@@ -1,0 +1,71 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from 'funciones_macro.html' import paginacion %}
+<div class="row">
+
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {#
+        En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
+        y se muestra el formulario para agregar un item.
+        #}
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" style="display: none;" id="formulario">
+            <form action="/add_marca_equipo" method="POST">
+                <div class="form-group">
+
+                    <input type="text" name="nombre_marca_equipo" placeholder="Nombre marca" maxlength="45">
+                </div>
+                <button class="agregar-button"> Agregar</button>
+            </form>
+        </div>
+    </div>
+    <h2>Marca Equipos</h2>
+    <div style="position: relative;">
+        <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
+        <div style="overflow-x:auto;">
+
+
+            <table id="posts">
+                <thead>
+                    <tr> 
+
+                        <td onclick="sortTable(0)">Nombre Marca
+                        </td>
+                        <td>Acciones</td>
+                    </tr>
+                </thead>
+                <tbody id="myTableBody">
+                    <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
+                    {% for marcae in marca_equipo %}
+                    <tr>
+                        <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
+                        <td>{{marcae.nombreMarcaEquipo}}</td>
+                        <td>
+                            <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
+                            <a href="/marca_equipo/edit_marca_equipo/{{marcae.idMarca_Equipo}}"
+                                class="success-button">Editar</a>
+                            <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
+                            <a href="/marca_equipo/delete_marca_equipo/{{marcae.idMarca_Equipo}}"
+                                class="delete-button">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- Se termina la iteracion for -->
+                </tbody>
+            </table>
+            {{ paginacion("marca_equipo", page, lastpage) }}
+            {% endblock %}

@@ -1,0 +1,147 @@
+{% extends "layout.html" %}
+{% block body %}
+<table id="posts">
+    <thead>
+        <tr>
+            <td>Cod. inventario</td>
+            <td>Num. serie</td>
+            <td>Codigo Proveedor</td>
+            <td>Tipo equipo</td>
+            <td>Estado equipo</td>
+            <td>Unidad</td>
+            <td>Nombre orden compra</td>
+            <td>Modelo</td>
+        </tr>
+    </thead>
+    <tbody id="">
+        <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+        <tr>
+            <td>{{equipo.Cod_inventarioEquipo}}</td>
+            <td>{{equipo.Num_serieEquipo}}</td>
+            <td>{{equipo.codigoproveedor_equipo}}</td>
+            <td>{{equipo.nombreTipo_equipo}}</td>
+            <td>{{equipo.nombreEstado_equipo}}</td>
+            <td>{{equipo.nombreUnidad}}</td>
+            <td>{{equipo.nombreOrden_compra}}</td>
+            <td>{{equipo.nombreModeloequipo}}</td>
+        </tr>
+    </tbody>
+</table>
+<h3>Observacion</h3>
+{%if equipo.ObservacionEquipo == "None" or equipo.ObservacionEquipo == "" %}
+<p>No hay Observaciones</p>
+{% else %}
+<p>{{equipo.ObservacionEquipo}}</p>
+{% endif %}
+<br />
+{#Tabla telefono#}
+{% if equipo.nombreTipo_equipo == 'Telefono' or equipo.nombreTipo_equipo == 'Celular'%}
+<h3>Datos Telefonicos</h3>
+<table id="posts">
+    <thead>
+        <td>Mac</td>
+        <td>Imei</td>
+        <td>Numero de Telefono</td>
+    </thead>
+    <tbody>
+        <td>{{equipo.macEquipo}}</td>
+        <td>{{equipo.imeiEquipo}}</td>
+        <td>{{equipo.numerotelefonicoEquipo}}</td>
+    </tbody>
+</table>
+{% endif%}
+{% if funcionario != None %}
+<h3>Funcionario</h3>
+<table id="posts">
+    <thead>
+        <tr>
+            <td onclick="sortTable(0)">Rut funcionario</td>
+            <td onclick="sortTable(1)">Nombre funcionario</td>
+            <td onclick="sortTable(2)">Cargo</td>
+            <td onclick="sortTable(3)">Cod. Unidad</td>
+            <td onclick="sortTable(4)">Correo</td>
+        </tr>
+    </thead>
+    <tbody id="myTableBody">
+        <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+        <tr>
+            <td>{{funcionario.rutFuncionario}}</td>
+            <td>{{funcionario.nombreFuncionario}}</td>
+            <td>{{funcionario.cargoFuncionario}}</td>
+            <td>{{funcionario.nombreUnidad}}</td>
+            <td>{{funcionario.correoFuncionario}}</td>
+        </tr>
+    </tbody>
+</table>
+
+{% endif %}
+<div>
+    <h3>Historial</h3>
+    <table id="posts">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Fecha</th>
+                <th onclick="sortTable(1)">Evento</th>
+                <th onclick="sortTable(2)">Nombre</th>
+                <th onclick="sortTable(3)">Observacion</th>
+                <th onclick="sortTable(4)">Buscar</th>
+                <th>Acta</th>
+            </tr>
+        </thead>
+        <tbody id="myTableBody">
+            {# Se deberian tener una tupla de Asignaciones, Devoluciones y Asignaciones todas con un inner join#}
+            {# tenerlas por separado y despues ordenarlas en js por fecha#}
+            {% for evento in eventos %}
+            <tr>
+                <td>{{evento.fecha}}</td>
+                <td>{{evento.evento}}</td>
+                {% if evento.evento != "Traslado" %}
+                <td>{{evento.nombre}}</td>
+                {% else %}
+                <td></td>
+                {% endif %}
+                {% if evento.evento != "Traslado" %}
+                <td>{{evento.observacion}}</td>
+                {% else %}
+                <td></td>
+                {% endif%}
+                <td>
+                    {# buscar el elemento correspondiente en su tabla#}
+                    {% if evento.evento == "Incidencia" %}
+                    <a class="nav-button2" href="/incidencia/buscar/{{evento.id}}">Buscar</a>
+                    {% endif %}
+                    {% if evento.evento == "Traslado" %}
+                    <a class="nav-button2" href="/traslado/buscar/{{evento.id}}">Buscar</a>
+                    {% endif %}
+                    {% if evento.evento == "Asignacion" %}
+                    <a class="nav-button2" href="/asignacion/buscar/{{evento.id}}">Buscar</a>
+                    {% endif %}
+                    {% if evento.evento == "Devolucion" %}
+                    <a class="nav-button2" href="/asignacion/buscar/{{evento.id}}">Buscar</a>
+                    {% endif %}
+
+                </td>
+                <td>
+                    {% if evento.evento == "Incidencia" %}
+                    <a href="/incidencia/listar_pdf/{{evento.id}}" class="info-button" style="width: 90%;">Actas
+                        Incidencia</a>
+                    {% endif %}
+                    {% if evento.evento == "Traslado" %}
+                    <a href="/traslado/mostrar_pdf/{{evento.id}}" class="info-button" style="width: 90%;">Acta
+                        Traslado</a>
+                    {% endif %}
+                    {% if evento.evento == "Asignacion" %}
+                    <a href="/asignacion/mostrar_pdf/{{evento.id}}" class="info-button" style="width: 90%;">Acta
+                        Asignacion</a>
+                    {% endif %}
+                    {% if evento.evento == "Devolucion" %}
+                    <a href="/asignacion/mostrar_pdf_devolucion/{{evento.id}}" class="info-button"
+                        style="width: 90%;">Acta
+                        Devolucion</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endblock %}

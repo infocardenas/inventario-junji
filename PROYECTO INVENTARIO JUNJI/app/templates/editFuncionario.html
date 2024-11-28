@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<a class="nav-button" href="/funcionario">Volver</a>
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+      <div class="card card-body">
+    <form action="/update_funcionario/{{funcionario.rutFuncionario}}" method="POST"class="mi-formulario">
+    <div class="form-group">
+        <label for="rut_funcionario">Rut Funcionario</label>
+        <input type="text" name="rut_funcionario" value="{{funcionario.rutFuncionario}}"
+        maxlength="20">
+    </div>
+    <div class="form-group">
+        <label for="nombre_funcionario">Nombre Funcionario</label>
+        <input type="text" name="nombre_funcionario"  value="{{funcionario.nombreFuncionario}}"
+        maxlength="45">
+    </div>
+    <div class="form-group">
+        <label for="correo_funcionario">Correo Funcionario</label>
+        <input type="text" name="correo_funcionario"  
+            value="{{funcionario.correoFuncionario}}"
+            maxlength="45">
+    </div>
+    <div class="form-group">
+        <label for="cargo_funcionario">Cargo:</label>
+        <input type="text" name="cargo_funcionario" value="{{funcionario.cargoFuncionario}}"
+        maxlength="45">
+
+    </div>
+    <!-- Arreglar nombre unidad-->
+    <div class="form-group">
+        <label for="codigo_Unidad">Unidad:</label>
+        <select name="codigo_Unidad" id="" >
+            <option value="{{funcionario.idUnidad}}">{{funcionario.nombreUnidad}}</option>
+            {% for ubi in Unidad %}
+                {% if funcionario.idUnidad != ubi.idUnidad%}
+                <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>
+    <button type="submit" class="agregar-button"> Guardar</button>  
+</form>
+{% endblock %}

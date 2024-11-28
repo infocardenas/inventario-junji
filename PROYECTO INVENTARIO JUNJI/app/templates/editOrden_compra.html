@@ -1,0 +1,47 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<a class="nav-button" href="/orden_compra">Volver</a>
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+      <div class="card card-body">
+
+<form action="/update_ordenc/{{orden_compra.idOrden_compra}}" method="POST"class="mi-formulario">
+    {#
+    <label for="">Orden Compra: </label>
+    <input  type="text" name="id_orden_compra" placeholder="Nombre tipo adquisicion" value="{{orden_compra.idOrden_compra}}"
+    maxlength="45">
+    <br>
+    #}
+    <label for="nombre_ordenc">Nombre de Orden: </label>
+    <input type="text" name="nombre_ordenc" placeholder="Nombre tipo adquisicion" value="{{orden_compra.nombreOrden_compra}}"
+    maxlength="45">
+    <br>
+    <label for="fecha_compra_ordenc">Fecha de Orden de Compra: </label>
+    <input type="date" name="fecha_compra_ordenc" value="{{orden_compra.fechacompraOrden_compra}}">
+  <br>
+  <label for="fecha_fin_ordenc">Fecha Final de Orden de Compra: <span style="color: red;">*</span></label>
+  <input type="date" name="fecha_fin_ordenc" value="{{orden_compra.fecha_fin_ordenc}}">
+  <br>
+  {#
+  <label for="rutadocu_ordenc">Ruta Documento: </label>
+  <input type="text" name="rutadocu_ordenc" value="{{orden_compra.rutadocumentoOrden_compra}}">
+  <br>
+  #}
+  <label for="nombre_tipo_adquisicion_ordenc"> Tipo de Adquisicion: </label>
+    <select name="nombre_tipo_adquisicion_ordenc">
+        {% for tipoa in tipo_adquisicion %}
+            <option value="{{ tipoa.idTipo_adquisicion }}" {% if tipoa.idTipo_adquisicion == orden_compra.idTipo_adquisicion %}selected{% endif %}>{{ tipoa.nombreTipo_adquisicion}}</option>
+        {% endfor %}
+    </select>
+    <br>
+<label for="nombre_proveedor_ordenc">Proveedor: </label>
+    <select name="nombre_proveedor_ordenc">
+        {% for pro in proveedor %}
+            <option value="{{ pro.idProveedor }}" {% if pro.idProveedor == orden_compra.idProveedor %}selected{% endif %}>{{ pro.nombreProveedor }}</option>
+        {% endfor %}
+    </select>  
+
+    <button type="submit" class="agregar-button"> Guardar</button>  
+</form>
+{% endblock %}

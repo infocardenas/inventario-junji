@@ -1,0 +1,115 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from 'funciones_macro.html' import paginacion %}
+
+<div class="row">
+
+    <div class="col-md-5">
+
+        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <!-- Se termina la seccion de errores -->
+
+        <!-- ----- -->
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" id="formulario" , style="display: none;">
+            <form action="/add_Unidad" method="POST" class="mi-formulario">
+                <div class="form-group">
+
+                    <label for="codigo_unidad">Código de la Unidad: </label>
+                    <input type="text" class="form-control" name="codigo_unidad" placeholder="codigo"
+                    maxlength="11">
+                    <br>
+                    <label for="nombreUnidad">Nombre de la Unidad: </label>
+                    <input type="text" class="form-control" name="nombreUnidad" placeholder="Nombre"
+                    maxlength="45">
+                    <br>
+                    <label for="contactoUnidad">Contacto: </label>
+                    <input type="text" class="form-control" name="contactoUnidad" placeholder="Contacto"
+                    maxlength="45">
+                    <br>
+                    <label for="direccionUnidad">Dirección: </label>
+                    <input type="text" class="form-control" name="direccionUnidad" placeholder="Direccion"
+                    maxlength="45">
+                    <br>
+                    <label for="nombreComuna">Comuna: </label>
+                    <select class="form-select" aria-label="nombreComuna" name="idComuna">
+                        <option selected>Elija su Comuna</option>
+                        {% for comuna in comuna %}
+                        <option value="{{ comuna.idComuna }}">{{ comuna.nombreComuna }}</option>
+                        {% endfor %}
+                    </select>
+                    <br />
+                    <label>Modalidad: </label>
+                    <select class="form-select" aria-label="nombreModalidad" name="idModalidad">
+                        <option selected>Elija la Modalidad</option>
+                        {% for modalidad in Modalidades %}
+                        <option value="{{ modalidad.idModalidad }}">{{ modalidad.nombreModalidad }}</option>
+                        {% endfor %}
+                    </select>
+
+                </div>
+                <button class="agregar-button"> Guardar</button>
+            </form>
+        </div>
+    </div>
+    <h2>Unidad</h2>
+    <div style="overflow-x:auto;">
+        <table id="posts">
+            <thead>
+                <tr>
+                    <td onclick="sortTable(0)">Código Unidad</td>
+                    <td onclick="sortTable(1)">Nombre Unidad</td>
+                    <td onclick="sortTable(2)">Contacto</td>
+                    <td onclick="sortTable(3)">Dirección</td>
+                    <td onclick="sortTable(4)">Comuna</td>
+                    <td onclick="sortTable(5)">N° Equipos</td>
+                    <td onclick="sortTable(5)">Modalidad</td>
+                    <td>Acciones</td>
+                </tr>
+            </thead>
+            <tbody id="myTableBody">
+                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+                {% for ubi in Unidad %}
+                <tr>
+                    <td>{{ubi.idUnidad}}</td>
+                    <td>{{ubi.nombreUnidad}}</td>
+                    <td>{{ubi.contactoUnidad}}</td>
+                    <td>{{ubi.direccionUnidad}}</td>
+                    {% if Unidad.idComuna == comuna.idComuna %}
+                    <td>{{ubi.nombreComuna}}</td>
+                    {% endif %}
+                    <td>{{ubi.num_equipos}}</td>
+                    <td>{{ubi.nombreModalidad}}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="options-button">Opciones</button>
+                            <div class="dropdown-options">
+                                <a href="/edit_Unidad/{{ubi.idUnidad}}" class="success-button"
+                                    style="width: 95px">Editar</a>
+                                <a href="/delete_Unidad/{{ubi.idUnidad}}" class="delete-button"
+                                    >Eliminar</a>
+                                <a href="/mostrar_asociados_unidad/{{ubi.idUnidad}}" class="info-button"
+                                    >Equipos</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {{ paginacion("Unidad", page, lastpage) }}
+        {% endblock %}

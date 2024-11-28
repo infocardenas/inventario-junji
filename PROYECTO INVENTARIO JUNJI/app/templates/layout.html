@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario JUNJI</title>
+    <!-- BOOSTRAP 4 -->
+
+    <link rel="icon" href="{{url_for('static', filename='img/logo_junji.jpg')}}" />
+    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
+    <!-- <link rel="stylesheet" href="https://bootswatch.com/5/lux/bootstrap.min.css"> -->
+    <script src="https://kit.fontawesome.com/5457f9e89a.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <script src="{{url_for('static', filename='js/main.js')}}"></script>
+    <!--<script src="/app/static/js/utils.js"></script>-->
+</head>
+
+<body>
+    <div class="container">
+        <aside id="sidebar">
+            <input type="checkbox" name="" id="toggler">
+            <label for="toggler" class="toggle-btn">
+                <i class="lni lni-grid-alt"></i>
+            </label>
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="/" class="sidebar-link">
+                        <i class="lni lni-dashboard"></i>
+                        <span>Inicio</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/equipo" class="sidebar-link">
+                        <i class="lni lni-laptop-phone"></i>
+                        <span>Equipos </span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/marca_equipo" class="sidebar-link">
+                        <i class="lni lni-laptop"></i>
+                        <span>Marcas de Equipos </span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/modelo_equipo" class="sidebar-link ">
+                        <i class="lni lni-list"></i>
+                        <span>Modelo de Equipos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/tipo_equipo" class="sidebar-link ">
+                        <i class="lni lni-line-dotted"></i>
+                        <span>Tipo de Equipos</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/funcionario" class="sidebar-link">
+                        <i class="lni lni-user"></i>
+                        <span>Funcionarios</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/proveedor" class="sidebar-link">
+                        <i class="lni lni-network"></i>
+                        <span>Proveedores</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/Unidad" class="sidebar-link">
+                        <i class="lni lni-map"></i>
+                        <span>Unidad</span>
+                    </a>
+                <li class="sidebar-item">
+                    <a href="/orden_compra" class="sidebar-link">
+                        <i class="lni lni-customer"></i>
+                        <span>Orden de Compra</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/tipo_adquisicion" class="sidebar-link">
+                        <i class="lni lni-files"></i>
+                        <span>Tipo Adquisicion</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/estado_equipo" class="sidebar-link">
+                        <i class="lni lni-map"></i>
+                        <span>Estado de Equipo</span>
+                    </a>
+                </li>
+                {#
+                <li class="sidebar-item">
+                    <a href="/devolucion" class="sidebar-link">
+                        <i class="lni lni-package"></i>
+                        <span>Devoluciones</span>
+                    </a>
+                </li>
+                #}
+                <li class="sidebar-item">
+                    <a href="/asignacion" class="sidebar-link">
+                        <i class="lni lni-calculator-alt"></i>
+                        <span>Asignaciones</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/traslado" class="sidebar-link">
+                        <i class="lni lni-travel"></i>
+                        <span>Traslados</span>
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="/incidencia" class="sidebar-link">
+                        <i class="lni lni-stamp"></i>
+                        <span>Incidencias</span>
+                    </a>
+                </li>
+            </ul>
+            <div class="sidebar-footer">
+                <a href="/desloguear" class="sidebar-link">
+                    <i class="lni lni-exit"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </aside>
+        <div class="main">
+            <div class="dashboard-navbar">
+                <!-- Header de la barra de navegación
+<a  href="https://icons8.com/icon/BOpyuffqH8uW/inversión">Inversión</a> icon by <a href="https://icons8.com">Icons8</a>
+TRASLADO---
+            lni lni-delivery
+         <div class="navbar-header">
+          <img src="static/img/header_full_2022.png" alt="Header Image" class="header-image">
+      </div>   -->
+                <form action="/buscar" method="GET">
+                    <div class="nav-search">
+                        <input name="busqueda" type="text" class="search-query" placeholder="Search...">
+                        <button class="btn" type="submit">Search</button>
+                    </div>
+                </form>
+                <div class="navbar-content">
+                    <ul class="main-nav">
+                        <li class="user-link">
+                            <a href="#">
+                                <img src="static/img/account.png" alt="Profile" class="avatar">
+                            </a>
+                            <div class="user-link-dropdown">
+                                <a href="/ingresar" class="card">{{session['user']}}</a>
+                                <a href="/desloguear" class="card">Desloguear</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- 
+  <nav class="navbar navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="/"> Inicio </a>
+        <a class="navbar-brand" href="/index"> Marcas de Equipos </a>
+        <a class="navbar-brand" href="/modelo_equipo"> Modelo de Equipos </a>
+        <a class="navbar-brand" href="/funcionarios"> Funcionarios </a>
+        <a class="navbar-brand" href="/ubicacion"> Ubicacion </a>
+
+
+      </div>
+    </nav>  
+  
+  
+  
+        <ul>
+        <li>
+      <img src="img/logo.jpg" alt="Logo Fazt" class="logo"> 
+      </li>
+      <li>Home</li>
+      <li>About</li>
+      <li>Contact</li>
+    </ul>
+  -->
+            <div class="content">
+                <h2>Gestor de Inventario JUNJI</h2>
+                {% block body %}
+                {% endblock %}
+            </div>
+            <!-- <div class="dashboard-card">
+        <div class="card">
+            <h6 class="title">Memebrs Progress</h6>
+            <h6 class="amount">$72,540</h6>
+            <div class="badge">
+                <span class="text-success-bg"> +6.85% </span>
+                <span class="badge-text">Since Last Month</span>
+            </div>
+        </div>
+        <div class="card">
+            <h6 class="title">Authors Earninigs</h6>
+            <h6 class="amount">$72,540</h6>
+            <div class="badge">
+                <span class="text-success-bg"> +6.85% </span>
+                <span class="badge-text">Since Last Month</span>
+            </div>
+        </div>
+        <div class="card">
+            <h6 class="title">Total Users</h6>
+            <h6 class="amount">$72,540</h6>
+            <div class="badge">
+                <span class="text-success-bg"> +6.85% </span>
+                <span class="badge-text">Since Last Month</span>
+            </div>
+        </div>
+    </div>-->
+
+            <!-- TABLAS 
+        <h2>Avg. Agent Earnings</h2>
+    <div style="overflow-x:auto;">
+        <table id="posts">
+            <thead>
+                <tr>
+                    <th style="width:5%">SN</th>
+                    <th style="width:45%">Name</th>
+                    <th style="width:45%">Email</th>
+                    <th style="width:5%">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>1</td>
+                    <td>John Doe</td>
+                    <td>john@example.com</td>
+                    <td><a href="#">Edit</a></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td>Jane Smith</td>
+                    <td>jane@example.com</td>
+                    <td><a href="#">Edit</a></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>Bob Johnson</td>
+                    <td>bob@example.com</td>
+                    <td><a href="#">Edit</a></td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>Alice Williams</td>
+                    <td>alice@example.com</td>
+                    <td><a href="#">Edit</a></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div> -->
+            <footer>
+                <div class="footer-wrap">
+                    <div class="copyright-text">
+                        <ul>
+                            <li>
+                                <p>© Copyright 2024 by <strong>JUNJI</strong></p>
+                            </li>
+                            <li>version: 1.0</li>
+                        </ul>
+                    </div>
+                    <ul class="social-icons">
+                        <li><a href="https://www.junji.cl/">Pagina web</a></li>
+                    </ul>
+                </div>
+            </footer>
+        </div>
+
+    </div>
+</body>
+
+</html>

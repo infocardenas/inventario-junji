@@ -1,0 +1,287 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from 'funciones_macro.html' import paginacion, select, select_modelo, select_tipo%}
+
+<div class="row">
+
+    <div class="col-md-5">
+        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <!-- Se termina la seccion de errores -->
+
+        <!-- ----- -->
+
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" id="formulario" style="display: none;">
+            <form action="/add_equipo" method="POST" class="mi-formulario">
+                <div class="form-group">
+                    {#
+                    #}
+                    <div>
+
+                        <label for="marca">Nombre Marca <span style="color: red;">*</span></label>
+                        <select name="nombre_marca" id="marca" , onchange="mostrarTipo_equipo()">
+                            <option value="">Seleccione el Marca</option>
+                            {% for marca in marcas_equipo %}
+                            <option value="{{marca.idMarca_Equipo}}">{{marca.nombreMarcaEquipo}}</option>
+                            {% endfor%}
+                        </select>
+                    </div>
+                    {#}
+                    <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: *</label>
+                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
+                        <option value="">Seleccione el Tipo de Equipo</option>
+                        {% for tipoe in tipo_equipo %}
+                        <div id="{{}}">
+                            <option value="{{tipoe.nombreTipo_equipo}}">{{tipoe.nombreTipo_equipo}}</option>
+                        </div>
+                        {% endfor %}
+                    </select>
+                    #}
+                    <div id="select_div">
+                        {% for marca in marcas_equipo %}
+                        {#{marca.nombreMarcaEquipo}#}
+                        {# el div tiene la marca ya que todo lo que se muestra en el div
+                        siguiente solo se muestra si la marca elegida es la que este
+                        asociada a el tipo y modelo de la iteracion correspondiente
+                        #}
+                        <div id="{{marca.idMarca_Equipo}}" class="select_tipo_modelo_rel_marca" style="display:none">
+                            {{select_tipo(marca.tipo_equipo, marca.idMarca_Equipo)}}
+                            {% for tipo in marca.tipo_equipo%}
+                            {#{tipo.nombreTipo_equipo}#}
+                            <div id="div_modelo_{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo" style="display: none;">
+                                {#{tipo.modelo_equipo}#}
+                                {{select_modelo(tipo.modelo_equipo, tipo['idTipo_equipo'], marca.idMarca_Equipo)}}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <input style="display: none;" name="modelo_equipo" id="modelo_para_equipo" />
+                    {# select test #}
+                    <label for="codigo_Unidad">Unidad: <span style="color: red;">*</span></label>
+                    <select name="codigo_Unidad">
+                        <option value="">Seleccione la Unidad</option>
+                        {% for ubi in Unidad %}
+                        <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
+                        {% endfor %}
+                    </select>
+                    <br>
+                    <div>
+                        <label for="nombre_orden_compra">Orden de Compra: <span style="color: red;">*</span></label>
+                        <select name="nombre_orden_compra">
+                            <option value="">Seleccione el Orden de Compra</option>
+                            {% for ordenc in orden_compra %}
+                            <option value="{{ ordenc.idOrden_compra }}">{{ordenc.nombreOrden_compra}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    {# Mac solo se debe mostrar si es de tipo telefono fijo#}
+                    <div id="Mac" style="display: none;">
+                        <label for="mac">Mac: </label>
+                        <input type="text" class="form-control" name="mac" maxlength="45">
+                        <br>
+                    </div>
+                    <div id="Imei" style="display: none;">
+                        <label for="imei">imei: </label>
+                        <input type="text" name="imei" maxlength="45">
+                        <br>
+                    </div>
+                    <div id="Telefono" style="display: none;">
+                        <label for="numero">Número de Telefono: </label>
+                        <input type="text" name="numero" maxlength="12">
+                        <br>
+                    </div>
+                    <div>
+                        <label>Código Inventario</label>
+                        <input type="text" class="form-control" name="codigo_inventario"
+                            placeholder="Codigo Inventario" maxlength="20">
+                        <br>
+                    </div>
+                    <div>
+                        <label for="codigoproveedor">Código de Proveedor: </label>
+                        <input type="text" class="form-control" name="codigoproveedor" maxlength="45">
+                        <br>
+                    </div>
+                    <label for="numero_serie">Número de Serie: </label>
+                    <input type="text" class="form-control" name="numero_serie" placeholder="Numero de serie"
+                        maxlength="12">
+                    <br>
+                    <label for="observacion_equipo">Observación: </label>
+                    <textarea id="observacion_equipo" name="observacion_equipo" rows="2" cols="50" maxlength="250"></textarea>
+                    <br>
+                    <button class="agregar-button" type="submit"> Agregar</button>
+            </form>
+        </div>
+    </div>
+</div>
+<h2>Equipo</h2>
+<button class="nav-button" onclick="showDiv('formularioExcel', ['importar_excel'])">Exportar a Excel</button>
+<button class="nav-button" onclick="showDiv('importar_excel', ['formularioExcel'])">Importar a Excel</button>
+<div class="card card-body" id="formularioExcel" style="display: none;">
+    <h2>Seleccione que hojas quiere</h2>
+    <form action="/test_excel_form" method="POST" class="mi-formulario">
+        <div style="display:grid;">
+            <div style="padding: 30px;">
+                <input name="todo_check" type="radio" id="todo_check" onclick="todoCheck()" />
+                <label for="todo_check">Todo en una pagina</label>
+            </div>
+            <div id="checkbox_container">
+                <div>
+                    <input onclick="check_all()" type="checkbox" id="checkall" />
+                    <label for="checkall">Tickear todo</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="AIO_check" name="AIO_check" />
+                    <label for="AIO_check">AIO</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="Notebooks" name="Notebooks" />
+                    <label for="Notebooks">Notebooks</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="impresoras_check" name="impresoras_check" />
+                    <label for="impresoras_check">Impresoras</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="bam_check" name="bam_check" />
+                    <label for="bam_check">Bam</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="proyectores_check" name="proyectores_check" />
+                    <label for="proyectores_check">Proyectores</label>
+                </div>
+                <div>
+
+                    <input onclick="sheetCheck()" type="checkbox" id="telefonos_check" name="telefonos_check" />
+                    <label for="telefonos_check">Teléfonos</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="HDD_check" name="HDD_check" />
+
+                    <label for="HDD_check">Discos Duros Externos</label>
+                </div>
+                <div>
+                    <input onclick="sheetCheck()" type="checkbox" id="tablets_check" name="tablets_check" />
+                    <label for="tablets_check">Tablets</label>
+                </div>
+                <div>
+
+                    <input onclick="sheetCheck()" type="checkbox" id="otros_check" name="otros_check" />
+                    <label for="otros_check">Otros</label>
+                </div>
+            </div>
+            <button class="agregar-button">Exportar</button>
+        </div>
+    </form>
+</div>
+<div class="card card-body" id="importar_excel" style="display: none;">
+    {#aqui formulario para importar datos#}
+<h2>Importar Equipos o Unidades</h2>
+    <div class="card card-body" id="formulario" style="display: block;">
+        <form action="/equipo/importar_excel" method="POST" class="mi-formulario" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Añadir Excel e importar Equipos</label>
+                <input type="file" name="file" />
+                {# se nesesita una forma eficiente de añadir el equipo#}
+                <button class="agregar-button"> Agregar</button>
+            </div>
+        </form>
+    </div>
+    <div class="card card-body" id="formulario" style="display: block;">
+        <form action="/equipo/importar_excel/unidad" method="POST" class="mi-formulario" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="file">Añadir Excel e importar Unidad</label>
+                <input type="file" name="file" />
+                {# se nesesita una forma eficiente de añadir el equipo#}
+                <button class="agregar-button"> Agregar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<br />
+<div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
+    <div style="display:flex;">
+        <form action="/consulta_equipo" method="POST">
+            <input name="palabra" type="text" class="search-box" placeholder="Search..." id="buscador"
+                onkeyup="busqueda('myTableBody')" />
+            {#<button class="nav-button" type="submit">Buscar</button>#}
+        </form>
+    </div>
+
+</div>
+<div style="overflow-x:auto;">
+    <table id="posts">
+        <thead>
+            <tr>
+                <td onclick="sortTable(0)">Código Inventario</td>
+                <td onclick="sortTable(1)">N° Serie</td>
+                <td onclick="sortTable(2)">Funcionario</td>
+                <td onclick="sortTable(3)">Código Proveedor</td>
+                <td onclick="sortTable(4)">Unidad</td>
+                <td onclick="sortTable(5)">Tipo equipo</td>
+                <td onclick="sortTable(6)">Modelo</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <tbody id="myTableBody">
+            <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+            {% for equi in equipo %}
+            <tr>
+                <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
+                <td class="toCheck">{{equi.Num_serieEquipo}}</td>
+                {% if equi.nombreFuncionario == '' %}
+                <td class="toCheck">{{equi.nombreEstado_equipo}}</td>
+                {% else %}
+                <td class="toCheck">{{equi.nombreFuncionario}}</td>
+                {% endif %}
+                <td class="toCheck">{{equi.codigoproveedor_equipo}}</td>
+                <td class="toCheck">{{equi.nombreUnidad}}</td>
+                <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
+                <td class="toCheck">{{equi.nombreModeloequipo}}</td>
+                <td>
+                    {#clase para tener un boton que despliega los otros botones #}
+                    <div class="dropdown">
+                        <button class="options-button">Opciones</button>
+                        <div class="dropdown-options">
+                            <a href="/edit_equipo/{{equi.idEquipo}}" class="success-button"
+                                style="width: 90%;">Editar</a>
+                            <a href="/delete_equipo/{{equi.idEquipo}}" class="delete-button"
+                                style="width: 90%;">Eliminar</a>
+                            <a href="/equipo_detalles/{{equi.idEquipo}}" class="info-button"
+                                style="width: 90%;">Detalles</a>
+                            <a href="/incidencia/form/{{equi.idEquipo}}" class="agregar-button"
+                                style="width: 90%;">Incidencia</a>
+                            {% if equi.nombreEstado_equipo == "SIN ASIGNAR" %}
+                            <a href="/add_asignacion/{{equi.idEquipo}}" class="agregar-button"
+                                style="width: 90%;">Asignar</a>
+                            {% else %}
+                                {% if equi.nombreEstado_equipo == "EN USO" %}
+                                    <a href="/asignacion/devolver_uno/{{equi.idEquipo}}" class="agregar-button"
+                                        style="width: 90%;">Devolver</a>
+                                {% endif%}
+                            {% endif %}
+
+
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {{ paginacion("equipo", page, lastpage) }}
+    {% endblock %}

@@ -1,0 +1,112 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from 'funciones_macro.html' import paginacion %}
+<div class="row">
+
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {#
+        En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
+        y se muestra el formulario para agregar un item.
+        #}
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" id="formulario" style="display: none;">
+            <form action="/traslado/add_traslado" method="POST" class="mi-formulario">
+                <label>Origen</label>
+                <select name="Origen" id="">
+                    <option value="">Seleccione el Origen</option>
+                    {% for unidadOrigen in unidades %}
+                    <option value="{{unidadOrigen.idUnidad }}">{{unidadOrigen.nombreUnidad}}</option>
+                    {% endfor %}
+                </select>
+
+                <button class="agregar-button" type="submit"> Agregar</button>
+        </div>
+        </form>
+
+
+    </div>
+
+
+</div>
+<h2>Traslado</h2>
+<div style="width: 0px; margin:auto">
+    <input name="busqueda" type="text" class="search-box" placeholder="Search..." style="font-size: 30px" id="buscador"
+        onkeyup="busqueda('myTableBody')">
+</div>
+<div style="position: relative;">
+    <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
+    <div style="overflow-x:auto;">
+
+
+
+        <table id="posts">
+            <thead id="myTableHead">
+                <tr>
+
+                    <th onclick="sortTable(0)">Fecha Traslado</th>
+                    <th>Acta</th>
+                    <th onclick="sortTable(2)">Origen</th>
+                    <th onclick="sortTable(3)">Destino</th>
+                    <th onclick="sortTable(4)">N°</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="myTableBody">
+                <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
+                {% for tras in traslado %}
+                <tr>
+                    <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
+                    <td class="toCheck">{{tras.fechatraslado}}</td>
+                    <td>
+                        {# añadir el path para los pdfs#}
+                        <a href="/traslado/mostrar_pdf/{{tras.idTraslado}}" class="info-button">Acta</a>
+                        {% if tras.estaFirmadoTraslado == 1%}
+                        <a href="/traslado/mostrar_pdf_firmado/{{tras.idTraslado}}" class="info-button">Acta Firmada</a>
+                        {% endif %}
+                    </td>
+                    <td class="toCheck">{{tras.nombreOrigen}}</td>
+                    <td class="toCheck">{{tras.nombreDestino}}</td>
+                    <td class="toCheck">{{tras.idTraslado}}</td>
+                    <td>
+                        <div class="dropdown">
+                            <button class="options-button desplegable-button">Opciones</button>
+                            <div class="dropdown-options" style="border: 0px; border-color:#5500ff; border-style:solid">
+                                <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
+                                 {# El boton de editar no se ocupa porque el acta tendria que generarse denuevo de todos modos#}
+                                {#<a href="/traslado/edit_traslado/{{tras.idTraslado}}"
+                                    class="success-button desplegable-button">Editar</a>#}
+                                <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
+                                <a href="/traslado/delete_traslado/{{tras.idTraslado}}"
+                                    class="delete-button desplegable-button">Eliminar</a>
+                                <a href="/mostrar_asociados_traslado/{{tras.idTraslado}}"
+                                    class="info-button desplegable-button">Equipos</a>
+                                {% if tras.estaFirmadoTraslado != 1%}
+                                <a href="/traslado/listar_pdf/{{tras.idTraslado}}"
+                                    class="success-button desplegable-button">
+                                    Firmar</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                <!-- Se termina la iteracion for -->
+            </tbody>
+        </table>
+
+        {{ paginacion("traslado", page, lastpage) }}
+        {% endblock %}

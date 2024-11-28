@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<a class="nav-button" href="/marca_equipo">Volver</a>
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+      <div class="card card-body">
+<form action="/update_marca_equipo/{{marca_equipo.idMarca_Equipo}}" method="POST" class="mi-formulario">
+    <div class="form-group">
+
+        <label for="nombre_marca_equipo">Nombre Marca: </label>
+    <input type="text" name="nombre_marca_equipo" placeholder="Nombre de marca" value="{{marca_equipo.nombreMarcaEquipo}}"
+        maxlength="45">
+    </div>
+    <button type="submit" class="agregar-button"> Guardar</button>  
+</form> 
+</div>
+</div>
+</div>
+
+{% endblock %}

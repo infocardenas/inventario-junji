@@ -1,0 +1,1630 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Servidor: 127.0.0.1
+-- Tiempo de generación: 08-04-2024 a las 16:18:14
+-- Versión del servidor: 10.4.32-MariaDB
+-- Versión de PHP: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Base de datos: `inventariofinal`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `asignacion`
+--
+
+CREATE TABLE `asignacion` (
+  `idAsignacion` int(11) NOT NULL,
+  `fecha_inicioAsignacion` date DEFAULT NULL,
+  `ObservacionAsignacion` varchar(250) DEFAULT NULL,
+  `rutaactaAsignacion` varchar(45) DEFAULT NULL,
+  `ActivoAsignacion` tinyint(4) DEFAULT NULL,
+  `rutFuncionario` varchar(20) DEFAULT NULL,
+  `idDevolucion` int(11) DEFAULT NULL,
+  `fechaDevolucion` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `asignacion`
+--
+
+INSERT INTO `asignacion` (`idAsignacion`, `fecha_inicioAsignacion`, `ObservacionAsignacion`, `rutaactaAsignacion`, `ActivoAsignacion`, `rutFuncionario`, `idDevolucion`, `fechaDevolucion`) VALUES
+(62, '2024-03-22', 'TODOS', 'ruta', 0, '20941502-', NULL, '2024-03-22'),
+(63, '2024-03-22', 'TODOS', 'ruta', 1, '20941502-', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `comuna`
+--
+
+CREATE TABLE `comuna` (
+  `idComuna` int(11) NOT NULL,
+  `nombreComuna` varchar(45) DEFAULT NULL,
+  `idProvincia` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `comuna`
+--
+
+INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
+(1, 'Concepcion', 1),
+(2, 'Coronel', 1),
+(3, 'Chiguayante', 1),
+(4, 'Florida', 1),
+(5, 'Hualqui', 1),
+(6, 'Lota', 1),
+(7, 'Penco', 1),
+(8, 'San Pedro de la Paz', 1),
+(9, 'Santa Juana', 1),
+(10, 'Talcahuano', 1),
+(11, 'Tome', 1),
+(12, 'Hualpen', 1),
+(13, 'Lebu', 2),
+(14, 'Arauco', 2),
+(15, 'Cañete', 2),
+(16, 'Contulmo', 2),
+(17, 'Curanilahue', 2),
+(18, 'Los Álamos', 2),
+(19, 'Tirúa', 2),
+(20, 'Los Angeles', 3),
+(21, 'Antuco', 3),
+(22, 'Cabrero', 3),
+(23, 'Laja', 3),
+(24, 'Mulchen', 3),
+(25, 'Nacimiento', 3),
+(26, 'Negrete', 3),
+(27, 'Santa Barbara', 3),
+(28, 'Tucapel', 3),
+(29, 'Alto Biobío', 3),
+(30, 'San Rosendo', 3),
+(31, 'Quilleco', 3),
+(32, 'Quilaco', 3),
+(33, 'Yumbel', 3),
+(34, 'Concepcion', 1),
+(35, 'Coronel', 1),
+(36, 'Chiguayante', 1),
+(37, 'Florida', 1),
+(38, 'Hualqui', 1),
+(39, 'Lota', 1),
+(40, 'Penco', 1),
+(41, 'San Pedro de la Paz', 1),
+(42, 'Santa Juana', 1),
+(43, 'Talcahuano', 1),
+(44, 'Tome', 1),
+(45, 'Hualpen', 1),
+(46, 'Concepcion', 1),
+(47, 'Coronel', 1),
+(48, 'Chiguayante', 1),
+(49, 'Florida', 1),
+(50, 'Hualqui', 1),
+(51, 'Lota', 1),
+(52, 'Penco', 1),
+(53, 'San Pedro de la Paz', 1),
+(54, 'Santa Juana', 1),
+(55, 'Talcahuano', 1),
+(56, 'Tome', 1),
+(57, 'Hualpen', 1),
+(58, 'Concepcion', 1),
+(59, 'Coronel', 1),
+(60, 'Chiguayante', 1),
+(61, 'Florida', 1),
+(62, 'Hualqui', 1),
+(63, 'Lota', 1),
+(64, 'Penco', 1),
+(65, 'San Pedro de la Paz', 1),
+(66, 'Santa Juana', 1),
+(67, 'Talcahuano', 1),
+(68, 'Tome', 1),
+(69, 'Hualpen', 1),
+(70, 'Lebu', 2),
+(71, 'Arauco', 2),
+(72, 'Cañete', 2),
+(73, 'Contulmo', 2),
+(74, 'Curanilahue', 2),
+(75, 'Los Álamos', 2),
+(76, 'Tirúa', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalle_traslado`
+--
+
+CREATE TABLE `detalle_traslado` (
+  `idDetalle_traslado` int(11) NOT NULL,
+  `observacionDetalletraslado` varchar(45) DEFAULT NULL,
+  `idTraslado` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `detalle_traslado`
+--
+
+INSERT INTO `detalle_traslado` (`idDetalle_traslado`, `observacionDetalletraslado`, `idTraslado`) VALUES
+(1, 'Se traslada hacia tanto1', 1),
+(2, 'Se traslada hacia tanto1', 1),
+(3, 'Se traslada hacia tanto2', 2),
+(4, 'Se traslada hacia tanto3', 3),
+(5, 'Se traslada hacia tanto4', 2),
+(6, 'Se traslada hacia tanto5', 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `devolucion`
+--
+
+CREATE TABLE `devolucion` (
+  `idDevolucion` int(11) NOT NULL,
+  `fechaDevolucion` date DEFAULT NULL,
+  `observacionDevolucion` varchar(250) DEFAULT NULL,
+  `rutaactaDevolucion` varchar(45) DEFAULT NULL,
+  `ActivoDevolucion` tinyint(4) DEFAULT NULL,
+  `rutFuncionario` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `devolucion`
+--
+
+INSERT INTO `devolucion` (`idDevolucion`, `fechaDevolucion`, `observacionDevolucion`, `rutaactaDevolucion`, `ActivoDevolucion`, `rutFuncionario`) VALUES
+(1, '2020-12-12', 'El funcionario tanto1 devuelve el equipo tanto1', 'None', 0, '21000222k'),
+(2, '2020-12-12', 'El funcionario tanto2 devuelve el equipo tanto2', NULL, 0, '190001110'),
+(3, '2020-12-12', 'El funcionario tanto3 devuelve el equipo tanto3', NULL, 1, '180003339'),
+(4, '2020-12-12', 'El funcionario tanto4 devuelve el equipo tanto4', 'None', 0, '15222111k'),
+(5, '2020-12-12', 'El funcionario tanto5 devuelve el equipo tanto5', 'sge', 1, '15222111k'),
+(6, '2024-02-06', 'asd', 'qwd', 0, '10222333k');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `equipo`
+--
+
+CREATE TABLE `equipo` (
+  `idEquipo` int(11) NOT NULL,
+  `Cod_inventarioEquipo` varchar(20) DEFAULT NULL,
+  `Num_serieEquipo` varchar(20) DEFAULT NULL,
+  `ObservacionEquipo` varchar(250) DEFAULT NULL,
+  `codigoproveedor_equipo` varchar(45) DEFAULT NULL,
+  `macEquipo` varchar(45) DEFAULT NULL,
+  `imeiEquipo` varchar(45) DEFAULT NULL,
+  `numerotelefonicoEquipo` varchar(12) DEFAULT NULL,
+  `idEstado_equipo` int(11) NOT NULL,
+  `idUnidad` int(11) NOT NULL,
+  `idOrden_compra` varchar(45) NOT NULL,
+  `idModelo_equipo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `equipo`
+--
+
+INSERT INTO `equipo` (`idEquipo`, `Cod_inventarioEquipo`, `Num_serieEquipo`, `ObservacionEquipo`, `codigoproveedor_equipo`, `macEquipo`, `imeiEquipo`, `numerotelefonicoEquipo`, `idEstado_equipo`, `idUnidad`, `idOrden_compra`, `idModelo_equipo`) VALUES
+(1, '8013913', '0', 'TA BIEN', '01233421', NULL, NULL, NULL, 2, 8301035, '599-193-CC22', 2),
+(2, '17006716', '0', 'TA BIEN', '02988776', NULL, NULL, NULL, 2, 8203001, '599-193-CC22', 1),
+(3, '8013913', '0', 'TA BIEN', '01374859', NULL, NULL, NULL, 2, 8015892, '599-193-CC22', 3),
+(4, '8013913', '0', 'TA BIEN', '02993344', NULL, NULL, NULL, 2, 8015892, '599-193-CC22', 4),
+(5, '8013913', '0', 'TA BIEN', '01773356', NULL, NULL, NULL, 2, 8203001, '599-193-CC22', 5),
+(6, '123', '123', '123', '123', '123', '123', '123', 2, 8301033, '599-193-CC22', 20),
+(7, '137', '137', 'El nuevo', '00137', '?', '?', '1234', 2, 8015892, '599-193-CC22', 1),
+(8, '2', '2', '2A', '2A', '2A', '2A', '2A', 3, 8301033, '599-193-CC22', 16),
+(16, '0839433', '2346', '246', '356734', '34', '6346', '346534', 2, 8301034, '599-405-CC22', 20);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `equipo_asignacion`
+--
+
+CREATE TABLE `equipo_asignacion` (
+  `idAsignacion` int(11) NOT NULL,
+  `idEquipo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `equipo_asignacion`
+--
+
+INSERT INTO `equipo_asignacion` (`idAsignacion`, `idEquipo`) VALUES
+(62, 1),
+(62, 2),
+(62, 3),
+(62, 4),
+(62, 5),
+(62, 6),
+(62, 7),
+(62, 8),
+(62, 16),
+(63, 1),
+(63, 2),
+(63, 3),
+(63, 4),
+(63, 5),
+(63, 6),
+(63, 7),
+(63, 16);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `estado_equipo`
+--
+
+CREATE TABLE `estado_equipo` (
+  `idEstado_equipo` int(11) NOT NULL,
+  `nombreEstado_equipo` varchar(45) DEFAULT NULL,
+  `FechaEstado_equipo` date DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `estado_equipo`
+--
+
+INSERT INTO `estado_equipo` (`idEstado_equipo`, `nombreEstado_equipo`, `FechaEstado_equipo`) VALUES
+(1, 'BAJA', '2024-02-05'),
+(2, 'EN USO', '2024-02-05'),
+(3, 'SIN ASIGNAR', '2024-02-05'),
+(4, 'SINIESTRO', '2024-02-05');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `funcionario`
+--
+
+CREATE TABLE `funcionario` (
+  `rutFuncionario` varchar(20) NOT NULL,
+  `nombreFuncionario` varchar(45) NOT NULL,
+  `cargoFuncionario` varchar(45) DEFAULT NULL,
+  `idUnidad` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `funcionario`
+--
+
+INSERT INTO `funcionario` (`rutFuncionario`, `nombreFuncionario`, `cargoFuncionario`, `idUnidad`) VALUES
+('10222333k', 'Leticia Letelier', 'Encargada', 8015892),
+('15222111k', 'Valentina Salgado', 'Encargada', 8203001),
+('180003339', 'Natalie Ramirez', 'Encargada', 8203001),
+('190001110', 'Cristina Dominguez', 'Encargada', 8301033),
+('20941502-', 'martin', '123', 8301033),
+('20941502-k', 'martin2', 'cargo', 8015892),
+('21000222k', 'Romina Gonzales', 'Encargada', 8015892);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `incidencia`
+--
+
+CREATE TABLE `incidencia` (
+  `idIncidencia` int(11) NOT NULL,
+  `nombreIncidencia` varchar(45) DEFAULT NULL,
+  `observacionIncidencia` varchar(45) DEFAULT NULL,
+  `rutaactaIncidencia` varchar(45) DEFAULT NULL,
+  `fechaIncidencia` date DEFAULT NULL,
+  `idEquipo` int(11) NOT NULL,
+  `numDocumentos` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `incidencia`
+--
+
+INSERT INTO `incidencia` (`idIncidencia`, `nombreIncidencia`, `observacionIncidencia`, `rutaactaIncidencia`, `fechaIncidencia`, `idEquipo`, `numDocumentos`) VALUES
+(1, 'SD quemada', 'con fuego', NULL, '2023-10-12', 1, 3),
+(2, 'Disco quemado', 'no se encuentra', NULL, '2023-10-12', 2, 0),
+(7, 'asdf', 'asdflñkj', 'ruta', '2024-02-29', 1, 0),
+(8, 'asdf', 'asdflñkj', 'ruta', '2024-02-29', 1, 0),
+(9, 'asdf', 'asdflñkj', 'ruta', '2024-02-29', 1, 0),
+(10, 'adsf', 'asdf', 'ruta', '2024-02-29', 1, 0),
+(11, 'asdf', 'asdf', 'ruta', '2024-02-29', 1, 3),
+(13, 'sadv', 'asfd', 'ruta', '2024-02-13', 1, 0),
+(21, 'Incidencia 1', 'ROBO', 'ruta', '2024-02-29', 1, NULL),
+(22, 'asdf', 'asdf', 'ruta', '2024-03-01', 1, NULL),
+(23, 'asdf', 'asdf', 'ruta', '2024-03-01', 1, NULL),
+(24, 'asd', 'asd', 'ruta', '2024-03-01', 1, NULL),
+(25, 'asd', 'asd', 'ruta', '2024-03-01', 1, NULL),
+(26, 'incidencia de prueba', 'ñalskdjf', 'ruta', '2024-03-18', 1, 2),
+(27, 'incidencia prueba', 'hola', 'ruta', '2024-03-18', 1, 1),
+(28, 'incidencia 123', '123', 'ruta', '2312-02-11', 6, 2),
+(29, 'incidencia 123', '123', 'ruta', '2312-02-11', 6, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `marca_equipo`
+--
+
+CREATE TABLE `marca_equipo` (
+  `idMarca_Equipo` int(11) NOT NULL,
+  `nombreMarcaEquipo` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `marca_equipo`
+--
+
+INSERT INTO `marca_equipo` (`idMarca_Equipo`, `nombreMarcaEquipo`) VALUES
+(1, 'Lenovo'),
+(2, 'HP'),
+(3, 'ACER'),
+(4, 'TOSHIBA'),
+(5, 'Epson'),
+(6, 'ViewSonic'),
+(7, 'LG'),
+(8, 'itab'),
+(9, 'Samsung'),
+(10, 'Canon'),
+(11, 'OLIDATA'),
+(12, 'HUB'),
+(13, 'Klipxtreme'),
+(14, 'PHILCO'),
+(15, 'Lenovo'),
+(16, 'HP'),
+(17, 'ACER'),
+(18, 'TOSHIBA'),
+(19, 'Epson'),
+(20, 'ViewSonic'),
+(21, 'LG'),
+(22, 'itab'),
+(23, 'Samsung'),
+(24, 'Canon'),
+(25, 'OLIDATA'),
+(26, 'HUB'),
+(27, 'Klipxtreme'),
+(28, 'PHILCO'),
+(29, 'Lenovo'),
+(30, 'HP'),
+(31, 'ACER'),
+(32, 'TOSHIBA'),
+(33, 'Epson'),
+(34, 'ViewSonic'),
+(35, 'LG'),
+(36, 'itab'),
+(37, 'Samsung'),
+(38, 'Canon'),
+(39, 'OLIDATA'),
+(40, 'HUB'),
+(41, 'Klipxtreme'),
+(42, 'PHILCO'),
+(43, 'Lenovo'),
+(44, 'HP'),
+(45, 'ACER'),
+(46, 'TOSHIBA'),
+(47, 'Epson'),
+(48, 'ViewSonic'),
+(49, 'LG'),
+(50, 'itab'),
+(51, 'Samsung'),
+(52, 'Canon'),
+(53, 'OLIDATA'),
+(54, 'HUB'),
+(55, 'Klipxtreme'),
+(56, 'PHILCO'),
+(57, 'Lenovo'),
+(58, 'HP'),
+(59, 'ACER'),
+(60, 'TOSHIBA'),
+(61, 'Epson'),
+(62, 'ViewSonic'),
+(63, 'LG'),
+(64, 'itab'),
+(65, 'Samsung'),
+(66, 'Canon'),
+(67, 'OLIDATA'),
+(68, 'HUB'),
+(69, 'Klipxtreme'),
+(70, 'PHILCO'),
+(71, 'Lenovo'),
+(72, 'HP'),
+(73, 'ACER'),
+(74, 'TOSHIBA'),
+(75, 'Epson'),
+(76, 'ViewSonic'),
+(77, 'LG'),
+(78, 'itab'),
+(79, 'Samsung'),
+(80, 'Canon'),
+(81, 'OLIDATA'),
+(82, 'HUB'),
+(83, 'Klipxtreme'),
+(84, 'PHILCO'),
+(85, 'Lenovo'),
+(86, 'HP'),
+(87, 'ACER'),
+(88, 'TOSHIBA'),
+(89, 'Epson'),
+(90, 'ViewSonic'),
+(91, 'LG'),
+(92, 'itab'),
+(93, 'Samsung'),
+(94, 'Canon'),
+(95, 'OLIDATA'),
+(96, 'HUB'),
+(97, 'Klipxtreme'),
+(98, 'PHILCO'),
+(99, 'Lenovo'),
+(100, 'HP'),
+(101, 'ACER'),
+(102, 'TOSHIBA'),
+(103, 'Epson'),
+(104, 'ViewSonic'),
+(105, 'LG'),
+(106, 'itab'),
+(107, 'Samsung'),
+(108, 'Canon'),
+(109, 'OLIDATA'),
+(110, 'HUB'),
+(111, 'Klipxtreme'),
+(112, 'PHILCO');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `modalidad`
+--
+
+CREATE TABLE `modalidad` (
+  `idModalidad` int(11) NOT NULL,
+  `nombreModalidad` varchar(20) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `modalidad`
+--
+
+INSERT INTO `modalidad` (`idModalidad`, `nombreModalidad`) VALUES
+(1, 'CLASICO'),
+(2, 'ALTERNATIVO'),
+(3, 'OFICINA');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `modelo_equipo`
+--
+
+CREATE TABLE `modelo_equipo` (
+  `idModelo_Equipo` int(11) NOT NULL,
+  `nombreModeloequipo` varchar(45) DEFAULT NULL,
+  `idTipo_Equipo` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `modelo_equipo`
+--
+
+INSERT INTO `modelo_equipo` (`idModelo_Equipo`, `nombreModeloequipo`, `idTipo_Equipo`) VALUES
+(1, 'V510z', 1),
+(2, 'V530', 3),
+(3, 'M700z', NULL),
+(4, '71z', NULL),
+(5, 'E73z', NULL),
+(6, 'H436A', NULL),
+(7, 'PJD7383i', NULL),
+(8, 'H839A', NULL),
+(9, 'H552A', NULL),
+(10, 'H719A', NULL),
+(11, 'H552A', NULL),
+(12, 'V11H309220', NULL),
+(13, '240 G5', NULL),
+(14, '240 G7', NULL),
+(15, '245 G5', NULL),
+(16, '340', NULL),
+(17, '340G1', NULL),
+(18, 'ENVY 17', NULL),
+(19, 'X360', NULL),
+(20, 'S3 SERIES', NULL),
+(21, 'aspire s3', NULL),
+(22, 'SATELLITE C55', NULL),
+(23, '22MP58VQ', NULL),
+(24, '29UM68', NULL),
+(25, '20M35A', NULL),
+(26, 'PH550G', NULL),
+(27, 'VS17337', NULL),
+(28, 'X39L', NULL),
+(29, 'Galaxy Tab S2', NULL),
+(30, 'T810', NULL),
+(31, 'G2160', NULL),
+(32, 'IPF785', NULL),
+(33, 'DR - C225', NULL),
+(34, 'OL2019B', NULL),
+(35, 'TYPE-C', NULL),
+(36, 'DeskMate', NULL),
+(37, 'KCK-251S', NULL),
+(38, 'KEYBOARD', NULL),
+(39, '3113N0024', NULL),
+(40, 'V510z', NULL),
+(41, 'V530', NULL),
+(42, 'M700z', NULL),
+(43, '71z', NULL),
+(44, 'E73z', NULL),
+(45, 'H436A', NULL),
+(46, 'PJD7383i', NULL),
+(47, 'H839A', NULL),
+(48, 'H552A', NULL),
+(49, 'H719A', NULL),
+(50, 'H552A', NULL),
+(51, 'V11H309220', NULL),
+(52, '240 G5', NULL),
+(53, '240 G7', NULL),
+(54, '245 G5', NULL),
+(55, '340', NULL),
+(56, '340G1', NULL),
+(57, 'ENVY 17', NULL),
+(58, 'X360', NULL),
+(59, 'S3 SERIES', NULL),
+(60, 'aspire s3', NULL),
+(61, 'SATELLITE C55', NULL),
+(62, '22MP58VQ', NULL),
+(63, '29UM68', NULL),
+(64, '20M35A', NULL),
+(65, 'PH550G', NULL),
+(66, 'VS17337', NULL),
+(67, 'X39L', NULL),
+(68, 'Galaxy Tab S2', NULL),
+(69, 'T810', NULL),
+(70, 'G2160', NULL),
+(71, 'IPF785', NULL),
+(72, 'DR - C225', NULL),
+(73, 'OL2019B', NULL),
+(74, 'TYPE-C', NULL),
+(75, 'DeskMate', NULL),
+(76, 'KCK-251S', NULL),
+(77, 'KEYBOARD', NULL),
+(78, '3113N0024', NULL),
+(79, 'V510z', NULL),
+(80, 'V530', NULL),
+(81, 'M700z', NULL),
+(82, '71z', NULL),
+(83, 'E73z', NULL),
+(84, 'H436A', NULL),
+(85, 'PJD7383i', NULL),
+(86, 'H839A', NULL),
+(87, 'H552A', NULL),
+(88, 'H719A', NULL),
+(89, 'H552A', NULL),
+(90, 'V11H309220', NULL),
+(91, '240 G5', NULL),
+(92, '240 G7', NULL),
+(93, '245 G5', NULL),
+(94, '340', NULL),
+(95, '340G1', NULL),
+(96, 'ENVY 17', NULL),
+(97, 'X360', NULL),
+(98, 'S3 SERIES', NULL),
+(99, 'aspire s3', NULL),
+(100, 'SATELLITE C55', NULL),
+(101, '22MP58VQ', NULL),
+(102, '29UM68', NULL),
+(103, '20M35A', NULL),
+(104, 'PH550G', NULL),
+(105, 'VS17337', NULL),
+(106, 'X39L', NULL),
+(107, 'Galaxy Tab S2', NULL),
+(108, 'T810', NULL),
+(109, 'G2160', NULL),
+(110, 'IPF785', NULL),
+(111, 'DR - C225', NULL),
+(112, 'OL2019B', NULL),
+(113, 'TYPE-C', NULL),
+(114, 'DeskMate', NULL),
+(115, 'KCK-251S', NULL),
+(116, 'KEYBOARD', NULL),
+(117, '3113N0024', NULL),
+(118, 'V510z', NULL),
+(119, 'V530', NULL),
+(120, 'M700z', NULL),
+(121, '71z', NULL),
+(122, 'E73z', NULL),
+(123, 'H436A', NULL),
+(124, 'PJD7383i', NULL),
+(125, 'H839A', NULL),
+(126, 'H552A', NULL),
+(127, 'H719A', NULL),
+(128, 'H552A', NULL),
+(129, 'V11H309220', NULL),
+(130, '240 G5', NULL),
+(131, '240 G7', NULL),
+(132, '245 G5', NULL),
+(133, '340', NULL),
+(134, '340G1', NULL),
+(135, 'ENVY 17', NULL),
+(136, 'X360', NULL),
+(137, 'S3 SERIES', NULL),
+(138, 'aspire s3', NULL),
+(139, 'SATELLITE C55', NULL),
+(140, '22MP58VQ', NULL),
+(141, '29UM68', NULL),
+(142, '20M35A', NULL),
+(143, 'PH550G', NULL),
+(144, 'VS17337', NULL),
+(145, 'X39L', NULL),
+(146, 'Galaxy Tab S2', NULL),
+(147, 'T810', NULL),
+(148, 'G2160', NULL),
+(149, 'IPF785', NULL),
+(150, 'DR - C225', NULL),
+(151, 'OL2019B', NULL),
+(152, 'TYPE-C', NULL),
+(153, 'DeskMate', NULL),
+(154, 'KCK-251S', NULL),
+(155, 'KEYBOARD', NULL),
+(156, '3113N0024', NULL),
+(157, 'V510z', NULL),
+(158, 'V530', NULL),
+(159, 'M700z', NULL),
+(160, '71z', NULL),
+(161, 'E73z', NULL),
+(162, 'H436A', NULL),
+(163, 'PJD7383i', NULL),
+(164, 'H839A', NULL),
+(165, 'H552A', NULL),
+(166, 'H719A', NULL),
+(167, 'H552A', NULL),
+(168, 'V11H309220', NULL),
+(169, '240 G5', NULL),
+(170, '240 G7', NULL),
+(171, '245 G5', NULL),
+(172, '340', NULL),
+(173, '340G1', NULL),
+(174, 'ENVY 17', NULL),
+(175, 'X360', NULL),
+(176, 'S3 SERIES', NULL),
+(177, 'aspire s3', NULL),
+(178, 'SATELLITE C55', NULL),
+(179, '22MP58VQ', NULL),
+(180, '29UM68', NULL),
+(181, '20M35A', NULL),
+(182, 'PH550G', NULL),
+(183, 'VS17337', NULL),
+(184, 'X39L', NULL),
+(185, 'Galaxy Tab S2', NULL),
+(186, 'T810', NULL),
+(187, 'G2160', NULL),
+(188, 'IPF785', NULL),
+(189, 'DR - C225', NULL),
+(190, 'OL2019B', NULL),
+(191, 'TYPE-C', NULL),
+(192, 'DeskMate', NULL),
+(193, 'KCK-251S', NULL),
+(194, 'KEYBOARD', NULL),
+(195, '3113N0024', NULL),
+(196, 'V510z', NULL),
+(197, 'V530', NULL),
+(198, 'M700z', NULL),
+(199, '71z', NULL),
+(200, 'E73z', NULL),
+(201, 'H436A', NULL),
+(202, 'PJD7383i', NULL),
+(203, 'H839A', NULL),
+(204, 'H552A', NULL),
+(205, 'H719A', NULL),
+(206, 'H552A', NULL),
+(207, 'V11H309220', NULL),
+(208, '240 G5', NULL),
+(209, '240 G7', NULL),
+(210, '245 G5', NULL),
+(211, '340', NULL),
+(212, '340G1', NULL),
+(213, 'ENVY 17', NULL),
+(214, 'X360', NULL),
+(215, 'S3 SERIES', NULL),
+(216, 'aspire s3', NULL),
+(217, 'SATELLITE C55', NULL),
+(218, '22MP58VQ', NULL),
+(219, '29UM68', NULL),
+(220, '20M35A', NULL),
+(221, 'PH550G', NULL),
+(222, 'VS17337', NULL),
+(223, 'X39L', NULL),
+(224, 'Galaxy Tab S2', NULL),
+(225, 'T810', NULL),
+(226, 'G2160', NULL),
+(227, 'IPF785', NULL),
+(228, 'DR - C225', NULL),
+(229, 'OL2019B', NULL),
+(230, 'TYPE-C', NULL),
+(231, 'DeskMate', NULL),
+(232, 'KCK-251S', NULL),
+(233, 'KEYBOARD', NULL),
+(234, '3113N0024', NULL),
+(235, 'V510z', NULL),
+(236, 'V530', NULL),
+(237, 'M700z', NULL),
+(238, '71z', NULL),
+(239, 'E73z', NULL),
+(240, 'H436A', NULL),
+(241, 'PJD7383i', NULL),
+(242, 'H839A', NULL),
+(243, 'H552A', NULL),
+(244, 'H719A', NULL),
+(245, 'H552A', NULL),
+(246, 'V11H309220', NULL),
+(247, '240 G5', NULL),
+(248, '240 G7', NULL),
+(249, '245 G5', NULL),
+(250, '340', NULL),
+(251, '340G1', NULL),
+(252, 'ENVY 17', NULL),
+(253, 'X360', NULL),
+(254, 'S3 SERIES', NULL),
+(255, 'aspire s3', NULL),
+(256, 'SATELLITE C55', NULL),
+(257, '22MP58VQ', NULL),
+(258, '29UM68', NULL),
+(259, '20M35A', NULL),
+(260, 'PH550G', NULL),
+(261, 'VS17337', NULL),
+(262, 'X39L', NULL),
+(263, 'Galaxy Tab S2', NULL),
+(264, 'T810', NULL),
+(265, 'G2160', NULL),
+(266, 'IPF785', NULL),
+(267, 'DR - C225', NULL),
+(268, 'OL2019B', NULL),
+(269, 'TYPE-C', NULL),
+(270, 'DeskMate', NULL),
+(271, 'KCK-251S', NULL),
+(272, 'KEYBOARD', NULL),
+(273, '3113N0024', NULL),
+(274, 'V510z', NULL),
+(275, 'V530', NULL),
+(276, 'M700z', NULL),
+(277, '71z', NULL),
+(278, 'E73z', NULL),
+(279, 'H436A', NULL),
+(280, 'PJD7383i', NULL),
+(281, 'H839A', NULL),
+(282, 'H552A', NULL),
+(283, 'H719A', NULL),
+(284, 'H552A', NULL),
+(285, 'V11H309220', NULL),
+(286, '240 G5', NULL),
+(287, '240 G7', NULL),
+(288, '245 G5', NULL),
+(289, '340', NULL),
+(290, '340G1', NULL),
+(291, 'ENVY 17', NULL),
+(292, 'X360', NULL),
+(293, 'S3 SERIES', NULL),
+(294, 'aspire s3', NULL),
+(295, 'SATELLITE C55', NULL),
+(296, '22MP58VQ', NULL),
+(297, '29UM68', NULL),
+(298, '20M35A', NULL),
+(299, 'PH550G', NULL),
+(300, 'VS17337', NULL),
+(301, 'X39L', NULL),
+(302, 'Galaxy Tab S2', NULL),
+(303, 'T810', NULL),
+(304, 'G2160', NULL),
+(305, 'IPF785', NULL),
+(306, 'DR - C225', NULL),
+(307, 'OL2019B', NULL),
+(308, 'TYPE-C', NULL),
+(309, 'DeskMate', NULL),
+(310, 'KCK-251S', NULL),
+(311, 'KEYBOARD', NULL),
+(312, '3113N0024', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `orden_compra`
+--
+
+CREATE TABLE `orden_compra` (
+  `idOrden_compra` varchar(45) NOT NULL,
+  `nombreOrden_compra` varchar(45) DEFAULT NULL,
+  `fechacompraOrden_compra` date DEFAULT NULL,
+  `fechafin_ORDEN_COMPRA` date DEFAULT NULL,
+  `rutadocumentoOrden_compra` varchar(45) DEFAULT NULL,
+  `idTipo_adquisicion` int(11) NOT NULL,
+  `idProveedor` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `orden_compra`
+--
+
+INSERT INTO `orden_compra` (`idOrden_compra`, `nombreOrden_compra`, `fechacompraOrden_compra`, `fechafin_ORDEN_COMPRA`, `rutadocumentoOrden_compra`, `idTipo_adquisicion`, `idProveedor`) VALUES
+('599-193-CC22', 'contrato 1592', '2021-11-11', '2022-11-11', NULL, 1, 1),
+('599-405-CC22', 'contrato 2645', '2023-11-11', '2025-10-10', NULL, 2, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `proveedor`
+--
+
+CREATE TABLE `proveedor` (
+  `idProveedor` int(11) NOT NULL,
+  `nombreProveedor` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `proveedor`
+--
+
+INSERT INTO `proveedor` (`idProveedor`, `nombreProveedor`) VALUES
+(1, 'Sonda'),
+(2, 'TechnoSystem'),
+(3, 'Sonda'),
+(4, 'TechnoSystem'),
+(5, 'Sonda'),
+(6, 'TechnoSystem'),
+(7, 'Sonda'),
+(8, 'TechnoSystem'),
+(9, 'Sonda'),
+(10, 'TechnoSystem');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `provincia`
+--
+
+CREATE TABLE `provincia` (
+  `idProvincia` int(11) NOT NULL,
+  `nombreProvincia` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `provincia`
+--
+
+INSERT INTO `provincia` (`idProvincia`, `nombreProvincia`) VALUES
+(1, 'Concepcion'),
+(2, 'Arauco'),
+(3, 'Biobío'),
+(4, 'Concepcion'),
+(5, 'Arauco'),
+(6, 'Biobío'),
+(7, 'Concepcion'),
+(8, 'Arauco'),
+(9, 'Biobío'),
+(10, 'Concepcion'),
+(11, 'Arauco'),
+(12, 'Biobío'),
+(13, 'Concepcion'),
+(14, 'Arauco'),
+(15, 'Biobío'),
+(16, 'Concepcion'),
+(17, 'Arauco'),
+(18, 'Biobío'),
+(19, 'Concepcion'),
+(20, 'Arauco'),
+(21, 'Biobío'),
+(22, 'Concepcion'),
+(23, 'Arauco'),
+(24, 'Biobío');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `super_equipo`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `super_equipo` (
+`idEquipo` int(11)
+,`Cod_inventarioEquipo` varchar(20)
+,`Num_serieEquipo` varchar(20)
+,`ObservacionEquipo` varchar(250)
+,`codigoproveedor_equipo` varchar(45)
+,`macEquipo` varchar(45)
+,`imeiEquipo` varchar(45)
+,`numerotelefonicoEquipo` varchar(12)
+,`idTipo_equipo` int(11)
+,`nombreTipo_equipo` varchar(45)
+,`idEstado_equipo` int(11)
+,`nombreEstado_equipo` varchar(45)
+,`idUnidad` int(11)
+,`nombreUnidad` varchar(45)
+,`idOrden_compra` varchar(45)
+,`nombreOrden_compra` varchar(45)
+,`idModelo_equipo` int(11)
+,`nombreModeloequipo` varchar(45)
+,`nombreFuncionario` varchar(45)
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipo_adquisicion`
+--
+
+CREATE TABLE `tipo_adquisicion` (
+  `idTipo_adquisicion` int(11) NOT NULL,
+  `nombreTipo_adquisicion` varchar(45) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipo_adquisicion`
+--
+
+INSERT INTO `tipo_adquisicion` (`idTipo_adquisicion`, `nombreTipo_adquisicion`) VALUES
+(1, 'contrato de arriendo'),
+(2, 'compra'),
+(3, 'contrato de arriendo'),
+(4, 'compra'),
+(5, 'contrato de arriendo'),
+(6, 'compra'),
+(7, 'contrato de arriendo'),
+(8, 'compra'),
+(9, 'contrato de arriendo'),
+(10, 'compra'),
+(11, 'contrato de arriendo'),
+(12, 'compra'),
+(13, 'contrato de arriendo'),
+(14, 'compra'),
+(15, 'contrato de arriendo'),
+(16, 'compra');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tipo_equipo`
+--
+
+CREATE TABLE `tipo_equipo` (
+  `idTipo_equipo` int(11) NOT NULL,
+  `nombreTipo_equipo` varchar(45) DEFAULT NULL,
+  `idMarca_Equipo` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipo_equipo`
+--
+
+INSERT INTO `tipo_equipo` (`idTipo_equipo`, `nombreTipo_equipo`, `idMarca_Equipo`) VALUES
+(1, 'AIO', 1),
+(3, 'Mouse', NULL),
+(4, 'Monitor', NULL),
+(5, 'HUB', NULL),
+(6, 'Teclado', NULL),
+(7, 'Mouse', NULL),
+(8, 'Soporte monitor', NULL),
+(11, 'Impresora', NULL),
+(12, 'Tablet', NULL),
+(13, 'Notebook', NULL),
+(14, 'Proyector', NULL),
+(16, 'Teclado', NULL),
+(17, 'Mouse', NULL),
+(18, 'Monitor', NULL),
+(19, 'HUB', NULL),
+(20, 'Teclado', NULL),
+(21, 'Mouse', NULL),
+(22, 'Soporte monitor', NULL),
+(25, 'Impresora', NULL),
+(26, 'Tablet', NULL),
+(27, 'Notebook', NULL),
+(28, 'Proyector', NULL),
+(30, 'Teclado', NULL),
+(31, 'Mouse', NULL),
+(32, 'Monitor', NULL),
+(33, 'HUB', NULL),
+(34, 'Teclado', NULL),
+(35, 'Mouse', NULL),
+(36, 'Soporte monitor', NULL),
+(39, 'Impresora', NULL),
+(40, 'Tablet', NULL),
+(41, 'Notebook', NULL),
+(42, 'Proyector', NULL),
+(44, 'Teclado', NULL),
+(45, 'Mouse', NULL),
+(46, 'Monitor', NULL),
+(47, 'HUB', NULL),
+(48, 'Teclado', NULL),
+(49, 'Mouse', NULL),
+(50, 'Soporte monitor', NULL),
+(53, 'Impresora', NULL),
+(54, 'Tablet', NULL),
+(55, 'Notebook', NULL),
+(56, 'Proyector', NULL),
+(58, 'Teclado', NULL),
+(59, 'Mouse', NULL),
+(60, 'Monitor', NULL),
+(61, 'HUB', NULL),
+(62, 'Teclado', NULL),
+(63, 'Mouse', NULL),
+(64, 'Soporte monitor', NULL),
+(66, 'CPU', NULL),
+(67, 'Impresora', NULL),
+(68, 'Tablet', NULL),
+(69, 'Notebook', NULL),
+(70, 'Proyector', NULL),
+(72, 'Teclado', NULL),
+(73, 'Mouse', NULL),
+(74, 'Monitor', NULL),
+(75, 'HUB', NULL),
+(76, 'Teclado', NULL),
+(77, 'Mouse', NULL),
+(78, 'Soporte monitor', NULL),
+(80, 'CPU', NULL),
+(81, 'Impresora', NULL),
+(82, 'Tablet', NULL),
+(83, 'Notebook', NULL),
+(84, 'Proyector', NULL),
+(86, 'Teclado', NULL),
+(87, 'Mouse', NULL),
+(88, 'Monitor', NULL),
+(89, 'HUB', NULL),
+(90, 'Teclado', NULL),
+(91, 'Mouse', NULL),
+(92, 'Soporte monitor', NULL),
+(94, 'CPU', NULL),
+(95, 'Impresora', NULL),
+(96, 'Tablet', NULL),
+(97, 'Notebook', NULL),
+(98, 'Proyector', NULL),
+(100, 'Teclado', NULL),
+(101, 'Mouse', NULL),
+(102, 'Monitor', NULL),
+(103, 'HUB', NULL),
+(104, 'Teclado', NULL),
+(105, 'Mouse', NULL),
+(106, 'Soporte monitor', NULL),
+(107, 'Audifonos', NULL),
+(108, 'CPU', NULL),
+(109, 'Impresora', NULL),
+(110, 'Tablet', NULL),
+(111, 'Notebook', NULL),
+(112, 'Proyector', NULL),
+(113, 'tset', 1),
+(114, 'test', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `traslacion`
+--
+
+CREATE TABLE `traslacion` (
+  `idTraslado` int(11) NOT NULL,
+  `idEquipo` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `traslacion`
+--
+
+INSERT INTO `traslacion` (`idTraslado`, `idEquipo`) VALUES
+(250, 1),
+(250, 2),
+(251, 3),
+(252, 4),
+(253, 1),
+(255, 1),
+(256, 5),
+(257, 2),
+(258, 2),
+(259, 5),
+(260, 5),
+(261, 2),
+(262, 4),
+(263, 1),
+(263, 3),
+(263, 4),
+(263, 6),
+(265, 1),
+(265, 3),
+(265, 4),
+(266, 2),
+(266, 8),
+(267, 2),
+(267, 5),
+(267, 6),
+(267, 8),
+(268, 2),
+(268, 5),
+(269, 2),
+(270, 2),
+(271, 2),
+(272, 2),
+(273, 2),
+(274, 2),
+(275, 2),
+(276, 2),
+(277, 2),
+(278, 2),
+(279, 2),
+(280, 2),
+(281, 2),
+(282, 2),
+(283, 1),
+(284, 2),
+(285, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `traslado`
+--
+
+CREATE TABLE `traslado` (
+  `idTraslado` int(11) NOT NULL,
+  `fechatraslado` date DEFAULT NULL,
+  `rutadocumentoTraslado` varchar(50) DEFAULT NULL,
+  `idUnidadDestino` int(11) NOT NULL,
+  `idUnidadOrigen` int(11) DEFAULT NULL,
+  `estaFirmadoTraslado` tinyint(4) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `traslado`
+--
+
+INSERT INTO `traslado` (`idTraslado`, `fechatraslado`, `rutadocumentoTraslado`, `idUnidadDestino`, `idUnidadOrigen`, `estaFirmadoTraslado`) VALUES
+(1, '2024-03-01', NULL, 8203001, NULL, NULL),
+(2, '2022-12-28', NULL, 8203001, NULL, NULL),
+(3, '2024-01-03', NULL, 8203001, NULL, NULL),
+(4, '2020-10-30', NULL, 8203001, NULL, NULL),
+(5, '2022-02-14', NULL, 8203001, NULL, NULL),
+(6, '2024-01-02', NULL, 8203001, NULL, NULL),
+(7, '2023-11-30', NULL, 8301033, NULL, NULL),
+(8, '2022-11-11', NULL, 8301033, NULL, NULL),
+(9, '2021-04-25', NULL, 8301033, NULL, NULL),
+(10, '2021-10-15', NULL, 8301033, NULL, NULL),
+(11, '2024-07-05', NULL, 8301033, NULL, NULL),
+(12, '2021-07-07', NULL, 8301033, NULL, NULL),
+(250, '2024-02-27', 'ruta', 8205012, 8203001, NULL),
+(251, '2024-02-27', 'ruta', 8015892, 8203001, NULL),
+(252, '2024-02-27', 'ruta', 8205012, 8203001, NULL),
+(253, '2024-02-27', 'ruta', 8301033, 8205012, NULL),
+(255, '2024-02-27', 'ruta', 8015892, 8301033, NULL),
+(256, '2024-02-27', 'ruta', 8301033, 8203001, NULL),
+(257, '2024-02-27', 'ruta', 8301033, 8205012, NULL),
+(258, '2024-02-29', 'ruta', 8203001, 8301033, NULL),
+(259, '2024-02-29', 'ruta', 8203001, 8301033, NULL),
+(260, '2024-02-29', 'ruta', 8203001, 8301033, NULL),
+(261, '2024-02-29', 'ruta', 8301033, 8203001, NULL),
+(262, '2024-02-29', 'ruta', 8015892, 8205012, NULL),
+(263, '2024-02-29', 'ruta', 8203001, 8015892, NULL),
+(265, '2024-02-29', 'ruta', 8015892, 8203001, NULL),
+(266, '2024-03-25', 'ruta', 8203001, 8301033, NULL),
+(267, '2024-03-25', 'ruta', 8301033, 8203001, NULL),
+(268, '2024-03-25', 'ruta', 8203001, 8301033, NULL),
+(269, '2024-04-05', 'ruta', 8203001, 8203001, NULL),
+(270, '2024-04-05', 'ruta', 8203001, 8203001, NULL),
+(271, '2024-04-05', 'ruta', 8203001, 8203001, NULL),
+(272, '2024-04-05', 'ruta', 8203001, 8203001, NULL),
+(273, '2024-04-05', 'ruta', 8203001, 8203001, NULL),
+(274, '2024-04-05', 'ruta', 8205012, 8203001, NULL),
+(275, '2024-04-05', 'ruta', 8301035, 8205012, NULL),
+(276, '2024-04-05', 'ruta', 8301035, 8205012, NULL),
+(277, '2024-04-05', 'ruta', 8301035, 8205012, NULL),
+(278, '2024-04-05', 'ruta', 8301035, 8205012, NULL),
+(279, '2024-04-05', 'ruta', 8301035, 8205012, NULL),
+(280, '2024-04-05', 'ruta', 8301035, 8205012, NULL),
+(281, '2024-04-05', 'ruta', 8203001, 8301035, NULL),
+(282, '2024-04-05', 'ruta', 8203001, 8301035, NULL),
+(283, '2024-04-05', 'ruta', 8301035, 8015892, NULL),
+(284, '2024-04-05', 'ruta', 8205012, 8203001, NULL),
+(285, '2024-04-05', 'ruta', 8203001, 8205012, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `unidad`
+--
+
+CREATE TABLE `unidad` (
+  `idUnidad` int(11) NOT NULL,
+  `nombreUnidad` varchar(45) DEFAULT NULL,
+  `contactoUnidad` varchar(45) DEFAULT NULL,
+  `direccionUnidad` varchar(45) CHARACTER SET armscii8 COLLATE armscii8_general_ci DEFAULT NULL,
+  `idComuna` int(11) NOT NULL,
+  `idModalidad` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `unidad`
+--
+
+INSERT INTO `unidad` (`idUnidad`, `nombreUnidad`, `contactoUnidad`, `direccionUnidad`, `idComuna`, `idModalidad`) VALUES
+(8015892, 'BALDOMERO LILLO', 'CECILIA  JEREZ NEIRA', 'Evaristo  Az?car 62, Fundici?n Lota', 2, 3),
+(8203001, 'ABKELAY KIMUN', '982286157', 'Km.10 Sector De Primer Agua Tirua', 1, 1),
+(8205012, 'ACHNU CAÑETE', '88277769', 'Manuel Rodriguez N? 150', 15, NULL),
+(8301033, 'VILLA GENESIS', '91774260', 'Avda. Neltume S/N? Villa Genesis', 20, NULL),
+(8301034, 'Nueva-Unidad', 'nuevo-contacto', 'camino amarillo', 9, NULL),
+(8301035, 'conModalidad', 'conModalidad', 'comModalidad', 2, 2),
+(8301036, 'awef', 'asdf', 'awef', 76, 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `usuario`
+--
+
+CREATE TABLE `usuario` (
+  `nombreUsuario` varchar(30) NOT NULL,
+  `contrasennaUsuario` varchar(80) DEFAULT NULL,
+  `privilegiosAdministrador` tinyint(4) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `usuario`
+--
+
+INSERT INTO `usuario` (`nombreUsuario`, `contrasennaUsuario`, `privilegiosAdministrador`) VALUES
+('admin', '$2b$12$QUyjfHNIiGxsqPXjSKs38O7RCN2XfXfpzIxrzMNQw0VmBvF0J3cgG', 1),
+('admin2', '$2b$12$bfYyBpn8IR5UTMloQmFTu.GMrxrP.qexVtS4lGhLkjmsOLp/JYJCu', 1),
+('barco', '$2b$12$KhV1Eu/HY36u12bsco/speuP8fYiFM.79RtWS5rhrwYTG/cjtbUHa', 0),
+('martin', '$2b$12$SjJ/pqAbowILQ0wC7IiGxO5F4sCWDmd59plYQbFKBT3jjQTLkTArm', 0);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `super_equipo`
+--
+DROP TABLE IF EXISTS `super_equipo`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `super_equipo`  AS SELECT `e`.`idEquipo` AS `idEquipo`, `e`.`Cod_inventarioEquipo` AS `Cod_inventarioEquipo`, `e`.`Num_serieEquipo` AS `Num_serieEquipo`, `e`.`ObservacionEquipo` AS `ObservacionEquipo`, `e`.`codigoproveedor_equipo` AS `codigoproveedor_equipo`, `e`.`macEquipo` AS `macEquipo`, `e`.`imeiEquipo` AS `imeiEquipo`, `e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`, `te`.`idTipo_equipo` AS `idTipo_equipo`, `te`.`nombreTipo_equipo` AS `nombreTipo_equipo`, `ee`.`idEstado_equipo` AS `idEstado_equipo`, `ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`, `u`.`idUnidad` AS `idUnidad`, `u`.`nombreUnidad` AS `nombreUnidad`, `oc`.`idOrden_compra` AS `idOrden_compra`, `oc`.`nombreOrden_compra` AS `nombreOrden_compra`, `moe`.`idModelo_Equipo` AS `idModelo_equipo`, `moe`.`nombreModeloequipo` AS `nombreModeloequipo`, '' AS `nombreFuncionario` FROM (((((`equipo` `e` join `modelo_equipo` `moe` on(`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)) left join `tipo_equipo` `te` on(`te`.`idTipo_equipo` = `moe`.`idTipo_Equipo`)) join `estado_equipo` `ee` on(`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)) join `unidad` `u` on(`u`.`idUnidad` = `e`.`idUnidad`)) join `orden_compra` `oc` on(`oc`.`idOrden_compra` = `e`.`idOrden_compra`)) WHERE `ee`.`nombreEstado_equipo` not like 'EN USO'union select `e`.`idEquipo` AS `idEquipo`,`e`.`Cod_inventarioEquipo` AS `Cod_inventarioEquipo`,`e`.`Num_serieEquipo` AS `Num_serieEquipo`,`e`.`ObservacionEquipo` AS `ObservacionEquipo`,`e`.`codigoproveedor_equipo` AS `codigoproveedor_equipo`,`e`.`macEquipo` AS `macEquipo`,`e`.`imeiEquipo` AS `imeiEquipo`,`e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`,`te`.`idTipo_equipo` AS `idTipo_equipo`,`te`.`nombreTipo_equipo` AS `nombreTipo_equipo`,`ee`.`idEstado_equipo` AS `idEstado_equipo`,`ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`,`u`.`idUnidad` AS `idUnidad`,`u`.`nombreUnidad` AS `nombreUnidad`,`oc`.`idOrden_compra` AS `idOrden_compra`,`oc`.`nombreOrden_compra` AS `nombreOrden_compra`,`moe`.`idModelo_Equipo` AS `idModelo_equipo`,`moe`.`nombreModeloequipo` AS `nombreModeloequipo`,`f`.`nombreFuncionario` AS `nombreFuncionario` from ((((((((`equipo` `e` join `modelo_equipo` `moe` on(`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)) left join `tipo_equipo` `te` on(`te`.`idTipo_equipo` = `moe`.`idTipo_Equipo`)) join `unidad` `u` on(`u`.`idUnidad` = `e`.`idUnidad`)) join `orden_compra` `oc` on(`oc`.`idOrden_compra` = `e`.`idOrden_compra`)) join `equipo_asignacion` `ea` on(`ea`.`idEquipo` = `e`.`idEquipo`)) join `estado_equipo` `ee` on(`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)) join `asignacion` `a` on(`a`.`idAsignacion` = `ea`.`idAsignacion`)) join `funcionario` `f` on(`f`.`rutFuncionario` = `a`.`rutFuncionario`)) where `ee`.`nombreEstado_equipo` like 'EN USO' and `a`.`ActivoAsignacion` = 1  ;
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `asignacion`
+--
+ALTER TABLE `asignacion`
+  ADD PRIMARY KEY (`idAsignacion`),
+  ADD KEY `idDevolucion` (`idDevolucion`),
+  ADD KEY `rutFuncionario` (`rutFuncionario`);
+
+--
+-- Indices de la tabla `comuna`
+--
+ALTER TABLE `comuna`
+  ADD PRIMARY KEY (`idComuna`,`idProvincia`),
+  ADD KEY `idProvincia` (`idProvincia`);
+
+--
+-- Indices de la tabla `detalle_traslado`
+--
+ALTER TABLE `detalle_traslado`
+  ADD PRIMARY KEY (`idDetalle_traslado`),
+  ADD KEY `idTraslado` (`idTraslado`);
+
+--
+-- Indices de la tabla `devolucion`
+--
+ALTER TABLE `devolucion`
+  ADD PRIMARY KEY (`idDevolucion`),
+  ADD KEY `rutFuncionario` (`rutFuncionario`);
+
+--
+-- Indices de la tabla `equipo`
+--
+ALTER TABLE `equipo`
+  ADD PRIMARY KEY (`idEquipo`),
+  ADD KEY `idEstado_equipo` (`idEstado_equipo`),
+  ADD KEY `idUnidad` (`idUnidad`),
+  ADD KEY `idOrden_compra` (`idOrden_compra`),
+  ADD KEY `idModelo_equipo` (`idModelo_equipo`);
+
+--
+-- Indices de la tabla `equipo_asignacion`
+--
+ALTER TABLE `equipo_asignacion`
+  ADD PRIMARY KEY (`idAsignacion`,`idEquipo`),
+  ADD KEY `idEquipo` (`idEquipo`);
+
+--
+-- Indices de la tabla `estado_equipo`
+--
+ALTER TABLE `estado_equipo`
+  ADD PRIMARY KEY (`idEstado_equipo`);
+
+--
+-- Indices de la tabla `funcionario`
+--
+ALTER TABLE `funcionario`
+  ADD PRIMARY KEY (`rutFuncionario`),
+  ADD UNIQUE KEY `rutFuncionario` (`rutFuncionario`),
+  ADD KEY `idUnidad` (`idUnidad`);
+
+--
+-- Indices de la tabla `incidencia`
+--
+ALTER TABLE `incidencia`
+  ADD PRIMARY KEY (`idIncidencia`),
+  ADD KEY `idEquipo` (`idEquipo`);
+
+--
+-- Indices de la tabla `marca_equipo`
+--
+ALTER TABLE `marca_equipo`
+  ADD PRIMARY KEY (`idMarca_Equipo`);
+
+--
+-- Indices de la tabla `modalidad`
+--
+ALTER TABLE `modalidad`
+  ADD PRIMARY KEY (`idModalidad`);
+
+--
+-- Indices de la tabla `modelo_equipo`
+--
+ALTER TABLE `modelo_equipo`
+  ADD PRIMARY KEY (`idModelo_Equipo`),
+  ADD KEY `idTipo_Equipo` (`idTipo_Equipo`);
+
+--
+-- Indices de la tabla `orden_compra`
+--
+ALTER TABLE `orden_compra`
+  ADD PRIMARY KEY (`idOrden_compra`),
+  ADD KEY `idTipo_adquisicion` (`idTipo_adquisicion`),
+  ADD KEY `idProveedor` (`idProveedor`);
+
+--
+-- Indices de la tabla `proveedor`
+--
+ALTER TABLE `proveedor`
+  ADD PRIMARY KEY (`idProveedor`);
+
+--
+-- Indices de la tabla `provincia`
+--
+ALTER TABLE `provincia`
+  ADD PRIMARY KEY (`idProvincia`);
+
+--
+-- Indices de la tabla `tipo_adquisicion`
+--
+ALTER TABLE `tipo_adquisicion`
+  ADD PRIMARY KEY (`idTipo_adquisicion`);
+
+--
+-- Indices de la tabla `tipo_equipo`
+--
+ALTER TABLE `tipo_equipo`
+  ADD PRIMARY KEY (`idTipo_equipo`),
+  ADD KEY `idMarca_Equipo` (`idMarca_Equipo`);
+
+--
+-- Indices de la tabla `traslacion`
+--
+ALTER TABLE `traslacion`
+  ADD PRIMARY KEY (`idTraslado`,`idEquipo`),
+  ADD KEY `idEquipo` (`idEquipo`);
+
+--
+-- Indices de la tabla `traslado`
+--
+ALTER TABLE `traslado`
+  ADD PRIMARY KEY (`idTraslado`),
+  ADD KEY `idUnidad` (`idUnidadDestino`),
+  ADD KEY `fk_idUnidadOrigen` (`idUnidadOrigen`);
+
+--
+-- Indices de la tabla `unidad`
+--
+ALTER TABLE `unidad`
+  ADD PRIMARY KEY (`idUnidad`),
+  ADD KEY `idComuna` (`idComuna`),
+  ADD KEY `idModalidad` (`idModalidad`);
+
+--
+-- Indices de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  ADD PRIMARY KEY (`nombreUsuario`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `asignacion`
+--
+ALTER TABLE `asignacion`
+  MODIFY `idAsignacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=64;
+
+--
+-- AUTO_INCREMENT de la tabla `comuna`
+--
+ALTER TABLE `comuna`
+  MODIFY `idComuna` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
+
+--
+-- AUTO_INCREMENT de la tabla `detalle_traslado`
+--
+ALTER TABLE `detalle_traslado`
+  MODIFY `idDetalle_traslado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `devolucion`
+--
+ALTER TABLE `devolucion`
+  MODIFY `idDevolucion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `equipo`
+--
+ALTER TABLE `equipo`
+  MODIFY `idEquipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT de la tabla `estado_equipo`
+--
+ALTER TABLE `estado_equipo`
+  MODIFY `idEstado_equipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
+
+--
+-- AUTO_INCREMENT de la tabla `incidencia`
+--
+ALTER TABLE `incidencia`
+  MODIFY `idIncidencia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+
+--
+-- AUTO_INCREMENT de la tabla `marca_equipo`
+--
+ALTER TABLE `marca_equipo`
+  MODIFY `idMarca_Equipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=125;
+
+--
+-- AUTO_INCREMENT de la tabla `modalidad`
+--
+ALTER TABLE `modalidad`
+  MODIFY `idModalidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `modelo_equipo`
+--
+ALTER TABLE `modelo_equipo`
+  MODIFY `idModelo_Equipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=313;
+
+--
+-- AUTO_INCREMENT de la tabla `proveedor`
+--
+ALTER TABLE `proveedor`
+  MODIFY `idProveedor` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de la tabla `provincia`
+--
+ALTER TABLE `provincia`
+  MODIFY `idProvincia` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+
+--
+-- AUTO_INCREMENT de la tabla `tipo_adquisicion`
+--
+ALTER TABLE `tipo_adquisicion`
+  MODIFY `idTipo_adquisicion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+
+--
+-- AUTO_INCREMENT de la tabla `tipo_equipo`
+--
+ALTER TABLE `tipo_equipo`
+  MODIFY `idTipo_equipo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
+
+--
+-- AUTO_INCREMENT de la tabla `traslado`
+--
+ALTER TABLE `traslado`
+  MODIFY `idTraslado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=286;
+
+--
+-- AUTO_INCREMENT de la tabla `unidad`
+--
+ALTER TABLE `unidad`
+  MODIFY `idUnidad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8301037;
+
+--
+-- Restricciones para tablas volcadas
+--
+
+--
+-- Filtros para la tabla `asignacion`
+--
+ALTER TABLE `asignacion`
+  ADD CONSTRAINT `asignacion_ibfk_3` FOREIGN KEY (`idDevolucion`) REFERENCES `devolucion` (`idDevolucion`),
+  ADD CONSTRAINT `rutFuncionario` FOREIGN KEY (`rutFuncionario`) REFERENCES `funcionario` (`rutFuncionario`);
+
+--
+-- Filtros para la tabla `comuna`
+--
+ALTER TABLE `comuna`
+  ADD CONSTRAINT `comuna_ibfk_1` FOREIGN KEY (`idProvincia`) REFERENCES `provincia` (`idProvincia`);
+
+--
+-- Filtros para la tabla `detalle_traslado`
+--
+ALTER TABLE `detalle_traslado`
+  ADD CONSTRAINT `detalle_traslado_ibfk_1` FOREIGN KEY (`idTraslado`) REFERENCES `traslado` (`idTraslado`);
+
+--
+-- Filtros para la tabla `equipo`
+--
+ALTER TABLE `equipo`
+  ADD CONSTRAINT `equipo_ibfk_2` FOREIGN KEY (`idEstado_equipo`) REFERENCES `estado_equipo` (`idEstado_equipo`),
+  ADD CONSTRAINT `equipo_ibfk_3` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`),
+  ADD CONSTRAINT `equipo_ibfk_4` FOREIGN KEY (`idOrden_compra`) REFERENCES `orden_compra` (`idOrden_compra`),
+  ADD CONSTRAINT `equipo_ibfk_5` FOREIGN KEY (`idModelo_equipo`) REFERENCES `modelo_equipo` (`idModelo_Equipo`);
+
+--
+-- Filtros para la tabla `equipo_asignacion`
+--
+ALTER TABLE `equipo_asignacion`
+  ADD CONSTRAINT `equipo_asignacion_ibfk_1` FOREIGN KEY (`idAsignacion`) REFERENCES `asignacion` (`idAsignacion`),
+  ADD CONSTRAINT `equipo_asignacion_ibfk_2` FOREIGN KEY (`idEquipo`) REFERENCES `equipo` (`idEquipo`);
+
+--
+-- Filtros para la tabla `funcionario`
+--
+ALTER TABLE `funcionario`
+  ADD CONSTRAINT `funcionario_ibfk_1` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`);
+
+--
+-- Filtros para la tabla `incidencia`
+--
+ALTER TABLE `incidencia`
+  ADD CONSTRAINT `incidencia_ibfk_1` FOREIGN KEY (`idEquipo`) REFERENCES `equipo` (`idEquipo`);
+
+--
+-- Filtros para la tabla `modelo_equipo`
+--
+ALTER TABLE `modelo_equipo`
+  ADD CONSTRAINT `modelo_equipo_ibfk_1` FOREIGN KEY (`idTipo_Equipo`) REFERENCES `tipo_equipo` (`idTipo_equipo`);
+
+--
+-- Filtros para la tabla `orden_compra`
+--
+ALTER TABLE `orden_compra`
+  ADD CONSTRAINT `orden_compra_ibfk_1` FOREIGN KEY (`idTipo_adquisicion`) REFERENCES `tipo_adquisicion` (`idTipo_adquisicion`),
+  ADD CONSTRAINT `orden_compra_ibfk_2` FOREIGN KEY (`idProveedor`) REFERENCES `proveedor` (`idProveedor`);
+
+--
+-- Filtros para la tabla `tipo_equipo`
+--
+ALTER TABLE `tipo_equipo`
+  ADD CONSTRAINT `tipo_equipo_ibfk_1` FOREIGN KEY (`idMarca_Equipo`) REFERENCES `marca_equipo` (`idMarca_Equipo`);
+
+--
+-- Filtros para la tabla `traslacion`
+--
+ALTER TABLE `traslacion`
+  ADD CONSTRAINT `traslacion_ibfk_1` FOREIGN KEY (`idTraslado`) REFERENCES `traslado` (`idTraslado`),
+  ADD CONSTRAINT `traslacion_ibfk_2` FOREIGN KEY (`idEquipo`) REFERENCES `equipo` (`idEquipo`);
+
+--
+-- Filtros para la tabla `traslado`
+--
+ALTER TABLE `traslado`
+  ADD CONSTRAINT `fk_idUnidadOrigen` FOREIGN KEY (`idUnidadOrigen`) REFERENCES `unidad` (`idUnidad`),
+  ADD CONSTRAINT `traslado_ibfk_1` FOREIGN KEY (`idUnidadDestino`) REFERENCES `unidad` (`idUnidad`);
+
+--
+-- Filtros para la tabla `unidad`
+--
+ALTER TABLE `unidad`
+  ADD CONSTRAINT `unidad_ibfk_1` FOREIGN KEY (`idComuna`) REFERENCES `comuna` (`idComuna`),
+  ADD CONSTRAINT `unidad_ibfk_2` FOREIGN KEY (`idModalidad`) REFERENCES `modalidad` (`idModalidad`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

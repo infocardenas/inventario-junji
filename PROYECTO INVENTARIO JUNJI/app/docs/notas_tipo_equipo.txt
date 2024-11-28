@@ -1,0 +1,12 @@
+accesorios (Mouse, teclado, etc) {
+    Solo Modelo y marca
+}
+Celular (celular, tablet) {
+    Modelo, marca, imei, numero de telefono
+}
+Telefono Fijo (telefono) {
+    macEquipo, numero de telefono
+}
+codigo Proovedor {
+    algunos tienen y otros no
+}

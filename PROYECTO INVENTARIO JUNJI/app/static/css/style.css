@@ -1,0 +1,703 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
+
+*,
+::after,
+::before {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: #6366f1;
+}
+
+li {
+    list-style: none;
+}
+
+h2 {
+    color: #3e4455;
+    text-align: center;
+}
+h3 {
+    color: #4e5462;
+}
+
+img {
+    vertical-align: middle;
+    max-width: 100%;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+.container {
+    display: flex;
+}
+
+/* Sidebar layout & functionality */
+
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: #59ae87;
+}
+
+#toggler {
+    display: none;
+}
+
+.toggle-btn {
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #fcbd18;
+    padding: 1rem 1.5rem;
+    width: max-content;
+}
+
+.sidebar-nav {
+    width: 80px;
+    min-width: 80px;
+    padding: 25px 0;
+    flex: 1 1 auto;
+    transition: all .25s ease-in-out;
+}
+
+#sidebar input[type="checkbox"]:checked~.sidebar-nav {
+    width: 260px;
+    min-width: 260px;
+}
+
+a.sidebar-link {
+    padding: .625rem 1.625rem;
+    color: #FFF;
+    display: block;
+    white-space: nowrap;
+    border-left: 3px solid transparent;
+}
+
+.sidebar-link i {
+    font-size: 1.1re;
+    margin-right: .75rem;
+}
+
+a.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, .075);
+    border-left: 3px solid #59ae87;
+}
+
+#sidebar input[type="checkbox"]:not(:checked)~* .sidebar-link span {
+    display: none;
+}
+
+.main {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    width: 100%;
+    overflow: hidden;
+}
+
+/* Dashboard Navbar */
+
+.dashboard-navbar {
+    position: relative;
+    display: flex;
+    flex-wrap: nowrap;
+    padding: 1rem 1.5rem;
+    background-color: transparent;
+}
+.dashboard-navbar::before {
+    content: "";
+    position: absolute;;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    background-image: url('../img/header_full_2022.png'); /* Ruta de la imagen de fondo */
+    background-size: cover;
+    background-position: center;
+    opacity: 0.9; /
+}
+.dashboard-navbar .navbar-header {
+    position: relative; /* Ajustar la posición a relativa para permitir que otros elementos floten sobre ella */
+    z-index: 1; /* Asegura que los elementos floten sobre la imagen de fondo */
+}
+
+
+.dashboard-navbar .navbar-header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1; /* La imagen de encabezado estará detrás del contenido de la barra de navegación */
+}
+
+.dashboard-navbar form {
+    display: flex; /* Asegura que el formulario sea visible */
+    margin-right: auto; /* Mueve el formulario hacia la izquierda */
+}
+
+.dashboard-navbar .nav-search {
+    display: flex;
+    align-items: center; /* Centra los elementos verticalmente */
+}
+
+.dashboard-navbar .navbar-content {
+    display: flex;
+    flex-grow: 1;
+    min-width: 200px;
+}
+
+.dashboard-navbar .main-nav {
+    margin-left: auto;
+}
+
+.user-link {
+    position: relative;
+}
+
+.avatar {
+    height: 40px;
+    width: 40px;
+}
+
+.user-link-dropdown {
+    display: none;
+}
+
+.user-link:hover .user-link-dropdown {
+    position: absolute;
+    right: 0;
+    left: auto;
+    min-width: 10rem;
+    background-color: #FFF;
+    display: block;
+    border: 1px solid #d2d2d2;
+    box-shadow: 0 .1rem .2rem rgba(255, 255, 255, .075);
+    animation: fade .5s;
+}
+
+@keyframes fade {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.user-link-dropdown a {
+    display: block;
+    width: 100%;
+    color: #495057;
+    padding: 0 0.75rem;
+    font-size: 1rem;
+    margin-top: 0.75rem;
+}
+
+
+/* Dashboard Content */
+
+.content {
+    padding: 2rem;
+    flex: 1 1 auto;
+}
+
+.dashboard-card {
+    grid-template-columns: repeat(1, 1fr);
+    margin: 1rem 0;
+    display: grid;
+    gap: 2rem;
+}
+
+.card {
+    background-color: #f5f5f5;
+    padding: 1.5rem 1rem;
+    color: #000;
+    border-radius: 5px;
+    transition: .4s;
+    cursor: pointer;
+}
+/* Estilos del formulario */
+.mi-formulario {
+    max-width: 400px;
+    margin: 0 auto;
+}
+.title {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+
+.amount {
+    font-weight: 400;
+    font-size: 1rem;
+}
+
+.card:hover {
+    background-color: #59ae87;
+    color: #FFF;
+    transform: translateY(-7.5px);
+}
+
+.text-success-bg {
+    background-color: #71c664;
+    padding: 0.25rem 0.35rem;
+    margin-right: 0.375rem;
+    font-size: 0.715rem;
+    color: #FFF;
+    border-radius: 5px;
+}
+
+.badge-text {
+    font-size: 0.85rem;
+    font-weight: 400;
+}
+
+.custom-alert {
+    padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid #4CAF50; /* Color del borde de la alerta de éxito */
+    border-radius: 4px; /* Bordes redondeados */
+    background-color: #4CAF50; /* Color de fondo de la alerta de éxito */
+    color: #fff; /* Color del texto de la alerta */
+    position: relative;
+}
+
+/* Estilo del botón de cierre */
+.close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 15px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: #fff; /* Color del texto del botón de cierre */
+}
+
+/* Cambiar el cursor al pasar el ratón por encima del botón de cierre */
+.close:hover {
+    background-color: rgba(255, 255, 255, 0.3); /* Color de fondo al pasar el ratón por encima */
+}
+/*------------ Table Layout ------------*/
+.table-container {
+    margin: 20px auto; /* Centrar el contenedor horizontalmente y agregar margen */
+    width: 80%; /* Ancho del contenedor */
+  }
+  
+
+#posts {
+    border-collapse: collapse;
+    margin: 30px auto;
+    width: 100%;
+}
+
+#posts thead tr {
+    color: #FFF;
+    text-align: left;
+    background-color: #59ae87;
+}
+
+#posts th,
+#posts td {
+    padding: 12px 15px;
+}
+
+#posts tbody tr:nth-of-type(2n) {
+    background-color: #f5f5f5;
+}
+/*boton informacion*/
+.info-button {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 15px;
+   /* font-weight: bold; */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid #0000ff; /* Color del borde del éxito en Bootstrap */
+    color: #fff; /* Color del texto */
+    background-color: #0000ff; /* Color de fondo del éxito en Bootstrap */
+    border-radius: 5px; /* Bordes redondeados */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
+}
+.nav-button {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 15px;
+    margin: 15px;
+   /* font-weight: bold; */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid #008800; 
+    color: #fff; /* Color del texto */
+    background-color: #009900; 
+    border-radius: 5px; /* Bordes redondeados */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
+}
+.nav-button2 {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 15px;
+    margin: 1px;
+   /* font-weight: bold; */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid #008800; 
+    color: #fff; /* Color del texto */
+    background-color: #009900; 
+    border-radius: 5px; /* Bordes redondeados */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
+}
+
+
+/* Estilo del botón de éxito */
+.success-button {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 15px;
+   /* font-weight: bold; */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid #fcbd18; /* Color del borde del éxito en Bootstrap */
+    color: #fff; /* Color del texto */
+    background-color: #fcbd18; /* Color de fondo del éxito en Bootstrap */
+    border-radius: 5px; /* Bordes redondeados */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
+}
+
+/* Estilo del botón de éxito al pasar el ratón por encima */
+.success-button:hover {
+    background-color: #fcc741; /* Nuevo color de fondo al pasar el ratón */
+    border-color: #fcc741; /* Nuevo color del borde al pasar el ratón */
+}
+
+.delete-button {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 15px;
+    /* font-weight: bold; */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid #fc3318; /* Color del borde del éxito en Bootstrap */
+    color: #fff; /* Color del texto */
+    background-color: #fc3318; /* Color de fondo del éxito en Bootstrap */
+    border-radius: 5px; /* Bordes redondeados */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
+}
+
+/* Estilo del botón de éxito al pasar el ratón por encima */
+.delete-button:hover {
+    background-color: #ff5039; /* Nuevo color de fondo al pasar el ratón */
+    border-color: #ff5039; /* Nuevo color del borde al pasar el ratón */
+}
+.agregar-button {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 15px;
+    /*font-weight: bold; */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid #495057; /* Color del borde del éxito en Bootstrap */
+    color: #fff; /* Color del texto */
+    background-color: #495057; /* Color de fondo del éxito en Bootstrap */
+    border-radius: 5px; /* Bordes redondeados */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
+}
+
+/* Estilo del botón de éxito al pasar el ratón por encima */
+.agregar-button:hover {
+    background-color: #555c63; /* Nuevo color de fondo al pasar el ratón */
+    border-color: #555c63; /* Nuevo color del borde al pasar el ratón */
+}
+
+/* Footer */
+
+.footer-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    white-space: nowrap;
+    align-items: center;
+    overflow-x: auto;
+    justify-content: space-between;
+    background-color: #f5f5f5;
+    padding: 1rem 2rem;
+}
+
+.social-icons {
+    display: none;
+}
+
+/* Responsive */
+
+@media (min-width: 768px) {
+
+    /* Navbar Form */
+
+    .dashboard-navbar form {
+        display: block;
+        max-width: 320px;
+    }
+
+    .nav-search {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .nav-search .search-query {
+        flex: 1 1 auto;
+        width: 1%;
+        height: calc(1.5em + .9rem + 2px);
+        padding: 0 20px;
+        margin: auto;
+        border: none;
+        color: #3e4455;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .nav-search .search-query:focus-visible {
+        margin: auto;
+        outline: none;
+    }
+    .search-query {
+        margin: auto;
+    }
+
+    .nav-search .btn {
+        border: 0;
+        background-color: #59ae87;
+        color: #FFF;
+        padding: 0.45rem 0.9rem;
+        font-family: 'Poppins', sans-serif;
+        cursor: pointer;
+    }
+
+    /* Dashboard Content  */
+
+    .dashboard-card {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    /* Social Icons */
+
+    .social-icons {
+        display: block;
+    }
+
+    .social-icons li:not(:last-child) {
+        margin-right: 0.5rem;
+        border-right: 1px solid #000;
+        padding-right: 0.7rem;
+    }
+
+    .social-icons li {
+        display: inline-block;
+    }
+
+    .social-icons li a {
+        color: #000;
+    }
+    body, html {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+    }
+    
+    .container {
+        display: flex;
+        width: 100%;
+    }
+    
+    .main {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        width: 100%;
+        overflow: hidden;
+    }
+}
+
+/*Pagination */
+
+.pagination.pagination-circle .page-item.active .page-link {
+  border-radius: 50%;
+}
+.pagination .page-item .page-link:hover {
+  -webkit-transition: all 0.3s linear;
+  transition: all 0.3s linear;
+  border-radius: 0.125rem;
+  background-color: #eee;
+}
+.pagination.pg-blue .page-item.active .page-link:hover {
+  background-color: #2bbbad;
+}
+.pagination .page-item.active .page-link {
+  -webkit-transition: all 0.2s linear;
+  transition: all 0.2s linear;
+  border-radius: 0.125rem;
+  background-color: #2bbbad;
+  color: #fff;
+}
+.pagination .page-item .page-link {
+  -webkit-transition: all 0.3s linear;
+  transition: all 0.3s linear;
+  outline: 0;
+  border: 0;
+  background-color: transparent;
+  font-size: 0.9rem;
+  color: #999;
+  font-weight: bold;
+}
+.pagination.pagination-circle .page-item .page-link:hover {
+  border-radius: 50%;
+}
+.pagination.pagination-circle .page-item .page-link {
+  margin-left: 2px;
+  margin-right: 2px;
+  border-radius: 50%;
+}
+.pagination .page-item.active .page-link {
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+}
+.page-link {
+  border: none !important;
+}
+.text-sort {
+    color: #444;
+}
+
+/*dropdown search*/
+/* Dropdown Button */
+.dropbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+  }
+  
+  /* Dropdown button on hover & focus */
+  .dropbtn:hover, .dropbtn:focus {
+    background-color: #3e8e41;
+  }
+  
+  /* The search field */
+  #myInput {
+    box-sizing: border-box;
+    background-image: url('searchicon.png');
+    background-position: 14px 12px;
+    background-repeat: no-repeat;
+    font-size: 16px;
+    padding: 14px 20px 12px 45px;
+    border: none;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  /* The search field when it gets focus/clicked on */
+  #myInput:focus {outline: 3px solid #ddd;}
+  
+  /* The container <div> - needed to position the dropdown content */
+  .dropdown {
+    position: relative;
+    display: inline-block;
+  }
+  
+  /* Dropdown Content (Hidden by Default) */
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f6f6f6;
+    min-width: 230px;
+    border: 1px solid #ddd;
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+  .dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+  }
+  
+  /* Change color of dropdown links on hover */
+  .dropdown-content a:hover {background-color: #f1f1f1}
+  
+  /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
+  .show {display:block;}
+  /*end dropdown search*/
+  .pagination {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .main-ul {
+    width: 85px;
+    min-width: 85px;
+    padding: 25px 0;
+    flex: 1 1 auto;
+}
+.main-ul-item {
+    color: #000;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    
+}
+a.mainbar-link {
+    padding: 1.625rem 3.625rem;
+    color: #FFF;
+    display: block;
+    white-space: nowrap;
+    border-left: 3px;
+    background-color: #090;
+    border-color: #080;
+    margin: 15px;
+    border-radius: 5px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+.dropdown-options {
+    z-index: 100;
+    display: none;
+    position: absolute;
+    overflow: auto;
+  }
+  .dropdown:hover .dropdown-options {
+    display: block;
+  }
+.options-button {
+    display: inline-block;
+    padding: 5px 15px;
+    font-size: 15px;
+   /* font-weight: bold; */
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    border: solid #5500ff; /* Color del borde del éxito en Bootstrap */
+    color: #fff; /* Color del texto */
+    background-color: #5500ff; /* Color de fondo del éxito en Bootstrap */
+    border-radius: 5px; /* Bordes redondeados */
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
+}
+
+.desplegable-button {
+    width: 100%; 
+    border-radius:0px;
+}
+.search-box {
+    font-size: 30px;
+    text-align:center;
+    margin-right:30px;
+    margin-left: -190px;
+}

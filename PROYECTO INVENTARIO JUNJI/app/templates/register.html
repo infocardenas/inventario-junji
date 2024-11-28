@@ -1,0 +1,84 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
+
+<div class="custom-alert" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<!-- Se termina la seccion de errores -->
+
+<!-- ----- -->
+
+
+<a class="nav-button" href="/">Volver</a>
+<button class="nav-button" onclick="showDiv()">Agregar</button>
+<div class="card card-body" id="formulario" style="display: none;">
+    <form action="/crear_cuenta" method="POST" class="mi-formulario">
+        <div class="form-group">
+            <label for="nombreUsuario">Nombre de Usuario</label>
+            <input type="text" class="form-control" name="nombreUsuario" placeholder="Nombre Usuario">
+            <br>
+            <label for="password">Contraseña: </label>
+            <input id="contrasenna" type="password" class="form-control" name="contrasenna" placeholder="Contraseña">
+            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
+                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna"/>
+            <br>
+            <label>Repetir Contraseña: </label>
+            <input id="contrasenna_repetir" type="password" class="form-control" name="repetir" placeholder="Contraseña">
+            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
+                onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir"/>
+            <br/>
+            <label>Es Administrador</label>
+            <input type="checkbox" class="form-control", name="isAdmin"/>
+            <br/>
+            <button class="agregar-button">Ingresar</button>
+        </div>
+    </form>
+</div>
+
+<h2>Usuarios</h2>
+<div style="position: relative;">
+    <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
+    <div style="overflow-x:auto;">
+        <table id="posts">
+            <thead id="myTableHead">
+                <tr>
+                    <th onclick="sortTable(0)">Nombre</th>
+                    <th onclick="sortTable(1)">Privilegios</th>
+                    <th onclick="sortTable(2)">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="myTableBody">
+                {% for usuario in usuarios %}
+                <tr>
+                    <td>{{usuario.nombreUsuario}}</td>
+                    <td>
+                        {% if usuario.privilegiosAdministrador == 1 %}
+                        Admin
+                        {% else %}
+                        Usuario
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="/edit_usuario/{{usuario.nombreUsuario}}" class="success-button" 
+                           >Editar</a>
+                        <a href="/delete_usuario/{{usuario.nombreUsuario}}" class="delete-button"
+                           >Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

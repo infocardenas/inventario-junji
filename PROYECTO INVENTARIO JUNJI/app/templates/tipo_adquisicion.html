@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from 'funciones_macro.html' import paginacion %}
+
+<div class="row">
+
+    <div class="col-md-5">
+            <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            {% for message in messages %}
+
+            <div class="custom-alert" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+            <!-- Se termina la seccion de errores -->
+
+<!-- ----- -->
+<button class="nav-button" onclick="showDiv()">Agregar</button>
+<div class="card card-body" id="formulario" style="display: none;">
+<form action="/add_tipoa" method="POST"class="mi-formulario">
+    <label for="nombre_tipoa"> Tipo de Adquisición</label>
+    <input type="text" name="nombre_tipoa" placeholder="Nombre tipo adquisicion">
+    <button class="agregar-button"> Agregar</button>    
+</form>
+</div>
+</div>
+<h2>Tipo de Adquisición</h2>
+<div style="overflow-x:auto;">
+  <table id="posts">
+    <thead>
+        <tr>
+            <td onclick="sortTable(0)">Tipo de Adquisición</td>
+            <td>Acciones</td>
+        </tr>
+    </thead>
+    <tbody id="myTableBody">
+        <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+        {% for ta in tipo_adquisicion %}
+        <tr>
+            <td>{{ta.nombreTipo_adquisicion}}</td>
+            <td>
+                <a href="/edit_tipoa/{{ta.idTipo_adquisicion}}"class="success-button">Editar</a>
+                <a href="/delete_tipoa/{{ta.idTipo_adquisicion}}"class="delete-button">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table> 
+{{ paginacion("tipo_adquisicion", page, lastpage) }}
+{% endblock %}

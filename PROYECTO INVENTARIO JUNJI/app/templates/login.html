@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block body %}
+
+        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <!-- Se termina la seccion de errores -->
+
+        <!-- ----- -->
+
+<div class="card card-body" id="formulario">
+    <form action="/loguear" method="POST" class="mi-formulario">
+        <div class="form-group">
+            <label for="nombreUsuario">Nombre de Usuario</label>
+            <input type="text" class="form-control" 
+                name="nombreUsuario" placeholder="Nombre_Usuario">
+            <br>
+            <label for="password">Contraseña: </label>
+            <input id="contrasenna" type="password" class="form-control" 
+                name="contrasenna" placeholder="">
+            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
+                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna"/>
+            <br>
+            <button class="agregar-button">Ingresar</button>
+    </form>
+</div>
+
+{% endblock %}

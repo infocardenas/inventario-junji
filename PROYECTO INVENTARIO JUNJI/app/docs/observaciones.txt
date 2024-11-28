@@ -1,0 +1,44 @@
+Este archivo es esclusivo para recomendaciones y futuras correcciones para el codigo y base de datos
+
+# Para bases de datos
+
+* Cuidar la nomenclatura
+    - Para los ids y atributos debe ser del mismo formato 
+        EJ: id de ubicacion = idUbicacion
+        EJ: id de codigo proveedor = idCodigo_proveedor, cuidando que a partir del _ todas las siguientes letras esten en minuscula
+        EJ: atributo nombre de ubicacion = nombreUbicacion
+        EJ: atributo nombre de codigo proveedor = nombreCodigo_proveedor, cuidando que a partir del _ todas las siguientes letras esten en 
+        Tambien es recomendable utilizar solo camel case (utilizar la primera letra mayuscula para el inicio de cada paralabra 'HolaComoEstamosParaCodear')
+    
+    - Foraneas 
+        Debe ser con el siguiente formato, fk_ mas el id tal cual fue escrito
+        EJ: idUbicacion en otra tabla como foranea es fk_idUbicacion
+
+    - Recomendacion 
+        Escribir los atributos e en minuscula utilizando snake case (utilizando '_')
+        EJ: id de ubicacion = idubicacion 
+        EJ: id de codigo proveedor = idcodigo_proveedor
+        EJ: atributo nombre de ubicacion = nombrecbicacion
+        EJ: atributo nombre de codigo proveedor = nombrecodigo_proveedor
+
+
+# Para el codigo
+
+*Conservar nomenclatura
+    -Para las funciones (def nombre_funcion)
+        Conservar la nomenclatura respetando que:
+            + Ruta principal (la que se utiliza para ver la tabla con los datos) Si la tabla es de una palabra la funcion debera empezar en mayuscula 'def Funcionario()' (ver funcionario.py),
+            de no ser asi al importarse en main.py este dara un error y no podra funcionar la aplicacion
+            + Para aquellas que tengan mas de una palabra utilizar camel case 'def tipoEquipo()' ver (tipo_equipo.py)
+
+*Consultas sql en routes(nombre_tabla.route)
+    - Para las consultas realizadas en cur.execute(''), tener en cuenta que los atributos deben verse tal cual los han escrito en la base de datos, a pesar de ser unsensitive case mysql
+        EJ: base de datos(nombreSedEsae)
+            cur.execute('SELECT nombreSedEsae FROM nombre_tabla')
+
+# Futuro trabajo
+    - Agregar labels a los input
+    - Validaciones segun corresponda el campo (consultar cuales serian las validaciones necesarias)
+    - Agregar tabla fecha_modificacion que acompañara a estado_equipo (ver la relacion mas eficiente)
+    - Terminar crud para tablas faltantes
+    - Generar modals para los formularios de edicion EJ= editComuna.html, <investigar>

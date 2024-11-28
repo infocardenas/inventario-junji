@@ -1,0 +1,80 @@
+{% extends "layout.html" %}
+{% block body %}
+<a class="nav-button" href="/asignacion">Volver</a>
+<button class="nav-button" onclick="showDiv();fechaPorDefecto()">Agregar</button>
+<div class="card card-body" id="formulario" style="display: none;">
+    <form action="/asignacion/create_asignacion" method="POST" class="mi-formulario">
+        <div class="form-group">
+            <div>
+                <label for="fechaasignacion"> Fecha de Inicio:</label>
+                <input type="date" name="fechaasignacion" id="inputFecha">
+                <script>
+                    fechaPorDefecto()
+                </script>
+            </div>
+            <br>
+            <div>
+                <label>Observaciones</label>
+                <textarea id="observacion" name="observacion" rows="4" cols="50"
+                maxlength="250"></textarea>
+            </div>
+            <br>
+            <div>
+                <label>Funcionario <span style="color: red;">*</span></label>
+                <select name="rut" id="">
+                    <option value="">Seleccione el funcionario</option>
+                    {% for f in funcionarios %}
+                    <option value="{{ f.rutFuncionario }}">{{f.nombreFuncionario}}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <label for="realizar_traslado">¿Realizar el traslado?</label>
+            <input type="checkbox" name="realizar_traslado" id="realizar_traslado" />
+            <button class="agregar-button" type="submit"> Agregar</button>
+        </div>
+</div>
+<h2>Crear Asignación</h2>
+<div style="position: relative;">
+    <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
+    <div style="overflow-x:auto;">
+
+
+        <table id="posts">
+            <thead>
+                <tr>
+
+                    <td>Tipo Equipo</td>
+                    <td>Código Inventario</td>
+                    <td>N° Serie</td>
+                    <td>Modelo</td>
+                    <td>Estado Equipo</td>
+                    <td>Código Proovedor</td>
+                    <td>Unidad</td>
+                    <td>Acciones</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for eq in equipos %}
+                <tr>
+                    <td>{{eq.nombreTipo_equipo}}</td>
+                    <td>{{eq.Cod_inventarioEquipo}}</td>
+                    <td>{{eq.Num_serieEquipo}}</td>
+                    <td>{{eq.nombreModeloequipo}}</td>
+                    <td>{{eq.nombreEstado_equipo}}</td>
+                    <td>{{eq.codigoproveedor_equipo }}</td>
+                    {# hacer inner join con unidad para obtener nombreUnidad#}
+                    <td>{{eq.nombreUnidad}}</td>
+                    <td>
+                        Asignar:
+                        {% if equipoSeleccionado == eq.idEquipo %}
+                        <input type="checkbox" value="{{eq.idEquipo}}" name="asignaciones[]" checked="true" />
+                        {% else %}
+                        <input type="checkbox" value="{{eq.idEquipo}}"  name="asignaciones[]"/>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </form>
+        {% endblock %}

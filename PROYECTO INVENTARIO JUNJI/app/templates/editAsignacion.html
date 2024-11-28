@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block body %}
+
+
+<a class="nav-button" href="/asignacion">Volver</a>
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <div class="card card-body">
+            <form action="/asignacion/update_asignacion/{{asignacion.idAsignacion}}" method="POST"
+                class="mi-formulario">
+                <div class="form-group">
+                    <div>
+                        <label for="fechaasignacion"> Fecha de Inicio:</label>
+                        <input type="date" name="fechaasignacion" id="fechaasignacion">
+                        <script>
+                            date = new Date();
+                            year = date.getFullYear();
+                            month = date.getMonth() + 1;
+                            day = date.getDate();
+                            if (month < 10) {
+                                month = "0" + month
+                            }
+                            formatedDate = year + "-" + month + "-" + day
+                            //console.log(formatedDate)
+                            document.getElementById("fechaasignacion")
+                                .setAttribute("value", formatedDate);
+                        </script>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="observacionasignacion">Observacion:</label>
+                        <br>
+                        <textarea id="observacionasignacion" name="observacionasignacion"
+                            class="form-control">{{asignacion.observacionAsignacion}}
+                        </textarea>
+                    </div>
+                    <br>
+                    <div class="form-group">
+                        <label for="rutFuncionario">Nombre Funcionario:</label>
+
+                        <select name="rutFuncionario" id="">
+                            <option value={{asignacion.rutFuncionario}}>{{asignacion.nombreFuncionario}}</option>
+                            {% for f in funcionario %}
+                            {% if( f.rutFuncionario != asignacion.rutFuncionario) %}
+                            <option value="{{ f.rutFuncionario }}">{{ f.nombreFuncionario }}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <button type="submit" class="agregar-button"> Guardar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

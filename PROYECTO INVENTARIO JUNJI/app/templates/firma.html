@@ -1,0 +1,37 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from 'funciones_macro.html' import paginacion, subirArchivo, tablaDocumentos %}
+
+<div class="row">
+
+    <div class="col-md-5">
+        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" 
+                data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <!-- Se termina la seccion de errores -->
+        {% if location == 'devolucion' %}
+            <a class="nav-button" href="/asignacion">Volver</a>
+        {% else %}
+            <a class="nav-button" href="/{{location}}">Volver</a>
+        {% endif %}
+        <!-- ----- -->
+        {{ subirArchivo(location, id) }}
+    </div>
+    <br />
+        <h2>Documento de Traslado</h2>
+        {{tablaDocumentos(id, (nombreFirmado,), location)}}
+
+{% endblock %}

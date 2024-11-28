@@ -1,0 +1,139 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from 'funciones_macro.html' import paginacion, select_para_marca %}
+
+<div class="row">
+
+    <div class="col-md-5">
+        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <!-- Se termina la seccion de errores -->
+
+        <!-- ----- 
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.11.3/b-2.1.1/b-html5-2.1.1/b-print-2.1.1/cr-1.5.5/r-2.2.9/datatables.min.js"></script>
+-->
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div class="card card-body" style="display: none;" id="formulario">
+
+            <form action="/add_modelo_equipo" method="POST" class="mi-formulario">
+                <div class="form-group">
+                    <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
+                    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo"
+                    maxlength="45">
+
+                </div>
+                {#
+                TODO: Al apretar el boton verde agregar se muestra un boton para seleccionar la marca
+                Despues de seleccionar la marca se muestra el tipo de equipo y el boton gris de agregar.
+
+                - modificar la tupla de marcas para que tenga como uno de sus objetos una tupla de tipos de equipo
+                #}
+
+                {#Usar una macro para crear por cada marca crear un select con el tipo y esconderlo #}
+                <div class="form-group">
+                    <div id="selector_marca">
+                        <label for="nombre_marca_equipo"> Marca Equipo: </label>
+                        <select name="nombre_marca_equipo" id="marca" onchange="mostrarTipo_para_agregar_modelo()">
+                            <option value="">Elija la Marca del Equipo</option>
+                            {% for marcae in marca_equipo %}
+                            <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>
+                            {% endfor %}
+                        </select>
+                        <br />
+                    </div>
+                    {# crea selectores para tipo de equipo#}
+                    {% for marcae in marca_equipo %}
+                    {{ select_para_marca(marcae) }}
+                    {% endfor %}
+
+                    <div id="selector_tipo_equipo" style="display: none;">
+                        <input name="nombre_tipo_equipo" id="nombre_tipo_equipo" />
+                    </div>
+                </div>
+
+                <button id="enviar" class="agregar-button" style="display: none;"> Agregar</button>
+            </form>
+        </div>
+    </div>
+    <h2>Modelo de Equipos</h2>
+
+    <div style="overflow-x:auto;">
+        <table id="posts">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Modelo equipo</th>
+                    {#<th onclick="sortTable(1)">Marca</th>#}
+                    <th onclick="sortTable(1)">Tipo Equipo</th>
+                    <th onclick="sortTable(2)">Marca Equipo</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="myTableBody">
+                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+                {% for modeloe in modelo_equipo %}
+                <tr>
+                    <td>{{modeloe.nombreModeloequipo}}</td>
+                   {# <td>{{modeloe.nombreMarcaEquipo}}</td> #}
+                    <td>{{modeloe.nombreTipo_equipo}}</td>
+                    <td>{{modeloe.nombreMarcaEquipo}}</td>
+                    <td>
+                        <a href="/edit_modelo_equipo/{{modeloe.idModelo_Equipo}}" class="success-button">Editar</a>
+                        <a href="/delete_modelo_equipo/{{modeloe.idModelo_Equipo}}" class="delete-button">Eliminar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!--
+<script>
+    $(document).ready(function() {
+        $('#posts').DataTable({
+            "dom":
+            "<'table-pagination'<'table-info-top'<'table-search'l><'table-info'f>>" +
+            "<'table-info-bottom'<'table-length'i><'table-pagination-buttons'p>>",
+            "language": {
+                "search": "Buscar:",
+                "info": "Mostrando del _START_ al _END_ de _TOTAL_ registros",
+                "lengthMenu": "Mostrando _MENU_ registros",
+                "paginate": {
+                    "first": "Primero",
+                    "last": "Último",
+                    "next": "Siguiente",
+                    "previous": "Anterior"
+                },
+                "loadingRecords": "Cargando...",
+                "zeroRecords": "No se encontraron resultados",
+                "infoEmpty": "Mostrando del 0 al 0 de 0 registros",
+                "infoFiltered": "(filtrado de un total de _MAX_ registros)",
+                "processing": "Procesando..."
+            },
+            "columns": [
+                { "data": "modeloe.nombreModeloequipo" },
+                { "data": "modeloe.nombreMarcaEquipo" },
+                { "data": "Operations" }
+            ],
+            "columnDefs": [{ "orderable": true, "targets": [1] }]
+        });
+    });
+</script>
+
+-->
+    {{ paginacion("modelo_equipo", page, lastpage) }}
+
+    {% endblock %}

@@ -1,0 +1,116 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="row">
+  <div class="col-md-5">
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+      {{ message }}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+  </div>
+</div>
+<h3>Resumen de datos</h3>
+{% if privilegio == 1%}
+<a href="/registrar" class="nav-button">Administrar Usuarios</a>
+{% endif %}
+<div class="container">
+<ul class="main-ul-item">
+  <li class="main-li ">
+    <a href="/equipo" class="mainbar-link">
+      <i class="lni lni-laptop-phone"></i>
+      <span>Equipos </span>
+    </a>
+  </li>
+  <li class="main-li ">
+    <a href="/marca_equipo" class="mainbar-link">
+      <i class="lni lni-laptop"></i>
+      <span>Marcas de Equipos </span>
+    </a>
+  </li>
+  <li class="main-li ">
+    <a href="/modelo_equipo" class="mainbar-link">
+      <i class="lni lni-list"></i>
+      <span>Modelo de Equipos</span>
+    </a>
+  </li>
+  <li class="main-li ">
+    <a href="/tipo_equipo" class="mainbar-link">
+      <i class="lni lni-line-dotted"  ></i>
+      <span>Tipo de Equipos</span>
+    </a>
+  </li>
+  <li class="main-li">
+    <a href="/funcionario" class="mainbar-link">
+      <i class="lni lni-user"></i>
+      <span>Funcionarios</span>
+    </a>
+  </li>
+  <li class="main-li">
+    <a href="/proveedor" class="mainbar-link">
+      <i class="lni lni-network"></i>
+      <span>Proveedores</span>
+    </a>
+  </li>
+  <li class="main-li">
+    <a href="/Unidad" class="mainbar-link">
+      <i class="lni lni-map"></i>
+      <span>Unidad</span>
+    </a>
+  <li class="main-li">
+    <a href="/orden_compra" class="mainbar-link">
+      <i class="lni lni-customer"></i>
+      <span>Orden de Compra</span>
+    </a>
+  </li>
+  
+  <li class="main-li">
+    <a href="/tipo_adquisicion" class="mainbar-link">
+      <i class="lni lni-files"></i>
+      <span>Tipo Adquisicion</span>
+    </a>
+  </li>
+  <li class="main-li">
+    <a href="/estado_equipo" class="mainbar-link">
+      <i class="lni lni-map"></i>
+      <span>Estado de Equipo</span>
+    </a>
+  </li>
+  {#}
+  <li class="main-li">
+    <a href="/devolucion" class="mainbar-link">
+      <i class="lni lni-package"></i>
+      <span>Devoluciones</span>
+    </a>
+    
+  </li>#}
+  <li class="main-li">
+    <a href="/asignacion" class="mainbar-link">
+      <i class="lni lni-calculator-alt"></i>
+      <span>Asignaciones</span>
+    </a>
+  </li>
+  <li class="main-li">
+    <a href="/traslado" class="mainbar-link">
+      <i class="lni lni-travel"></i>
+      <span>Traslados</span>
+    </a>
+  </li>
+  <li class="main-li">
+    <a href="/incidencia" class="mainbar-link">
+      <i class="lni lni-stamp"></i> 
+      <span>Incidencias</span>
+    </a>
+  </li>
+</ul>
+
+
+</div>
+{% endblock %}

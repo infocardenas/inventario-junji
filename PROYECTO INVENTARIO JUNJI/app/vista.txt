@@ -1,0 +1,43 @@
+vista: super_equipo
+
+SELECT e.idEquipo, e.Cod_inventarioEquipo, 
+           e.Num_serieEquipo, e.ObservacionEquipo,
+           e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
+           e.numerotelefonicoEquipo,
+           te.idTipo_equipo, 
+           te.nombreTipo_equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
+           u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+    moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario
+    FROM equipo e
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    
+
+    WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
+    UNION 
+    SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
+            e.Num_serieEquipo, e.ObservacionEquipo, 
+            e.codigoproveedor_equipo, e.macEquipo, 
+            e.imeiEquipo, e.numerotelefonicoEquipo,
+            te.idTipo_equipo, te.nombreTipo_equipo,
+            ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
+            u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
+            moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
+    FROM equipo e
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN Unidad u on u.idUnidad = e.idUnidad
+    INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    
+
+    INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
+    INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
+    INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
+    INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+    WHERE ee.nombreEstado_equipo LIKE "EN USO"
+    AND a.ActivoAsignacion = 1
+
+    

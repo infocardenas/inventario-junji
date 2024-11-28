@@ -1,0 +1,173 @@
+{% macro paginacion(location, page, lastpage) %}
+<div class="pagination">
+    {% if page != 1 %}
+    <a class="nav-button" href="/{{location}}/{{page - 1}}">Pagina Anterior</a>
+    {% endif %}
+    {# reviar que hacer con la paginacion para que se pueda buscar en todas las paginas antes de seguir#}
+    <form action="/{{location}}/{{page}}">
+    </form>
+    {% if lastpage %}
+    <a class="nav-button" href="/{{location}}/{{page + 1}}">Pagina Siguiente</a>
+    {% endif %}
+</div>
+<p style="margin: 15px;">Pagina: {{page}}</p>
+{% endmacro %}
+
+{% macro tablaTraslado(traslado)%}
+
+{% endmacro %}
+
+{% macro subirArchivo(location, id) %}
+
+<button class="nav-button" onclick="showDiv()">Agregar PDF</button>
+<div class="card card-body" id="formulario" style="display: none;">
+    <form action="/{{location}}/adjuntar_pdf/{{id}}" method="POST" class="mi-formulario" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="file">Añadir pdf</label>
+            <input type="file" name="file" />
+            {# se nesesita una forma eficiente de añadir el equipo#}
+            <button class="agregar-button"> Agregar</button>
+        </div>
+    </form>
+</div>
+
+{% endmacro %}
+
+{% macro tablaDocumentos(id, documentos, location) %}
+<div style="overflow-x:auto;">
+    <table id="posts">
+        <thead>
+            <tr>
+                <td onclick="sortTable(0)">Nombre pdf</td>
+                <td>Operations</td>
+            </tr>
+        </thead>
+        <tbody id="myTableBody">
+            <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+            {% for documento in documentos %}
+            {% if documento != "None" %}
+            <tr>
+                <td>{{documento}}</td>
+                <td>
+                    <a href="/{{location}}/mostrar_pdf/{{id}}/{{documento}}" class="info-button">Abrir</a>
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endmacro %}
+
+
+{#
+Seria nesesario tener un diccionario con llaves que indiquen la id del tipo
+por cada llave se tiene una lista de tuplas de los modelos asociados
+#}
+{% macro select(modelos_del_tipo, id_tipo) %}
+<div id="{{id_tipo}}" style="display: none;" class="select_modelo">
+    <label for="nombre_modelo_equipo">Modelo de Equipo: *</label>
+    <select name="nombre_modelo_equipo">
+        <option value="">Seleccione el Modelo del Equipo</option>
+        {% for modelo in modelos_del_tipo %}
+        <option value="{{ modelo.idModelo_Equipo }}">
+            {{modelo.nombreModeloequipo}}</option>
+        {% endfor %}
+    </select>
+    <br>
+</div>
+
+{% endmacro %}
+
+{#
+Select para modelos que tiene en cuenta su relacion con la marca
+y el tipo
+#}
+{% macro select_modelo(tupla_modelos, id_tipo, id_marca) %}
+<label for="idModelo_Equipo">Modelo Equipo <span style="color: red;">*</span></label>
+<select id="s_{{id_tipo}}_{{id_marca}}" name="iModelo_Equipo" onchange="enviarModelo('s_{{id_tipo}}_{{id_marca}}')">
+    <option value="">Selecciones Modelo Equipo</option>
+    {% for modelo in tupla_modelos %}
+    <option id="{{modelo.idModelo_Equipo}}" value="{{modelo.idModelo_Equipo}}">
+        {{modelo.nombreModeloequipo}}
+    </option>
+    {% endfor %}
+</select>
+{% endmacro %}
+{# select para tipos #}
+
+{% macro select_tipo(tupla_tipos_equipo, id_marca) %}
+<label for="nombre_modelo">Tipo Equipo <span style="color: red;">*</span></label>
+<select id="select_tipo_marca:{{id_marca}}" name=""
+    onchange="mostrarSelectModelo('select_tipo_marca:{{id_marca}}'); mostrarSelectsEspeciales('{{id_marca}}')">
+    <option value="">Seleccione Tipo Equipo</option>
+    {% for tipo in tupla_tipos_equipo %}
+    <option id="{{tipo.idTipo_equipo}}" value="{{tipo.nombreTipo_equipo}}">
+        {{tipo.nombreTipo_equipo}}
+    </option>
+    {% endfor %}
+</select>
+{% endmacro %}
+
+{# macro para select de tipos de equipo en base a su asociacion con una marca #}
+
+{% macro select_para_marca(marcas) %}
+<div id="{{marcas.idMarca_Equipo}}" style="display: none;" class="select_modelo">
+    <label for="nombre_modelo_equipo">Tipo Equipo: </label>
+    {%for tipo in lista_tipos_asociados_marca%}
+    {{tipo}}
+    {% endfor%}
+    <select id="s_{{marcas.idMarca_Equipo}}" name="" onchange="mostrar_agregar('s_{{marcas.idMarca_Equipo}}')">
+        <option value="">Seleccione el Tipo del Equipo</option>
+        {% for tipo in marcas.tipo_equipo %}
+        <option value="{{ tipo.idTipo_equipo }}">
+            {{tipo.nombreTipo_equipo}}
+        </option>
+        {% endfor %}
+    </select>
+    <br>
+</div>
+{% endmacro %}
+
+{% macro select_para_marca_mostrar(marcas) %}
+<div id="{{marcas.idMarca_Equipo}}" style="display: block;" class="select_modelo">
+    <label for="nombre_modelo_equipo">Tipo Equipo: </label>
+    {%for tipo in lista_tipos_asociados_marca%}
+    {{tipo}}
+    {% endfor%}
+    <select id="s_{{marcas.idMarca_Equipo}}" name="" onchange="mostrar_agregar('s_{{marcas.idMarca_Equipo}}')">
+        <option value="">Seleccione el Tipo del Equipo</option>
+        {% for tipo in marcas.tipo_equipo %}
+        <option value="{{ tipo.idTipo_equipo }}">
+            {{tipo.nombreTipo_equipo}}
+        </option>
+        {% endfor %}
+    </select>
+    <br>
+</div>
+{% endmacro %}
+
+
+
+{# macro para select abstracto (abandonado)#}
+{#
+{% macro select_abstracto(lista_opciones, id_select, label_text, option_text) %}
+<div id="{{id_select}}" style="display: none;" class="select_modelo">
+    <label for="nombre_modelo_equipo">{{label_text}}: </label>
+    <select name="nombre_modelo_equipo">
+        <option value="">{{option_text}}</option>
+        {% for lista_opciones in lista_opciones %}
+        <option value="{{ modelo.idModelo_Equipo }}">
+            {{modelo.nombreModeloequipo}}</option>
+        {% endfor %}
+    </select>
+    <br>
+</div>
+
+{% endmacro %}
+
+
+
+
+
+#}

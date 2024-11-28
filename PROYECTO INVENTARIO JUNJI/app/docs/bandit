@@ -1,0 +1,8 @@
+bandit es un analizdor de codigo estatico para encontrar 
+errores de seguridad 
+
+para revisar todos los .py en la carpeta app
+
+bandit -r app
+
+-r significa recursivo por lo que busca todos los archivos en la carpeta

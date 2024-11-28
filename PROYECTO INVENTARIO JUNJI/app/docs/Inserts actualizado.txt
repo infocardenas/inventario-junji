@@ -1,0 +1,131 @@
+-- INSERT PARA PROVINCIA listo
+
+INSERT INTO provincia (nombreProvincia)
+VALUES ('Concepcion'), ('Arauco'), ('Biobío');
+
+-- INSERT PARA COMUNA listo
+
+INSERT INTO Comuna(idComuna, nombreComuna, idProvincia)
+VALUES(1,'Concepcion',1),(2,'Coronel',1), (3,'Chiguayante',1), (4,'Florida',1), (5,'Hualqui',1),(6,'Lota',1),(7,'Penco',1), (8,'San Pedro de la Paz',1),(9,'Santa Juana',1), (10,'Talcahuano',1), (11,'Tome',1), (12,'Hualpen',1);
+INSERT INTO Comuna(idComuna, nombreComuna, idProvincia)
+VALUES(13, 'Lebu',2 ),(14, 'Arauco', 2),(15,'Cañete' , 2),(16, 'Contulmo', 2),(17, 'Curanilahue', 2),(18, 'Los Álamos', 2),(19, 'Tirúa', 2);
+INSERT INTO Comuna(idComuna, nombreComuna, idProvincia)
+VALUES(20, 'Los Angeles', 3),(21, 'Antuco', 3),(22, 'Cabrero', 3),(23, 'Laja', 3),
+(24, 'Mulchen', 3),(25, 'Nacimiento', 3),(26, 'Negrete', 3),(27, 'Santa Barbara', 3),
+(28, 'Tucapel', 3),(29, 'Alto Biobío', 3),(30, 'San Rosendo', 3),(31, 'Quilleco', 3),
+(32, 'Quilaco', 3),(33, 'Yumbel', 3);
+
+-- INSERT PARA UBICACION listo
+
+INSERT INTO Unidad  (idUnidad ,nombreUnidad , contactoUnidad , direccionUnidad , idComuna ) VALUES ('8015892', 'BALDOMERO LILLO', 'CECILIA  JEREZ NEIRA', 'Evaristo  Azócar 62, Fundición Lota',6);
+INSERT INTO Unidad  (idUnidad ,nombreUnidad , contactoUnidad , direccionUnidad , idComuna ) VAlUES ('8301033', 'VILLA GENESIS', '91774260', 'Avda. Neltume S/Nº Villa Genesis',20);
+INSERT INTO Unidad  (idUnidad ,nombreUnidad , contactoUnidad , direccionUnidad , idComuna ) VALUES ('8203001', 'ABKELAY KIMUN', '982286157', 'Km.10 Sector De Primer Agua Tirua',19);
+INSERT INTO Unidad  (idUnidad ,nombreUnidad , contactoUnidad , direccionUnidad , idComuna ) VALUES ('8205012', 'ACHNU CAÑETE', '88277769', 'Manuel Rodriguez N° 150',15);
+
+--INSERT PARA ESTADO_EQUIPO
+
+INSERT INTO Estado_Equipo (nombreEstado_equipo, FechaEstado_equipo) VALUES ('BAJA', '2024-02-05'),('EN USO', '2024-02-05'),('SIN ASIGNAR', '2024-02-05'),('SINIESTRO', '2024-02-05');
+
+-- INSERT PARA TIPO_EQUIPO
+
+INSERT INTO tipo_equipo (nombreidTipoequipo) VALUES ('AIO'),('Teclado'),('Mouse'),('Monitor'),('HUB'),('Teclado'),('Mouse'),('Soporte monitor'),('Audifonos'),('CPU'),('Impresora'),('Tablet'),('Notebook'),('Proyector');
+
+-- INSERT PARA MARCA_EQUIPO
+
+INSERT INTO marca_equipo (nombreMarcaEquipo) VALUES ('Lenovo'),('HP'),('ACER'),('TOSHIBA'),('Epson'),('ViewSonic'),('LG'),('itab'),('Samsung'),('Canon'),('OLIDATA'),('HUB'),('Klipxtreme'),('PHILCO');
+
+-- INSERT PARA MODELO_EQUIPO
+
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('V510z',1),('V530',1),('M700z',1),('71z',1),('E73z',1);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('H436A',5),('PJD7383i',6),('H839A',5),('H552A',5),('H719A',5),('H552A',5),('V11H309220',5);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('240 G5',2),('240 G7',2),('245 G5',2),('340',2),('340G1',2),('ENVY 17',2),('X360',2);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('S3 SERIES',3),('aspire s3',3);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('SATELLITE C55',4);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('22MP58VQ',7),('29UM68',7),('20M35A',7),('PH550G',7),('VS17337',7);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('X39L',8);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('Galaxy Tab S2',9),('T810',9);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('G2160',10),('IPF785',10),('DR - C225',10);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('OL2019B',11);	
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('TYPE-C',12),('DeskMate',13),('KCK-251S',13);
+INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_equipo) VALUES ('KEYBOARD',14),('3113N0024',14);--
+
+-- INSERT PARA TIPO_ADQUISICION
+
+insert into tipo_adquisicion(nombreTipo_adquisicion) values('contrato de arriendo');
+insert into tipo_adquisicion(nombreTipo_adquisicion) values('compra');
+
+-- INSERT PARA PROVEEDOR
+
+insert into proveedor(nombreProveedor) values('Sonda'),('TechnoSystem');--
+
+-- INSERT PARA ORDEN_COMPRA
+
+insert into orden_compra(idOrden_compra, nombreOrden_compra,fechacompraOrden_compra, fechafin_ORDEN_COMPRA ,rutadocumentoOrden_compra, idTipo_adquisicion , idProveedor )	
+values('599-193-CC22', 'contrato 1592','2021-11-11','2022-11-11', 1, 1);
+insert into orden_compra(idOrden_compra, nombreOrden_compra,fechacompraOrden_compra, fechafin_ORDEN_COMPRA, rutadocumentoOrden_compra, idTipo_adquisicion, idProveedor)
+values('599-405-CC22', 'contrato 2645', '2023-11-11','2025-10-10', 2, 1);
+
+-- INSERT PARA FUNCIONARIO
+
+insert into funcionario(rutFuncionario, nombreFuncionario, cargoFuncionario, idUnidad ) VALUES('21000222k','Romina Gonzales','Encargada',8015892);
+insert into funcionario(rutFuncionario, nombreFuncionario, cargoFuncionario, idUnidad ) VALUES('190001110','Cristina Dominguez','Encargada',8301033);
+insert into funcionariO(rutFuncionario, nombreFuncionario, cargoFuncionario, idUnidad ) VALUES('180003339','Natalie Ramirez','Encargada',8203001);
+insert into funcionario(rutFuncionario, nombreFuncionario, cargoFuncionario, idUnidad ) VALUES('15222111k','Valentina Salgado','Encargada',8203001);
+insert into funcionario(rutFuncionario, nombreFuncionario, cargoFuncionario, idUnidad ) VALUES('10222333k','Leticia Letelier','Encargada',8015892);
+
+-- INSERT PARA TRASLADO
+
+INSERT INTO traslado(fechatraslado, rutadocumentoTraslado, idUnidad, idEquipo) values ('2024-03-01', 8203001,8015892), ('2022-12-28', 8203001,8015892), ('2024-01-03', 8203001,8015892), ('2020-10-30', 8203001,8015892), ('2022-02-14', 8203001,8015892), ('2024-01-02', 8203001,8015892),
+('2023-11-30', 8301033, 8203001), ('2022-11-11', 8301033,8203001), ('2021-04-25', 8301033,8203001), ('2021-10-15', 8301033,8203001), ('2024-07-05', 8301033,8203001), ('2021-07-07', 8301033,8203001), ('2020-11-01', 8015892, 8301033), ('2021-12-01', 8015892, 8301033), ('2023-03-01', 08015892,8301033),
+('2024-03-01', 8015892,8301033), ('2024-03-01', 8015892,8301033), ('2024-03-01', 8015892,8301033);
+
+-- INSERT PARA DETALLE_TRASLADO
+
+INSERT INTO detalle_traslado(observacionDetalletraslado, idTraslado) values ('Se traslada hacia tanto1', 1);
+INSERT INTO detalle_traslado(observacionDetalletraslado, idTraslado) values ('Se traslada hacia tanto2', 2);
+INSERT INTO detalle_traslado(observacionDetalletraslado, idTraslado) values ('Se traslada hacia tanto3', 3);
+INSERT INTO detalle_traslado(observacionDetalletraslado, idTraslado) values ('Se traslada hacia tanto4', 4);
+INSERT INTO detalle_traslado(observacionDetalletraslado, idTraslado) values ('Se traslada hacia tanto5', 5);
+
+
+
+-- INSERT PARA EQUIPO
+
+INSERT INTO equipo (cod_inventarioEquipo, num_serieEquipo, ObservacionEquipo,codigoproveedor_equipo,macEquipo,imeiEquipo,numerotelefonicoEquipo, idTipo_equipo, idestado_equipo, idUnidad , idOrden_compra, idModelo_equipo	) 
+VALUES (08013913, 'MJ04EWYG','TA BIEN', '01233421',1,2,8015892,'599-193-CC22',2);
+INSERT INTO equipo (cod_inventarioEquipo, num_serieEquipo, ObservacionEquipo,codigoproveedor_equipo,macEquipo,imeiEquipo,numerotelefonicoEquipo, idTipo_equipo, idestado_equipo, idUnidad , idOrden_compra, idModelo_Equipo)
+ VALUES (17006716, 'MJ04EWYG','TA BIEN','02988776',1,2,8301033,'599-193-CC22',1);
+INSERT INTO equipo (cod_inventarioEquipo, num_serieEquipo, ObservacionEquipo,codigoproveedor_equipo,macEquipo,imeiEquipo,numerotelefonicoEquipo, idTipo_equipo, idestado_equipo, idUnidad , idOrden_compra, idModelo_equipo)
+ VALUES (08013913, 'MJ04EWYG','TA BIEN','01374859',1,2,8203001,'599-193-CC22',3);
+INSERT INTO equipo (cod_inventarioEquipo, num_serieEquipo, ObservacionEquipo,codigoproveedor_equipo,macEquipo,imeiEquipo,numerotelefonicoEquipo, idTipo_equipo, idestado_equipo, idUnidad , idOrden_compra, idModelo_equipo)
+ VALUES (08013913, 'MJ04EWYG','TA BIEN','02993344',1,2,8203001,'599-193-CC22',4 );
+INSERT INTO equipo (cod_inventarioEquipo, num_serieEquipo, ObservacionEquipo,codigoproveedor_equipo,macEquipo,imeiEquipo,numerotelefonicoEquipo, idTipo_equipo, idestado_equipo, idUnidad , idOrden_compra, idModelo_equipo)
+ VALUES (08013913, 'MJ04EWYG','TA BIEN','01773356',1,2,8205012,'599-193-CC22',5);
+
+
+
+-- INSERT PARA DEVOLUCION
+
+insert into Devolucion (fechaDevolucion, observacionDevolucion,rutaactaDevolucion, activoDevolucion, idEquipo, rutFuncionario) values('2020-12-12', 'El funcionario tanto1 devuelve el equipo tanto1',true,  6, '21000222k');
+insert into Devolucion (fechaDevolucion, observacionDevolucion,rutaactaDevolucion, activoDevolucion, idEquipo, rutFuncionario) values('2020-12-12', 'El funcionario tanto2 devuelve el equipo tanto2',false, 7, '190001110');
+insert into Devolucion (fechaDevolucion, observacionDevolucion,rutaactaDevolucion, activoDevolucion, idEquipo, rutFuncionario) values('2020-12-12', 'El funcionario tanto3 devuelve el equipo tanto3',true,8, '180003339');
+insert into Devolucion (fechaDevolucion, observacionDevolucion,rutaactaDevolucion, activoDevolucion, idEquipo, rutFuncionario) values('2020-12-12', 'El funcionario tanto4 devuelve el equipo tanto4',false,9, '15222111k');
+insert into Devolucion (fechaDevolucion, observacionDevolucion,rutaactaDevolucion, activoDevolucion, idEquipo, rutFuncionario) values('2020-12-12', 'El funcionario tanto5 devuelve el equipo tanto5',true,10, '10222333k');
+
+
+
+
+-- INSERT PARA INCIDENCIA
+
+INSERT INTO incidencia(nombreIncidencia, observacionIncidencia, fechaIncidencia, idEquipo) values ('Disco quemado', 'no se encuentra', '2023-10-12',7);
+INSERT INTO incidencia(nombreIncidencia, observacionIncidencia, fechaIncidencia, idEquipo) values ('Error video', 'no arroja video en ningun caso', '2022-10-27',8);
+INSERT INTO incidencia(nombreIncidencia, observacionIncidencia, fechaIncidencia, idEquipo) values ('Recuperado', 'Se encuentra equipo perdido', '2021-12-01',9);
+
+-- INSERT PARA ASIGNACION
+
+insert into asignacion(fecha_inicioAsignacion, observacionAsignacion, activoasignacion, rutFuncionario,idEquipo,idDevolucion ) values('2023-12-12','Se le asigna el equipo tanto1 a el funcionario tanto1',true, '21000222k',1,1);
+insert into asignacion(fecha_inicioAsignacion, observacionAsignacion, activoasignacion, rutFuncionario,idEquipo,idDevolucion ) values('2022-09-09','Se le asigna el equipo tanto1 a el funcionario tanto1',false, '21000222k',2,2);
+insert into asignacion(fecha_inicioAsignacion, observacionAsignacion, activoasignacion, rutFuncionario,idEquipo,idDevolucion ) values('2021-10-23','Se le asigna el equipo tanto1 a el funcionario tanto1',false, '21000222k',3,1);
+insert into asignacion(fecha_inicioAsignacion, observacionAsignacion, activoasignacion, rutFuncionario,idEquipo,idDevolucion ) values('2020-09-09','Se le asigna el equipo tanto1 a el funcionario tanto1',true, '21000222k',4,3);
+insert into asignacion(fecha_inicioAsignacion, observacionAsignacion, activoasignacion, rutFuncionario,idEquipo,idDevolucion ) values('2019-08-30','Se le asigna el equipo tanto1 a el funcionario tanto1',false, '21000222k',5,2);
+insert into asignacion(fecha_inicioAsignacion, observacionAsignacion, activoasignacion, rutFuncionario,idEquipo,idDevolucion ) values('2023-02-01','Se le asigna el equipo tanto1 a el funcionario tanto1',true, '21000222k',6,4);

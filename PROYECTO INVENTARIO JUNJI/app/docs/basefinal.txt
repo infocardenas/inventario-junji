@@ -1,0 +1,241 @@
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`TIPO_EQUIPO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS TIPO_EQUIPO (
+  idTipo_equipo INT NOT NULL AUTO_INCREMENT,
+  nombreidTipoequipo VARCHAR(45) NULL,
+  PRIMARY KEY (idTipo_equipo));
+
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`ESTADO_EQUIPO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS ESTADO_EQUIPO (
+  idEstado_equipo INT NOT NULL AUTO_INCREMENT,
+  nombreEstado_equipo VARCHAR(45) NULL,
+  FechaEstado_equipo DATE NULL,
+  PRIMARY KEY (idEstado_equipo));
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`PROVINCIA`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS PROVINCIA (
+  idProvincia INT NOT NULL AUTO_INCREMENT,
+  nombreProvincia VARCHAR(45) NOT NULL,
+  PRIMARY KEY (idProvincia));
+
+-- -----------------------------------------------------
+-- Table COMUNA
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS COMUNA (
+  idComuna INT NOT NULL AUTO_INCREMENT,
+  nombreComuna VARCHAR(45) NULL,
+  idProvincia INT NULL,
+  PRIMARY KEY (idComuna, idProvincia),
+    FOREIGN KEY (idProvincia)
+    REFERENCES PROVINCIA (idProvincia)
+    )
+;
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`Unidad`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS Unidad (
+  idUnidad INT NOT NULL,
+  nombreUnidad VARCHAR(45) NULL,
+  contactoUnidad VARCHAR(45) NULL,
+  direccionUnidad VARCHAR(45) CHARACTER SET 'armscii8' NULL,
+  idComuna INT NOT NULL,
+    PRIMARY KEY (idUnidad),
+    FOREIGN KEY (idComuna)
+    REFERENCES COMUNA (idComuna)
+    )
+;
+
+
+
+-- -----------------------------------------------------
+-- Table TIPO_ADQUISICION
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS TIPO_ADQUISICION (
+  idTipo_adquisicion INT NOT NULL AUTO_INCREMENT,
+  nombreTipo_adquisicion VARCHAR(45) NOT NULL,
+  PRIMARY KEY (idTipo_adquisicion))
+;
+
+
+
+-- -----------------------------------------------------
+-- Table PROVEEDOR
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS PROVEEDOR (
+  idProveedor INT NOT NULL AUTO_INCREMENT,
+  nombreProveedor VARCHAR(45) NOT NULL,
+  PRIMARY KEY (idProveedor))
+;
+
+
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`ORDEN_COMPRA`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS ORDEN_COMPRA (
+  idOrden_compra VARCHAR(45) NOT NULL,
+  nombreOrden_compra VARCHAR(45) NULL,
+  fechacompraOrden_compra DATE NULL,
+  fechafin_ORDEN_COMPRA DATE NULL,
+  rutadocumentoOrden_compra VARCHAR(45) NULL,
+  idTipo_adquisicion INT NOT NULL,
+  idProveedor INT NOT NULL,
+  PRIMARY KEY (idOrden_compra),
+ FOREIGN KEY (idTipo_adquisicion)
+    REFERENCES TIPO_ADQUISICION (idTipo_adquisicion),
+    FOREIGN KEY (idProveedor)
+    REFERENCES PROVEEDOR (idProveedor));
+
+-- -----------------------------------------------------
+-- Table MARCA_EQUIPO
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS MARCA_EQUIPO (
+  idMarca_Equipo INT NOT NULL AUTO_INCREMENT,
+  nombreMarcaEquipo VARCHAR(45) NOT NULL,
+  PRIMARY KEY (idMarca_Equipo));
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`MODELO_EQUIPO` idModelo_Equipo Autoincremental???
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS MODELO_EQUIPO (
+  idModelo_Equipo INT NOT NULL,
+  nombreModeloequipo VARCHAR(45) NULL,
+  idMarca_equipo INT NOT NULL,
+  PRIMARY KEY (idModelo_Equipo),
+    FOREIGN KEY (idMarca_equipo)
+    REFERENCES MARCA_EQUIPO (idMarca_Equipo));
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`EQUIPO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS EQUIPO (
+  idEquipo INT NOT NULL AUTO_INCREMENT,
+  Cod_inventarioEquipo INT NULL,
+  Num_serieEquipo INT NULL,
+  ObservacionEquipo VARCHAR(250) NULL,
+  codigoproveedor_equipo VARCHAR(45) NULL,
+  macEquipo VARCHAR(45) NULL,
+  imeiEquipo VARCHAR(45) NULL,
+  numerotelefonicoEquipo VARCHAR(12) NULL,
+  idTipo_Equipo INT NOT NULL,
+  idEstado_equipo INT NOT NULL,
+  idUnidad INT NOT NULL,
+  idOrden_compra VARCHAR(45) NOT NULL,
+  idModelo_equipo INT NOT NULL,
+  PRIMARY KEY (idEquipo),
+    FOREIGN KEY (idTipo_Equipo)
+    REFERENCES TIPO_EQUIPO (idTipo_equipo),
+    FOREIGN KEY (idEstado_equipo)
+    REFERENCES ESTADO_EQUIPO (idEstado_equipo),
+    FOREIGN KEY (idUnidad)
+    REFERENCES UNIDAD (idUnidad),
+    FOREIGN KEY (idOrden_compra)
+    REFERENCES ORDEN_COMPRA (idOrden_compra),
+    FOREIGN KEY (idModelo_equipo)
+    REFERENCES MODELO_EQUIPO (idModelo_Equipo));
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`FUNCIONARIO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS FUNCIONARIO (
+  rutFuncionario VARCHAR(9) NOT NULL UNIQUE,
+  nombreFuncionario VARCHAR(45) NOT NULL,
+  cargoFuncionario VARCHAR(45) NULL,
+  idUnidad INT NULL,
+  PRIMARY KEY (rutFuncionario),
+    FOREIGN KEY (idUnidad)
+    REFERENCES UNIDAD (idUnidad));
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`DEVOLUCION`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS DEVOLUCION (
+  idDevolucion INT NOT NULL AUTO_INCREMENT,
+  fechaDevolucion DATE NULL,
+  observacionDevolucion VARCHAR(250) NULL,
+  rutaactaDevolucion VARCHAR(45) NULL,
+  ActivoDevolucion TINYINT NULL,
+  rutFuncionario VARCHAR(10) NOT NULL,
+  PRIMARY KEY (idDevolucion),
+    FOREIGN KEY (rutFuncionario)
+    REFERENCES FUNCIONARIO (rutFuncionario)
+);
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`ASIGNACION`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS ASIGNACION (
+  idAsignacion INT NOT NULL AUTO_INCREMENT,
+  fecha_inicioAsignacion DATE NULL,
+  ObservacionAsignacion VARCHAR(250) NULL,
+  rutaactaAsignacion VARCHAR(45) NULL,
+  ActivoAsignacion TINYINT NULL,
+  rutFuncionario VARCHAR(10) NOT NULL,
+  idEquipo INT NOT NULL,
+  idDevolucion INT NOT NULL,
+  PRIMARY KEY (idAsignacion),
+ FOREIGN KEY (idEquipo)
+    REFERENCES EQUIPO (idEquipo),
+    FOREIGN KEY (rutFuncionario)
+    REFERENCES FUNCIONARIO (rutFuncionario),
+    FOREIGN KEY (idDevolucion)
+    REFERENCES DEVOLUCION (idDevolucion));
+
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`TRASLADO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS TRASLADO (
+  idTraslado INT NOT NULL AUTO_INCREMENT,
+  fechatraslado DATE NULL,
+  rutadocumentoTraslado VARCHAR(50) NULL,
+  idUnidad INT NOT NULL,
+  idEquipo INT NOT NULL,
+  PRIMARY KEY (idTraslado),
+    FOREIGN KEY (idUnidad)
+    REFERENCES Unidad (idUnidad),
+    FOREIGN KEY (idEquipo)
+    REFERENCES EQUIPO (idEquipo));
+
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`DETALLE_TRASLADO`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS DETALLE_TRASLADO (
+  idDetalle_traslado INT NOT NULL,
+  observacionDetalletraslado VARCHAR(45) NULL,
+  idTraslado INT NOT NULL,
+  PRIMARY KEY (idDetalle_traslado),
+    FOREIGN KEY (idTraslado)
+    REFERENCES TRASLADO (idTraslado));
+
+-- -----------------------------------------------------
+-- Table `inventariofinal`.`INCIDENCIA`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS INCIDENCIA (
+  idIncidencia INT NOT NULL,
+  nombreIncidencia VARCHAR(45) NULL,
+  observacionIncidencia VARCHAR(45) NULL,
+  rutaactaIncidencia VARCHAR(45) NULL,
+  fechaIncidencia DATE NULL,
+  idEquipo INT NOT NULL,
+  PRIMARY KEY (idIncidencia),
+    FOREIGN KEY (idEquipo)
+    REFERENCES EQUIPO (idEquipo));

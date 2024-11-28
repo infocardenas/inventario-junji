@@ -1,0 +1,9 @@
+<form action="/update_codigo_proveedor/{{codigo_proveedor.idCodigo_proveedor}}" method="POST"class="mi-formulario">
+    <input type="text" name="codigo_proveedor" placeholder="Codigo del proveedor" value="{{codigo_proveedor.idCodigo_proveedor}}">
+    <select name="nombre_proveedor">
+        {% for pro in proveedor %}
+            <option value="{{ pro.idProveedor }}" {% if pro.idProveedor == codigo_proveedor.fk_idProveedor %}selected{% endif %}>{{ pro.nombreProveedor }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="agregar-button"> Guardar</button>  
+</form>

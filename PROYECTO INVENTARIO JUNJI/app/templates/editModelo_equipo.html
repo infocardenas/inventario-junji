@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from 'funciones_macro.html' import select_para_marca %}
+
+
+<a class="nav-button" href="/modelo_equipo">Volver</a>
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <div class="card card-body" style="display: block;" id="formulario">
+
+            <form action="/update_modelo_equipo/{{id}}" method="POST" class="mi-formulario">
+                <div class="form-group">
+                    <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
+                    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo"
+                        value="{{modelo_equipo.nombreModeloequipo}}"
+                        maxlength="45">
+                </div>
+                <div class="form-group">
+                    <div id="selector_marca">
+                        <label for="nombre_marca_equipo"> Marca Equipo: </label>
+                        <select name="nombre_marca_equipo" id="marca" 
+                            onchange="mostrarTipo_para_agregar_modelo()">
+                            <option value="{{modelo_equipo.idMarca_Equipo}}" selected="true">
+                                    {{modelo_equipo.nombreMarcaEquipo}}</option>
+
+                            {% for marcae in marcas %}
+                            {% if modelo_equipo.idMarca_Equipo != marcae.idMarca_Equipo%}
+                            <option value="{{marcae.idMarca_Equipo}}">{{marcae.nombreMarcaEquipo}}</option>
+                            {% endif %}
+                            {% endfor %}
+                        </select>
+                        <br />
+                    </div>
+                    {% for marcae in marca_equipo %}
+                    {{ select_para_marca(marcae) }}
+                    {% endfor %}
+
+                    <div id="selector_tipo_equipo" style="display: none;">
+                        <input name="nombre_tipo_equipo" id="nombre_tipo_equipo" value="{{modelo_equipo.idTipo_equipo}}"/>
+                    </div>
+                </div>
+
+
+                <button id="enviar" class="agregar-button" style="display: block;"> Agregar</button>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    mostrarTipo_para_agregar_modelo();
+    seleccionarTipoEquipoEditarModelo("{{modelo_equipo.idMarca_Equipo}}");
+</script>
+
+{% endblock %}

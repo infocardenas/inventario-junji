@@ -1,0 +1,429 @@
+La asignacion, la unidad de la asignacion es 
+la unidad del funcionario no la unidad donde se encuentre
+
+TODO:
+        OK 50% Boton detalles para equipo
+                (informacion, observacion, asignacion, devolucion, traslado, Incidencias),
+        OK La imagen de login no se puede ver si vas a la pestaña de traslado y luego a la de equipo
+        
+
+        OK Pestaña de Incidencias (
+                OK Edit Incidencias
+                OK Eliminar Incidencias
+                OK pdf? subir como usuario
+        )
+
+        OK Todos las pestañas de formularios deben tener un boton volver.
+        OK boton de opciones en equipo despliega los otros botones
+        
+        
+        OK añadir modelo a tabla traslado
+
+        OK Exportar a excel
+        OK asignacion(pdf)
+        OK asignacion(editar, eliminar)
+        OK combinar devolucion y asignacion
+        OK pdf de asignacion y devolucion
+        OK detalles asignacion y devolucion(asignacion ya esta)
+        OK usar el estado de equipo en caso de sin asignar
+        OK detalle de traslado(no esta claro como se deberia acceder)
+        ventana emergente para observacion
+        comentar codigos
+        OK buscador
+        OK mostrar numero de incidencias en la pestaña detalles. Esto 
+                probablemente requeriria modificar la BBDD
+        OK agregar boton para ver equipos de un funcionario
+        
+        **
+        By default openpyxl does not guard against quadratic 
+        blowup or billion laughs xml attacks. 
+        To guard against these attacks install defusedxml.
+        **
+
+        en la paginacion no funciona correctamente. Al ordenar las tablas solo se ordenan
+        las que ya se mostraban antes(posible solucion aumentar cantidad por pagina)
+
+        OK El mostrar_asociados_funcionario no funciona correctamente
+        OK falta editar edicion de unidad
+        OK arreglar el rut (parece que el varchar es muy pequeño y no hay instrucciones para ingresar el rut)
+
+        OK excel por tipo_equipo 
+        OK cambiar cabeceras 
+        OK cambiar cod_inventario varchar()
+        OK buscar(unidades, funcionarios, equipos, asignacions, 
+                devoluciones, incidencias, traslados)
+        OK filtrar equipos de baja
+        
+                Algunas consultas de equipos le podria faltar 
+                AND a.ActivoAsignacion = 1
+                para que no se repitan equipos de asignaciones devueltas
+              
+        -Favor de actualizar archivo de texto baseactualizada.txt cada vez que se modifique la bdd
+        
+
+        18/03/2024
+        -Login con microsoft o propio  * 1dia {
+                ¿Los usuarios se deberian guardar en una base de datos distinta?
+                ¿que informacion se deberia guardar por usuario?       
+                        (nombre, contraseña, correo, etc)
+                ¿Que acciones se deberian bloquear al no estar 
+                        dentro de la red?                
+
+        se deberia poder acceder con cualquier junji
+        }
+
+
+
+
+        -seleccionar pagina paginacion * 1h
+OK -acceso directo asignacion desde historial * 1h
+OK -acceso de asignar desde pestaña equipo * 1h
+OK -acceso de devolucion desde pestaña equipo * 1h 
+OK (que pasa si se la asignacion es de multiples equipos y solo se quiere devolver 1 )
+OK -pistola debe funcionar en todos las tablas con equipos *1dia
+OK -añadir notebooks a las hojas del excel * 1h
+OK-añadir codigo de unidad en el excel y columna de tabla equipos *1h
+OK -añadir al excel nombre de provedor *1h
+OK -codigo proveedor de sonda *1h
+        -solo se puede añadir codigo de proveedor cuando el nombreProveedor sea SONDA *1h
+OK-añadir buscador solo para equipos --
+OK-cambiar modelo de marca y tipos de equipo
+OK -añadir elegir marca y por cada marca mostrar los modelos de esa marca 
+OK -cambiar orden marca, tipo_equipo, modelo *2h
+OK -error funcionario equipos sin asignar *1h
+OK -boton agregar funcionario se llama "agregar funcionario"
+OK -cambiar fechaEstado Equipo (sacar)
+OK -Podria ser una buena idea hacer una vista de la consulta de equipo conectada a todas los tipos y estados etc
+OK -adjuntar pdf firmados para (
+OK traslado, 
+OK asignacion, 
+OK devolucion) *4h
+OK-añadir buscador para traslado *4h
+OK -añadir traslados a busqueda *2h
+OK-añadir los botones de busqueda
+OK-agregar una columna que muestre el tipo
+OK-quitar acta de el formulario para crear traslados
+OK -añadir detalles a de equipo a incidencias
+OK -desde la pestaña de incidencias tener un boton para ir a equipos
+OK -error incidencia se añade solo a un equipo
+OK -Proteger de inyeccion sql
+        //cuando este en el servidor
+        -codigo QR para equipos
+        -probar desde el celular
+        -guardar la tabla del excel en pdf
+        -opcion importar excel
+        -al eliminar considerar volver al original
+        -que hacer con comunas y provincias ¿pestaña de reportes?
+        -------------------------
+
+        Agregar lista de opciones para incidencias cosa que los botones se vean mas parejos
+
+
+
+OK boton crear cuenta
+OK cuenta de usuario solo puede ver
+OK agregar usuario a pdfs
+OK ver pdfs en tabla
+
+
+
+tests {
+        usuarios OK
+        equipo {
+                agregar OK (falta funcionalidad)
+                exportar a Excel OK
+                edit OK
+                Eliminar OK (que pasa si tiene incidencias)
+                Detalles OK
+                Incidencias OK
+                Asignar OK
+                Devolucion OK (error si se devuelve el mismo equipo dos veces)
+        }
+        marca_equipo {
+                agregar OK
+                editar OK
+                eliminar OK
+        } 
+        modelo_equipo {
+                agregar OK
+                editar OK
+                eliminar OK
+        }
+        tipos_equipo {
+                agregar OK
+                editar OK
+                eliminar OK
+        }
+        Funcionarios {
+                agregar OK
+                editar OK
+                eliminar OK
+                equipos OK
+        }
+        Proveedores {
+               agregar OK
+               editar OK
+               eliminar OK 
+        }
+        Unidad {
+                agregar OK
+                editar OK
+                eliminar OK
+                equipos OK
+        }
+        Orden de compra {
+                agregar OK
+                editar OK
+                eliminar OK
+        }
+        tipo_adquisicion {
+                agregar OK
+                editar OK
+                eliminar OK
+        }
+        estado_equipo {
+                agregar OK
+                editar OK
+                eliminar OK
+                equipos OK
+        }
+        asignaciones {
+                agregar OK
+                ver acta asignacion OK
+                firmar acta de asignacion OK
+                abrir acta firmada OK
+                editar OK
+                devolver OK
+                ver acta devolucion OK
+                firmar acta de devolucion OK
+                ver acta de devolucion firmada OK
+                eliminar OK
+        }
+        traslado {
+                agregar OK
+                editar OK
+                eliminar OK
+                equipos OK
+                firmar OK
+        }
+        incidencias {
+               agregar OK 
+               editar OK
+               eliminar OK
+               equipo OK
+        }
+
+
+}
+todas las consultas deben referirse a los nombres de las tablas en minuscula
+
+
+
+
+-Marca o modelo nuevo, no lo registro
+-No se puede repetir modelo. o marca (nombre)
+-equipo no se puede repetir la serial.
+
+Mouse modelo y marca
+mac telefono
+imei celular, tablet
+accesorio marca y modelo
+codigo proveedor tiene que estar siempre
+
+OK al asignar trasladar equipo.
+al devolver mover a ti
+OK error de traslado 'create_traslado'
+
+tipo a marca deberia ser de muchos a muchos
+
+tipo edit
+
+modelo marca unica ¿?
+
+OK funcionario con correo
+OK esconder contraseña crear usuario y ingresar
+OK agregar ojo para ver contraseña
+ocultar botones a usuario normal porque usuario solo puede ver
+enviar correo en momento de asignar y devolver lo dejo con mauricio.cardenas@junji.cl
+        (en asignar)
+agregar boton para decidir si se envia o no correo
+agregar opciones para acciones por defecto(traslado, correo, etc)
+OK filtro de marca_equipo en agregar equipo
+
+OK Pedir el excel para importar los datos
+
+
+error en editar modelos cambiar nombre
+
+
+error editar tipo_equipo no salen todas las marcas
+
+importar excel(
+        que determina la cantidad de filas en openxl
+)
+
+OK modelo editar no muestra boton de agregar
+OK cambiar rutas a variables de entorno
+OK cambiar contraseñas por variables de entorno
+error orden de compra
+OK Tipo equipo telefono no funciona
+posible error en cumpleaños. Quizas no deje leer la ultima linea tal y como esta hecha la iteracion
+        (arreglado pero no agregado a Linux)
+selector de fecha estan en formato mm/dd/yyyy pero seria preferible un formato dd/mm/yyyy
+Al editar modelo no estan los valores anteriores
+
+
+
+Mejoras de diseño {
+        La tabla de equipos es muy grande y es poco practica
+        La tabla de detalles podria ser mas grande dejando espacio a detalles
+}
+editAsignacion es muy pobre falta una opcion para cambiar la tabla de equipos asignados
+OK add_asignacion no funciona
+
+OK TODO: en modelo_equipo editar el tipo de equipo no sale seleccionado con el valor actual
+Falta añadir observaciones a editar equipos
+editar contraseña
+
+parece haber varios errores en incidencia. Seria bueno hacer una revision completa de este modulo
+
+
+OK Error detalles devolucion
+OK Error leer pdf asignacion
+OK Error pdf devolucion
+
+Error subir pdf a incidencia
+Error subir pdf a asignacion
+
+agregar regla para que solo se pueda subir archivos pdf a las asignaciones
+o foto¿?
+
+no se listan los pdf en incidencias en linux
+
+Porque aveces la ruta debe ser pdf y aveces app/pdf:
+        Depende desde que directorio se ejecuta el main.py. En linux se inicia desde wsgi.py que esta dentro de la carpeta app.
+        Por esta razon siempre se debe ejecutar el codigo windows desde dentro del directorio app. Por alguna razon intentar evadir el problema
+        usando rutas absolutas genera mas problemas
+
+
+Hay cosas redundantes en editar traslados y no muestra el tipo de equipo
+
+Al devolver desde la pestaña de equipo cuando se asignan multiples 
+equipos a una persona. Al devolver no crea las asignaciones correctamente
+
+editar marcas en modelo se mestran multiples lenovo
+
+agregar mensaje a error se duplica tipo de equipo
+
+
+
+
+Verificacion Final {
+        Usuario {
+                Añadir usuario OK
+                Editar usuario OK
+                Cambiar contraseña OK
+                Eliminar OK
+        }
+        Equipo {
+                Exportar equipos (Funciona quizas no de la manera esperada no lo se)
+                Importar equipos OK
+                Agregar Equipo OK
+                Editar OK 
+                Eliminar OK
+                Incidencia OK
+                Asignar OK
+        }
+        Detalles {
+                Buscar OK
+                Datos telefonicos OK
+                Acta OK
+        }
+        Marca {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Modelo_equipo {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Tipo_equipo {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Funcionarios {
+               Agregar OK
+               Editar OK
+               Eliminar OK
+               Buscar Equipos: OK
+        }
+        Proveedores {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Unidad {
+               Agregar NO
+               Editar OK
+               Eliminar OK
+        }
+        Orden de compra {
+                Agregar MEH
+                Editar MEH
+                Eliminar OK
+        }
+        Tipo adquisicion {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+        }
+        Estado Equipo {
+                Agregar OK
+                Editar OK
+                Eliminar OK
+                Equipo OK
+        }
+        Asignacion {
+                Crear asignacion OK
+                Editar NO
+                Eliminar OK
+        }
+        Traslado {
+                Agregar OK
+                Acta OK
+                Editar NO
+                Eliminar OK
+        }
+        Incidencia {
+                Subir archivo OK
+                Abri archivo OK
+                Boton documentos OK
+                Editar Funciona OK
+        }
+}
+
+Resultados:
+Tipo_equipo: 
+        Podria mostrar las marcas en una lista (No es muy importante)
+                aunque dificil que un tipo tenga tantas marcas 
+        Error al editar tipo de equipo (asignar todas las marcas y luego quitarla todas menos una. Cambiar nombre) OK
+Funcionarios:
+        Muestra equipos que no estan asignados en este momento OK
+Unidad: 
+        Al agregar Unidad No hay forma de agregar el codigo OK
+Orden de Compra:
+        El formulario para agregar ordenes de compra funciona pero contiene informacion irrelevante
+        El formulario de edicion no permite que se edite la id de la orden de compra
+Tipo Adquisicion:
+        Editar da error OK
+Estado Equipo:
+        ¿Que significa la fecha de modificacion?
+Asignacion:
+        editar el funcionario OK
+Traslado       
+        Si se edita no cambia el funcionario mejor no dejar editar OK
+Incidencia:
+        Error N° Documento OK

@@ -1,0 +1,104 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<a class="nav-button" href="/modelo_equipo">Volver</a>
+<div class="row">
+
+    <div class="col-md-5">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        {#
+        En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
+        y se muestra el formulario para agregar un item.
+        #}
+        <div class="card card-body">
+            <form action="/traslado/create_traslado/{{equipo[0].idUnidad}}" class="mi-formulario" method="POST">
+                <div class="form-group">
+                    <div>
+                        <label for="fechatraslado"> Fecha de Traslado:</label>
+                        <input id="fechatraslado" type="date" name='fechatraslado' value="">
+                        <script>
+                            date = new Date();
+                            year = date.getFullYear();
+                            month = date.getMonth() + 1;
+                            day = date.getDate();
+                            if (month < 10) {
+                                month = "0" + month
+                            }
+                            formatedDate = year + "-" + month + "-" + day
+                            //console.log(formatedDate)
+                            document.getElementById("fechatraslado")
+                                .setAttribute("value", formatedDate);
+                        </script>
+                    </div>
+                    <label for="Destino"> Destino:</label>
+                    <select name="Destino" id="">
+                        <option value="{{traslado.idUnidadDestino}}">{{ traslado.nombreDestino}}</option>
+                        {% for unidadDestino in unidades %}
+                        {% if unidadDestino.idUnidad != traslado.idUnidadDestino %}
+                        <option value="{{ unidadDestino.idUnidad}}">{{ unidadDestino.nombreUnidad}}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <button class="agregar-button" type="submit"> Agregar</button>
+                </div>
+
+
+        </div>
+
+
+
+    </div>
+    <h2>Crear Traslado</h2>
+    <div style="position: relative;">
+        <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
+        <div style="overflow-x:auto;">
+
+            <table id="posts">
+                <thead>
+                    <tr>
+
+                        <td>Tipo Equipo</td>
+                        <td>Codigo Inventario</td>
+                        <td>N° Serie</td>
+                        <td>Codigo Proovedor</td>
+                        <td>Unidad</td>
+                        <td>Botones</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for eq in equipo %}
+                    <tr>
+                        <td>{{eq.nombreTipo_equipo}}</td>
+                        <td>{{eq.Cod_inventarioEquipo}}</td>
+                        <td>{{eq.Num_serieEquipo}}</td>
+                        <td>{{eq.codigoproveedor_equipo }}</td>
+                        {# hacer inner join con unidad para obtener nombreUnidad#}
+                        <td>{{traslado.nombreOrigen}}</td>
+                        <td>
+                            Trasladar: <input type="checkbox" value="{{eq.idEquipo}}" name="trasladar[]" />
+                            {#<input type="hidden" value="off" name="trasladar[]" />#}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            
+            </form>
+            {% endblock %}
