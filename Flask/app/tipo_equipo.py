@@ -101,7 +101,11 @@ def crear_tipo_equipo():
  # Validar los datos usando Cerberus
         v = Validator(tipo_equipo_schema)
         if not v.validate(data):
+<<<<<<< HEAD
             flash("Caracteres no permitidos")
+=======
+            flash("Error: " + str(v.errors))
+>>>>>>> d27d042e0aa1bf787ae95e23d0906ea126c8491c
             return redirect(url_for("tipo_equipo.tipoEquipo"))
             
         cur = mysql.connection.cursor()
@@ -280,7 +284,11 @@ def update_tipo_equipo(id):
          # Validar los datos usando Cerberus
         v = Validator(tipo_equipo_schema)
         if not v.validate(data):
+<<<<<<< HEAD
             flash("Caracteres no permitidos")
+=======
+            flash("Error: " + str(v.errors))
+>>>>>>> d27d042e0aa1bf787ae95e23d0906ea126c8491c
             return redirect(url_for("tipo_equipo.tipoEquipo"))
 
         cur = mysql.connection.cursor()
