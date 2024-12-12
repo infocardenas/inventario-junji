@@ -512,10 +512,9 @@ $(document).ready(function() {
 $(document).ready(function() {
   function validateLettersInput() {
       const input = $(this).val();
-      const regex = /^[a-zA-Z\s]*$/; // Permitir solo letras y espacios
-      const errorMessage = $("#error-message"); // Elemento para mostrar el mensaje de error
+      const regex = /^[a-zA-Z\s]*$/; 
+      const errorMessage = $("#error-message"); 
 
-      // Validar el valor del input actual
       if (!regex.test(input)) {
           errorMessage.text("Solo se permiten letras y espacios.").show();
       } else {
@@ -523,7 +522,6 @@ $(document).ready(function() {
       }
   }
 
-  // Asignar la validación a todos los inputs con la clase 'solo-letras'
   $(".solo-letras").on("input", validateLettersInput);
 });
 
@@ -531,17 +529,58 @@ $(document).ready(function() {
 $(document).ready(function() {
   function validateNumbersInput() {
       const input = $(this).val();
-      const regex = /^[0-9]*$/; // Permitir solo números
-      const errorMessage = $("#error-message"); // Elemento para mostrar el mensaje de error
+      const regex = /^[0-9]*$/;
+      const errorMessage = $("#error-message"); 
 
-      // Validar el valor del input actual
       if (!regex.test(input)) {
-          errorMessage.text("Solo se permiten números.").show();
+          errorMessage.text("Solo se permiten números.").show()
+      } else {
+          errorMessage.hide();
+      }
+  }
+  $(".solo-numeros").on("input", validateNumbersInput);
+});
+
+$(document).ready(function() {
+  function validateRutInput() {
+      const input = $(this).val();
+      const errorMessage = $("#error-message"); 
+      const regex = /^[0-9]{7,8}-[0-9kK]$/; // Formato válido: 12345678-9 o 12345678-k
+
+      // Validar el formato del RUT
+      if (!regex.test(input)) {
+          errorMessage.text("Formato de RUT inválido. Use el formato 12345678-9.").show();
+          return;
+      }
+
+      // Validar el dígito verificador
+      const [rut, dv] = input.split("-");
+      if (!validarDigitoVerificador(rut, dv)) {
+          errorMessage.text("El dígito verificador del RUT es incorrecto.").show();
       } else {
           errorMessage.hide();
       }
   }
 
-  // Asignar la validación a todos los inputs con la clase 'solo-numeros'
-  $(".solo-numeros").on("input", validateNumbersInput);
+  // Función para calcular y validar el dígito verificador
+  function validarDigitoVerificador(rut, dv) {
+      let suma = 0;
+      let multiplicador = 2;
+
+      // Iterar sobre el RUT de derecha a izquierda
+      for (let i = rut.length - 1; i >= 0; i--) {
+          suma += parseInt(rut[i]) * multiplicador;
+          multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+      }
+
+      const resto = suma % 11;
+      const calculado = 11 - resto;
+
+      // Convertir el resultado al formato de DV esperado
+      const dvCalculado = calculado === 11 ? "0" : calculado === 10 ? "k" : calculado.toString();
+      return dvCalculado.toLowerCase() === dv.toLowerCase();
+  }
+
+  // Asignar la validación a los inputs con la clase 'rut-input'
+  $(".rut-input").on("input", validateRutInput);
 });
