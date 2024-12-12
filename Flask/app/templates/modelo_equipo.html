@@ -30,11 +30,12 @@
         <button class="nav-button" onclick="showDiv()">Agregar</button>
         <div class="card card-body" style="display: none;" id="formulario">
 
-            <form action="/add_modelo_equipo" method="POST" class="mi-formulario">
+            <form action="/add_modelo_equipo" method="POST" class="mi-formulario" onsubmit="return validarInputs()">
                 <div class="form-group">
                     <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
-                    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo"
+                    <input class="validatable-input" type="text" name="nombre_modelo_equipo" placeholder="Modelo"
                     maxlength="45">
+                    <div id="error-message" style="display: none;" class="error-message"></div>
 
                 </div>
                 {#
@@ -134,6 +135,9 @@
 </script>
 
 -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
     {{ paginacion("modelo_equipo", page, lastpage) }}
 
     {% endblock %}
