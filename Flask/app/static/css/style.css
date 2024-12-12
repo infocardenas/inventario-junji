@@ -701,3 +701,16 @@ a.mainbar-link {
     margin-right:30px;
     margin-left: -190px;
 }
+
+.error-message {
+    color: white; /* Cambiamos el color del texto a blanco para mejor contraste */
+    background-color: red; /* Fondo rojo para el mensaje de error */
+    border: 1px solid darkred; /* Borde más oscuro para definir el área */
+    border-radius: 5px; /* Bordes redondeados */
+    padding: 10px; /* Espaciado interno */
+    margin: 10px 0; /* Margen superior e inferior */
+    display: none; /* Inicialmente oculto */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Sombra para dar profundidad */
+    font-family: Arial, sans-serif; /* Fuente más legible */
+    font-size: 14px; /* Tamaño de fuente */
+}
