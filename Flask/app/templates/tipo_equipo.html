@@ -28,8 +28,8 @@
             <form action="/crear_tipo_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombreTipo_equipo">Nombre Tipo Equipo:</label>
-                    <input class="validatable-input" type="text" id="nombreTipo_equipo" name="nombreTipo_equipo" required maxlength="45">
-                    <div id="error-message" style="display: none;" calss="error-message"></div>
+                    <input class="solo-letras" type="text" id="nombreTipo_equipo" name="nombreTipo_equipo" required maxlength="45">
+                    <div id="error-message" style="display: none;" class="error-message"></div>
                     
                 </div>
                 {#<label for="nombre_marca_equipo"> Marca Equipo: </label>#}

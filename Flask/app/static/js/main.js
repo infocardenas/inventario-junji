@@ -507,3 +507,41 @@ $(document).ready(function() {
   // Asignar la función de validación a todos los inputs con la clase 'validatable-input'
   $(".validatable-input").on("input", validateInput);
 });
+
+
+$(document).ready(function() {
+  function validateLettersInput() {
+      const input = $(this).val();
+      const regex = /^[a-zA-Z\s]*$/; // Permitir solo letras y espacios
+      const errorMessage = $("#error-message"); // Elemento para mostrar el mensaje de error
+
+      // Validar el valor del input actual
+      if (!regex.test(input)) {
+          errorMessage.text("Solo se permiten letras y espacios.").show();
+      } else {
+          errorMessage.hide();
+      }
+  }
+
+  // Asignar la validación a todos los inputs con la clase 'solo-letras'
+  $(".solo-letras").on("input", validateLettersInput);
+});
+
+
+$(document).ready(function() {
+  function validateNumbersInput() {
+      const input = $(this).val();
+      const regex = /^[0-9]*$/; // Permitir solo números
+      const errorMessage = $("#error-message"); // Elemento para mostrar el mensaje de error
+
+      // Validar el valor del input actual
+      if (!regex.test(input)) {
+          errorMessage.text("Solo se permiten números.").show();
+      } else {
+          errorMessage.hide();
+      }
+  }
+
+  // Asignar la validación a todos los inputs con la clase 'solo-numeros'
+  $(".solo-numeros").on("input", validateNumbersInput);
+});
