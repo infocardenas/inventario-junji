@@ -2,9 +2,19 @@ from flask import Blueprint, request, flash, render_template, redirect, url_for,
 from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
+from cerberus import Validator
 
 marca_equipo = Blueprint('marca_equipo', __name__, template_folder= 'app/templates')
 
+# Definir el esquema de validación para marca equipo
+marca_equipo_schema = {
+    'nombre_marca_equipo': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 100,
+        'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+    }
+}
 
 @marca_equipo.route('/marca_equipo')
 #@marca_equipo.route('/marca_equipo/<order>')
@@ -42,18 +52,36 @@ def add_marca_equipo():
         flash("you are NOT authorized")
         return redirect("/ingresar")
     if request.method == 'POST':
-        nombre_marca_equipo = request.form['nombre_marca_equipo']
+# Obtener los datos del formulario
+        datos = {
+            'nombre_marca_equipo': request.form["nombre_marca_equipo"]
+        }
+
+        # Validar los datos usando Cerberus
+        v = Validator(marca_equipo_schema)
+        if not v.validate(datos):
+            # Capturar los errores de validación
+            errors = v.errors
+            # Formatear el mensaje de advertencia
+            warning_messages = []
+            flash("Caracteres no permitidos")
+            return redirect(url_for("marca_equipo.marcaEquipo"))  # Redirigir a la misma página
+
+
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO marca_equipo (nombreMarcaEquipo) VALUES (%s)', (nombre_marca_equipo,))
+            cur.execute("""INSERT INTO marca_equipo (nombreMarcaEquipo) VALUES (%s)""", (datos['nombre_marca_equipo'],))
             mysql.connection.commit()
             flash('Marca agregada correctamente')
             return redirect(url_for('marca_equipo.marcaEquipo'))  
         except Exception as e:
-            #flash(e.args[1])
-            flash("Error al crear")
+            print("excepcion al agregar marca equipo: ", e)
+            if(e.args[0] == 1062):
+                flash("No se puede repetir el valor de serie")
+            else:
+                flash("Error al crear")
             return redirect(url_for('marca_equipo.marcaEquipo'))
-        
+       
 #enviar datos a vista editar
 @marca_equipo.route('/marca_equipo/edit_marca_equipo/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
@@ -76,14 +104,25 @@ def update_marca_equipo(id):
         flash("you are NOT authorized")
         return redirect("/ingresar")
     if request.method == 'POST':
-        nombre_marca_equipo = request.form['nombre_marca_equipo']
+         # Obtener los datos del formulario
+        datos = {
+            'nombre_marca_equipo': request.form["nombre_marca_equipo"]   
+        }
+
+        # Validar los datos usando Cerberus
+        v = Validator(marca_equipo_schema)
+        if not v.validate(datos):
+            flash("Caracteres no permitidos: {}".format(v.errors))
+            return redirect(url_for("marca_equipo.marcaEquipo"))
+
+
         try:
             cur = mysql.connection.cursor()
             cur.execute("""
             UPDATE marca_equipo
             SET nombreMarcaEquipo = %s
             WHERE idMarca_Equipo = %s
-            """, (nombre_marca_equipo, id))
+            """, (datos['nombre_marca_equipo'], id))
             mysql.connection.commit()
             flash('Marca actualizada correctamente')
             return redirect(url_for('marca_equipo.marcaEquipo'))

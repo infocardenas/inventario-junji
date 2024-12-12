@@ -5,6 +5,8 @@ from db import mysql
 #importamos el modulo que creamos
 from funciones import validarChar, getPerPage
 from cuentas import loguear_requerido, administrador_requerido
+from cerberus import Validator
+
 
 orden_compra = Blueprint('orden_compra', __name__, template_folder='app/templates')
 
@@ -48,19 +50,48 @@ def ordenCompra(page = 1):
 @administrador_requerido
 def add_ordenc():
     if request.method == 'POST':
-        id_ordenc = request.form['id_ordenc']
-        nombre_ordenc = request.form['nombre_ordenc']
-        fecha_compra = request.form['fecha_compra_ordenc']
-        fecha_fin = request.form['fecha_fin_ordenc']
-        nombre_tipoa = request.form['nombre_tipo_adquisicion_ordenc']  
-        nombre_proveedor = request.form['nombre_proveedor_ordenc']
+        fecha_compra = request.form["fecha_compra_ordenc"],
+        fecha_fin = request.form["fecha_fin_ordenc"],
+
+        data  = {
+        'id_ordenc' : request.form["id_ordenc"],
+        'nombre_ordenc' : request.form["nombre_ordenc"],
+        'nombre_tipoa' : request.form["nombre_tipo_adquisicion_ordenc"],  
+        'nombre_proveedor' : request.form["nombre_proveedor_ordenc"],
+        }
+
+        orden_compra_schema = {
+            'id_ordenc': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9 -]*$'  # Permitir solo letras, números y espacios
+            },
+            'nombre_ordenc': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+            },
+            'nombre_tipoa': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+            },
+            'nombre_proveedor': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+            }
+        }
+        v = Validator(orden_compra_schema)
+        if not v.validate(data):
+            flash("caracteres no permitidos")
+            return redirect(url_for('orden_compra.ordenCompra'))
+
+        
         try:      
             cur = mysql.connection.cursor()
             cur.execute('''INSERT INTO orden_compra 
                         (idOrden_compra, nombreOrden_compra, fechacompraOrden_compra,fechafin_ORDEN_COMPRA,
                             idTipo_adquisicion,idProveedor) 
                         VALUES (%s,%s,%s,%s,%s,%s)
-                        ''', (id_ordenc, nombre_ordenc, fecha_compra, fecha_fin, nombre_tipoa, nombre_proveedor))
+                        ''', (data['id_ordenc'], data['nombre_ordenc'], fecha_compra, fecha_fin, data['nombre_tipoa'], data['nombre_proveedor']))
+            
             cur.connection.commit()
             flash("Orden de compra agregada correctamente")
             return redirect(url_for('orden_compra.ordenCompra'))
@@ -98,28 +129,52 @@ def edit_ordenc(id):
 @administrador_requerido
 def update_ordenc(id):
     if request.method == 'POST':
-        #id_orden_compra = request.form['id_orden_compra']
-        nombre_ordenc = request.form['nombre_ordenc']
-        fecha_compra_ordenc = request.form['fecha_compra_ordenc']
-        fecha_fin_ordenc = request.form['fecha_fin_ordenc']
-        nombre_tipo_adquisicion_ordenc = request.form['nombre_tipo_adquisicion_ordenc']
-        nombre_proveedor_ordenc = request.form['nombre_proveedor_ordenc']
+        fecha_compra_ordenc = request.form['fecha_compra_ordenc'],
+        fecha_fin_ordenc = request.form['fecha_fin_ordenc'],
+        data ={
+        'id_orden_compra' : request.form['id_orden_compra'],
+        'nombre_ordenc' : request.form['nombre_ordenc'],
+        'nombre_tipo_adquisicion_ordenc' : request.form['nombre_tipo_adquisicion_ordenc'],
+        'nombre_proveedor_ordenc' : request.form['nombre_proveedor_ordenc'],
+        }
 
-        print("update_orden_compra")
-        print(fecha_compra_ordenc)
-        print(fecha_fin_ordenc)
+        orden_compra_schema = {
+            'id_orden_compra': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9 -]*$'  # Permitir solo letras, números y espacios
+            },
+            'nombre_ordenc': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+            },
+            'nombre_tipo_adquisicion_ordenc': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+            },
+            'nombre_proveedor_ordenc': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+            }
+        }
+
+        v = Validator(orden_compra_schema)
+        if not v.validate(data):
+            flash(v.errors)
+            return redirect(url_for('orden_compra.ordenCompra'))
+
+
         try:
             cur = mysql.connection.cursor()
             cur.execute('''
             UPDATE orden_compra 
-            SET 
+            SET idOrden_compra = %s,
                 nombreOrden_compra = %s,
                 fechacompraOrden_compra = %s,
                 fechafin_ORDEN_COMPRA= %s,
                 idProveedor = %s,
                 idTipo_adquisicion = %s
             WHERE idOrden_compra = %s
-            ''', (nombre_ordenc, fecha_compra_ordenc, fecha_fin_ordenc,nombre_tipo_adquisicion_ordenc, nombre_proveedor_ordenc, id))
+            ''', (data['nombre_ordenc'],data['nombre_tipo_adquisicion_ordenc'], data['nombre_proveedor_ordenc'],fecha_compra_ordenc, fecha_fin_ordenc, id))
             mysql.connection.commit()
             flash('Orden de compra actualizada correctamente')
             return redirect(url_for('orden_compra.ordenCompra'))

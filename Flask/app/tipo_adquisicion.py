@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, url_for, redirect,flash, 
 from db import mysql
 from funciones import validarChar, getPerPage
 from cuentas import loguear_requerido, administrador_requerido
+from cerberus import Validator
 
 tipo_adquisicion = Blueprint('tipo_adquisicion', __name__, template_folder='app/templates')
 
@@ -32,10 +33,25 @@ def add_tipoa():
         flash("you are NOT authorized")
         return redirect("/ingresar")
     if request.method == 'POST':
-        nombre_tipoa = request.form['nombre_tipoa']   
+        data = {
+            'nombre_tipoa' : request.form['nombre_tipoa'] 
+        } 
+
+        schema = {
+            'nombre_tipoa': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+            }
+        }
+
+        v = Validator(schema)
+        if not v.validate(data):
+            flash("caracteres no permitidos")
+            return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))
+
         try:    
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO tipo_adquisicion (nombreTipo_adquisicion) VALUES(%s)', (nombre_tipoa,))
+            cur.execute('INSERT INTO tipo_adquisicion (nombreTipo_adquisicion) VALUES(%s)', (data['nombre_tipoa'],))
             mysql.connection.commit()
             flash('Tipo de adquisicion agregado exitosamente')
             return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))
@@ -65,14 +81,28 @@ def edit_tipoa(id):
 @administrador_requerido
 def actualizar_tipoa(id):
     if request.method == 'POST':
-        nombre_tipoa = request.form['nombre_tipoa'] 
+        data = {
+            'nombre_tipoa' : request.form['nombre_tipoa']
+        }
+
+        schema = {
+            'nombre_tipoa': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+            }
+        }
+        v = Validator(schema)
+        if not v.validate(data):
+            flash("caracteres no permitidos")
+            return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))
+        
         try: 
             cur = mysql.connection.cursor()
             cur.execute(""" 
             UPDATE tipo_adquisicion 
             SET nombreTipo_adquisicion = %s                  
             WHERE idTipo_adquisicion = %s                                    
-            """, (nombre_tipoa, id))
+            """, (data['nombre_tipoa'], id))
             mysql.connection.commit()
             flash('Tipo de adquisicion actualizado correctamente')
             return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))

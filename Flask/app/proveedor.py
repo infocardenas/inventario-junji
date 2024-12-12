@@ -5,10 +5,18 @@ from db import mysql
 #importamos el modulo que creamos
 from funciones import validarChar, getPerPage
 from cuentas import loguear_requerido, administrador_requerido
-
+from cerberus import Validator
 proveedor = Blueprint('proveedor', __name__, template_folder='app/templates')
 
-
+# Definir el esquema de validación para el proveedor
+schema_proveedor = {
+    'nombre_proveedor': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 100,
+        'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+    }
+}
 
 #se especifica la ruta principal para la vista de proveedor 
 @proveedor.route('/proveedor')
@@ -42,25 +50,23 @@ def add_proveedor():
         flash("you are NOT authorized")
         return redirect("/ingresar")
     if request.method == 'POST':
-        #en una variable se almacena el dato en el campo de texto del formulario que tiene por name"nombre_proveedor"
-        nombre_proveedor = request.form['nombre_proveedor']
+       # Obtener el dato del formulario
+        data = {
+            'nombre_proveedor': request.form['nombre_proveedor']
+        }
+
+        # Validar los datos usando Cerberus
+        v = Validator(schema_proveedor)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
+            return redirect(url_for('proveedor.Proveedor'))
+
         #generaremos un try catch para que no se caiga la app
         try:
-             #verificamos que el campo este 
-                if nombre_proveedor == "":
-                    #flash se encarga de generar un mensage
-                    flash('El campo es requerido')
-                    #redirect redirije a la vista especificada en la funcion correspondiente gracias a url_for(), en este caso la funcion es Proveedor
-                    return redirect(url_for('proveedor.Proveedor'))
-                for x in nombre_proveedor:
-                    #funcion generada en el modulo (funciones) que procura que en texto no existan ciertos caracteres
-                    if x == validarChar(x):
-                        flash(f'Existen caracteres no permitidos ({validarChar(x)})')
-                        return redirect(url_for('proveedor.Proveedor')) 
                 #el cursor() permite generar consultas sql          
                 cur = mysql.connection.cursor()
                 #se especifica la consulta sql
-                cur.execute('INSERT INTO proveedor (nombreProveedor) VALUES(%s)', (nombre_proveedor,))
+                cur.execute('INSERT INTO proveedor (nombreProveedor) VALUES(%s)', (data["nombre_proveedor"],))
                 #esta linea se utiliza para realizar la consulta sql
                 mysql.connection.commit()
                 flash('Proveedor agregado exitosamente')
@@ -100,14 +106,24 @@ def edit_proveedor(id):
 @administrador_requerido
 def actualizar_proveedor(id):
     if request.method == 'POST':
-        nombre_proveedor = request.form['nombre_proveedor']
+         # Obtener el dato del formulario
+        data = {
+            'nombre_proveedor': request.form['nombre_proveedor']
+        }
+
+        # Validar los datos usando Cerberus
+        v = Validator(schema_proveedor)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
+            return redirect(url_for('proveedor.Proveedor'))
+        
         try:
             cur = mysql.connection.cursor()
             cur.execute(""" 
             UPDATE proveedor 
             SET nombreProveedor = %s
             WHERE idProveedor = %s                                    
-            """, (nombre_proveedor, id))
+            """, (data["nombre_proveedor"], id))
             mysql.connection.commit()
             flash('Proveedor actualizado correctamente')
             return redirect(url_for('proveedor.Proveedor'))

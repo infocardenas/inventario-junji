@@ -3,6 +3,40 @@ from db import mysql
 from funciones import validarRut, getPerPage, validarCorreo
 from cuentas import loguear_requerido, administrador_requerido
 funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
+from cerberus import Validator
+
+# Definir el esquema de validación para funcionario
+schema_funcionario = {
+    'rut_funcionario': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 12,  # Longitud máxima considerando el RUT con guion
+        'regex': '^[0-9]+[-]?[0-9kK]$'  # Permitir números y el carácter '-'
+    },
+    'nombre_funcionario': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 100,
+        'regex': '^[a-zA-Z]*$'  # Permitir solo letras y espacios
+    },
+    'cargo_funcionario': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 100,
+        'regex': '^[a-zA-Z]*$'  # Permitir solo letras y espacios
+    },
+    'codigo_Unidad': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 10  
+    },
+    'correo_funcionario': {
+        'type': 'string',
+        'minlength': 5,
+        'maxlength': 100,
+        'regex': '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,}$'  # Permitir formato de correo electrónico
+    }
+}
 
 #envias los datos a la vista pricipal de funcionario
 @funcionario.route('/funcionario')
@@ -41,19 +75,18 @@ def add_funcionario():
         flash("you are NOT authorized")
         return redirect("/ingresar")
     if request.method == 'POST':
-        rut_funcionario = request.form['rut_funcionario']
-        nombre_funcionario = request.form['nombre_funcionario']
-        cargo_funcionario = request.form['cargo_funcionario']
-        codigo_Unidad = request.form['codigo_Unidad']
-        correo_funcionario = request.form['correo_funcionario']
-
-
-        if(not validarRut(rut_funcionario)):
-            flash(f'Rut no es valido')
+        data = {
+            'rut_funcionario': request.form['rut_funcionario'],
+            'nombre_funcionario': request.form['nombre_funcionario'],
+            'cargo_funcionario': request.form['cargo_funcionario'],
+            'codigo_Unidad': request.form['codigo_Unidad'],
+            'correo_funcionario': request.form['correo_funcionario']
+        }
+        # Validar los datos usando Cerberus
+        v = Validator(schema_funcionario)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
             return redirect(url_for('funcionario.Funcionario'))
-        #if(not validarCorreo(correo_funcionario)):
-            #flash('El correo no es valido')
-            #return redirect(url_for('funcionario.Funcionario'))
         
     
         try:
@@ -64,8 +97,8 @@ def add_funcionario():
                         cargoFuncionario, idUnidad, correoFuncionario) 
                         VALUES (%s, %s, %s, %s, %s)
                         """, 
-            (rut_funcionario, nombre_funcionario,cargo_funcionario, 
-                codigo_Unidad, correo_funcionario))
+            (data['rut_funcionario'], data['nombre_funcionario'], data['cargo_funcionario'], 
+                data['codigo_Unidad'], data['correo_funcionario']))
             mysql.connection.commit()
             flash('Funcionario agregado correctamente')
             return redirect(url_for('funcionario.Funcionario'))
@@ -104,15 +137,24 @@ def edit_funcionario(id):
 @administrador_requerido
 def update_funcionario(id):
     if request.method == 'POST':
-        rut_funcionario = request.form['rut_funcionario']
-        nombre_funcionario = request.form['nombre_funcionario']
-        correo_funcionario = request.form['correo_funcionario']
-        cargo_funcionario = request.form['cargo_funcionario']
-        codigo_Unidad = request.form['codigo_Unidad']
+        # Obtener los datos del formulario
+        data = {
+            'rut_funcionario': request.form['rut_funcionario'],
+            'nombre_funcionario': request.form['nombre_funcionario'],
+            'correo_funcionario': request.form['correo_funcionario'],
+            'cargo_funcionario': request.form['cargo_funcionario'],
+            'codigo_Unidad': request.form['codigo_Unidad']
+        }
 
-        cur = mysql.connection.cursor()
+        # Validar los datos usando Cerberus
+        v = Validator(schema_funcionario)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
+            return redirect(url_for('funcionario.Funcionario'))
+
 
         try:
+            cur = mysql.connection.cursor()
             cur.execute("""
             UPDATE funcionario
             SET rutFuncionario = %s,
@@ -121,8 +163,8 @@ def update_funcionario(id):
                 idUnidad = %s,
                 correoFuncionario = %s
             WHERE rutFuncionario = %s
-            """, (rut_funcionario, nombre_funcionario, cargo_funcionario, 
-                codigo_Unidad, correo_funcionario, id))
+            """, (data["rut_funcionario"], data["nombre_funcionario"], data["cargo_funcionario"], 
+                data["codigo_Unidad"], data["correo_funcionario"], id))
             mysql.connection.commit()
             flash('Funcionario actualizado correctamente')
         

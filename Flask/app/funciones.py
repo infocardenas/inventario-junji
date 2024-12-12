@@ -62,7 +62,7 @@ def validarCorreo(correo_funcionario):
 
 #define el numero de filas en las tablas para la paginacion
 def getPerPage():
-    return 100
+    return 15
 
 #categorias
 categorias = {
