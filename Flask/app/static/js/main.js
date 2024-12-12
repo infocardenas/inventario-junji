@@ -556,7 +556,7 @@ $(document).ready(function () {
       // Validar caracteres no permitidos
       if (/[^0-9\-kK]/.test(rawInput)) {
           errorMessage.text("Solo se permiten números, un guion y la letra K (después del guion).").show();
-          rawInput = rawInput.replace(/[^0-9\-kK]/g, "");
+          rawInput = rawInput.replace(/[^0-9\-kK]/g, ""); // Elimina caracteres no válidos
           return;
       }
 
@@ -592,7 +592,7 @@ $(document).ready(function () {
 
       // Validar que la `k` solo aparezca después del guion
       if (dv && !/^[0-9kK]$/.test(dv)) {
-          errorMessage.text("El dígito verificador solo puede tener un carácter.").show();
+          errorMessage.text("El dígito verificador debe ser un número o la letra K.").show();
           rawInput = `${rut}-`; // Borra el DV inválido
           inputField.val(rawInput);
           return;
@@ -603,27 +603,26 @@ $(document).ready(function () {
           const calculatedDV = calcularDigitoVerificador(rut); // Calcular DV
           rawInput = `${rut}-${calculatedDV}`; // Formatear el RUT completo
           inputField.val(rawInput);
-          errorMessage.hide();
-          return;
-      }
 
-      // Validar que el DV sea correcto si ya existe
-      if (hasGuion && dv && rut.length >= 7 && rut.length <= 8) {
-          const calculatedDV = calcularDigitoVerificador(rut); // Calcular DV
-          if (dv.toLowerCase() !== calculatedDV.toLowerCase()) {
-              rawInput = `${rut}-${calculatedDV}`; // Corregir el DV
-              inputField.val(rawInput);
-              errorMessage.text("El dígito verificador era incorrecto, se corrigió automáticamente.").show();
-          } else {
-              errorMessage.hide();
-          }
+          // Mover el cursor antes del dígito verificador
+          const cursorPos = rawInput.length - calculatedDV.length; // Posición justo antes del DV
+          inputField[0].setSelectionRange(cursorPos, cursorPos);
+
+          errorMessage.hide();
           return;
       }
 
       // Bloquear entrada si el RUT está completo
       if (rut.length >= 7 && rut.length <= 8 && hasGuion && /^[0-9kK]$/.test(dv)) {
-          rawInput = `${rut}-${dv}`; // Evitar caracteres adicionales
+          // Limitar el valor del input solo al RUT completo
+          rawInput = `${rut}-${dv}`;
           inputField.val(rawInput);
+
+          // Eliminar cualquier carácter adicional
+          if (rawInput.length > rut.length + dv.length + 1) {
+              inputField.val(`${rut}-${dv}`); // Asegurarse de que no se agreguen caracteres adicionales
+          }
+
           errorMessage.hide();
           return;
       }
