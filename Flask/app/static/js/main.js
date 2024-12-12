@@ -541,29 +541,98 @@ $(document).ready(function() {
   $(".solo-numeros").on("input", validateNumbersInput);
 });
 
-$(document).ready(function() {
-  function validateRutInput() {
-      const input = $(this).val();
-      const errorMessage = $("#error-message"); 
-      const regex = /^[0-9]{7,8}-[0-9kK]$/; // Formato válido: 12345678-9 o 12345678-k
+$(document).ready(function () {
+  function validarRut() {
+      const inputField = $(this);
+      let rawInput = inputField.val(); // Captura el valor ingresado
+      const errorMessage = $("#error-message");
 
-      // Validar el formato del RUT
-      if (!regex.test(input)) {
-          errorMessage.text("Formato de RUT inválido. Use el formato 12345678-9.").show();
+      // Ocultar el mensaje si el campo está vacío
+      if (rawInput.trim() === "") {
+          errorMessage.hide();
           return;
       }
 
-      // Validar el dígito verificador
-      const [rut, dv] = input.split("-");
-      if (!validarDigitoVerificador(rut, dv)) {
-          errorMessage.text("El dígito verificador del RUT es incorrecto.").show();
-      } else {
-          errorMessage.hide();
+      // Validar caracteres no permitidos
+      if (/[^0-9\-kK]/.test(rawInput)) {
+          errorMessage.text("Solo se permiten números, un guion y la letra K (después del guion).").show();
+          rawInput = rawInput.replace(/[^0-9\-kK]/g, "");
+          return;
       }
+
+      // Dividir el input en partes (antes y después del guion)
+      const parts = rawInput.split("-");
+      const rut = parts[0]; // Parte numérica antes del guion
+      const dv = parts[1] || ""; // Parte después del guion, si existe
+      const hasGuion = rawInput.includes("-");
+
+      // Validar longitud antes del guion
+      if (rut.length > 8) {
+          errorMessage.text("El RUT no puede tener más de 8 dígitos antes del guion.").show();
+          rawInput = rut.slice(0, 8) + (hasGuion ? "-" + dv : ""); // Cortar al límite
+          inputField.val(rawInput);
+          return;
+      }
+
+      // Prevenir ingresar guion si hay menos de 7 dígitos
+      if (hasGuion && (rut.length < 7 || rut.length > 8)) {
+          errorMessage.text("El RUT debe tener entre 7 y 8 dígitos antes del guion.").show();
+          rawInput = rut; // Elimina el guion si es inválido
+          inputField.val(rawInput);
+          return;
+      }
+
+      // Validar que el dígito verificador tenga solo un carácter
+      if (dv && dv.length > 1) {
+          errorMessage.text("El dígito verificador solo puede tener un carácter.").show();
+          rawInput = rut + "-" + dv.slice(0, 1); // Limitar el dígito verificador
+          inputField.val(rawInput);
+          return;
+      }
+
+      // Validar que la `k` solo aparezca después del guion
+      if (dv && !/^[0-9kK]$/.test(dv)) {
+          errorMessage.text("El dígito verificador solo puede tener un carácter.").show();
+          rawInput = `${rut}-`; // Borra el DV inválido
+          inputField.val(rawInput);
+          return;
+      }
+
+      // Calcular el dígito verificador automáticamente solo si el guion es válido
+      if (hasGuion && dv === "" && rut.length >= 7 && rut.length <= 8) {
+          const calculatedDV = calcularDigitoVerificador(rut); // Calcular DV
+          rawInput = `${rut}-${calculatedDV}`; // Formatear el RUT completo
+          inputField.val(rawInput);
+          errorMessage.hide();
+          return;
+      }
+
+      // Validar que el DV sea correcto si ya existe
+      if (hasGuion && dv && rut.length >= 7 && rut.length <= 8) {
+          const calculatedDV = calcularDigitoVerificador(rut); // Calcular DV
+          if (dv.toLowerCase() !== calculatedDV.toLowerCase()) {
+              rawInput = `${rut}-${calculatedDV}`; // Corregir el DV
+              inputField.val(rawInput);
+              errorMessage.text("El dígito verificador era incorrecto, se corrigió automáticamente.").show();
+          } else {
+              errorMessage.hide();
+          }
+          return;
+      }
+
+      // Bloquear entrada si el RUT está completo
+      if (rut.length >= 7 && rut.length <= 8 && hasGuion && /^[0-9kK]$/.test(dv)) {
+          rawInput = `${rut}-${dv}`; // Evitar caracteres adicionales
+          inputField.val(rawInput);
+          errorMessage.hide();
+          return;
+      }
+
+      // Si no hay errores, ocultar el mensaje
+      errorMessage.hide();
   }
 
-  // Función para calcular y validar el dígito verificador
-  function validarDigitoVerificador(rut, dv) {
+  function calcularDigitoVerificador(rut) {
       let suma = 0;
       let multiplicador = 2;
 
@@ -577,10 +646,8 @@ $(document).ready(function() {
       const calculado = 11 - resto;
 
       // Convertir el resultado al formato de DV esperado
-      const dvCalculado = calculado === 11 ? "0" : calculado === 10 ? "k" : calculado.toString();
-      return dvCalculado.toLowerCase() === dv.toLowerCase();
+      return calculado === 10 ? "k" : calculado === 11 ? "0" : calculado.toString();
   }
 
-  // Asignar la validación a los inputs con la clase 'rut-input'
-  $(".rut-input").on("input", validateRutInput);
+  $(".rut-input").on("input", validarRut);
 });
