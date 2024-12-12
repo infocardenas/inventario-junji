@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, url_for, redirect, flash,
 from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
+from cerberus import Validator
 
 estado_equipo = Blueprint('estado_equipo', __name__, template_folder='app/templates')
 
@@ -29,11 +30,21 @@ def add_estado_equipo():
         flash("you are NOT authorized")
         return redirect("/ingresar")
     if request.method == 'POST':
-        nombre_estado_equipo = request.form['nombre_estado_equipo']
+        data ={
+            'nombre_estado_equipo': request.form['nombre_estado_equipo'],
+            }
+        schema = {
+            'nombre_estado_equipo': {'required': True, 'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+        }
         fecha_modificacion = request.form['fecha_modificacion']
+        v = Validator(schema)
+        if not v.validate(data):
+            flash("caracteres no premitidos")
+            return redirect(url_for('estado_equipo.estadoEquipo'))
+    
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO estado_equipo (nombreEstado_equipo, FechaEstado_equipo) VALUES (%s, %s)', (nombre_estado_equipo, fecha_modificacion))
+            cur.execute('INSERT INTO estado_equipo (nombreEstado_equipo, FechaEstado_equipo) VALUES (%s, %s)', (data ['nombre_estado_equipo'], fecha_modificacion))
             mysql.connection.commit()
             flash('Estado de equipo agregado correctamente')
             return redirect(url_for('estado_equipo.estadoEquipo'))
@@ -67,8 +78,20 @@ def update_estado_equipo(id):
         flash("you are NOT authorized")
         return redirect("/ingresar")
     if request.method == 'POST':
-        nombre_estado_equipo = request.form['nombre_estado_equipo']
+        data ={
+            'nombre_estado_equipo': request.form['nombre_estado_equipo'],
+        }
         fecha_modificacion = request.form['fecha_modificacion']
+
+        schema = {
+            'nombre_estado_equipo': {'required': True, 'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+        }
+
+        v = Validator(schema)
+        if not v.validate(data):
+            flash("caracteres no permitidos")
+            return redirect(url_for('estado_equipo.estadoEquipo'))
+
         try:
             cur = mysql.connection.cursor()
             cur.execute("""
@@ -76,7 +99,7 @@ def update_estado_equipo(id):
             SET nombreEstado_equipo = %s,
                 FechaEstado_equipo = %s
             WHERE idEstado_equipo = %s
-            """, (nombre_estado_equipo, fecha_modificacion, id))
+            """, (data['nombre_estado_equipo'], fecha_modificacion, id))
             mysql.connection.commit()
             flash('Estado de equipo actualizado correctamente')
             return redirect(url_for('estado_equipo.estadoEquipo'))

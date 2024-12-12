@@ -5,6 +5,7 @@ from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill
 from cuentas import loguear_requerido, administrador_requerido
 from werkzeug.utils import secure_filename
+from cerberus import Validator
 
 import os
 
@@ -146,20 +147,44 @@ def crear_lista_modelo_tipo_marca():
 @equipo.route("/add_equipo", methods=["POST"])
 def add_equipo():
     if request.method == "POST":
-        codigo_inventario = request.form["codigo_inventario"]
-        numero_serie = request.form["numero_serie"]
-        observacion_equipo = request.form["observacion_equipo"]
-        codigoproveedor = request.form["codigoproveedor"]
-        mac = request.form["mac"]
-        imei = request.form["imei"]
-        numero = request.form["numero"]
-        #nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
-        #nombre_estado_equipo = request.form["nombre_estado_equipo"]
-        codigo_Unidad = request.form["codigo_Unidad"]
-        nombre_orden_compra = request.form["nombre_orden_compra"]
-        idModelo_equipo = request.form["modelo_equipo"]
-        print("idModelo_equipo")
-        print(idModelo_equipo)
+        datos = {
+            'codigo_inventario' : request.form["codigo_inventario"],
+            'numero_serie' : request.form["numero_serie"],
+            'observacion_equipo' : request.form["observacion_equipo"],
+            'codigoproveedor' : request.form["codigoproveedor"],
+            'mac' : request.form["mac"],
+            'imei' : request.form["imei"],
+            'numero' : request.form["numero"],
+            #nombre_tipo_equipo : request.form["nombre_tipo_equipo"]
+            #nombre_estado_equipo : request.form["nombre_estado_equipo"]
+            'codigo_Unidad' : request.form["codigo_Unidad"],
+            'nombre_orden_compra' : request.form["nombre_orden_compra"],
+            'idModelo_equipo' : request.form["modelo_equipo"],
+        }
+
+                # Definir el esquema de validación
+        schema = { 
+            'codigo_inventario': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'}, 
+            'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'}, 
+            'observacion_equipo': {'type': 'string', 'nullable': True}, 
+            'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'}, 
+            'mac': {'type': 'string', 'regex': '^[0-9]+$'}, 
+            'imei': {'type': 'string', 'regex': '^[0-9]+$'}, 
+            'numero': {'type': 'string', 'regex': '^[0-9]+$'}, 
+            'codigo_Unidad': {'type': 'string', 'nullable': True}, 
+            'nombre_orden_compra': {'type': 'string', 'nullable': True}, 
+            'idModelo_equipo': {'type': 'string', 'nullable': True},
+            }
+
+        #validator
+        v = Validator(schema)
+
+        # Validar los datos usando Cerberus
+        if not v.validate(datos):
+            flash("Caracteres no permitidos")
+            return redirect(url_for("marca_equipo.marcaEquipo"))
+
+
         #TODO: Muchos select tienen el mismo nombre y esto provoca un error
         #no recuerdo si resolvi la linea anterior
         try:
@@ -191,17 +216,17 @@ def add_equipo():
                 %s)
             """,
                 (
-                    codigo_inventario,
-                    numero_serie,
-                    observacion_equipo,
-                    codigoproveedor,
-                    mac,
-                    imei,
-                    numero,
+                   datos['codigo_inventario'],
+                   datos ['numero_serie'],
+                    datos['observacion_equipo'],
+                    datos['codigoproveedor'],
+                    datos['mac'],
+                   datos ['imei'],
+                   datos ['numero'],
                     3,
-                    codigo_Unidad,
-                    nombre_orden_compra,
-                    idModelo_equipo,
+                   datos ['codigo_Unidad'],
+                  datos  ['nombre_orden_compra'],
+                   datos ['idModelo_equipo'],
                 ),
             )
             mysql.connection.commit()
@@ -215,6 +240,7 @@ def add_equipo():
                 flash("Error al crear")
                 #flash(e.args[1])
             return redirect(url_for("equipo.Equipo"))
+        
 # envia datos al formulario editar segun id
 @equipo.route("/edit_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
@@ -269,57 +295,81 @@ def update_equipo(id):
         flash("you are NOT authorized")
         return redirect("/ingresar")
     if request.method == "POST":
-        codigo_inventario = request.form["codigo_inventario"]
-        numero_serie = request.form["numero_serie"]
-        observacion_equipo = request.form["observacion_equipo"]
-        codigoproveedor = request.form["codigoproveedor"]
-        mac = request.form["mac"]
-        imei = request.form["imei"]
-        numero = request.form["numero"]
-        nombre_estado_equipo = request.form["nombre_estado_equipo"]
-        codigo_Unidad = request.form["codigo_Unidad"]
-        nombre_orden_compra = request.form["nombre_orden_compra"]
-        nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
+        datos = {
+            'codigo_inventario': request.form["codigo_inventario"],
+            'numero_serie': request.form["numero_serie"],
+            'observacion_equipo': request.form["observacion_equipo"],
+            'codigoproveedor': request.form["codigoproveedor"],
+            'mac': request.form["mac"],
+            'imei': request.form["imei"],
+            'numero': request.form["numero"],
+            'nombre_estado_equipo': request.form["nombre_estado_equipo"],
+            'codigo_Unidad': request.form["codigo_Unidad"],
+            'nombre_orden_compra': request.form["nombre_orden_compra"],
+            'nombre_modelo_equipo': request.form["nombre_modelo_equipo"],
+        }
+
+        schema = {
+            'codigo_inventario': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'observacion_equipo': {'type': 'string', 'nullable': True},
+            'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'mac': {'type': 'string', 'regex': '^[0-9]+$'},
+            'imei': {'type': 'string', 'regex': '^[0-9]+$'},
+            'numero': {'type': 'string', 'regex': '^[0-9]+$'},
+            'nombre_estado_equipo': {'type': 'string'},
+            'codigo_Unidad': {'type': 'string', 'nullable': True},
+            'nombre_orden_compra': {'type': 'string', 'nullable': True},
+            'nombre_modelo_equipo': {'type': 'string', 'nullable': True},
+        }
+
+
+        v = Validator(schema)
+        # Validación de caracteres no permitidos
+        if not v.validate(datos):
+            flash("Caracteres no permitidos")
+            return redirect(url_for("equipo.Equipo"))
+
         try:
             cur = mysql.connection.cursor()
             cur.execute(
                 """
-            UPDATE equipo
-            SET Cod_inventarioEquipo = %s,
-                Num_serieEquipo = %s,
-                ObservacionEquipo = %s,
-                codigoproveedor_equipo =%s,
-                macEquipo=%s,
-                imeiEquipo=%s,
-                numerotelefonicoEquipo=%s,
-                idEstado_Equipo = %s,
-                idUnidad = %s,
-                idOrden_compra = %s,
-                idModelo_equipo = %s
+                UPDATE equipo
+                SET Cod_inventarioEquipo = %s,
+                    Num_serieEquipo = %s,
+                    ObservacionEquipo = %s,
+                    codigoproveedor_equipo = %s,
+                    macEquipo = %s,
+                    imeiEquipo = %s,
+                    numerotelefonicoEquipo = %s,
+                    idUnidad = %s,
+                    idOrden_compra = %s,
+                    idModelo_equipo = %s
                 WHERE idEquipo = %s
-            """,
+                """,
                 (
-                    codigo_inventario,
-                    numero_serie,
-                    observacion_equipo,
-                    codigoproveedor,
-                    mac,
-                    imei,
-                    numero,
-                    nombre_estado_equipo,
-                    codigo_Unidad,
-                    nombre_orden_compra,
-                    nombre_modelo_equipo,
+                    datos['codigo_inventario'],
+                    datos['numero_serie'],
+                    datos['observacion_equipo'],
+                    datos['codigoproveedor'],
+                    datos['mac'],
+                    datos['imei'],
+                    datos['numero'],
+                    datos['nombre_estado_equipo'],
+                    datos['codigo_Unidad'],
+                    datos['nombre_orden_compra'],
+                    datos['nombre_modelo_equipo'],
                     id,
                 ),
             )
             mysql.connection.commit()
             flash("Equipo actualizado correctamente")
             return redirect(url_for("equipo.Equipo"))
-        except Exception as e:
-            flash("Error al crear")
-            #flash(e.args[1])
+        except Exception as error:
+            flash(f"Error al actualizar el equipo: {str(error)}")
             return redirect(url_for("equipo.Equipo"))
+        
+
 # elimina registro a traves de id correspondiente
 @equipo.route("/delete_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
@@ -734,7 +784,7 @@ def añadir_hoja_de_otros(tipos, ws):
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    RIGHT JOIN marca_equipo me on me.idMarca_Equipo = me.idMarca_Equipo
+    left JOIN marca_equipo me on me.idMarca_Equipo = me.idMarca_Equipo
     LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
 
     LEFT JOIN comuna com ON com.idComuna = u.idComuna
@@ -755,7 +805,7 @@ def añadir_hoja_de_otros(tipos, ws):
             me.nombreMarcaEquipo, mo.nombreModalidad,
             pr.nombreProveedor
     FROM equipo e
-    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
+    INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = moe.idModelo_equipo
     INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
     INNER JOIN unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
@@ -1478,3 +1528,23 @@ def buscar_equipo(id):
         #page=page,
         #lastpage=page < (total / perpage) + 1,
     #)
+
+def obtener_equipos():
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM equipo")
+        return cur.fetchall()
+    
+
+@equipo.route('/equipos', methods=['GET'])
+def listar_equipos():
+    page = request.args.get('page', 1, type=int)  # Obtener el número de página de la solicitud
+    per_page = 15  # Número máximo de equipos por página
+    equipos = obtener_equipos()  # Función que obtiene todos los equipos
+    total_equipos = len(equipos)  # Contar la cantidad total de equipos
+
+    # Calcular el inicio y el final de los equipos para la página actual
+    start = (page - 1) * per_page
+    end = start + per_page
+    equipos_pagina = equipos[start:end]  # Obtener solo los equipos para la página actual
+
+    return render_template('equipo.html', items=equipos_pagina, total_equipos=total_equipos, page=page)
