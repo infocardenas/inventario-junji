@@ -24,12 +24,12 @@
         #}
         <button class="nav-button" onclick="showDiv()">Agregar</button>
         <div class="card card-body" style="display: none;" id="formulario">
-            <form action="/add_marca_equipo" method="POST">
+            <form id="marcaEquipoForm" action="/add_marca_equipo" method="POST">
                 <div class="form-group">
-
-                    <input type="text" name="nombre_marca_equipo" placeholder="Nombre marca" maxlength="45">
+                    <input class="validatable-input" type="text" name="nombre_marca_equipo" id="nombre_marca_equipo" placeholder="Nombre marca" maxlength="45" required>
+                    <div id="error-message" style="color: red; display: none;"></div>
                 </div>
-                <button class="agregar-button"> Agregar</button>
+                <button type="submit" class="agregar-button">Agregar</button>
             </form>
         </div>
     </div>
@@ -68,4 +68,12 @@
                 </tbody>
             </table>
             {{ paginacion("marca_equipo", page, lastpage) }}
-            {% endblock %}
+        </div>
+    </div>
+</div>
+            <!-- Incluir jQuery y jQuery Validation -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
+    
+{% endblock %}

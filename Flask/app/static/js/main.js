@@ -467,3 +467,43 @@ function seleccionarTipoEquipoEditarModelo(id_select) {
   }
 
 }
+
+function validarInputs() {
+  // Define los caracteres no permitidos
+  const caracteresNoPermitidos = /[!"#$%&/()]/;
+  const inputs = document.querySelectorAll('input'); // Selecciona todos los inputs del formulario
+
+  for (let input of inputs) {
+      if (input.value.trim() !== "" && caracteresNoPermitidos.test(input.value)) {
+          alert(`El campo "${input.name}" contiene caracteres no permitidos.`);
+          input.focus(); // Enfoca el input problemático
+          return false; // Evita que el formulario se envíe
+      }
+  }
+  return true; // Si todos los inputs son válidos, permite el envío del formulario
+}
+
+
+$(document).ready(function() {
+  // Función de validación
+  function validateInput() {
+      var input = $(this).val();
+      var regex = /^[a-zA-Z0-9 ]*$/; // Permitir letras, números y espacios
+      var errorMessage = $("#error-message");
+
+      // Verificar si el input actual es válido
+      if (!regex.test(input)) {
+          errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
+      } else {
+          // Verificar si hay algún input con error
+          if ($(".validatable-input").filter(function() { return !regex.test($(this).val()); }).length > 0) {
+              errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
+          } else {
+              errorMessage.hide();
+          }
+      }
+  }
+
+  // Asignar la función de validación a todos los inputs con la clase 'validatable-input'
+  $(".validatable-input").on("input", validateInput);
+});
