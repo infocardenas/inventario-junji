@@ -24,13 +24,13 @@
 
         <!-- ----- -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div id="error-message" style="display: none;" class="error-message"></div>
         <div class="card card-body" id="formulario", style="display: none;">
             <form action="/add_proveedor" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombre_proveedor">Nombre Proveedor: </label>
                     <input class="validatable-input" type="text" name="nombre_proveedor" placeholder="Nombre proveedor"
                     maxlength="45">
-                    <div id="error-message" style="display: none;" class="error-message"></div>
                     <button class="agregar-button">Agregar</button>
             </form>
         </div>

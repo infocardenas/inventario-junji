@@ -1,5 +1,6 @@
+<div id="error-message" style="display: none;" class="error-message"></div>
 <form action="/update_codigo_proveedor/{{codigo_proveedor.idCodigo_proveedor}}" method="POST"class="mi-formulario">
-    <input type="text" name="codigo_proveedor" placeholder="Codigo del proveedor" value="{{codigo_proveedor.idCodigo_proveedor}}">
+    <input class="validatable-input" type="text" name="codigo_proveedor" placeholder="Codigo del proveedor" value="{{codigo_proveedor.idCodigo_proveedor}}">
     <select name="nombre_proveedor">
         {% for pro in proveedor %}
             <option value="{{ pro.idProveedor }}" {% if pro.idProveedor == codigo_proveedor.fk_idProveedor %}selected{% endif %}>{{ pro.nombreProveedor }}</option>
@@ -7,3 +8,8 @@
     </select>
     <button type="submit" class="agregar-button"> Guardar</button>  
 </form>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>

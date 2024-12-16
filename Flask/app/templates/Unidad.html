@@ -25,24 +25,25 @@
 
         <!-- ----- -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div id="error-message" style="display: none;" class="error-message"></div>
         <div class="card card-body" id="formulario" , style="display: none;">
             <form action="/add_Unidad" method="POST" class="mi-formulario">
                 <div class="form-group">
 
                     <label for="codigo_unidad">Código de la Unidad: </label>
-                    <input type="text" class="form-control" name="codigo_unidad" placeholder="codigo"
+                    <input type="text" class="solo-numeros" name="codigo_unidad" placeholder="codigo"
                     maxlength="11">
                     <br>
                     <label for="nombreUnidad">Nombre de la Unidad: </label>
-                    <input type="text" class="form-control" name="nombreUnidad" placeholder="Nombre"
+                    <input type="text" class="validatable-input" name="nombreUnidad" placeholder="Nombre"
                     maxlength="45">
                     <br>
                     <label for="contactoUnidad">Contacto: </label>
-                    <input type="text" class="form-control" name="contactoUnidad" placeholder="Contacto"
+                    <input type="text" class="validatable-input" name="contactoUnidad" placeholder="Contacto"
                     maxlength="45">
                     <br>
                     <label for="direccionUnidad">Dirección: </label>
-                    <input type="text" class="form-control" name="direccionUnidad" placeholder="Direccion"
+                    <input type="text" class="validatable-input" name="direccionUnidad" placeholder="Direccion"
                     maxlength="45">
                     <br>
                     <label for="nombreComuna">Comuna: </label>
@@ -110,6 +111,11 @@
                 </tr>
                 {% endfor %}
             </tbody>
-        </table>
+        </table>´
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
+
         {{ paginacion("Unidad", page, lastpage) }}
         {% endblock %}

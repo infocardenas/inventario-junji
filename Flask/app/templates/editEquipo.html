@@ -2,18 +2,19 @@
 {% block body %}
 
 <a class="nav-button" href="/equipo">Volver</a>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="row">
     <div class="col-md-4 offset-md-4">
       <div class="card card-body">
         <form action="/update_equipo/{{equipo.idEquipo}}" method="POST"class="mi-formulario">
             <div class="form-group">
             <label for="codigo_inventario">Código inventario: </label>
-            <input type="text" name="codigo_inventario" value="{{equipo.Cod_inventarioEquipo}}"
+            <input class="validatable-input" type="text" name="codigo_inventario" value="{{equipo.Cod_inventarioEquipo}}"
             maxlength="45">           
             </div>
             <div class="form-group">
             <label for="numero_serie">Número serie: </label>
-            <input type="text" name="numero_serie" value="{{equipo.Num_serieEquipo}}" maxlength="20">
+            <input class="validatable-input" type="text" name="numero_serie" value="{{equipo.Num_serieEquipo}}" maxlength="20">
              </div>
 
             <div class="form-group">
@@ -24,22 +25,22 @@
              <div class="form-group">
 
                 <label for="codigoproveedor">Código Proveedor: </label>
-                <input type="text" name="codigoproveedor" value="{{equipo.codigoproveedor_equipo}}"
+                <input class="validatable-input" type="text" name="codigoproveedor" value="{{equipo.codigoproveedor_equipo}}"
                     maxlength="20">
                
                 </div>
                 <div class="form-group">
                 <label for="mac">Mac : </label>
-                <input type="text" name="mac" value="{{equipo.macEquipo}}" maxlength="45">
+                <input class="validatable-input" type="text" name="mac" value="{{equipo.macEquipo}}" maxlength="45">
                 </div>
     
                 <div class="form-group">
                 <label for="imei">IMEI : </label>
-                <input type="text" name="imei" value="{{equipo.imeiEquipo}}" maxlength="45">
+                <input class="validatable-input" type="text" name="imei" value="{{equipo.imeiEquipo}}" maxlength="45">
                  </div>
                  <div class="form-group">
                     <label for="numero">Número de teléfono : </label>
-                    <input type="text" name="numero" value="{{equipo.numerotelefonicoEquipo}}"
+                    <input  class="solo-numeros"type="text" name="numero" value="{{equipo.numerotelefonicoEquipo}}"
                         maxlength="12">
                      </div>
             <div class="form-group">
@@ -81,5 +82,8 @@
             <button type="submit" class="agregar-button"> Guardar</button>  
         </form>
 
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+        <script src="../static/js/main.js"></script>
 
 {% endblock %}

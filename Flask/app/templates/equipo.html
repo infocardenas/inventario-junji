@@ -23,6 +23,7 @@
 
         <!-- ----- -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div id="error-message" style="display: none;" class="error-message"></div>
         <div class="card card-body" id="formulario" style="display: none;">
             <form action="/add_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
@@ -91,37 +92,34 @@
                     <div id="Mac" style="display: none;">
                         <label for="mac">Mac: </label>
                         <input class= "validatable-input" type="text" name="mac" maxlength="45">
-                        <div id="error-message" style="display: none;" class="error-message"></div>
+                        
                         <br>
                     </div>
                     <div id="Imei" style="display: none;">
                         <label for="imei">imei: </label>
                         <input class= "validatable-input" type="text" name="imei" maxlength="45">
-                        <div id="error-message" style="display: none;" class="error-message"></div>
                         <br>
                     </div>
                     <div id="Telefono" style="display: none;">
                         <label for="numero">Número de Telefono: </label>
-                        <input type="text" name="numero" maxlength="12">
+                        <input class= "solo-numeros" type="text" name="numero" maxlength="12">
                         <br>
                     </div>
                     <div>
                         <label>Código Inventario</label>
                         <input class= "validatable-input" type="text" name="codigo_inventario"
                             placeholder="Codigo Inventario" maxlength="20">
-                        <div id="error-message" style="display: none;" class="error-message"></div>
+                        
                         <br>
                     </div>
                     <div>
                         <label for="codigoproveedor">Código de Proveedor: </label>
                         <input type="text" class="validatable-input" name="codigoproveedor" maxlength="45">
-                        <div id="error-message" style="display: none;" class="error-message"></div>
                         <br>
                     </div>
                     <label for="numero_serie">Número de Serie: </label>
                     <input type="text" class="validatable-input" name="numero_serie" placeholder="Numero de serie"
                         maxlength="12">
-                        <div id="error-message" style="display: none;" class="error-message"></div>
                     <br>
                     <label for="observacion_equipo">Observación: </label>
                     <textarea id="observacion_equipo" name="observacion_equipo" rows="2" cols="50" maxlength="250"></textarea>

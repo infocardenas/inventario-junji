@@ -24,7 +24,8 @@
 
         <!-- ----- -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
-        <div class="card card-body" id="formulario" , style="display: none;">
+        <div class="card card-body" id="formulario" style="display: flex; justify-content: center;">
+            <div id="error-message" style="color: red; display: none;"></div>
             <form action="/add_funcionario" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="rut_funcionario">Rut funcionario(sin puntos y con guion)</label>
@@ -51,8 +52,8 @@
                         <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
                         {% endfor %}
                     </select>
-                    <button class="agregar-button"> Agregar Funcionario</button>
             </form>
+            <button class="agregar-button"> Agregar Funcionario</button>
         </div>
     </div>
     <h2>Funcionarios</h2>

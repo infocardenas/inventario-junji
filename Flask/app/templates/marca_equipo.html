@@ -23,20 +23,20 @@
         y se muestra el formulario para agregar un item.
         #}
         <button class="nav-button" onclick="showDiv()">Agregar</button>
-        <div class="card card-body" style="display: none;" id="formulario">
+        <div id="error-message" style="display: none;" class="error-message"></div>
+        <div class="card card-body" style="display: flex; justify-content: center;" id="formulario">
+
             <form id="marcaEquipoForm" action="/add_marca_equipo" method="POST">
                 <div class="form-group">
+                    <label for="nombre_marca">Nombre Marca: </label>
                     <input class="validatable-input" type="text" name="nombre_marca_equipo" id="nombre_marca_equipo" placeholder="Nombre marca" maxlength="45" required>
-                    <div id="error-message" style="color: red; display: none;"></div>
                 </div>
                 <button type="submit" class="agregar-button">Agregar</button>
             </form>
+            
         </div>
     </div>
     <h2>Marca Equipos</h2>
-    <div style="position: relative;">
-        <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
-        <div style="overflow-x:auto;">
 
 
             <table id="posts">
