@@ -473,7 +473,7 @@ $(document).ready(function () {
   // Función de validación
   function validateInput() {
     var input = $(this).val();
-    var regex = /^[a-zA-Z0-9 ]*$/; // Permitir letras, números y espacios
+    var regex = /^[a-zA-Z0-9@. ]*$/; // Permitir letras, @, puntos, números y espacios
     var errorMessage = $("#error-message");
 
     // Verificar si el input actual es válido

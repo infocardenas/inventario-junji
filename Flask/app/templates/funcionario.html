@@ -24,25 +24,25 @@
 
         <!-- ----- -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div id="error-message" style="display: none;" class="error-message"></div>
         <div class="card card-body" id="formulario" style="display: flex; justify-content: center;">
-            <div id="error-message" style="color: red; display: none;"></div>
             <form action="/add_funcionario" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="rut_funcionario">Rut funcionario(sin puntos y con guion)</label>
-                    <input type="text" name="rut_funcionario" placeholder="Rut de funcionario"
+                    <input type="text" class="rut-input" name="rut_funcionario" placeholder="Rut de funcionario"
                     maxlength="20">
                     <br>
                     <label for="nombre_funcionario">Nombre Funcionario: </label>
-                    <input type="text" name="nombre_funcionario" placeholder="Nombre funcionario"
+                    <input type="text" class="solo-letras" name="nombre_funcionario" placeholder="Nombre funcionario"
                     maxlength="45">
 
                     <br>
                     <label for="correo_funcionario">Correo Funcionario: </label>
-                    <input type="text" name="correo_funcionario" placeholder="Correo funcionario"
+                    <input type="text" class="validatable-input" name="correo_funcionario" placeholder="Correo funcionario"
                     maxlength="45">
                     <br>
                     <label for="cargo_funcionario"> Cargo: </label>
-                    <input type="text" name="cargo_funcionario" placeholder="Cargo"
+                    <input type="text" class="validatable-input" name="cargo_funcionario" placeholder="Cargo"   
                     maxlength="45">
                     <br>
                     <label for="codigo_Unidad">Unidad: </label>
@@ -87,5 +87,10 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+        <script src="../static/js/main.js"></script>
+
         {{ paginacion("funcionario", page, lastpage) }}
         {% endblock %}

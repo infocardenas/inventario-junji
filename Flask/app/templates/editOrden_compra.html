@@ -2,6 +2,7 @@
 {% block body %}
 
 <a class="nav-button" href="/orden_compra">Volver</a>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="row">
     <div class="col-md-4 offset-md-4">
       <div class="card card-body">
@@ -9,12 +10,12 @@
 <form action="/update_ordenc/{{orden_compra.idOrden_compra}}" method="POST"class="mi-formulario">
     {#
     <label for="">Orden Compra: </label>
-    <input  type="text" name="id_orden_compra" placeholder="Nombre tipo adquisicion" value="{{orden_compra.idOrden_compra}}"
+    <input  type="text" class="validar-id-orden" name="id_orden_compra" placeholder="Nombre tipo adquisicion" value="{{orden_compra.idOrden_compra}}"
     maxlength="45">
     <br>
     #}
     <label for="nombre_ordenc">Nombre de Orden: </label>
-    <input type="text" name="nombre_ordenc" placeholder="Nombre tipo adquisicion" value="{{orden_compra.nombreOrden_compra}}"
+    <input type="text" class="validatable-input" name="nombre_ordenc" placeholder="Nombre tipo adquisicion" value="{{orden_compra.nombreOrden_compra}}"
     maxlength="45">
     <br>
     <label for="fecha_compra_ordenc">Fecha de Orden de Compra: </label>
@@ -44,4 +45,8 @@
 
     <button type="submit" class="agregar-button"> Guardar</button>  
 </form>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
 {% endblock %}

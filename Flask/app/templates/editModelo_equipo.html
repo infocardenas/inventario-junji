@@ -4,6 +4,7 @@
 
 
 <a class="nav-button" href="/modelo_equipo">Volver</a>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="row">
     <div class="col-md-4 offset-md-4">
         <div class="card card-body" style="display: block;" id="formulario">
@@ -11,7 +12,7 @@
             <form action="/update_modelo_equipo/{{id}}" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
-                    <input type="text" name="nombre_modelo_equipo" placeholder="Modelo"
+                    <input  class="validatable-input" type="text" name="nombre_modelo_equipo" placeholder="Modelo"
                         value="{{modelo_equipo.nombreModeloequipo}}"
                         maxlength="45">
                 </div>
@@ -51,4 +52,8 @@
     seleccionarTipoEquipoEditarModelo("{{modelo_equipo.idMarca_Equipo}}");
 </script>
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
 {% endblock %}
