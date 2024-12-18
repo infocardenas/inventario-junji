@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-md-4 offset-md-4">
       <div class="card card-body">
-<form action="/update_tipoa/{{tipo_adquisicion.idTipo_adquisicion}}" method="POST"class="mi-formulario">
+<form action="/update_tipoa/{{tipo_adquisicion.idTipo_adquisicion}}" method="POST" class="mi-formulario">
     <input type="text" class="validatable-input" name="nombre_tipoa" placeholder="Nombre tipo adquisicion" value="{{tipo_adquisicion.nombreTipo_adquisicion}}">
     <button type="submit" class="agregar-button"> Guardar</button>  
 </form>
@@ -14,4 +14,4 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <script src="../static/js/main.js"></script>
-{% endblock %}
+{% endblock %}  

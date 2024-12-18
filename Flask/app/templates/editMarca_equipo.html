@@ -3,25 +3,30 @@
 
 <a class="nav-button" href="/marca_equipo">Volver</a>
 <div id="error-message" style="display: none;" class="error-message"></div>
+
 <div class="row">
     <div class="col-md-4 offset-md-4">
         <div class="card card-body">
-            <form action="/update_marca_equipo/{{marca_equipo.idMarca_Equipo}}" method="POST" class="mi-formulario">
-                <div class="form-group">
-
-                    <label for="nombre_marca_equipo">Nombre Marca: </label>
-                    <input class="validatable-input" type="text" name="nombre_marca_equipo" placeholder="Nombre de marca"
-                        value="{{marca_equipo.nombreMarcaEquipo}}" maxlength="45">
-                </div>
-                <button type="submit" class="agregar-button"> Guardar</button>
+            <form
+                id="editMarcaEquipoForm"
+                action="/update_marca_equipo/{{marca_equipo.idMarca_Equipo}}"
+                method="POST"
+                class="mi-formulario"
+            >
+                <label for="nombre_marca">Nombre Marca:</label>
+                <input
+                    class="validatable-input"
+                    type="text"
+                    name="nombre_marca_equipo"
+                    placeholder="Nombre marca"
+                    value="{{marca_equipo.nombreMarcaEquipo}}"
+                >
+                <button type="submit" class="agregar-button">Guardar</button>
             </form>
-        </div>
-    </div>
-</div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
-<script src="../static/js/main.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
 
 {% endblock %}

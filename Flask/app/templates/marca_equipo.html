@@ -1,79 +1,76 @@
 {% extends "layout.html" %}
 {% block body %}
 {% from 'funciones_macro.html' import paginacion %}
-<div class="row">
 
-    <div class="col-md-5">
+<div class="row">
+    <div class="col-md-5 offset-md-3">
+        <!-- Mensajes Flash -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-        {% for message in messages %}
-
-        <div class="custom-alert" role="alert">
-            {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-
-        {% endfor %}
+            {% for message in messages %}
+                <div class="custom-alert" role="alert">
+                    {{ message }}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endfor %}
         {% endif %}
         {% endwith %}
-        {#
-        En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
-        y se muestra el formulario para agregar un item.
-        #}
-        <button class="nav-button" onclick="showDiv()">Agregar</button>
-        <div id="error-message" style="display: none;" class="error-message"></div>
-        <div class="card card-body" style="display: flex; justify-content: center;" id="formulario">
 
-            <form id="marcaEquipoForm" action="/add_marca_equipo" method="POST">
+        <!-- Botón para mostrar el formulario -->
+        <button class="nav-button" onclick="showDiv()">Agregar</button>
+
+        <!-- Mensaje de error -->
+        <div id="error-message" style="display: none;" class="error-message"></div>
+
+        <!-- Formulario -->
+        <div class="card card-body" id="formulario" style="display: none;">
+            <form id="marcaEquipoForm" action="/add_marca_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
-                    <label for="nombre_marca">Nombre Marca: </label>
-                    <input class="validatable-input" type="text" name="nombre_marca_equipo" id="nombre_marca_equipo" placeholder="Nombre marca" maxlength="45" required>
+                    <label for="nombre_marca">Nombre Marca:</label>
+                    <input
+                        class="validatable-input"
+                        type="text"
+                        name="nombre_marca_equipo"
+                        id="nombre_marca_equipo"
+                        placeholder="Nombre marca"
+                        maxlength="45"
+                        required
+                    >
                 </div>
                 <button type="submit" class="agregar-button">Agregar</button>
             </form>
-            
-        </div>
-    </div>
-    <h2>Marca Equipos</h2>
-
-
-            <table id="posts">
-                <thead>
-                    <tr> 
-
-                        <td onclick="sortTable(0)">Nombre Marca
-                        </td>
-                        <td>Acciones</td>
-                    </tr>
-                </thead>
-                <tbody id="myTableBody">
-                    <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
-                    {% for marcae in marca_equipo %}
-                    <tr>
-                        <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
-                        <td>{{marcae.nombreMarcaEquipo}}</td>
-                        <td>
-                            <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                            <a href="/marca_equipo/edit_marca_equipo/{{marcae.idMarca_Equipo}}"
-                                class="success-button">Editar</a>
-                            <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                            <a href="/marca_equipo/delete_marca_equipo/{{marcae.idMarca_Equipo}}"
-                                class="delete-button">Eliminar</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    <!-- Se termina la iteracion for -->
-                </tbody>
-            </table>
-            {{ paginacion("marca_equipo", page, lastpage) }}
         </div>
     </div>
 </div>
-            <!-- Incluir jQuery y jQuery Validation -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
+<h2>Marca Equipos</h2>
+
+<table id="posts">
+    <thead>
+        <tr>
+            <td onclick="sortTable(0)">Nombre Marca</td>
+            <td>Acciones</td>
+        </tr>
+    </thead>
+    <tbody id="myTableBody">
+        {% for marcae in marca_equipo %}
+        <tr>
+            <td>{{ marcae.nombreMarcaEquipo }}</td>
+            <td>
+                <a href="/marca_equipo/edit_marca_equipo/{{ marcae.idMarca_Equipo }}" class="success-button">Editar</a>
+                <a href="/marca_equipo/delete_marca_equipo/{{ marcae.idMarca_Equipo }}" class="delete-button">Eliminar</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{{ paginacion("marca_equipo", page, lastpage) }}
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="../static/js/main.js"></script>
-    
+
 {% endblock %}
