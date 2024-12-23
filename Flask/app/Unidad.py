@@ -55,8 +55,8 @@ def add_Unidad():
             'nombreUnidad': request.form['nombreUnidad'],
             'contactoUnidad': request.form['contactoUnidad'],
             'direccionUnidad': request.form['direccionUnidad'],
-            'idComuna': request.form['idComuna'],
-            'idModalidad': request.form['idModalidad']
+            'idComuna': int(request.form['idComuna']),
+            'idModalidad': int(request.form['idModalidad'])
         }
         add_Unidad_schema = {
             'codigoUnidad': {
@@ -85,12 +85,12 @@ def add_Unidad():
                 'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir alfanuméricos, espacios, comas, puntos y guiones
             },
             'idComuna': {
-                'type': 'string',
-                'nullable': True
+                'type': 'integer',
+                'required': True
             },
             'idModalidad': {
-                'type': 'string',
-                'nullable': True
+                'type': 'integer',
+                'required': True
             }
         }
 
@@ -172,7 +172,8 @@ def update_Unidad(id):
             },
             'contactoUnidad': {
                 'type': 'string',
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+                'regex': '^[a-zA-Z0-9 ]+$',
+                'nullabe': 'true'  # Permitir solo alfanuméricos y espacios
             },
             'direccionUnidad': {
                 'type': 'string',
