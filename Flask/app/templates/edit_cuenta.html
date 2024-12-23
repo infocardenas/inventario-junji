@@ -2,12 +2,13 @@
 {% block body %}
 
 <a class="nav-button" href="/registrar">Volver</a>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="card card-body" id="formulario" >
     <form action="/update_usuario/{{usuario.nombreUsuario}}" method="POST" class="mi-formulario">
         <h3>Editar Cuenta</h3>
         <div class="form-group">
             <label for="nombreUsuario">Nombre de Usuario</label>
-            <input type="text" class="form-control" 
+            <input type="text" class="validar-user" 
             name="nombreUsuario" placeholder="Nombre Usuario" value="{{usuario.nombreUsuario}}">
             <br>
             <label>Es Administrador</label>
@@ -43,4 +44,7 @@
         </div>
     </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
 {% endblock %}

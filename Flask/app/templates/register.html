@@ -22,11 +22,12 @@
 
 <a class="nav-button" href="/">Volver</a>
 <button class="nav-button" onclick="showDiv()">Agregar</button>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="card card-body" id="formulario" style="display: none;">
     <form action="/crear_cuenta" method="POST" class="mi-formulario">
         <div class="form-group">
             <label for="nombreUsuario">Nombre de Usuario</label>
-            <input type="text" class="form-control" name="nombreUsuario" placeholder="Nombre Usuario">
+            <input type="text" class="validar-user" name="nombreUsuario" placeholder="Nombre Usuario">
             <br>
             <label for="password">Contraseña: </label>
             <input id="contrasenna" type="password" class="form-control" name="contrasenna" placeholder="Contraseña">
@@ -81,4 +82,8 @@
         </table>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
 {% endblock %}

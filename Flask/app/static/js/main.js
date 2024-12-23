@@ -468,6 +468,27 @@ function seleccionarTipoEquipoEditarModelo(id_select) {
 
 }
 
+$(document).ready(function () {
+  //funcion para validacion de nombre usuario
+  function validateInput() {
+    var input = $(this).val();
+    var regex = /^[a-zA-Z0-9@.]*$/; // Permitir letras, @, puntos, números y espacios
+    var errorMessage = $("#error-message");
+
+    // Verificar si el input actual es válido
+    if (!regex.test(input)) {
+      errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números, @ y puntos.").show();
+    } else {
+            // Verificar si hay algún input con error
+            if ($(".validatable-input").filter(function () { return !regex.test($(this).val()); }).length > 0) {
+              errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
+            } else {
+              errorMessage.hide();
+            }
+    }
+  }
+  $(".validar-user").on("input", validateInput);
+});
 
 $(document).ready(function () {
   // Función de validación
