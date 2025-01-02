@@ -2,9 +2,31 @@ from flask import Blueprint, flash, redirect, render_template, url_for, request,
 from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
+from cerberus import Validator
 
 modelo_equipo = Blueprint("modelo_equipo", __name__, template_folder="app/templates")
 
+# Definir el esquema de validación
+schema = {
+    'nombre_modelo_equipo': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 100,
+        'regex': '^[a-zA-Z0-9]*$'  # Permite solo letras, números y espacios
+    },
+    'nombre_tipo_equipo': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 100,
+        'regex': '^[a-zA-Z0-9]*$'
+    },
+    'nombre_marca_equipo': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 100,
+        'regex': '^[a-zA-Z0-9]*$'
+    }
+}
 
 @modelo_equipo.route("/modelo_equipo")
 @modelo_equipo.route("/modelo_equipo/<page>")
@@ -117,12 +139,19 @@ def ingresar_elemento_a_tupla(tupla_mayor, tupla_a_agregar, nombre_tupla_agregar
 @administrador_requerido
 def add_modelo_equipo():
     if request.method == "POST":
-        nombre_modelo_equipo = request.form['nombre_modelo_equipo']
-        id_tipo_equipo = request.form['nombre_tipo_equipo']
-        id_marca_equipo = request.form['nombre_marca_equipo']
-        #print("add")
-        #print(id_tipo_equipo)
-        #print(nombre_modelo_equipo)
+        # Obtener los datos del formulario
+        data = {
+            'nombre_modelo_equipo': request.form['nombre_modelo_equipo'],
+            'nombre_tipo_equipo': request.form['nombre_tipo_equipo'],
+            'nombre_marca_equipo': request.form['nombre_marca_equipo']
+        }
+
+        # Validar los datos usando Cerberus
+        v = Validator(schema)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
+            return redirect(url_for("modelo_equipo.modeloEquipo"))
+
         try:
             cur = mysql.connection.cursor()
             cur.execute(
@@ -131,16 +160,14 @@ def add_modelo_equipo():
                 (nombreModeloequipo, idTipo_equipo, idMarca_Equipo) 
             VALUES (%s, %s, %s)
             """,
-                (nombre_modelo_equipo, id_tipo_equipo, id_marca_equipo)
+                (data['nombre_modelo_equipo'], data['nombre_tipo_equipo'], data['nombre_marca_equipo'])
             )
             cur.connection.commit()
             flash("Modelo agregado correctamente")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
         except Exception as e:
-            #flash(e.args[1])
             flash("Error al crear")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
-
 
 # Envias datos a formulario editar
 @modelo_equipo.route("/edit_modelo_equipo/<id>", methods=["POST", "GET"])
@@ -214,13 +241,17 @@ def update_modelo_equipo(id):
         flash("you are NOT authorized")
         return redirect("/ingresar")
     if request.method == "POST":
-        nombre_modelo_equipo = request.form["nombre_modelo_equipo"]
-        nombre_tipo_equipo = request.form["nombre_tipo_equipo"]
-        idMarca_Equipo = request.form['nombre_marca_equipo']
-        print("marca")
-        print(idMarca_Equipo)
-        print("nombre tipo equipo")
-        print(nombre_tipo_equipo)
+        # Obtener los datos del formulario
+        data = {
+            'nombre_modelo_equipo': request.form["nombre_modelo_equipo"],
+            'nombre_tipo_equipo': request.form["nombre_tipo_equipo"],
+            'nombre_marca_equipo': request.form['nombre_marca_equipo']
+        }
+# Validar los datos usando Cerberus
+        v = Validator(schema)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
+            return redirect(url_for("modelo_equipo.modeloEquipo"))
         try:
             cur = mysql.connection.cursor()
             cur.execute(
@@ -231,15 +262,12 @@ def update_modelo_equipo(id):
                 idMarca_Equipo = %s
             WHERE idModelo_Equipo = %s
             """,
-                (nombre_modelo_equipo, nombre_tipo_equipo, idMarca_Equipo, id),
+                (data['nombre_modelo_equipo'], data['nombre_tipo_equipo'], data['nombre_marca_equipo'], id),
             )
-            print('id')
-            print(id)
             mysql.connection.commit()
             flash("Modelo actualizado correctamente")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
         except Exception as e:
-            #flash(e.args[1])
             flash("Error al crear")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
 

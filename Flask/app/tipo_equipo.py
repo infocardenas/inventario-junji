@@ -2,9 +2,20 @@ from flask import Blueprint, render_template, request, url_for, redirect, flash,
 from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
+from cerberus import Validator
 
 tipo_equipo = Blueprint("tipo_equipo", __name__, template_folder="app/templates")
 
+
+# Definir el esquema de validación para tipo_equipo
+tipo_equipo_schema = {
+    'nombreTipo_Equipo': {
+        'type': 'string',
+        'minlength': 1,
+        'maxlength': 100,
+        'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+    }
+}
 
 # ruta para enviar los datos y visualizar la pagina principal para tipo de equipo
 @tipo_equipo.route("/tipo_equipo")
@@ -83,38 +94,47 @@ def tipoEquipo(page=1):
 @tipo_equipo.route("/crear_tipo_equipo", methods=["POST"])
 @administrador_requerido
 def crear_tipo_equipo():
-    nombreTipo_Equipo = request.form["nombreTipo_equipo"]
-    cur = mysql.connection.cursor()
-    try:
-        cur.execute("""
-                    INSERT INTO tipo_equipo (nombreTipo_equipo) 
-                    VALUES (%s)""",
-            (nombreTipo_Equipo,),
-        )
-    except Exception as e:
-            #flash(e.args[1])
-            flash("Error al crear")
+        
+        data = {
+            'nombreTipo_Equipo': request.form['nombreTipo_equipo']
+        }
+ # Validar los datos usando Cerberus
+        v = Validator(tipo_equipo_schema)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
             return redirect(url_for("tipo_equipo.tipoEquipo"))
-    mysql.connection.commit()
-    cur.execute(
-        """
-    SELECT *
-    FROM tipo_equipo
-    WHERE tipo_equipo.idTipo_equipo = %s
-                """,
-        (cur.lastrowid,),
-    )
-    tipo_equipo = cur.fetchone()
-    cur.execute(
-        """
-            SELECT *
-            FROM marca_equipo
-                """
-    )
-    marcas = cur.fetchall()
-    return render_template(
-        "enlazar_marcas.html", tipo_equipo=tipo_equipo, marcas=marcas
-    )
+            
+        cur = mysql.connection.cursor()
+        try:
+            cur.execute("""
+                        INSERT INTO tipo_equipo (nombreTipo_equipo) 
+                        VALUES (%s)""",
+                (data["nombreTipo_Equipo"],),
+            )
+        except Exception as e:
+                #flash(e.args[1])
+                flash("Error al crear")
+                return redirect(url_for("tipo_equipo.tipoEquipo"))
+        mysql.connection.commit()
+        cur.execute(
+            """
+        SELECT *
+        FROM tipo_equipo
+        WHERE tipo_equipo.idTipo_equipo = %s
+                    """,
+            (cur.lastrowid,),
+        )
+        tipo_equipo = cur.fetchone()
+        cur.execute(
+            """
+                SELECT *
+                FROM marca_equipo
+                    """
+        )
+        marcas = cur.fetchall()
+        return render_template(
+            "enlazar_marcas.html", tipo_equipo=tipo_equipo, marcas=marcas
+        )
 
 
 @tipo_equipo.route("/add_tipo_equipo/<idTipo_equipo>", methods=["POST"])
@@ -250,10 +270,18 @@ def edit_tipo_equipo(id):
 def update_tipo_equipo(id):
     print("update tipo equipo")
     if request.method == "POST":
-        nombre_tipo_equipo = request.form["nombreTipo_equipo"]
+        data = {
+            'nombreTipo_Equipo': request.form['nombreTipo_equipo']
+        }
         ids_marca = request.form.getlist("marcas[]")
         print("ids_marca")
         print(ids_marca)
+
+         # Validar los datos usando Cerberus
+        v = Validator(tipo_equipo_schema)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
+            return redirect(url_for("tipo_equipo.tipoEquipo"))
 
         cur = mysql.connection.cursor()
         cur.execute(
@@ -271,7 +299,7 @@ def update_tipo_equipo(id):
         SET nombreTipo_equipo = %s
         WHERE idTipo_equipo = %s
         """,
-            (nombre_tipo_equipo, id),
+            (data["nombreTipo_Equipo"], id),
         )
         #editar la relacion entre tipo y marcas
         cur.execute("""

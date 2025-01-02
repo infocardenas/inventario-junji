@@ -467,3 +467,166 @@ function seleccionarTipoEquipoEditarModelo(id_select) {
   }
 
 }
+
+$(document).ready(function () {
+  //funcion para validacion de nombre usuario
+  function validateInput() {
+    var input = $(this).val();
+    var regex = /^[a-zA-Z0-9@.]*$/; // Permitir letras, @, puntos, números y espacios
+    var errorMessage = $("#error-message");
+
+    // Verificar si el input actual es válido
+    if (!regex.test(input)) {
+      errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números, @ y puntos.").show();
+    } else {
+            // Verificar si hay algún input con error
+            if ($(".validatable-input").filter(function () { return !regex.test($(this).val()); }).length > 0) {
+              errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
+            } else {
+              errorMessage.hide();
+            }
+    }
+  }
+  $(".validar-user").on("input", validateInput);
+});
+
+$(document).ready(function () {
+  //funcion para validar contraseñas
+  function validatePassword() {
+    var input = $(this).val();
+    var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; // Permitir letras, números, @, $, !, %, *, ?, & y un mínimo de 8 caracteres
+    var errorMessage = $("#error-message");
+
+    // Verificar si el input actual es válido
+    if (!regex.test(input)) {
+      errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
+    } else {
+      if ($(".validar-contraseña").filter(function () { return !regex.test($(this).val()); }).length > 0) {
+        errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
+      } else {
+        errorMessage.hide();
+      }
+    }
+  }
+  $(".validar-contraseña").on("input", validatePassword);
+});
+
+$(document).ready(function () {
+  // Función de validación
+  function validateInput() {
+    var input = $(this).val();
+    var regex = /^[a-zA-Z0-9@. ]*$/; // Permitir letras, @, puntos, números y espacios
+    var errorMessage = $("#error-message");
+
+    // Verificar si el input actual es válido
+    if (!regex.test(input)) {
+      errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
+    } else {
+      // Verificar si hay algún input con error
+      if ($(".validatable-input").filter(function () { return !regex.test($(this).val()); }).length > 0) {
+        errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
+      } else {
+        errorMessage.hide();
+      }
+    }
+  }
+
+  // Asignar la función de validación a todos los inputs con la clase 'validatable-input'
+  $(".validatable-input").on("input", validateInput);
+});
+
+
+$(document).ready(function () {
+  // Función de validación
+  function validateLettersInput() {
+    const input = $(this).val();
+    const regex = /^[a-zA-Z\s]*$/; // Permitir letras y espacios
+    const errorMessage = $("#error-message");
+
+    if (!regex.test(input)) {
+      errorMessage.text("Solo se permiten letras y espacios.").show();
+    } else {
+      errorMessage.hide();
+    }
+  }
+
+  $(".solo-letras").on("input", validateLettersInput);
+});
+
+
+$(document).ready(function () {
+  // Función de validación
+  function validateNumbersInput() {
+    const input = $(this).val();
+    const regex = /^[0-9]*$/; // Permitir números
+    const errorMessage = $("#error-message");
+
+    if (!regex.test(input)) {
+      errorMessage.text("Solo se permiten números.").show()
+    } else {
+      errorMessage.hide();
+    }
+  }
+  $(".solo-numeros").on("input", validateNumbersInput);
+});
+
+$(document).ready(function () {
+  // Función de validación
+  function validarIdOrden() {
+    const input = $(this).val();
+    const regex = /^[A-Za-z0-9-]*$/; // Permitir letras, números y guiones
+    const errorMessage = $("#error-message");
+    if (!regex.test(input)) {
+      errorMessage.text("Solo se permiten letras, números y guiones.").show();
+    } else {
+      errorMessage.hide();
+    }
+  }
+  $(".validar-id-orden").on("input", validarIdOrden);
+});
+
+$(document).ready(function () {
+  // Función de validación
+  function validateRutInput() {
+    const input = $(this).val();
+    const errorMessage = $("#error-message");
+    const regex = /^[0-9]{7,8}-[0-9kK]$/; // Formato válido: 12345678-9 o 12345678-k
+
+    // Validar el formato del RUT
+    if (!regex.test(input)) {
+      errorMessage.text("Formato de RUT inválido. Use el formato 12345678-9.").show();
+      return;
+    }
+
+    // Validar el dígito verificador
+    const [rut, dv] = input.split("-");
+    if (!validarDigitoVerificador(rut, dv)) {
+      errorMessage.text("El dígito verificador del RUT es incorrecto.").show();
+    } else {
+      errorMessage.hide();
+    }
+  }
+
+  // Función para calcular y validar el dígito verificador
+  function validarDigitoVerificador(rut, dv) {
+    let suma = 0;
+    let multiplicador = 2;
+
+    // Iterar sobre el RUT de derecha a izquierda
+    for (let i = rut.length - 1; i >= 0; i--) {
+      suma += parseInt(rut[i]) * multiplicador;
+      multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+    }
+
+    const resto = suma % 11;
+    const calculado = 11 - resto;
+
+    // Convertir el resultado al formato de DV esperado
+    const dvCalculado = calculado === 11 ? "0" : calculado === 10 ? "k" : calculado.toString();
+    return dvCalculado.toLowerCase() === dv.toLowerCase();
+  }
+
+  // Asignar la validación a los inputs con la clase 'rut-input'
+  $(".rut-input").on("input", validateRutInput);
+});
+

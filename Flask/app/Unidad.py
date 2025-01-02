@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, url_for, redirect, flash,
 from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
+from cerberus import Validator
 
 Unidad = Blueprint('Unidad', __name__, template_folder = 'app/templates')
 
@@ -47,21 +48,67 @@ def UNIDAD(page=1):
 @administrador_requerido
 def add_Unidad():
     if request.method == 'POST':
-        codigoUnidad = request.form['codigo_unidad']
-        nombreUnidad = request.form['nombreUnidad']
-        contactoUnidad = request.form['contactoUnidad']
-        direccionUnidad = request.form['direccionUnidad']
-        idComuna= request.form['idComuna']
-        idModalidad = request.form['idModalidad']
+
+        # Recoger datos del formulario
+        data = {
+            'codigoUnidad': request.form['codigo_unidad'],
+            'nombreUnidad': request.form['nombreUnidad'],
+            'contactoUnidad': request.form['contactoUnidad'],
+            'direccionUnidad': request.form['direccionUnidad'],
+            'idComuna': int(request.form['idComuna']),
+            'idModalidad': int(request.form['idModalidad'])
+        }
+        add_Unidad_schema = {
+            'codigoUnidad': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+            },
+            'nombreUnidad': {
+                'type': 'string',
+                'minlength': 1,
+                'maxlength': 100,
+                'required': True,
+                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+            },
+            'contactoUnidad': {
+                'type': 'string',
+                'minlength': 1,
+                'maxlength': 50,
+                'required': True,
+                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+            },
+            'direccionUnidad': {
+                'type': 'string',
+                'minlength': 1,
+                'maxlength': 200,
+                'required': True,
+                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir alfanuméricos, espacios, comas, puntos y guiones
+            },
+            'idComuna': {
+                'type': 'integer',
+                'required': True
+            },
+            'idModalidad': {
+                'type': 'integer',
+                'required': True
+            }
+        }
+
+        # Validar datos
+        v = Validator(add_Unidad_schema)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
+            return redirect(url_for('Unidad.UNIDAD'))
+
+
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO unidad (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s, %s)'
-            , (codigoUnidad,nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad))
+            cur.execute('INSERT INTO unidad (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s, %s)',
+                       (data['codigoUnidad'], data['nombreUnidad'], data['contactoUnidad'], data['direccionUnidad'], data['idComuna'], data['idModalidad']))
             mysql.connection.commit()
             flash('Unidad agregada correctamente')
             return redirect(url_for('Unidad.UNIDAD'))
         except Exception as e:
-            #flash(e.args[1])
             flash("Error al crear")
             return redirect(url_for('Unidad.UNIDAD'))
 
@@ -98,38 +145,75 @@ def edit_Unidad(id):
         #flash(e.args[1])
         flash("Error al crear")
         return redirect(url_for('Unidad.UNIDAD'))
-
-#actualiza los datos de Unidad segun el id correspondiente   
-@Unidad.route('/update_Unidad/<id>', methods = ['POST'])
+  
+# Actualiza los datos de Unidad según el id correspondiente   
+@Unidad.route('/update_Unidad/<id>', methods=['POST'])
 @administrador_requerido
 def update_Unidad(id):
     if request.method == 'POST':
-        codigo_Unidad = request.form['codigo_Unidad']
-        nombreUnidad = request.form['nombreUnidad']
-        contactoUnidad = request.form['contactoUnidad']
-        direccionUnidad = request.form['direccionUnidad']
-        idComuna = request.form['nombreComuna']
-        idModalidad = request.form['idModalidad']
+        # Recoger datos del formulario
+        data = {
+            'codigo_Unidad': request.form['codigo_Unidad'],
+            'nombreUnidad': request.form['nombreUnidad'],
+            'contactoUnidad': request.form['contactoUnidad'],
+            'direccionUnidad': request.form['direccionUnidad'],
+            'idComuna': int(request.form['nombreComuna']),
+            'idModalidad': int(request.form['idModalidad'])
+        }
+
+        update_Unidad_schema = {
+            'codigo_Unidad': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+            },
+            'nombreUnidad': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+            },
+            'contactoUnidad': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9 ]+$',
+                'nullabe': 'true'  # Permitir solo alfanuméricos y espacios
+            },
+            'direccionUnidad': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir solo alfanuméricos y espacios
+            },
+            'idComuna': {
+                'type': 'integer',
+                'required': True
+            },
+            'idModalidad': {
+                'type': 'integer',
+                'required': True
+            }
+        }
+
+        # Validar datos
+        v = Validator(update_Unidad_schema)
+        if not v.validate(data):
+            flash("Caracteres no permitidos")
+            return redirect(url_for('Unidad.UNIDAD'))
+
 
         try:
             cur = mysql.connection.cursor()
             cur.execute(""" 
             UPDATE unidad
-            SET idUnidad = %s,
+            SET idUnidad =%s,
                 nombreUnidad = %s,
                 contactoUnidad = %s,
                 direccionUnidad = %s,
                 idComuna = %s,
                 idModalidad = %s
-                WHERE idUnidad = %s
-            """, (codigo_Unidad, nombreUnidad, contactoUnidad, 
-                  direccionUnidad, idComuna, idModalidad ,id))
+            WHERE idUnidad = %s
+            """, (data['codigo_Unidad'], data['nombreUnidad'], data['contactoUnidad'], 
+                  data['direccionUnidad'], data['idComuna'], data['idModalidad'], id))
             mysql.connection.commit()
             flash('Unidad actualizada correctamente')
             return redirect(url_for('Unidad.UNIDAD'))
         except Exception as e:
-            #flash(e.args[1])
-            flash("Error al crear")
+            flash("Error al actualizar: " + str(e))  # Muestra el error para depuración
             return redirect(url_for('Unidad.UNIDAD'))
         
 #Elimina un registro segun el id

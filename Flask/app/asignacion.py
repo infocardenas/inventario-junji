@@ -91,8 +91,12 @@ def add_asignacion(idEquipo = "None"):
                 WHERE ee.nombreEstado_equipo = %s
                 """, ("SIN ASIGNAR",))
     equipos_data = cur.fetchall()
-    return render_template("add_asignacion.html",equipos=equipos_data,
-        funcionarios=funcionarios_data, equipoSeleccionado = idEquipo)
+    return render_template(
+        "add_asignacion.html",
+        equipos=equipos_data,
+        funcionarios=funcionarios_data,
+        equipoSeleccionado = idEquipo
+        )
 
 
 

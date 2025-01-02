@@ -25,24 +25,25 @@
 
         <!-- ----- -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div id="error-message" style="display: none;" class="error-message"></div>
         <div class="card card-body" id="formulario" , style="display: none;">
             <form action="/add_Unidad" method="POST" class="mi-formulario">
                 <div class="form-group">
 
                     <label for="codigo_unidad">Código de la Unidad: </label>
-                    <input type="text" class="form-control" name="codigo_unidad" placeholder="codigo"
+                    <input type="text" class="solo-numeros" name="codigo_unidad" placeholder="codigo"
                     maxlength="11">
                     <br>
                     <label for="nombreUnidad">Nombre de la Unidad: </label>
-                    <input type="text" class="form-control" name="nombreUnidad" placeholder="Nombre"
+                    <input type="text" class="validatable-input" name="nombreUnidad" placeholder="Nombre"
                     maxlength="45">
                     <br>
                     <label for="contactoUnidad">Contacto: </label>
-                    <input type="text" class="form-control" name="contactoUnidad" placeholder="Contacto"
+                    <input type="text" class="validatable-input" name="contactoUnidad" placeholder="Contacto"
                     maxlength="45">
                     <br>
                     <label for="direccionUnidad">Dirección: </label>
-                    <input type="text" class="form-control" name="direccionUnidad" placeholder="Direccion"
+                    <input type="text" class="validatable-input" name="direccionUnidad" placeholder="Direccion"
                     maxlength="45">
                     <br>
                     <label for="nombreComuna">Comuna: </label>
@@ -67,6 +68,15 @@
         </div>
     </div>
     <h2>Unidad</h2>
+    <div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
+        <div style="display:flex;">
+            <form action="/buscar_unidad" method="POST">
+                <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador"
+                    onkeyup="busqueda('myTableBody')" />
+            </form>
+        </div>
+    
+    </div>
     <div style="overflow-x:auto;">
         <table id="posts">
             <thead>
@@ -85,15 +95,15 @@
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for ubi in Unidad %}
                 <tr>
-                    <td>{{ubi.idUnidad}}</td>
-                    <td>{{ubi.nombreUnidad}}</td>
-                    <td>{{ubi.contactoUnidad}}</td>
-                    <td>{{ubi.direccionUnidad}}</td>
+                    <td class="toCheck">{{ubi.idUnidad}}</td>
+                    <td class="toCheck">{{ubi.nombreUnidad}}</td>
+                    <td class="toCheck">{{ubi.contactoUnidad}}</td>
+                    <td class="toCheck">{{ubi.direccionUnidad}}</td>
                     {% if Unidad.idComuna == comuna.idComuna %}
-                    <td>{{ubi.nombreComuna}}</td>
+                    <td class="toCheck">{{ubi.nombreComuna}}</td>
                     {% endif %}
-                    <td>{{ubi.num_equipos}}</td>
-                    <td>{{ubi.nombreModalidad}}</td>
+                    <td class="toCheck">{{ubi.num_equipos}}</td>
+                    <td class="toCheck">{{ubi.nombreModalidad}}</td>
                     <td>
                         <div class="dropdown">
                             <button class="options-button">Opciones</button>
@@ -111,5 +121,10 @@
                 {% endfor %}
             </tbody>
         </table>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
+
         {{ paginacion("Unidad", page, lastpage) }}
         {% endblock %}

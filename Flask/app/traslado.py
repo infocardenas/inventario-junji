@@ -256,6 +256,10 @@ def create_traslado(origen):
         return redirect(url_for("traslado.Traslado"))
     return redirect(url_for("traslado.Traslado"))
 
+
+
+
+##funcion para crear un traslado
 def crear_traslado_generico(fechatraslado, Destino, Origen, equipos):
     # Añadir fila a traslado
     cur = mysql.connection.cursor()

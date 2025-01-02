@@ -23,16 +23,17 @@
 
 <!-- ----- -->
 <button class="nav-button" onclick="showDiv()">Agregar</button>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="card card-body" id="formulario", style="display: none;">
     <form action="/add_ordenc" method="POST" class="mi-formulario">
     <div class="form-group">
     <label for="id_ordenc">ID de Orden: </label>
-    <input type="text" name="id_ordenc" id="id_ordenc" placeholder="Serie orden de compra"
+    <input type="text" class="validar-id-orden" name="id_ordenc" id="id_ordenc" placeholder="Serie orden de compra"
     maxlength="45">
     <br>
     <label for="nombre_ordenc">Nombre de Orden: </label>
     <input type="text" name="nombre_ordenc" placeholder="Nombre orden de compra"
-    maxlength="45">
+    maxlength="45" class="validatable-input">
    <br>
    <label for="fecha_compra_ordenc">Fecha de Orden de Compra: </label>
     <input type="date" name="fecha_compra_ordenc" placeholder="">
@@ -93,11 +94,17 @@
             <td>{{ordenc.nombreProveedor}}</td>
         {% endif %}
             <td>
+                <a href="/edit_ordenc/{{ordenc.idOrden_compra}}" class="success-button">Editar</a>
                 <a href="/delete_ordenc/{{ordenc.idOrden_compra}}"class="delete-button">Eliminar</a>
             </td>
         </tr>
         {% endfor %}
     </tbody>
 </table>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
+
 {{ paginacion("orden_compra", page, lastpage) }}
 {% endblock %}

@@ -3,6 +3,7 @@ from flask import Blueprint, render_template, request, url_for, redirect, flash,
 from db import mysql, bcrypt
 from funciones import getPerPage
 import datetime
+from cerberus import Validator
 
 cuentas = Blueprint("cuentas", __name__, template_folder="app/templates")
 
@@ -83,18 +84,38 @@ def registrar():
 @cuentas.route("/crear_cuenta", methods=["GET", "POST"])
 @administrador_requerido
 def crear_cuenta():
-    nombreUsuario = request.form['nombreUsuario']
-    contrasenna = request.form['contrasenna']
-    contrasenna2 = request.form['repetir']
+    data={
+    'nombreUsuario' : request.form['nombreUsuario'],
+    'contrasenna' : request.form['contrasenna'],
+    'contrasenna2 ': request.form['repetir']
+    }
     isAdmin = request.form.get("isAdmin")
-    #print("##############")
-    #print(isAdmin)
+
+    schema = {
+        'nombreUsuario' : {
+            'required' : True,
+            'type' : 'string',
+            'regex' : '^[a-zA-Z0-9@.]+$'},
+        'contrasenna' : {
+            'required' : True,
+            'type' : 'string',
+            'regex' : '^[a-zA-Z0-9!@#$%^&*]+$'},
+        'contrasenna2' : {
+            'required' : True,
+            'type' : 'string',
+            'regex' : '^[a-zA-Z0-9!@#$%^&*]+$'}, 
+    }
+    v = Validator(schema)
+    if not v.validate(data):
+        flash("caracteres no permitidos")
+        return redirect(url_for('cuentas.registrar'))
+    
     if isAdmin == "on":
         isAdmin = 1
     else:
         isAdmin = 0
 
-    if contrasenna != contrasenna2:
+    if 'contrasenna' != 'contrasenna2':
         flash("Las contraseñas son diferentes")
         return redirect("/registrar")
 
@@ -105,7 +126,7 @@ def crear_cuenta():
     SELECT * 
     FROM usuario u
     WHERE u.nombreUsuario = %s
-        """, (nombreUsuario,))
+        """, ('nombreUsuario',))
     #se usa fetchall para que este en forma de tupla
     usuarios = cur.fetchall()
     if len(usuarios) == 1:
@@ -114,7 +135,7 @@ def crear_cuenta():
 
     
     #Encriptar contraseña
-    contraseñaHasheda = bcrypt.generate_password_hash(contrasenna).decode('utf-8')
+    contraseñaHasheda = bcrypt.generate_password_hash('contrasenna').decode('utf-8')
     print(contraseñaHasheda)
 
     #subir datos a la base de datos
@@ -124,7 +145,7 @@ def crear_cuenta():
         contrasennaUsuario,
         privilegiosAdministrador
     ) VALUES (%s, %s, %s)
-    """, (nombreUsuario, contraseñaHasheda, str(isAdmin)))
+    """, ('nombreUsuario', contraseñaHasheda, str(isAdmin)))
     mysql.connection.commit()
     return redirect("/registrar")
 
