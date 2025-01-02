@@ -5,7 +5,6 @@ from env_vars import cuentas
 
 import os
 
-
 # Configuramos la conexion a base de datos
 app.config['MYSQL_USER'] = os.getenv('MYSQL_USER') or cuentas['nombre_usuario']
 app.config['MYSQL_PASSWORD'] = os.getenv('MYSQL_PASSWORD') or cuentas['contrasenna']

@@ -491,6 +491,27 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+  //funcion para validar contraseñas
+  function validatePassword() {
+    var input = $(this).val();
+    var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; // Permitir letras, números, @, $, !, %, *, ?, & y un mínimo de 8 caracteres
+    var errorMessage = $("#error-message");
+
+    // Verificar si el input actual es válido
+    if (!regex.test(input)) {
+      errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
+    } else {
+      if ($(".validar-contraseña").filter(function () { return !regex.test($(this).val()); }).length > 0) {
+        errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
+      } else {
+        errorMessage.hide();
+      }
+    }
+  }
+  $(".validar-contraseña").on("input", validatePassword);
+});
+
+$(document).ready(function () {
   // Función de validación
   function validateInput() {
     var input = $(this).val();

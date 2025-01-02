@@ -57,6 +57,14 @@
         </div>
     </div>
     <h2>Funcionarios</h2>
+    <div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
+        <div style="display:flex;">
+            <form action="/buscar_funcionario" method="POST">
+                <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador"
+                    onkeyup="busqueda('myTableBody')" />
+            </form>
+        </div>
+    </div>
     <div style="overflow-x:auto;">
         <table id="posts">
             <thead>
@@ -73,11 +81,11 @@
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for fun in funcionario %}
                 <tr>
-                    <td>{{fun.rutFuncionario}}</td>
-                    <td>{{fun.nombreFuncionario}}</td>
-                    <td>{{fun.cargoFuncionario}}</td>
-                    <td>{{fun.nombreUnidad}}</td>
-                    <td>{{fun.correoFuncionario}}</td>
+                    <td class="toCheck">{{fun.rutFuncionario}}</td>
+                    <td class="toCheck">{{fun.nombreFuncionario}}</td>
+                    <td class="toCheck">{{fun.cargoFuncionario}}</td>
+                    <td class="toCheck">{{fun.nombreUnidad}}</td>
+                    <td class="toCheck">{{fun.correoFuncionario}}</td>
                     <td>
                         <a href="/edit_funcionario/{{fun.rutFuncionario}}" class="success-button">Editar</a>
                         <a href="/delete_funcionario/{{fun.rutFuncionario}}" class="delete-button">Eliminar</a>

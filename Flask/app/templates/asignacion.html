@@ -26,7 +26,14 @@
 
     </div>
     <h2>Asignaciones</h2>
-    <div style="position: relative;">
+    <div style=" padding: 0px;width: 50%; text-align:center">
+        <div style="display:flex;">
+            <form action="/consulta_equipo" method="POST">
+                <input name="palabra" type="text" class="search-box" placeholder="Search..." id="buscador"
+                    onkeyup="busqueda('myTableBody')" />
+                {#<button class="nav-button" type="submit">Buscar</button>#}
+            </form>
+        </div>
         <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
         <div style="overflow-x:auto;">
             <table id="posts">
@@ -74,7 +81,7 @@
                                 class="success-button">Devolver</a>
                             {% endif %}
                         </td>
-                        <td>{{asig.nombreFuncionario}}</td>
+                        <td class="toCheck">{{asig.nombreFuncionario}}</td>
                         <td>
                             {% if asig.fechaDevolucion == None%}
                             Sin Devolver

@@ -68,6 +68,15 @@
         </div>
     </div>
     <h2>Unidad</h2>
+    <div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
+        <div style="display:flex;">
+            <form action="/buscar_unidad" method="POST">
+                <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador"
+                    onkeyup="busqueda('myTableBody')" />
+            </form>
+        </div>
+    
+    </div>
     <div style="overflow-x:auto;">
         <table id="posts">
             <thead>
@@ -86,15 +95,15 @@
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for ubi in Unidad %}
                 <tr>
-                    <td>{{ubi.idUnidad}}</td>
-                    <td>{{ubi.nombreUnidad}}</td>
-                    <td>{{ubi.contactoUnidad}}</td>
-                    <td>{{ubi.direccionUnidad}}</td>
+                    <td class="toCheck">{{ubi.idUnidad}}</td>
+                    <td class="toCheck">{{ubi.nombreUnidad}}</td>
+                    <td class="toCheck">{{ubi.contactoUnidad}}</td>
+                    <td class="toCheck">{{ubi.direccionUnidad}}</td>
                     {% if Unidad.idComuna == comuna.idComuna %}
-                    <td>{{ubi.nombreComuna}}</td>
+                    <td class="toCheck">{{ubi.nombreComuna}}</td>
                     {% endif %}
-                    <td>{{ubi.num_equipos}}</td>
-                    <td>{{ubi.nombreModalidad}}</td>
+                    <td class="toCheck">{{ubi.num_equipos}}</td>
+                    <td class="toCheck">{{ubi.nombreModalidad}}</td>
                     <td>
                         <div class="dropdown">
                             <button class="options-button">Opciones</button>

@@ -194,10 +194,19 @@ def buscar_funcionario(id):
     cur = mysql.connection.cursor()
     cur.execute("""
     SELECT * 
-    FROM funcionario f
-    INNER JOIN unidad u on f.idUnidad = u.idUnidad
-    WHERE f.rutFuncionario = %s
-    """, (id,))
+    FROM (
+        SELECT f.rutFuncionario, f.nombreFuncionario, f.cargoFuncionario, 
+            f.idUnidad, u.idUnidad, u.nombreUnidad, f.correoFuncionario
+        FROM funcionario f
+        INNER JOIN unidad u on f.idUnidad = u.idUnidad
+        WHERE f.rutFuncionario = %s
+        UNION ALL
+        SELECT f.rutFuncionario, f.nombreFuncionario, f.cargoFuncionario, 
+            f.idUnidad, u.idUnidad, u.nombreUnidad, f.correoFuncionario
+        FROM funcionario f
+        INNER JOIN unidad u on f.idUnidad = u.idUnidad
+        WHERE f.correoFuncionario = %s)
+    """, (id, id))
     funcionarios = cur.fetchall()
 
     cur.execute("""
@@ -207,3 +216,4 @@ def buscar_funcionario(id):
     unidades = cur.fetchall()
     return render_template('funcionario.html', funcionario = funcionarios, 
                            Unidad = unidades, page=1, lastpage=True)
+
