@@ -630,3 +630,19 @@ $(document).ready(function () {
   $(".rut-input").on("input", validateRutInput);
 });
 
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Selecciona el input con la clase 'search-box'
+  const searchBox = document.querySelector('.search-box');
+
+  // Agrega un event listener para el evento 'keydown'
+  searchBox.addEventListener('keydown', function(event) {
+      // Verifica si la tecla presionada es 'Enter' (código 13)
+      if (event.keyCode === 13) {
+          // Previene la acción por defecto (enviar el formulario)
+          event.preventDefault();
+          // Puedes agregar aquí cualquier otra acción que desees realizar
+          console.log('Enter bloqueado');
+      }
+  });
+});

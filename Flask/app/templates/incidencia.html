@@ -45,6 +45,15 @@
     </div>
     <br />
     <h2>Incidencias</h2>
+    <div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
+        <div style="display:flex;">
+            <form action="/consulta_equipo" method="POST">
+                <input name="palabra" type="text" class="search-box" placeholder="Buscar incidencias" id="buscador"
+                    onkeyup="busqueda('myTableBody')" />
+                {#<button class="nav-button" type="submit">Buscar</button>#}
+            </form>
+        </div>
+    </div>
     <div style="overflow-x:auto;">
         <table id="posts">
             <thead>
@@ -66,17 +75,17 @@
                 <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for incidencia in Incidencia %}
                 <tr>
-                    <td>{{incidencia.nombreIncidencia}}</td>
-                    <td>{{incidencia.observacionIncidencia}}</td>
-                    <td>{{incidencia.fechaIncidencia}}</td>
-                    <td>
+                    <td class="toCheck">{{incidencia.nombreIncidencia}}</td>
+                    <td class="toCheck">{{incidencia.observacionIncidencia}}</td>
+                    <td class="toCheck">{{incidencia.fechaIncidencia}}</td>
+                    <td class="toCheck">
                         <a href="/incidencia/listar_pdf/{{incidencia.idIncidencia}}" class="info-button">Documentos</a>
                     </td>
-                    <td>{{incidencia.cod_inventarioEquipo}}</td>
-                    <td>{{incidencia.Num_serieEquipo}}</td>
-                    <td>{{incidencia.nombreTipo_Equipo}}</td>
-                    <td>{{incidencia.nombreModeloEquipo}}</td>
-                    <td>{{incidencia.numDocumentos}}</td>
+                    <td class="toCheck">{{incidencia.cod_inventarioEquipo}}</td>
+                    <td class="toCheck">{{incidencia.Num_serieEquipo}}</td>
+                    <td class="toCheck">{{incidencia.nombreTipo_Equipo}}</td>
+                    <td class="toCheck">{{incidencia.nombreModeloEquipo}}</td>
+                    <td class="toCheck">{{incidencia.numDocumentos}}</td>
                     <td>
                         <div class="dropdown">
                             <button class="options-button desplegable-button">Opciones</button>
@@ -93,5 +102,10 @@
                 {% endfor %}
             </tbody>
         </table>
+
+        
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <script src="../static/js/main.js"></script>
         {{ paginacion("incidencia", page, lastpage) }}
         {% endblock %}
