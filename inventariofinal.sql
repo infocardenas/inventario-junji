@@ -212,7 +212,7 @@ CREATE TABLE `equipo` (
   `macEquipo` varchar(45) DEFAULT NULL,
   `imeiEquipo` varchar(45) DEFAULT NULL,
   `numerotelefonicoEquipo` varchar(12) DEFAULT NULL,
-  `idEstado_equipo` int(11) NOT NULL,
+  `idEstado_equipo` int(11) NOT NULL DEFAULT 1,
   `idUnidad` int(11) NOT NULL,
   `idOrden_compra` varchar(45) NOT NULL,
   `idModelo_equipo` int(11) NOT NULL,
@@ -406,14 +406,19 @@ INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 (32, 'Quilaco', 3),
 (33, 'Yumbel', 3);
 
---
--- Volcado de datos para la tabla `modalidad`
---
-
+-- Insersion de datos para la tabla `modalidad`
 INSERT INTO `modalidad` (`idModalidad`, `nombreModalidad`) VALUES
 (1, 'CLASICO'),
 (2, 'ALTERNATIVO'),
 (3, 'OFICINA');
 
+-- Insersion de datos para la tabla `estado_equipo`
+INSERT INTO `estado_equipo` (`idEstado_equipo`, `nombreEstado_equipo`) VALUES 
+(1, 'SIN ASIGNAR'),
+(2, 'En Uso'),
+(3, 'Siniestro'),
+(4, 'Baja'),
+(5, 'Mantencion');
 
 COMMIT;
+
