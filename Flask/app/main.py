@@ -47,4 +47,4 @@ if __name__ == "__main__":
     #esta es para desarrollo
     #app.run(port=3000, debug=True)
     #esta es para produccion
-    app.run(host='0.0.0.0', port=3000)
+    app.run(debug=True, host='0.0.0.0', port=3000)
