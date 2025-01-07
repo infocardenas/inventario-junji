@@ -6,6 +6,43 @@ from cerberus import Validator
 
 Unidad = Blueprint('Unidad', __name__, template_folder = 'app/templates')
 
+#schema de validaciones
+Unidad_schema = {
+            'codigo_unidad': {
+                'type': 'string',
+                'regex': '^[a-zA-Z0-9]+$'  # Permitir solo alfanuméricos y espacios
+            },
+            'nombreUnidad': {
+                'type': 'string',
+                'minlength': 1,
+                'maxlength': 100,
+                'required': True,
+                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+            },
+            'contactoUnidad': {
+                'type': 'string',
+                'minlength': 1,
+                'maxlength': 50,
+                'required': True,
+                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+            },
+            'direccionUnidad': {
+                'type': 'string',
+                'minlength': 1,
+                'maxlength': 200,
+                'required': True,
+                'regex': '^[a-zA-Z0-9 ,.-/]+$'  # Permitir alfanuméricos, espacios, comas, puntos y guiones
+            },
+            'idComuna': {
+                'type': 'integer',
+                'required': True
+            },
+            'idModalidad': {
+                'type': 'integer',
+                'required': True
+            }
+        }
+
 #ruta para poder enviar datos a la pagina principal de Unidad
 @Unidad.route('/Unidad')
 @Unidad.route('/Unidad/<page>')
@@ -58,44 +95,9 @@ def add_Unidad():
             'idComuna': int(request.form['idComuna']),
             'idModalidad': int(request.form['idModalidad'])
         }
-        add_Unidad_schema = {
-            'codigoUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
-            },
-            'nombreUnidad': {
-                'type': 'string',
-                'minlength': 1,
-                'maxlength': 100,
-                'required': True,
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
-            },
-            'contactoUnidad': {
-                'type': 'string',
-                'minlength': 1,
-                'maxlength': 50,
-                'required': True,
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
-            },
-            'direccionUnidad': {
-                'type': 'string',
-                'minlength': 1,
-                'maxlength': 200,
-                'required': True,
-                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir alfanuméricos, espacios, comas, puntos y guiones
-            },
-            'idComuna': {
-                'type': 'integer',
-                'required': True
-            },
-            'idModalidad': {
-                'type': 'integer',
-                'required': True
-            }
-        }
 
         # Validar datos
-        v = Validator(add_Unidad_schema)
+        v = Validator(Unidad_schema)
         if not v.validate(data):
             flash("Caracteres no permitidos")
             return redirect(url_for('Unidad.UNIDAD'))
@@ -103,13 +105,13 @@ def add_Unidad():
 
         try:
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO unidad (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s, %s)',
+            cur.execute("""INSERT INTO unidad (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s, %s)""",
                        (data['codigoUnidad'], data['nombreUnidad'], data['contactoUnidad'], data['direccionUnidad'], data['idComuna'], data['idModalidad']))
-            mysql.connection.commit()
+            cur.connection.commit()
             flash('Unidad agregada correctamente')
             return redirect(url_for('Unidad.UNIDAD'))
         except Exception as e:
-            flash("Error al crear")
+            flash('Error al agregar unidad')
             return redirect(url_for('Unidad.UNIDAD'))
 
 #ruta para poder enviar los datos a la vista de edicion segun el id correspondiente
@@ -161,36 +163,8 @@ def update_Unidad(id):
             'idModalidad': int(request.form['idModalidad'])
         }
 
-        update_Unidad_schema = {
-            'codigo_Unidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
-            },
-            'nombreUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
-            },
-            'contactoUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ]+$',
-                'nullabe': 'true'  # Permitir solo alfanuméricos y espacios
-            },
-            'direccionUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir solo alfanuméricos y espacios
-            },
-            'idComuna': {
-                'type': 'integer',
-                'required': True
-            },
-            'idModalidad': {
-                'type': 'integer',
-                'required': True
-            }
-        }
-
         # Validar datos
-        v = Validator(update_Unidad_schema)
+        v = Validator(Unidad_schema)
         if not v.validate(data):
             flash("Caracteres no permitidos")
             return redirect(url_for('Unidad.UNIDAD'))

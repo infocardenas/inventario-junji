@@ -469,53 +469,10 @@ function seleccionarTipoEquipoEditarModelo(id_select) {
 }
 
 $(document).ready(function () {
-  //funcion para validacion de nombre usuario
-  function validateInput() {
-    var input = $(this).val();
-    var regex = /^[a-zA-Z0-9@.]*$/; // Permitir letras, @, puntos, números y espacios
-    var errorMessage = $("#error-message");
-
-    // Verificar si el input actual es válido
-    if (!regex.test(input)) {
-      errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números, @ y puntos.").show();
-    } else {
-            // Verificar si hay algún input con error
-            if ($(".validatable-input").filter(function () { return !regex.test($(this).val()); }).length > 0) {
-              errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
-            } else {
-              errorMessage.hide();
-            }
-    }
-  }
-  $(".validar-user").on("input", validateInput);
-});
-
-$(document).ready(function () {
-  //funcion para validar contraseñas
-  function validatePassword() {
-    var input = $(this).val();
-    var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/; // Permitir letras, números, @, $, !, %, *, ?, & y un mínimo de 8 caracteres
-    var errorMessage = $("#error-message");
-
-    // Verificar si el input actual es válido
-    if (!regex.test(input)) {
-      errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
-    } else {
-      if ($(".validar-contraseña").filter(function () { return !regex.test($(this).val()); }).length > 0) {
-        errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
-      } else {
-        errorMessage.hide();
-      }
-    }
-  }
-  $(".validar-contraseña").on("input", validatePassword);
-});
-
-$(document).ready(function () {
   // Función de validación
   function validateInput() {
     var input = $(this).val();
-    var regex = /^[a-zA-Z0-9@. ]*$/; // Permitir letras, @, puntos, números y espacios
+    var regex = /^[a-zA-Z0-9,.-/  ]*$/; // Permitir letras, @, puntos, números y espacios
     var errorMessage = $("#error-message");
 
     // Verificar si el input actual es válido
@@ -533,6 +490,27 @@ $(document).ready(function () {
 
   // Asignar la función de validación a todos los inputs con la clase 'validatable-input'
   $(".validatable-input").on("input", validateInput);
+});
+
+$(document).ready(function () {
+  //funcion para validar contraseñas
+  function validatePassword() {
+    var input = $(this).val();
+    var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$])[A-Za-z\d@$]{8,}$/; // Permitir letras, números, @, $, !, %, *, ?, & y un mínimo de 8 caracteres
+    var errorMessage = $("#error-message");
+
+    // Verificar si el input actual es válido
+    if (!regex.test(input)) {
+      errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
+    } else {
+      if ($(".validar-contraseña").filter(function () { return !regex.test($(this).val()); }).length > 0) {
+        errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
+      } else {
+        errorMessage.hide();
+      }
+    }
+  }
+  $(".validar-contraseña").on("input", validatePassword);
 });
 
 
