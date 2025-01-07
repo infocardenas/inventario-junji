@@ -549,7 +549,6 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-<<<<<<< HEAD
   function validarRut() {
       const inputField = $(this);
       let rawInput = inputField.val(); // Captura el valor ingresado
@@ -642,48 +641,6 @@ $(document).ready(function () {
   function calcularDigitoVerificador(rut) {
       let suma = 0;
       let multiplicador = 2;
-=======
-  // Función de validación
-  function validarIdOrden() {
-    const input = $(this).val();
-    const regex = /^[A-Za-z0-9-]*$/; // Permitir letras, números y guiones
-    const errorMessage = $("#error-message");
-    if (!regex.test(input)) {
-      errorMessage.text("Solo se permiten letras, números y guiones.").show();
-    } else {
-      errorMessage.hide();
-    }
-  }
-  $(".validar-id-orden").on("input", validarIdOrden);
-});
-
-$(document).ready(function () {
-  // Función de validación
-  function validateRutInput() {
-    const input = $(this).val();
-    const errorMessage = $("#error-message");
-    const regex = /^[0-9]{7,8}-[0-9kK]$/; // Formato válido: 12345678-9 o 12345678-k
-
-    // Validar el formato del RUT
-    if (!regex.test(input)) {
-      errorMessage.text("Formato de RUT inválido. Use el formato 12345678-9.").show();
-      return;
-    }
-
-    // Validar el dígito verificador
-    const [rut, dv] = input.split("-");
-    if (!validarDigitoVerificador(rut, dv)) {
-      errorMessage.text("El dígito verificador del RUT es incorrecto.").show();
-    } else {
-      errorMessage.hide();
-    }
-  }
-
-  // Función para calcular y validar el dígito verificador
-  function validarDigitoVerificador(rut, dv) {
-    let suma = 0;
-    let multiplicador = 2;
->>>>>>> fabian
 
     // Iterar sobre el RUT de derecha a izquierda
     for (let i = rut.length - 1; i >= 0; i--) {
@@ -694,14 +651,8 @@ $(document).ready(function () {
     const resto = suma % 11;
     const calculado = 11 - resto;
 
-<<<<<<< HEAD
       // Convertir el resultado al formato de DV esperado
       return calculado === 10 ? "k" : calculado === 11 ? "0" : calculado.toString();
-=======
-    // Convertir el resultado al formato de DV esperado
-    const dvCalculado = calculado === 11 ? "0" : calculado === 10 ? "k" : calculado.toString();
-    return dvCalculado.toLowerCase() === dv.toLowerCase();
->>>>>>> fabian
   }
 
   $(".rut-input").on("input", validarRut);
