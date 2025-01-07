@@ -1,9 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 <br/>
-    <div style="margin: auto; width: 0px;">
+    <div style="margin: auto; width: 50%; text-align: center;">
     <input name="busqueda" type="text" class="search-box" placeholder="Search..."
-     style="font-size: 30px"
+     style="font-size: 30px; width: 100%;"
         value="{{busqueda}}" id="buscador" onkeyup="busqueda()">
     </div>
 <div class="nav-search">
@@ -50,8 +50,4 @@
 
     </tbody>
 </table>
-<script>
-    //buscar al iniciar la pagina
-    busqueda()
-</script>
 {% endblock %}

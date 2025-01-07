@@ -172,6 +172,7 @@ def adjuntar_pdf(id):
         carpeta_incidencias,
         secure_filename(fileName)
     ))
+
     
     #obtener incidencia
 

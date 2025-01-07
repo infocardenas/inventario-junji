@@ -24,11 +24,12 @@
 
         <!-- ----- -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
+        <div id="error-message" style="display: none;" class="error-message"></div>
         <div class="card card-body" id="formulario", style="display: none;">
             <form action="/add_proveedor" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="nombre_proveedor">Nombre Proveedor: </label>
-                    <input type="text" name="nombre_proveedor" placeholder="Nombre proveedor"
+                    <input class="validatable-input" type="text" name="nombre_proveedor" placeholder="Nombre proveedor"
                     maxlength="45">
                     <button class="agregar-button">Agregar</button>
             </form>
@@ -60,6 +61,11 @@
                 <!-- Se termina la iteracion for -->
             </tbody>
         </table>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
+
         {{ paginacion("proveedor", page, lastpage) }}
 
         {% endblock %}

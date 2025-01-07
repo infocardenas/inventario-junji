@@ -1,2 +1,14 @@
+<<<<<<< HEAD
 .venv
 venv/
+=======
+# Ignorar la carpeta de entorno virtual
+.venv
+venv
+
+# Archivos de configuración
+.DS_Store
+
+
+**/__pycache__/
+>>>>>>> fabian

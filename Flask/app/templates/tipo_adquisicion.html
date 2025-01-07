@@ -24,10 +24,11 @@
 
 <!-- ----- -->
 <button class="nav-button" onclick="showDiv()">Agregar</button>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="card card-body" id="formulario" style="display: none;">
 <form action="/add_tipoa" method="POST"class="mi-formulario">
     <label for="nombre_tipoa"> Tipo de Adquisición</label>
-    <input type="text" name="nombre_tipoa" placeholder="Nombre tipo adquisicion">
+    <input type="text" name="nombre_tipoa" placeholder="Nombre tipo adquisicion" class="validatable-input">
     <button class="agregar-button"> Agregar</button>    
 </form>
 </div>
@@ -54,5 +55,9 @@
         {% endfor %}
     </tbody>
 </table> 
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
 {{ paginacion("tipo_adquisicion", page, lastpage) }}
 {% endblock %}

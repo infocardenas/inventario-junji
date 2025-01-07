@@ -2,13 +2,14 @@
 {% block body %}
 
 <a class="nav-button" href="/estado_equipo">Volver</a>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="row">
     <div class="col-md-4 offset-md-4">
       <div class="card card-body">
 <form action="/update_estado_equipo/{{estado_equipo.idEstado_equipo}}" method="POST"class="mi-formulario">
     <div class="form-group">
     <label for="nombre_estado_equipo">Estado Equipo:</label>
-    <input type="text" name="nombre_estado_equipo" placeholder="Nombre estado" value="{{estado_equipo.nombreEstado_equipo}}"
+    <input type="text" class="validatable-input" name="nombre_estado_equipo" placeholder="Nombre estado" value="{{estado_equipo.nombreEstado_equipo}}"
     maxlength="45">
     </div>
     <div class="form-group">
@@ -19,4 +20,7 @@
     <button type="submit" class="agregar-button"> Guardar</button>  
 </form> 
 
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
 {% endblock %}

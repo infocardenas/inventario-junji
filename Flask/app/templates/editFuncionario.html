@@ -1,30 +1,31 @@
-{% extends "layout.html" %}
+    {% extends "layout.html" %}
 {% block body %}
 
 <a class="nav-button" href="/funcionario">Volver</a>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="row">
     <div class="col-md-4 offset-md-4">
       <div class="card card-body">
     <form action="/update_funcionario/{{funcionario.rutFuncionario}}" method="POST"class="mi-formulario">
     <div class="form-group">
         <label for="rut_funcionario">Rut Funcionario</label>
-        <input type="text" name="rut_funcionario" value="{{funcionario.rutFuncionario}}"
+        <input type="text" class="rut-input" name="rut_funcionario" value="{{funcionario.rutFuncionario}}"
         maxlength="20">
     </div>
     <div class="form-group">
         <label for="nombre_funcionario">Nombre Funcionario</label>
-        <input type="text" name="nombre_funcionario"  value="{{funcionario.nombreFuncionario}}"
+        <input type="text" class="solo-letras" name="nombre_funcionario"  value="{{funcionario.nombreFuncionario}}"
         maxlength="45">
     </div>
     <div class="form-group">
         <label for="correo_funcionario">Correo Funcionario</label>
-        <input type="text" name="correo_funcionario"  
+        <input type="text" class="validatable-input" name="correo_funcionario"  
             value="{{funcionario.correoFuncionario}}"
             maxlength="45">
     </div>
     <div class="form-group">
         <label for="cargo_funcionario">Cargo:</label>
-        <input type="text" name="cargo_funcionario" value="{{funcionario.cargoFuncionario}}"
+        <input type="text" class="validatable-input" name="cargo_funcionario" value="{{funcionario.cargoFuncionario}}"
         maxlength="45">
 
     </div>
@@ -42,4 +43,9 @@
     </div>
     <button type="submit" class="agregar-button"> Guardar</button>  
 </form>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
+
 {% endblock %}

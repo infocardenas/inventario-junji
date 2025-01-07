@@ -468,80 +468,88 @@ function seleccionarTipoEquipoEditarModelo(id_select) {
 
 }
 
-function validarInputs() {
-  // Define los caracteres no permitidos
-  const caracteresNoPermitidos = /[!"#$%&/()]/;
-  const inputs = document.querySelectorAll('input'); // Selecciona todos los inputs del formulario
-
-  for (let input of inputs) {
-      if (input.value.trim() !== "" && caracteresNoPermitidos.test(input.value)) {
-          alert(`El campo "${input.name}" contiene caracteres no permitidos.`);
-          input.focus(); // Enfoca el input problemático
-          return false; // Evita que el formulario se envíe
-      }
-  }
-  return true; // Si todos los inputs son válidos, permite el envío del formulario
-}
-
-
-$(document).ready(function() {
+$(document).ready(function () {
   // Función de validación
   function validateInput() {
-      var input = $(this).val();
-      var regex = /^[a-zA-Z0-9 ]*$/; // Permitir letras, números y espacios
-      var errorMessage = $("#error-message");
+    var input = $(this).val();
+    var regex = /^[a-zA-Z0-9,.-/  ]*$/; // Permitir letras, @, puntos, números y espacios
+    var errorMessage = $("#error-message");
 
-      // Verificar si el input actual es válido
-      if (!regex.test(input)) {
-          errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
+    // Verificar si el input actual es válido
+    if (!regex.test(input)) {
+      errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
+    } else {
+      // Verificar si hay algún input con error
+      if ($(".validatable-input").filter(function () { return !regex.test($(this).val()); }).length > 0) {
+        errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
       } else {
-          // Verificar si hay algún input con error
-          if ($(".validatable-input").filter(function() { return !regex.test($(this).val()); }).length > 0) {
-              errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
-          } else {
-              errorMessage.hide();
-          }
+        errorMessage.hide();
       }
+    }
   }
 
   // Asignar la función de validación a todos los inputs con la clase 'validatable-input'
   $(".validatable-input").on("input", validateInput);
 });
 
+$(document).ready(function () {
+  //funcion para validar contraseñas
+  function validatePassword() {
+    var input = $(this).val();
+    var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$])[A-Za-z\d@$]{8,}$/; // Permitir letras, números, @, $, !, %, *, ?, & y un mínimo de 8 caracteres
+    var errorMessage = $("#error-message");
 
-$(document).ready(function() {
-  function validateLettersInput() {
-      const input = $(this).val();
-      const regex = /^[a-zA-Z\s]*$/; 
-      const errorMessage = $("#error-message"); 
-
-      if (!regex.test(input)) {
-          errorMessage.text("Solo se permiten letras y espacios.").show();
+    // Verificar si el input actual es válido
+    if (!regex.test(input)) {
+      errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
+    } else {
+      if ($(".validar-contraseña").filter(function () { return !regex.test($(this).val()); }).length > 0) {
+        errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
       } else {
-          errorMessage.hide();
+        errorMessage.hide();
       }
+    }
+  }
+  $(".validar-contraseña").on("input", validatePassword);
+});
+
+
+$(document).ready(function () {
+  // Función de validación
+  function validateLettersInput() {
+    const input = $(this).val();
+    const regex = /^[a-zA-Z\s]*$/; // Permitir letras y espacios
+    const errorMessage = $("#error-message");
+
+    if (!regex.test(input)) {
+      errorMessage.text("Solo se permiten letras y espacios.").show();
+    } else {
+      errorMessage.hide();
+    }
   }
 
   $(".solo-letras").on("input", validateLettersInput);
 });
 
 
-$(document).ready(function() {
+$(document).ready(function () {
+  // Función de validación
   function validateNumbersInput() {
-      const input = $(this).val();
-      const regex = /^[0-9]*$/;
-      const errorMessage = $("#error-message"); 
+    const input = $(this).val();
+    const regex = /^[0-9]*$/; // Permitir números
+    const errorMessage = $("#error-message");
 
-      if (!regex.test(input)) {
-          errorMessage.text("Solo se permiten números.").show()
-      } else {
-          errorMessage.hide();
-      }
+    if (!regex.test(input)) {
+      errorMessage.text("Solo se permiten números.").show()
+    } else {
+      errorMessage.hide();
+    }
   }
   $(".solo-numeros").on("input", validateNumbersInput);
 });
 
 $(document).ready(function () {
+<<<<<<< HEAD
   function validarRut() {
       const inputField = $(this);
       let rawInput = inputField.val(); // Captura el valor ingresado
@@ -634,19 +642,84 @@ $(document).ready(function () {
   function calcularDigitoVerificador(rut) {
       let suma = 0;
       let multiplicador = 2;
+=======
+  // Función de validación
+  function validarIdOrden() {
+    const input = $(this).val();
+    const regex = /^[A-Za-z0-9-]*$/; // Permitir letras, números y guiones
+    const errorMessage = $("#error-message");
+    if (!regex.test(input)) {
+      errorMessage.text("Solo se permiten letras, números y guiones.").show();
+    } else {
+      errorMessage.hide();
+    }
+  }
+  $(".validar-id-orden").on("input", validarIdOrden);
+});
 
-      // Iterar sobre el RUT de derecha a izquierda
-      for (let i = rut.length - 1; i >= 0; i--) {
-          suma += parseInt(rut[i]) * multiplicador;
-          multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
-      }
+$(document).ready(function () {
+  // Función de validación
+  function validateRutInput() {
+    const input = $(this).val();
+    const errorMessage = $("#error-message");
+    const regex = /^[0-9]{7,8}-[0-9kK]$/; // Formato válido: 12345678-9 o 12345678-k
 
-      const resto = suma % 11;
-      const calculado = 11 - resto;
+    // Validar el formato del RUT
+    if (!regex.test(input)) {
+      errorMessage.text("Formato de RUT inválido. Use el formato 12345678-9.").show();
+      return;
+    }
 
+    // Validar el dígito verificador
+    const [rut, dv] = input.split("-");
+    if (!validarDigitoVerificador(rut, dv)) {
+      errorMessage.text("El dígito verificador del RUT es incorrecto.").show();
+    } else {
+      errorMessage.hide();
+    }
+  }
+
+  // Función para calcular y validar el dígito verificador
+  function validarDigitoVerificador(rut, dv) {
+    let suma = 0;
+    let multiplicador = 2;
+>>>>>>> fabian
+
+    // Iterar sobre el RUT de derecha a izquierda
+    for (let i = rut.length - 1; i >= 0; i--) {
+      suma += parseInt(rut[i]) * multiplicador;
+      multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
+    }
+
+    const resto = suma % 11;
+    const calculado = 11 - resto;
+
+<<<<<<< HEAD
       // Convertir el resultado al formato de DV esperado
       return calculado === 10 ? "k" : calculado === 11 ? "0" : calculado.toString();
+=======
+    // Convertir el resultado al formato de DV esperado
+    const dvCalculado = calculado === 11 ? "0" : calculado === 10 ? "k" : calculado.toString();
+    return dvCalculado.toLowerCase() === dv.toLowerCase();
+>>>>>>> fabian
   }
 
   $(".rut-input").on("input", validarRut);
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Selecciona el input con la clase 'search-box'
+  const searchBox = document.querySelector('.search-box');
+
+  // Agrega un event listener para el evento 'keydown'
+  searchBox.addEventListener('keydown', function(event) {
+      // Verifica si la tecla presionada es 'Enter' (código 13)
+      if (event.keyCode === 13) {
+          // Previene la acción por defecto (enviar el formulario)
+          event.preventDefault();
+          // Puedes agregar aquí cualquier otra acción que desees realizar
+          console.log('Enter bloqueado');
+      }
+  });
 });

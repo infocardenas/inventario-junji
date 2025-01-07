@@ -159,7 +159,7 @@ def update_ordenc(id):
 
         v = Validator(orden_compra_schema)
         if not v.validate(data):
-            flash(v.errors)
+            flash("Caracteres no permitidos")
             return redirect(url_for('orden_compra.ordenCompra'))
 
 

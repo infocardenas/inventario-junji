@@ -26,7 +26,15 @@
 
     </div>
     <h2>Asignaciones</h2>
-    <div style="position: relative;">
+        <div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
+            <div style="display:flex;">
+                <form action="/buscar_asignacion" method="POST">
+                    <input name="palabra" type="text" class="search-box" placeholder="Buscar asigancion..." id="buscador"
+                        onkeyup="busqueda('myTableBody')" />
+                </form>
+            </div>
+        
+        </div>
         <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
         <div style="overflow-x:auto;">
             <table id="posts">
@@ -74,7 +82,7 @@
                                 class="success-button">Devolver</a>
                             {% endif %}
                         </td>
-                        <td>{{asig.nombreFuncionario}}</td>
+                        <td class="toCheck">{{asig.nombreFuncionario}}</td>
                         <td>
                             {% if asig.fechaDevolucion == None%}
                             Sin Devolver
@@ -97,6 +105,11 @@
                     <!-- Se termina la iteracion for -->
                 </tbody>
             </table>
+
+            
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+    <script src="../static/js/main.js"></script>
             {{ paginacion("asignacion", page, lastpage) }}
 
             {% endblock %}

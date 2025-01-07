@@ -2,12 +2,18 @@
 {% block body %}
 
 <a class="nav-button" href="/proveedor">Volver</a>
+<div id="error-message" style="display: none;" class="error-message"></div>
 <div class="row">
     <div class="col-md-4 offset-md-4">
         <div class="card card-body">
 <form action="/update_proveedor/{{proveedor.idProveedor}}" method="POST"class="mi-formulario">
-    <input type="text" name="nombre_proveedor" placeholder="Nombre de proveedor" value="{{proveedor.nombreProveedor}}"
+    <input type="text" class="validatable-input" name="nombre_proveedor" placeholder="Nombre de proveedor" value="{{proveedor.nombreProveedor}}"
     maxlength="45">
     <button type="submit" class="agregar-button"> Guardar</button>  
 </form> 
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="../static/js/main.js"></script>
+
 {% endblock %}
