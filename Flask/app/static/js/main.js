@@ -549,6 +549,100 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
+<<<<<<< HEAD
+  function validarRut() {
+      const inputField = $(this);
+      let rawInput = inputField.val(); // Captura el valor ingresado
+      const errorMessage = $("#error-message");
+
+      // Ocultar el mensaje si el campo está vacío
+      if (rawInput.trim() === "") {
+          errorMessage.hide();
+          return;
+      }
+
+      // Validar caracteres no permitidos
+      if (/[^0-9\-kK]/.test(rawInput)) {
+          errorMessage.text("Solo se permiten números, un guion y la letra K (después del guion).").show();
+          rawInput = rawInput.replace(/[^0-9\-kK]/g, ""); // Elimina caracteres no válidos
+          return;
+      }
+
+      // Dividir el input en partes (antes y después del guion)
+      const parts = rawInput.split("-");
+      const rut = parts[0]; // Parte numérica antes del guion
+      const dv = parts[1] || ""; // Parte después del guion, si existe
+      const hasGuion = rawInput.includes("-");
+
+      // Validar longitud antes del guion
+      if (rut.length > 8) {
+          errorMessage.text("El RUT no puede tener más de 8 dígitos antes del guion.").show();
+          rawInput = rut.slice(0, 8) + (hasGuion ? "-" + dv : ""); // Cortar al límite
+          inputField.val(rawInput);
+          return;
+      }
+
+      // Prevenir ingresar guion si hay menos de 7 dígitos
+      if (hasGuion && (rut.length < 7 || rut.length > 8)) {
+          errorMessage.text("El RUT debe tener entre 7 y 8 dígitos antes del guion.").show();
+          rawInput = rut; // Elimina el guion si es inválido
+          inputField.val(rawInput);
+          return;
+      }
+
+      // Validar que el dígito verificador tenga solo un carácter
+      if (dv && dv.length > 1) {
+          errorMessage.text("El dígito verificador solo puede tener un carácter.").show();
+          rawInput = rut + "-" + dv.slice(0, 1); // Limitar el dígito verificador
+          inputField.val(rawInput);
+          return;
+      }
+
+      // Validar que la `k` solo aparezca después del guion
+      if (dv && !/^[0-9kK]$/.test(dv)) {
+          errorMessage.text("El dígito verificador debe ser un número o la letra K.").show();
+          rawInput = `${rut}-`; // Borra el DV inválido
+          inputField.val(rawInput);
+          return;
+      }
+
+      // Calcular el dígito verificador automáticamente solo si el guion es válido
+      if (hasGuion && dv === "" && rut.length >= 7 && rut.length <= 8) {
+          const calculatedDV = calcularDigitoVerificador(rut); // Calcular DV
+          rawInput = `${rut}-${calculatedDV}`; // Formatear el RUT completo
+          inputField.val(rawInput);
+
+          // Mover el cursor antes del dígito verificador
+          const cursorPos = rawInput.length - calculatedDV.length; // Posición justo antes del DV
+          inputField[0].setSelectionRange(cursorPos, cursorPos);
+
+          errorMessage.hide();
+          return;
+      }
+
+      // Bloquear entrada si el RUT está completo
+      if (rut.length >= 7 && rut.length <= 8 && hasGuion && /^[0-9kK]$/.test(dv)) {
+          // Limitar el valor del input solo al RUT completo
+          rawInput = `${rut}-${dv}`;
+          inputField.val(rawInput);
+
+          // Eliminar cualquier carácter adicional
+          if (rawInput.length > rut.length + dv.length + 1) {
+              inputField.val(`${rut}-${dv}`); // Asegurarse de que no se agreguen caracteres adicionales
+          }
+
+          errorMessage.hide();
+          return;
+      }
+
+      // Si no hay errores, ocultar el mensaje
+      errorMessage.hide();
+  }
+
+  function calcularDigitoVerificador(rut) {
+      let suma = 0;
+      let multiplicador = 2;
+=======
   // Función de validación
   function validarIdOrden() {
     const input = $(this).val();
@@ -589,6 +683,7 @@ $(document).ready(function () {
   function validarDigitoVerificador(rut, dv) {
     let suma = 0;
     let multiplicador = 2;
+>>>>>>> fabian
 
     // Iterar sobre el RUT de derecha a izquierda
     for (let i = rut.length - 1; i >= 0; i--) {
@@ -599,13 +694,17 @@ $(document).ready(function () {
     const resto = suma % 11;
     const calculado = 11 - resto;
 
+<<<<<<< HEAD
+      // Convertir el resultado al formato de DV esperado
+      return calculado === 10 ? "k" : calculado === 11 ? "0" : calculado.toString();
+=======
     // Convertir el resultado al formato de DV esperado
     const dvCalculado = calculado === 11 ? "0" : calculado === 10 ? "k" : calculado.toString();
     return dvCalculado.toLowerCase() === dv.toLowerCase();
+>>>>>>> fabian
   }
 
-  // Asignar la validación a los inputs con la clase 'rut-input'
-  $(".rut-input").on("input", validateRutInput);
+  $(".rut-input").on("input", validarRut);
 });
 
 
