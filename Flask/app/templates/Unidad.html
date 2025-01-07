@@ -32,7 +32,7 @@
 
                     <label for="codigo_unidad">Código de la Unidad: </label>
                     <input type="text" class="solo-numeros" name="codigo_unidad" placeholder="codigo"
-                    maxlength="11">
+                    maxlength="20">
                     <br>
                     <label for="nombreUnidad">Nombre de la Unidad: </label>
                     <input type="text" class="validatable-input" name="nombreUnidad" placeholder="Nombre"
@@ -61,7 +61,6 @@
                         <option value="{{ modalidad.idModalidad }}">{{ modalidad.nombreModalidad }}</option>
                         {% endfor %}
                     </select>
-
                 </div>
                 <button class="agregar-button"> Guardar</button>
             </form>

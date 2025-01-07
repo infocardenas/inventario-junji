@@ -4,6 +4,7 @@ from funciones import validarRut, getPerPage, validarCorreo
 from cuentas import loguear_requerido, administrador_requerido
 funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
 from cerberus import Validator
+from MySQLdb import IntegrityError 
 
 # Definir el esquema de validación para funcionario
 schema_funcionario = {
@@ -102,10 +103,24 @@ def add_funcionario():
             mysql.connection.commit()
             flash('Funcionario agregado correctamente')
             return redirect(url_for('funcionario.Funcionario'))
+        
+        except IntegrityError as e:
+                    error_message = str(e)
+                    if "Duplicate entry" in error_message:
+                        if "PRIMARY" in error_message:
+                            flash("Error: El RUT ya está registrado")
+                        elif "correoFuncionario" in error_message:
+                            flash("Error: El correo electrónico ya está registrado")
+                        else:
+                            flash("Error de duplicación en la base de datos")
+                    else:
+                        flash("Error de integridad en la base de datos")
+                    return redirect(url_for('funcionario.Funcionario'))
+                
         except Exception as e:
-            #flash(e.args[1])
-            flash("Error al crear")
-            return redirect(url_for('funcionario.Funcionario'))
+                    flash(f"Error al crear el funcionario: {str(e)}")
+                    return redirect(url_for('funcionario.Funcionario'))
+            
     
 #enviar datos a vista editar
 @funcionario.route('/edit_funcionario/<id>', methods = ['POST', 'GET'])
@@ -169,9 +184,21 @@ def update_funcionario(id):
             flash('Funcionario actualizado correctamente')
         
             return redirect(url_for('funcionario.Funcionario'))
+        except IntegrityError as e:
+            error_message = str(e)
+            if "Duplicate entry" in error_message:
+                if "PRIMARY" in error_message:
+                    flash("Error: El RUT ya está registrado")
+                elif "correoFuncionario" in error_message:
+                    flash("Error: El correo electrónico ya está registrado")
+                else:
+                    flash("Error de duplicación en la base de datos")
+            else:
+                flash("Error de integridad en la base de datos")
+            return redirect(url_for('funcionario.Funcionario'))
+        
         except Exception as e:
-            #flash(e.args[1])
-            flash("Error al crear")
+            flash(f"Error al actualizar el funcionario: {str(e)}")
             return redirect(url_for('funcionario.Funcionario'))
 
 #eliminar registro segun id

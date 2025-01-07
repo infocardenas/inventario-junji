@@ -6,6 +6,7 @@ from openpyxl.styles import PatternFill
 from cuentas import loguear_requerido, administrador_requerido
 from werkzeug.utils import secure_filename
 from cerberus import Validator
+from MySQLdb import IntegrityError
 
 import os
 
@@ -182,7 +183,7 @@ def add_equipo():
         # Validar los datos usando Cerberus
         if not v.validate(datos):
             flash("Caracteres no permitidos")
-            return redirect(url_for("marca_equipo.marcaEquipo"))
+            return redirect(url_for("equipo.Equipo"))
 
 
         #TODO: Muchos select tienen el mismo nombre y esto provoca un error
@@ -232,14 +233,22 @@ def add_equipo():
             mysql.connection.commit()
             flash("Equipo agregado correctamente")
             return redirect(url_for("equipo.Equipo"))
-        except Exception as e:
-            print("exception agregar equipo")
-            if(e.args[0] == 1062):
-                flash("No se puede repetir el valor de serie")
+        except IntegrityError as e:
+            mensaje_error = str(e)
+            if "Duplicate entry" in mensaje_error:
+                if "PRIMARY" in mensaje_error:
+                    flash("El código de inventario ya existe")
+                elif "UNIQUE" in mensaje_error:
+                    flash("El número de serie ya existe")
+                else:
+                    flash("Error de duplicacion en la base de datos")
             else:
-                flash("Error al crear")
-                #flash(e.args[1])
-            return redirect(url_for("equipo.Equipo"))
+                flash("Error de integridad en la base de datos")
+            return redirect(url_for('equipo.Equipo'))
+        
+        except Exception as e:
+            flash(f"Error al crear el equipo: {str(e)}")
+            return redirect(url_for('equipo.Equipo'))
         
 # envia datos al formulario editar segun id
 @equipo.route("/edit_equipo/<id>", methods=["POST", "GET"])
