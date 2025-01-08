@@ -469,6 +469,25 @@ function seleccionarTipoEquipoEditarModelo(id_select) {
 }
 
 $(document).ready(function () {
+  // Función para validar caracteres permitidos en el correo
+  function validateEmailInput() {
+    var input = $(this).val();
+    var regex = /^[a-zA-Z0-9.@]*$/; // Solo permite letras, números, puntos y @
+    var errorMessage = $("#error-message");
+
+    // Verificar si hay caracteres no permitidos
+    if (!regex.test(input)) {
+      errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números, puntos y @.").show();
+    } else {
+      errorMessage.hide();
+    }
+  }
+
+  // Asignar la función de validación a todos los inputs con la clase 'validate-email'
+  $(".validar-correo").on("input", validateEmailInput);
+});
+
+$(document).ready(function () {
   // Función de validación
   function validateInput() {
     var input = $(this).val();
