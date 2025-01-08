@@ -67,7 +67,7 @@ def add_ordenc():
             },
             'nombre_ordenc': {
                 'type': 'string',
-                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+                'regex': '^[a-zA-Z0-9 ]*$'  # Permitir solo letras, números y espacios
             },
             'nombre_tipoa': {
                 'type': 'string',
