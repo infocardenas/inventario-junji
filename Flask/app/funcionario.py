@@ -18,13 +18,13 @@ schema_funcionario = {
         'type': 'string',
         'minlength': 1,
         'maxlength': 100,
-        'regex': '^[a-zA-Z]*$'  # Permitir solo letras y espacios
+        'regex': '^[a-zA-Z ]*$'  # Permitir solo letras y espacios
     },
     'cargo_funcionario': {
         'type': 'string',
         'minlength': 1,
         'maxlength': 100,
-        'regex': '^[a-zA-Z]*$'  # Permitir solo letras y espacios
+        'regex': '^[a-zA-Z ]*$'  # Permitir solo letras y espacios
     },
     'codigo_Unidad': {
         'type': 'string',
