@@ -212,7 +212,7 @@ CREATE TABLE `equipo` (
   `macEquipo` varchar(45) DEFAULT NULL,
   `imeiEquipo` varchar(45) DEFAULT NULL,
   `numerotelefonicoEquipo` varchar(12) DEFAULT NULL,
-  `idEstado_equipo` int(11) NOT NULL,
+  `idEstado_equipo` int(11) NOT NULL DEFAULT 1,
   `idUnidad` int(11) NOT NULL,
   `idOrden_compra` varchar(45) NOT NULL,
   `idModelo_equipo` int(11) NOT NULL,
@@ -317,6 +317,39 @@ CREATE TABLE `usuario` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
+-- Estructura Stand-in para la vista `super_equipo`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `super_equipo` (
+`idEquipo` int(11)
+,`Cod_inventarioEquipo` varchar(20)
+,`Num_serieEquipo` varchar(20)
+,`ObservacionEquipo` varchar(250)
+,`codigoproveedor_equipo` varchar(45)
+,`macEquipo` varchar(45)
+,`imeiEquipo` varchar(45)
+,`numerotelefonicoEquipo` varchar(12)
+,`idTipo_equipo` int(11)
+,`nombreTipo_equipo` varchar(45)
+,`idEstado_equipo` int(11)
+,`nombreEstado_equipo` varchar(45)
+,`idUnidad` int(11)
+,`nombreUnidad` varchar(45)
+,`idOrden_compra` varchar(45)
+,`nombreOrden_compra` varchar(45)
+,`idModelo_equipo` int(11)
+,`nombreModeloequipo` varchar(45)
+,`nombreFuncionario` varchar(45)
+,`rutFuncionario` varchar(20)
+);
+--
+-- Estructura para la vista `super_equipo`
+--
+DROP TABLE IF EXISTS `super_equipo`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `super_equipo`  AS SELECT `e`.`idEquipo` AS `idEquipo`, `e`.`Cod_inventarioEquipo` AS `Cod_inventarioEquipo`, `e`.`Num_serieEquipo` AS `Num_serieEquipo`, `e`.`ObservacionEquipo` AS `ObservacionEquipo`, `e`.`codigoproveedor_equipo` AS `codigoproveedor_equipo`, `e`.`macEquipo` AS `macEquipo`, `e`.`imeiEquipo` AS `imeiEquipo`, `e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`, `te`.`idTipo_equipo` AS `idTipo_equipo`, `te`.`nombreTipo_equipo` AS `nombreTipo_equipo`, `ee`.`idEstado_equipo` AS `idEstado_equipo`, `ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`, `u`.`idUnidad` AS `idUnidad`, `u`.`nombreUnidad` AS `nombreUnidad`, `oc`.`idOrden_compra` AS `idOrden_compra`, `oc`.`nombreOrden_compra` AS `nombreOrden_compra`, `moe`.`idModelo_Equipo` AS `idModelo_equipo`, `moe`.`nombreModeloequipo` AS `nombreModeloequipo`, '' AS `nombreFuncionario`, '' AS `rutFuncionario` FROM (((((`equipo` `e` join `modelo_equipo` `moe` on(`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)) left join `tipo_equipo` `te` on(`te`.`idTipo_equipo` = `moe`.`idTipo_Equipo`)) join `estado_equipo` `ee` on(`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)) join `unidad` `u` on(`u`.`idUnidad` = `e`.`idUnidad`)) join `orden_compra` `oc` on(`oc`.`idOrden_compra` = `e`.`idOrden_compra`)) WHERE `ee`.`nombreEstado_equipo` not like 'EN USO'union select `e`.`idEquipo` AS `idEquipo`,`e`.`Cod_inventarioEquipo` AS `Cod_inventarioEquipo`,`e`.`Num_serieEquipo` AS `Num_serieEquipo`,`e`.`ObservacionEquipo` AS `ObservacionEquipo`,`e`.`codigoproveedor_equipo` AS `codigoproveedor_equipo`,`e`.`macEquipo` AS `macEquipo`,`e`.`imeiEquipo` AS `imeiEquipo`,`e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`,`te`.`idTipo_equipo` AS `idTipo_equipo`,`te`.`nombreTipo_equipo` AS `nombreTipo_equipo`,`ee`.`idEstado_equipo` AS `idEstado_equipo`,`ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`,`u`.`idUnidad` AS `idUnidad`,`u`.`nombreUnidad` AS `nombreUnidad`,`oc`.`idOrden_compra` AS `idOrden_compra`,`oc`.`nombreOrden_compra` AS `nombreOrden_compra`,`moe`.`idModelo_Equipo` AS `idModelo_equipo`,`moe`.`nombreModeloequipo` AS `nombreModeloequipo`,`f`.`nombreFuncionario` AS `nombreFuncionario`,`f`.`rutFuncionario` AS `rutFuncionario` from ((((((((`equipo` `e` join `modelo_equipo` `moe` on(`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)) left join `tipo_equipo` `te` on(`te`.`idTipo_equipo` = `moe`.`idTipo_Equipo`)) join `unidad` `u` on(`u`.`idUnidad` = `e`.`idUnidad`)) join `orden_compra` `oc` on(`oc`.`idOrden_compra` = `e`.`idOrden_compra`)) join `equipo_asignacion` `ea` on(`ea`.`idEquipo` = `e`.`idEquipo`)) join `estado_equipo` `ee` on(`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)) join `asignacion` `a` on(`a`.`idAsignacion` = `ea`.`idAsignacion`)) join `funcionario` `f` on(`f`.`rutFuncionario` = `a`.`rutFuncionario`)) where `ee`.`nombreEstado_equipo` like 'EN USO' and `a`.`ActivoAsignacion` = 1  ;
+
+--
 -- Volcado de datos para la tabla `usuario`
 --
 
@@ -373,117 +406,19 @@ INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 (32, 'Quilaco', 3),
 (33, 'Yumbel', 3);
 
---
--- Volcado de datos para la tabla `modalidad`
---
-
+-- Insersion de datos para la tabla `modalidad`
 INSERT INTO `modalidad` (`idModalidad`, `nombreModalidad`) VALUES
 (1, 'CLASICO'),
 (2, 'ALTERNATIVO'),
 (3, 'OFICINA');
 
---
--- Volcado de datos para la tabla `unidad`
---
-
-INSERT INTO `unidad` (`idUnidad`, `nombreUnidad`, `contactoUnidad`, `direccionUnidad`, `idComuna`, `idModalidad`) VALUES
-(1, 'u_de_excel', 'test', '123_calle_falsa', 1, 1),
-(2, 'u_de_excel2', 'test', '123_calle_falsa', 2, 1),
-(3, 'u_de_excel2', 'test', '123_calle_falsa', 3, 1);
-
---
--- Volcado de datos para la tabla `funcionario`
---
-
-INSERT INTO `funcionario` (`rutFuncionario`, `nombreFuncionario`, `cargoFuncionario`, `idUnidad`, `correoFuncionario`) VALUES
-('1-1', 'ElFuncionario', 'funcionario', 1, 'fun@dominio.cl'),
-('10222333k', 'Leticia Letelier', 'Encargada', 2, NULL),
-('15222111k', 'Valentina Salgado', 'Encargada', 1, NULL),
-('180003339', 'Natalie Ramirez', 'Encargada', 1, NULL),
-('190001110', 'Cristina Dominguez', 'Encargada', 3, NULL),
-('20941502-', 'martin', '123', 3, NULL),
-('20941502-k', 'martin2', 'cargo', 2, NULL),
-('21000222k', 'Romina Gonzales', 'Encargada', 2, NULL);
-
---
--- Volcado de datos para la tabla `asignacion`
---
-
-INSERT INTO `asignacion` (`idAsignacion`, `fecha_inicioAsignacion`, `ObservacionAsignacion`, `rutaactaAsignacion`, `ActivoAsignacion`, `rutFuncionario`, `idDevolucion`, `fechaDevolucion`) VALUES
-(146, '2024-06-25', 'set', 'ruta', 0, '1-1', NULL, '2024-06-25'),
-(147, '0000-00-00', 'set', 'ruta', 0, '1-1', NULL, '2024-06-25');
-
---
--- Volcado de datos para la tabla `marca_equipo`
---
-
-INSERT INTO `marca_equipo` (`idMarca_Equipo`, `nombreMarcaEquipo`) VALUES
-(101, 'Acer'),
-(102, 'Samsung'),
-(103, 'Epson'),
-(104, 'HP'),
-(105, 'Lenovo');
-
---
--- Volcado de datos para la tabla `tipo_equipo`
---
-
-INSERT INTO `tipo_equipo` (`idTipo_equipo`, `nombreTipo_equipo`, `observacionTipoEquipo`) VALUES
-(101, 'AIO', 'test'),
-(102, 'Notebook', 'test'),
-(103, 'Impresora', 'test'),
-(104, 'Telefono', 'Smartphone'),
-(105, 'HUB', '');
-
---
--- Volcado de datos para la tabla `marca_tipo_equipo`
---
-
-INSERT INTO `marca_tipo_equipo` (`idMarca_Equipo`, `idTipo_equipo`) VALUES
-(105, 101),
-(101, 102),
-(103, 103),
-(102, 104),
-(104, 105);
-
---
--- Volcado de datos para la tabla `tipo_adquisicion`
---
-
-INSERT INTO `tipo_adquisicion` (`idTipo_adquisicion`, `nombreTipo_adquisicion`) VALUES
-(1, 'contrato de arriendo'),
-(2, 'compra'),
-(3, 'forzado'),
-(4, 'sin adquisicion');
-
---
--- Volcado de datos para la tabla `modelo_equipo`
---
-
-INSERT INTO `modelo_equipo` (`idModelo_Equipo`, `nombreModeloequipo`, `idTipo_Equipo`, `idMarca_Equipo`) VALUES
-(301, 'Tuf Gamming', 101, 102),
-(302, 'todo en uno', 105, 101),
-(303, 'Galaxy S24', 102, 104);
-
---
--- Volcado de datos para la tabla `proveedor`
---
-
-INSERT INTO `proveedor` (`idProveedor`, `nombreProveedor`) VALUES
-(1, 'Sonda'),
-(2, 'TechnoSystem'),
-(3, 'forzado'),
-(4, 'sin proveedor');
-
---
--- Volcado de datos para la tabla `orden_compra`
---
-
-INSERT INTO `orden_compra` (`idOrden_compra`, `nombreOrden_compra`, `fechacompraOrden_compra`, `fechafin_ORDEN_COMPRA`, `rutadocumentoOrden_compra`, `idTipo_adquisicion`, `idProveedor`) VALUES
-('1', 'forzado', '0000-00-00', '2024-06-21', NULL, 1, 1),
-('2342342', '3412412', '0000-00-00', '0000-00-00', NULL, 2, 1),
-('599-193-CC22', 'contrato 1592', '2021-11-11', '2022-11-11', NULL, 1, 1),
-('599-405-CC22', 'contrato 2645', '2023-11-11', '2025-10-10', NULL, 2, 1);
-
+-- Insersion de datos para la tabla `estado_equipo`
+INSERT INTO `estado_equipo` (`idEstado_equipo`, `nombreEstado_equipo`) VALUES 
+(1, 'SIN ASIGNAR'),
+(2, 'En Uso'),
+(3, 'Siniestro'),
+(4, 'Baja'),
+(5, 'Mantencion');
 
 COMMIT;
+
