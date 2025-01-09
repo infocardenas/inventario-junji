@@ -5,7 +5,7 @@
 <div class="row">
 
     <div class="col-md-5">
-        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        <!-- Esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
@@ -21,114 +21,12 @@
         {% endwith %}
         <!-- Se termina la seccion de errores -->
 
-        <!-- ----- -->
-        <button class="nav-button" onclick="showDiv()">Agregar</button>
-        <div id="error-message" style="display: none;" class="error-message"></div>
-        <div class="card card-body" id="formulario" style="display: none;">
-            <form action="/add_equipo" method="POST" class="mi-formulario">
-                <div class="form-group">
-                    {#
-                    #}
-                    <div>
+        <!-- Modal para el formulario -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#formModal">
+            Agregar
+        </button>
+        
 
-                        <label for="marca">Nombre Marca <span style="color: red;">*</span></label>
-                        <select name="nombre_marca" id="marca" , onchange="mostrarTipo_equipo()">
-                            <option value="">Seleccione el Marca</option>
-                            {% for marca in marcas_equipo %}
-                            <option value="{{marca.idMarca_Equipo}}">{{marca.nombreMarcaEquipo}}</option>
-                            {% endfor%}
-                        </select>
-                    </div>
-                    {#}
-                    <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: *</label>
-                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
-                        <option value="">Seleccione el Tipo de Equipo</option>
-                        {% for tipoe in tipo_equipo %}
-                        <div id="{{}}">
-                            <option value="{{tipoe.nombreTipo_equipo}}">{{tipoe.nombreTipo_equipo}}</option>
-                        </div>
-                        {% endfor %}
-                    </select>
-                    #}
-                    <div id="select_div">
-                        {% for marca in marcas_equipo %}
-                        {#{marca.nombreMarcaEquipo}#}
-                        {# el div tiene la marca ya que todo lo que se muestra en el div
-                        siguiente solo se muestra si la marca elegida es la que este
-                        asociada a el tipo y modelo de la iteracion correspondiente
-                        #}
-                        <div id="{{marca.idMarca_Equipo}}" class="select_tipo_modelo_rel_marca" style="display:none">
-                            {{select_tipo(marca.tipo_equipo, marca.idMarca_Equipo)}}
-                            {% for tipo in marca.tipo_equipo%}
-                            {#{tipo.nombreTipo_equipo}#}
-                            <div id="div_modelo_{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo" style="display: none;">
-                                {#{tipo.modelo_equipo}#}
-                                {{select_modelo(tipo.modelo_equipo, tipo['idTipo_equipo'], marca.idMarca_Equipo)}}
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <input style="display: none;" name="modelo_equipo" id="modelo_para_equipo" />
-                    {# select test #}
-                    <label for="codigo_Unidad">Unidad: <span style="color: red;">*</span></label>
-                    <select name="codigo_Unidad">
-                        <option value="">Seleccione la Unidad</option>
-                        {% for ubi in Unidad %}
-                        <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
-                        {% endfor %}
-                    </select>
-                    <br>
-                    <div>
-                        <label for="nombre_orden_compra">Orden de Compra: <span style="color: red;">*</span></label>
-                        <select name="nombre_orden_compra">
-                            <option value="">Seleccione el Orden de Compra</option>
-                            {% for ordenc in orden_compra %}
-                            <option value="{{ ordenc.idOrden_compra }}">{{ordenc.nombreOrden_compra}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    {# Mac solo se debe mostrar si es de tipo telefono fijo#}
-                    <div id="Mac" style="display: none;">
-                        <label for="mac">Mac: </label>
-                        <input class= "validatable-input" type="text" name="mac" maxlength="45">
-                        
-                        <br>
-                    </div>
-                    <div id="Imei" style="display: none;">
-                        <label for="imei">imei: </label>
-                        <input class= "validatable-input" type="text" name="imei" maxlength="45">
-                        <br>
-                    </div>
-                    <div id="Telefono" style="display: none;">
-                        <label for="numero">Número de Telefono: </label>
-                        <input class= "solo-numeros" type="text" name="numero" maxlength="12">
-                        <br>
-                    </div>
-                    <div>
-                        <label>Código Inventario</label>
-                        <input class= "validatable-input" type="text" name="codigo_inventario"
-                            placeholder="Codigo Inventario" maxlength="20">
-                        
-                        <br>
-                    </div>
-                    <div>
-                        <label for="codigoproveedor">Código de Proveedor: </label>
-                        <input type="text" class="validatable-input" name="codigoproveedor" maxlength="45">
-                        <br>
-                    </div>
-                    <label for="numero_serie">Número de Serie: </label>
-                    <input type="text" class="validatable-input" name="numero_serie" placeholder="Numero de serie"
-                        maxlength="12">
-                    <br>
-                    <label for="observacion_equipo">Observación: </label>
-                    <textarea id="observacion_equipo" name="observacion_equipo" rows="2" cols="50" maxlength="250"></textarea>
-                    <br>
-                    <button class="agregar-button" type="submit"> Agregar</button>
-            </form>
-        </div>
-    </div>
-</div>
 <h2>Equipo</h2>
 <button class="nav-button" onclick="showDiv('formularioExcel', ['importar_excel'])">Exportar a Excel</button>
 <button class="nav-button" onclick="showDiv('importar_excel', ['formularioExcel'])">Importar a Excel</button>

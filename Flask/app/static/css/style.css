@@ -1,5 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
 
+/*Styles*/
+
+
+
+.container-home {
+    display: flex;
+    width: 100%;
+}
+
 *,
 ::after,
 ::before {
@@ -32,10 +41,6 @@ img {
 
 body {
     font-family: 'Poppins', sans-serif;
-}
-
-.container {
-    display: flex;
 }
 
 /* Sidebar layout & functionality */
@@ -287,8 +292,8 @@ a.sidebar-link:hover {
 }
 /*------------ Table Layout ------------*/
 .table-container {
-    margin: 20px auto; /* Centrar el contenedor horizontalmente y agregar margen */
-    width: 80%; /* Ancho del contenedor */
+    margin: 20px; /* Centrar el contenedor horizontalmente y agregar margen */
+    width: 100%; /* Ancho del contenedor */
   }
   
 
@@ -514,10 +519,6 @@ a.sidebar-link:hover {
         width: 100%;
     }
     
-    .container {
-        display: flex;
-        width: 100%;
-    }
     
     .main {
         display: flex;
