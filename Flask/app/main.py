@@ -42,9 +42,4 @@ app.register_blueprint(cuentas)
 
 # se inicia la aplicacion, y confirma que __name__ sea la aplicacion main y no un modulo
 if __name__ == "__main__":
-    #seleccion de puerto y debug para no tener que iniciar la aplicacion cada vez que se realicen cambios
-
-    #esta es para desarrollo
-    #app.run(port=3000, debug=True)
-    #esta es para produccion
     app.run(debug=True, host='0.0.0.0', port=3000)
