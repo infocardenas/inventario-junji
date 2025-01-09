@@ -29,35 +29,25 @@
             <form action="/add_funcionario" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="rut_funcionario">Rut funcionario</label>
-                    <input class="rut-input campo-obligatorio" type="text" name="rut_funcionario"
-                        placeholder="xxxxxxxx-x" maxlength="20">
+                    <input class="rut-input campo-obligatorio" type="text" name="rut_funcionario" placeholder="xx.xxx.xxx-x"maxlength="12">
                     <div class="text-error-message"></div>
-                </div>
 
-                <div class="form-group">
-                    <label for="nombre_funcionario">Nombre Funcionario:</label>
-                    <input class="solo-letras campo-obligatorio" type="text" name="nombre_funcionario"
-                        placeholder="Nombre funcionario" maxlength="45">
+                    <label for="nombre_funcionario">Nombre Funcionario: </label>
+                    <input class="solo-letras campo-obligatorio" type="text" name="nombre_funcionario" placeholder="Nombre funcionario" maxlength="45">
+                    <div id="error-message" style="display: none;" class="error-message"></div>
                     <div class="text-error-message"></div>
-                </div>
 
-                <div class="form-group">
-                    <label for="correo_funcionario">Correo Funcionario:</label>
-                    <input type="text" class="validar-correo campo-obligatorio" name="correo_funcionario"
-                        placeholder="Correo funcionario" maxlength="45">
+                    <label for="correo_funcionario">Correo Funcionario: </label>
+                    <input type="text" class="validatable-input campo-obligatorio" name="correo_funcionario" placeholder="Correo funcionario" maxlength="45">
                     <div class="text-error-message"></div>
-                </div>
 
-                <div class="form-group">
-                    <label for="cargo_funcionario">Cargo:</label>
-                    <input class="solo-letras campo-obligatorio" type="text" name="cargo_funcionario"
-                        placeholder="Cargo" maxlength="45">
+                    <label for="cargo_funcionario"> Cargo: </label>
+                    <input class="solo-letras campo-obligatorio" type="text" name="cargo_funcionario" placeholder="Cargo" maxlength="45">
+                    <div id="error-message" style="display: none;" class="error-message"></div>
                     <div class="text-error-message"></div>
-                </div>
 
-                <div class="form-group">
-                    <label for="codigo_Unidad">Unidad:</label>
-                    <select name="codigo_Unidad" class="campo-obligatorio">
+                    <label for="codigo_Unidad">Unidad: </label>
+                    <select class="campo-obligatorio" name="codigo_Unidad" id="">
                         <option value="">Elija la Unidad</option>
                         {% for ubi in Unidad %}
                         <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
