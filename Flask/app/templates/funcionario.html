@@ -38,9 +38,9 @@
                     <div class="text-error-message"></div>
 
                     <label for="correo_funcionario">Correo Funcionario: </label>
-                    <input type="text" class="validatable-input campo-obligatorio" name="correo_funcionario" placeholder="Correo funcionario" maxlength="45">
-                    <div class="text-error-message"></div>
-
+                    <input type="text" class="validar-correo campo-obligatorio" name="correo_funcionario" placeholder="Correo funcionario"
+                    maxlength="45">
+                    <br>
                     <label for="cargo_funcionario"> Cargo: </label>
                     <input class="solo-letras campo-obligatorio" type="text" name="cargo_funcionario" placeholder="Cargo" maxlength="45">
                     <div id="error-message" style="display: none;" class="error-message"></div>
@@ -104,6 +104,6 @@
 
         {{ paginacion("funcionario", page, lastpage) }}
 
-        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-        <script src="../static/js/main.js"></script>
-        {% endblock %}
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="../static/js/main.js"></script>
+{% endblock %}
