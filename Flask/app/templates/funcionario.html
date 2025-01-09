@@ -29,40 +29,52 @@
             <form action="/add_funcionario" method="POST" class="mi-formulario">
                 <div class="form-group">
                     <label for="rut_funcionario">Rut funcionario</label>
-                    <input class= "rut-input" type="text" name="rut_funcionario" placeholder="xxxxxxxx-x"maxlength="20">
-                    <div id="error-message" style="display: none;" class="error-message"></div>
-                    <br>
-                    <label for="nombre_funcionario">Nombre Funcionario: </label>
-                    <input class="solo-letras" type="text" name="nombre_funcionario" placeholder="Nombre funcionario"
-                    maxlength="45">
-                    <div id="error-message" style="display: none;" class="error-message"></div>
-                    <br>
-                    <label for="correo_funcionario">Correo Funcionario: </label>
-                    <input type="text" class="validar-correo" name="correo_funcionario" placeholder="Correo funcionario"
-                    maxlength="45">
-                    <br>
-                    <label for="cargo_funcionario"> Cargo: </label>
-                    <input class= "solo-letras" type="text" name="cargo_funcionario" placeholder="Cargo"
-                    maxlength="45">
-                    <div id="error-message" style="display: none;" class="error-message"></div>
-                    <br>
-                    <label for="codigo_Unidad">Unidad: </label>
-                    <select name="codigo_Unidad" id="">
+                    <input class="rut-input campo-obligatorio" type="text" name="rut_funcionario"
+                        placeholder="xxxxxxxx-x" maxlength="20">
+                    <div class="text-error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="nombre_funcionario">Nombre Funcionario:</label>
+                    <input class="solo-letras campo-obligatorio" type="text" name="nombre_funcionario"
+                        placeholder="Nombre funcionario" maxlength="45">
+                    <div class="text-error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="correo_funcionario">Correo Funcionario:</label>
+                    <input type="text" class="validar-correo campo-obligatorio" name="correo_funcionario"
+                        placeholder="Correo funcionario" maxlength="45">
+                    <div class="text-error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="cargo_funcionario">Cargo:</label>
+                    <input class="solo-letras campo-obligatorio" type="text" name="cargo_funcionario"
+                        placeholder="Cargo" maxlength="45">
+                    <div class="text-error-message"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="codigo_Unidad">Unidad:</label>
+                    <select name="codigo_Unidad" class="campo-obligatorio">
                         <option value="">Elija la Unidad</option>
                         {% for ubi in Unidad %}
                         <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
                         {% endfor %}
                     </select>
+                    <div class="text-error-message"></div>
+                </div>
+
+                <button class="agregar-button">Agregar Funcionario</button>
             </form>
-            <button class="agregar-button"> Agregar Funcionario</button>
         </div>
     </div>
     <h2>Funcionarios</h2>
     <div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
         <div style="display:flex;">
             <form action="/buscar_funcionario" method="POST">
-                <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador"
-                    onkeyup="busqueda('myTableBody')" />
+                <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador" onkeyup="busqueda('myTableBody')" />
             </form>
         </div>
     </div>
@@ -98,11 +110,10 @@
         </table>
 
         <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-
         <script src="../static/js/main.js"></script>
 
         {{ paginacion("funcionario", page, lastpage) }}
 
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-    <script src="../static/js/main.js"></script>
-{% endblock %}
+        <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+        <script src="../static/js/main.js"></script>
+        {% endblock %}

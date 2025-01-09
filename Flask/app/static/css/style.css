@@ -34,6 +34,10 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
+label {
+    display: block;
+}
+
 .container {
     display: flex;
 }
@@ -714,4 +718,8 @@ a.mainbar-link {
     font-family: Arial, sans-serif; /* Fuente más legible */
     font-size: 14px; /* Tamaño de fuente */
     text-align: center; /* Centrar el texto */
+}
+.text-error-message {
+    color: red;
+    font-size: 14px;
 }

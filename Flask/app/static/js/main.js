@@ -693,3 +693,43 @@ document.addEventListener('DOMContentLoaded', function() {
       }
   });
 });
+
+// Función para que muestre un mensaje de campo obligatorio
+$(document).ready(function () {
+  $("form").on("submit", function (event) {
+    let formularioValido = true;
+
+    // Recorre todos los campos con clase '.campo-obligatorio'
+    $(".campo-obligatorio").each(function () {
+      const inputField = $(this);
+      const errorMessage = inputField.siblings(".text-error-message");
+
+      // Verifica si el campo está vacío
+      if (inputField.val().trim() === "") {
+        errorMessage.text("Este campo es obligatorio").show();
+        formularioValido = false;
+      } else {
+        errorMessage.hide();
+      }
+    });
+
+    // Valida de que no se envíe el formulario con campos vacíos
+    if (!formularioValido) {
+      event.preventDefault();
+    }
+  });
+
+  // Verifica cuando cambia el valor del campo y lo oculta cuando hay texto
+  $(".campo-obligatorio").on("input change", function () {
+    const inputField = $(this);
+    const errorMessage = inputField.siblings(".text-error-message");
+
+    if (inputField.val().trim() !== "") {
+      errorMessage.hide();
+    }
+  });
+
+  $(".agregar-button").on("click", function () {
+    $("form").submit();
+  });
+});
