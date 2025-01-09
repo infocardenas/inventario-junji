@@ -1,44 +1,45 @@
 {% extends "layout.html" %}
 {% block body %}
 
-        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
+<!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for message in messages %}
 
-        <div class="custom-alert" role="alert">
-            {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-        <!-- Se termina la seccion de errores -->
+<div class="custom-alert" role="alert">
+    {{ message }}
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+<!-- Se termina la seccion de errores -->
 
-        <!-- ----- -->
+<!-- ----- -->
 
 <div class="card card-body" id="formulario">
     <div id="error-message" style="display: none;" class="error-message"></div>
     <form action="/loguear" method="POST" class="mi-formulario">
         <div class="form-group">
             <label for="nombreUsuario">Nombre de Usuario</label>
-            <input type="text" class="validatable-input" 
-                name="nombreUsuario" placeholder="Nombre_Usuario">
-            <br>
-            <label for="password">Contraseña: </label>
-            <input id="contrasenna" type="password" class="validar-contraseña" 
-                name="contrasenna" placeholder="">
-            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
-                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna"/>
-            <br>
-            <button class="agregar-button">Ingresar</button>
+            <input type="text" class="validatable-input campo-obligatorio" name="nombreUsuario" placeholder="Nombre_Usuario">
+            <div class="text-error-message"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input id="contrasenna" type="password" class="validar-contraseña campo-obligatorio" name="contrasenna" placeholder="">
+            <img style="width: 20px; height:20px" src="../static/img/hidden.png" onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna" />
+            <div class="text-error-message"></div>
+        </div>
+
+        <button class="agregar-button">Ingresar</button>
     </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-
 <script src="../static/js/main.js"></script>
 
 
