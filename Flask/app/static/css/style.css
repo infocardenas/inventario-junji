@@ -47,14 +47,6 @@ label {
     display: block;
 }
 
-/* Sidebar layout & functionality */
-
-#sidebar {
-    display: flex;
-    flex-direction: column;
-    background-color: #59ae87;
-}
-
 #toggler {
     display: none;
 }
