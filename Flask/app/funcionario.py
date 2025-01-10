@@ -10,9 +10,9 @@ from MySQLdb import IntegrityError
 schema_funcionario = {
     'rut_funcionario': {
         'type': 'string',
-        'minlength': 11,
-        'maxlength': 12,  # Longitud máxima considerando el RUT con puntos y guión
-        'regex': '^(\d{1,3}(\.\d{3})*|[0-9]{1,3})(-)?([0-9kK])$' # Expresión regular para validar el formato del RUT
+        'minlength': 1,
+        'maxlength': 12,  # Longitud máxima considerando el RUT con guion
+        'regex': '^[0-9]+[-]?[0-9kK]$'  # Permitir números y el carácter '-'
     },
     'nombre_funcionario': {
         'type': 'string',
@@ -86,19 +86,7 @@ def add_funcionario():
         # Validar los datos usando Cerberus
         v = Validator(schema_funcionario)
         if not v.validate(data):
-            # Recorre los errores y muestra mensajes específicos
-            for field, errors in v.errors.items():
-                for error in errors:
-                    if field == 'rut_funcionario':
-                        flash(f"El RUT ingresado no es válido")
-                    elif field == 'nombre_funcionario':
-                        flash(f"El nombre ingresado no es válido")
-                    elif field == 'cargo_funcionario':
-                        flash(f"El cargo ingresado no es válido")
-                    elif field == 'codigo_Unidad':
-                        flash(f"El código de unidad no es válido")
-                    elif field == 'correo_funcionario':
-                        flash(f"El correo no es válido")
+            flash("Caracteres no permitidos")
             return redirect(url_for('funcionario.Funcionario'))
         
     

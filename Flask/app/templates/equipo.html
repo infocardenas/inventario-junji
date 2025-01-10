@@ -4,7 +4,7 @@
 
 <div class="row">
 
-    <div class="col-md-5">
+    <div>
         <!-- Esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -20,17 +20,129 @@
         {% endif %}
         {% endwith %}
         <!-- Se termina la seccion de errores -->
+        
+        <button id="toggleFormBtn" class="btn btn-primary mb-3">Agregar Equipo</button>
 
-        <!-- ----- -->
+        <!-- Contenedor del formulario (inicialmente oculto) -->
+        <div id="formContainer" style="display: none;">
+            <div class="card" >
+                <div class="card-body">
+                    <form action="/add_equipo" method="POST" id="addEquipoForm" class="row g-3">
+                        <!-- Nombre Marca -->
+                        <div class="col-md-6">
+                            <label for="nombre_marca" class="form-label">Nombre Marca <span class="text-danger">*</span></label>
+                            <select class="form-select" name="nombre_marca" id="nombre_marca">
+                                <option value="" selected>Seleccione una Marca</option>
+                                {% for marca in marcas_equipo %}
+                                <option value="{{ marca.idMarca_Equipo }}">{{ marca.nombreMarcaEquipo }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                       <!-- Tipo de Equipo -->
+                        <div class="col-md-6">
+                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
+    <option value="" selected>Seleccione el Tipo de Equipo</option>
+    {% for tipo in tipo_equipo %}
+    <option value="{{ tipo.nombreTipo_equipo }}">{{ tipo.nombreTipo_equipo }}</option>
+    {% endfor %}
+</select>
+</div>                      </div>
+
+<!-- Modelos (Organizados por Tipo) -->
+<div id="modelos-container">
+    {% for tipo in tipo_equipo %}
+    <div id="modelos_{{ tipo.nombreTipo_equipo }}" class="modelos-tipo" style="display: none;">
+        <select name="modelo_equipo" id="modelo_equipo">
+            <option value="" selected>Seleccione el Modelo</option>
+            {% for modelo in tipo.modelo_equipo %}
+            <option value="{{ modelo.idModelo }}">{{ modelo.nombreModelo }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    {% endfor %}
+</div>
+
+                        <!-- Código Inventario -->
+                        <div class="col-md-6">
+                            <label for="codigo_inventario" class="form-label">Código Inventario</label>
+                            <input type="text" class="form-control" name="codigo_inventario" id="codigo_inventario" placeholder="Ingrese el Código de Inventario">
+                        </div>
+
+
+                        <!-- Unidad -->
+                        <div class="col-md-6">
+                            <label for="codigo_Unidad" class="form-label">Unidad <span class="text-danger">*</span></label>
+                            <select class="form-select" name="codigo_Unidad" id="codigo_Unidad">
+                                <option value="" selected>Seleccione la Unidad</option>
+                                {% for unidad in Unidad %}
+                                <option value="{{ unidad.idUnidad }}">{{ unidad.nombreUnidad }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Orden de Compra -->
+                        <div class="col-md-6">
+                            <label for="nombre_orden_compra" class="form-label">Orden de Compra <span class="text-danger">*</span></label>
+                            <select class="form-select" name="nombre_orden_compra" id="nombre_orden_compra">
+                                <option value="" selected>Seleccione la Orden de Compra</option>
+                                {% for orden in orden_compra %}
+                                <option value="{{ orden.idOrden_compra }}">{{ orden.nombreOrden_compra }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Mac -->
+                        <div class="col-md-6">
+                            <label for="mac" class="form-label">Mac</label>
+                            <input type="text" class="form-control" name="mac" id="mac" placeholder="Ingrese la dirección Mac">
+                        </div>
+
+                        <!-- Imei -->
+                        <div class="col-md-6">
+                            <label for="imei" class="form-label">IMEI</label>
+                            <input type="text" class="form-control" name="imei" id="imei" placeholder="Ingrese el IMEI">
+                        </div>
+
+                        <!-- Número de Teléfono -->
+                        <div class="col-md-6">
+                            <label for="numero" class="form-label">Número de Teléfono</label>
+                            <input type="text" class="form-control" name="numero" id="numero" placeholder="Ingrese el Número de Teléfono">
+                        </div>
+
+                        <!-- Número de Serie -->
+                        <div class="col-md-6">
+                            <label for="numero_serie" class="form-label">Número de Serie</label>
+                            <input type="text" class="form-control" name="numero_serie" id="numero_serie" placeholder="Ingrese el Número de Serie">
+                        </div>
+
+                        <!-- Observación -->
+                        <div class="col-12">
+                            <label for="observacion_equipo" class="form-label">Observación</label>
+                            <textarea class="form-control" id="observacion_equipo" name="observacion_equipo" rows="3" placeholder="Ingrese observaciones"></textarea>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="col-12 text-end">
+                            <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+        
+        <!-- Formulario -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
         <div id="error-message" style="display: none;" class="error-message"></div>
         <div class="card card-body" id="formulario" style="display: none;">
             <form action="/add_equipo" method="POST" class="mi-formulario">
                 <div class="form-group">
-                    {#
-                    #}
                     <div>
-
                         <label for="marca">Nombre Marca <span style="color: red;">*</span></label>
                         <select name="nombre_marca" id="marca" , onchange="mostrarTipo_equipo()">
                             <option value="">Seleccione el Marca</option>
@@ -290,6 +402,22 @@
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
     <script src="../static/js/main.js"></script>
+
+        <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- JavaScript para Mostrar/Ocultar el Formulario -->
+    <script>
+        document.getElementById("toggleFormBtn").addEventListener("click", function () {
+            const formContainer = document.getElementById("formContainer");
+            formContainer.style.display = formContainer.style.display === "none" ? "block" : "none";
+        });
+
+        document.getElementById("cancelFormBtn").addEventListener("click", function () {
+            const formContainer = document.getElementById("formContainer");
+            formContainer.style.display = "none";
+        });
+    </script>
     
     {{ paginacion("equipo", page, lastpage) }}
     {% endblock %}

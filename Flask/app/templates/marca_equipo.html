@@ -18,6 +18,26 @@
         {% endif %}
         {% endwith %}
 
+        {% from "Macros/modal_macro.html" import modal %}
+
+<!-- Botón para abrir el modal -->
+<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMarcaModal">
+    Agregar Marca
+</button>
+
+<!-- Modal para agregar equipo -->
+{{ modal("addMarcaModal", "Agregar Marca", "/add_marca_equipo", [
+    {
+        "type": "input",
+        "id": "nombre_marca",
+        "name": "nombre_marca",
+        "label": "Nombre Marca",
+        "placeholder": "Ingrese una Marca"
+    }
+]) }}
+
+
+
         <!-- Botón para mostrar el formulario -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
 
