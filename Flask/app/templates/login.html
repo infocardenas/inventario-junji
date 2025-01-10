@@ -1,24 +1,20 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
-{% with messages = get_flashed_messages() %}
+<!-- Mostrar errores a través de flash -->
+{% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
-{% for message in messages %}
-
-<div class="custom-alert" role="alert">
-    {{ message }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
+<div>
+    {% for category, message in messages %}
+    {% set alert_type = category %}
+    {% set message = message %}
+    {% include 'alert.html' %}
+    {% endfor %}
 </div>
-{% endfor %}
 {% endif %}
 {% endwith %}
-<!-- Se termina la seccion de errores -->
 
-<!-- ----- -->
-
+<!-- Formulario de login -->
 <div class="card card-body" id="formulario">
     <div id="error-message" style="display: none;" class="error-message"></div>
     <form action="/loguear" method="POST" class="mi-formulario">

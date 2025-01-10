@@ -682,3 +682,15 @@ $(document).ready(function () {
     $("form").submit();
   });
 });
+
+// Funcion para darle un tiempo de espera y luego desaparer la alerta con css
+$(document).ready(function() {
+  setTimeout(function () {
+    $('.alert').each(function () {
+      $(this).addClass('hidden');
+      setTimeout(() => {
+        $(this).remove();
+      }, 2000);
+    });
+  }, 5000);
+  });

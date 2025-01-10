@@ -724,3 +724,27 @@ a.mainbar-link {
     color: red;
     font-size: 14px;
 }
+
+svg.bi {
+    width: 1rem;
+    height: 1rem;
+}
+
+.alert {
+    position: fixed;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: auto;
+    max-width: 80%;
+    margin: 0 10px;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+    transition: opacity 2s ease-out, transform 0.5s ease-in;
+}
+
+.alert.hidden {
+    opacity: 0;
+}
