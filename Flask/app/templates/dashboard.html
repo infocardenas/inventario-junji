@@ -1,115 +1,101 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<div class="row">
-  <div class="col-md-5">
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-      {{ message }}
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
+  <div class="row">
+    <div class="col-md-5">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
+      {% for message in messages %}
+      <div class="alert alert-success alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
     </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
   </div>
-</div>
-<h3>Resumen de datos</h3>
-{% if privilegio == 1%}
-<a href="/registrar" class="nav-button">Administrar Usuarios</a>
-{% endif %}
-<div class="container">
-<ul class="main-ul-item">
-  <li class="main-li ">
-    <a href="/equipo" class="mainbar-link">
-      <i class="lni lni-laptop-phone"></i>
-      <span>Equipos </span>
-    </a>
-  </li>
-  <li class="main-li ">
-    <a href="/marca_equipo" class="mainbar-link">
-      <i class="lni lni-laptop"></i>
-      <span>Marcas de Equipos </span>
-    </a>
-  </li>
-  <li class="main-li ">
-    <a href="/modelo_equipo" class="mainbar-link">
-      <i class="lni lni-list"></i>
-      <span>Modelo de Equipos</span>
-    </a>
-  </li>
-  <li class="main-li ">
-    <a href="/tipo_equipo" class="mainbar-link">
-      <i class="lni lni-line-dotted"  ></i>
-      <span>Tipo de Equipos</span>
-    </a>
-  </li>
-  <li class="main-li">
-    <a href="/funcionario" class="mainbar-link">
-      <i class="lni lni-user"></i>
-      <span>Funcionarios</span>
-    </a>
-  </li>
-  <li class="main-li">
-    <a href="/proveedor" class="mainbar-link">
-      <i class="lni lni-network"></i>
-      <span>Proveedores</span>
-    </a>
-  </li>
-  <li class="main-li">
-    <a href="/Unidad" class="mainbar-link">
-      <i class="lni lni-map"></i>
-      <span>Unidad</span>
-    </a>
-  <li class="main-li">
-    <a href="/orden_compra" class="mainbar-link">
-      <i class="lni lni-customer"></i>
-      <span>Orden de Compra</span>
-    </a>
-  </li>
+
+  <div class="container bg-light py-5 rounded">
+    <div class="row">
+      <!-- Categoría 1: Gestión de Equipos -->
+      <div class="col-md-2">
+        <h5 class="text-dark mb-3"><i class="fas fa-tools me-2"></i>Gestión de Equipos</h5>
+        <a href="/equipo" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-laptop me-2 fs-5"></i>
+          <span>Equipos</span>
+        </a>
+        <a href="/marca_equipo" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-list-columns me-2 fs-5"></i>
+          <span>Marcas de Equipos</span>
+        </a>
+        <a href="/modelo_equipo" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-list-nested me-2 fs-5"></i>
+          <span>Modelo de Equipos</span>
+        </a>
+        <a href="/tipo_equipo" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-list-ul me-2 fs-5"></i>
+          <span>Tipos de Equipos</span>
+        </a>
+        <a href="/estado_equipo" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-list me-2 fs-5"></i>
+          <span>Estado de Equipos</span>
+        </a>
+      </div>
   
-  <li class="main-li">
-    <a href="/tipo_adquisicion" class="mainbar-link">
-      <i class="lni lni-files"></i>
-      <span>Tipo Adquisicion</span>
-    </a>
-  </li>
-  <li class="main-li">
-    <a href="/estado_equipo" class="mainbar-link">
-      <i class="lni lni-map"></i>
-      <span>Estado de Equipo</span>
-    </a>
-  </li>
-  {#}
-  <li class="main-li">
-    <a href="/devolucion" class="mainbar-link">
-      <i class="lni lni-package"></i>
-      <span>Devoluciones</span>
-    </a>
-    
-  </li>#}
-  <li class="main-li">
-    <a href="/asignacion" class="mainbar-link">
-      <i class="lni lni-calculator-alt"></i>
-      <span>Asignaciones</span>
-    </a>
-  </li>
-  <li class="main-li">
-    <a href="/traslado" class="mainbar-link">
-      <i class="lni lni-travel"></i>
-      <span>Traslados</span>
-    </a>
-  </li>
-  <li class="main-li">
-    <a href="/incidencia" class="mainbar-link">
-      <i class="lni lni-stamp"></i> 
-      <span>Incidencias</span>
-    </a>
-  </li>
-</ul>
+      <!-- Categoría 2: Gestión de Recursos Humanos -->
+      <div class="col-md-2">
+        <h5 class="text-dark mb-3"><i class="fas fa-users me-2"></i>Gestión de Recursos Humanos</h5>
+        <a href="/funcionario" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-person me-2 fs-5"></i>
+          <span>Funcionarios</span>
+        </a>
+        <a href="/asignacion" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-person-check me-2 fs-5"></i>
+          <span>Asignaciones</span>
+        </a>
+      </div>
+  
+      <!-- Categoría 3: Gestión de Proveedores -->
+      <div class="col-md-2">  
+        <h5 class="text-dark mb-3"><i class="fas fa-truck me-2"></i>Gestión de Proveedores</h5>
+        <a href="/proveedor" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-shop me-2 fs-5"></i>
+          <span>Proveedores</span>
+        </a>
+        <a href="/orden_compra" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-file-earmark-spreadsheet me-2 fs-5"></i>
+          <span>Orden de Compra</span>
+        </a>
+        <a href="/tipo_adquisicion" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-file-earmark me-2 fs-5"></i>
+          <span>Tipo de Adquisición</span>
+        </a>
+      </div>
+  
+      <!-- Categoría 4: Operaciones -->
+      <div class="col-md-2">
+        <h5 class="text-dark mb-3"><i class="fas fa-cogs me-2"></i>Operaciones</h5>
+        <a href="/traslado" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-arrow-repeat me-2 fs-5"></i>
+          <span>Traslados</span>
+        </a>
+      </div>
+  
+      <!-- Categoría 5: Organización -->
+      <div class="col-md-2">
+        <h5 class="text-dark mb-3"><i class="fas fa-sitemap me-2"></i>Organización</h5>
+        <a href="/Unidad" class="d-flex align-items-center py-2 text-decoration-none text-dark">
+          <i class="bi bi-house-door me-2 fs-5"></i>
+          <span>Unidades</span>
+        </a>
+      </div>
+    </div>
+  </div>
+  
+
 
 
 </div>

@@ -1,133 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <title>Inventario JUNJI</title>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+      <title>Inventario JUNJI</title>
 
-    <link rel="icon" href="{{url_for('static', filename='img/logo_junji.jpg')}}" />
-    <link href="https://cdn.lineicons.com/4.0/lineicons.css" rel="stylesheet" />
-    <script src="https://kit.fontawesome.com/5457f9e89a.js" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
-    <script src="{{url_for('static', filename='js/main.js')}}"></script>
-</head>
+      <link rel="icon" href="{{url_for('static', filename='img/logo_junji.jpg')}}" />
+      <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+      <script src="https://kit.fontawesome.com/5457f9e89a.js" crossorigin="anonymous"></script>
+      <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+      <link rel="stylesheet" href="{{url_for('static', filename='css/sidebar.css')}}">
+      <script src="{{url_for('static', filename='js/main.js')}}"></script>
+  </head>
 
-<body>
     <div class="container-home">
-        <aside id="sidebar">
-            <input type="checkbox" name="" id="toggler">
-            <label for="toggler" class="toggle-btn">
-                <i class="lni lni-grid-alt"></i>
-            </label>
-            <ul class="sidebar-nav">
-                <li class="sidebar-item">
-                    <a href="/" class="sidebar-link">
-                        <i class="lni lni-dashboard"></i>
-                        <span>Inicio</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/equipo" class="sidebar-link">
-                        <i class="lni lni-laptop-phone"></i>
-                        <span>Equipos </span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/marca_equipo" class="sidebar-link">
-                        <i class="lni lni-laptop"></i>
-                        <span>Marcas de Equipos </span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/modelo_equipo" class="sidebar-link ">
-                        <i class="lni lni-list"></i>
-                        <span>Modelo de Equipos</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/tipo_equipo" class="sidebar-link ">
-                        <i class="lni lni-line-dotted"></i>
-                        <span>Tipo de Equipos</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/funcionario" class="sidebar-link">
-                        <i class="lni lni-user"></i>
-                        <span>Funcionarios</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/proveedor" class="sidebar-link">
-                        <i class="lni lni-network"></i>
-                        <span>Proveedores</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/Unidad" class="sidebar-link">
-                        <i class="lni lni-map"></i>
-                        <span>Unidad</span>
-                    </a>
-                <li class="sidebar-item">
-                    <a href="/orden_compra" class="sidebar-link">
-                        <i class="lni lni-customer"></i>
-                        <span>Orden de Compra</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/tipo_adquisicion" class="sidebar-link">
-                        <i class="lni lni-files"></i>
-                        <span>Tipo Adquisicion</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/estado_equipo" class="sidebar-link">
-                        <i class="lni lni-map"></i>
-                        <span>Estado de Equipo</span>
-                    </a>
-                </li>
-                
-                <li class="sidebar-item">
-                    <a href="/devolucion" class="sidebar-link">
-                        <i class="lni lni-package"></i>
-                        <span>Devoluciones</span>
-                    </a>
-                </li>
-                
-                <li class="sidebar-item">
-                    <a href="/asignacion" class="sidebar-link">
-                        <i class="lni lni-calculator-alt"></i>
-                        <span>Asignaciones</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/traslado" class="sidebar-link">
-                        <i class="lni lni-travel"></i>
-                        <span>Traslados</span>
-                    </a>
-                </li>
-                <li class="sidebar-item">
-                    <a href="/incidencia" class="sidebar-link">
-                        <i class="lni lni-stamp"></i>
-                        <span>Incidencias</span>
-                    </a>
-                </li>
-            </ul>
-            <div class="sidebar-footer">
-                <a href="/desloguear" class="sidebar-link">
-                    <i class="lni lni-exit"></i>
-                    <span>Logout</span>
-                </a>
+      <div class="flex-shrink-0 p-3 bg-light sidebar" style="width: 260px;">
+        <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+          <span class="fs-5 fw-semibold">Gestor de inventario</span>
+        </a>
+        <ul class="list-unstyled ps-0">
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+              <i class="fas fa-tools me-2"></i> Equipos
+            </button>
+            <div class="collapse" id="home-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                <li><a href="/equipo" class="link-dark rounded">Equipos</a></li>
+                <li><a href="/marca_equipo" class="link-dark rounded">Marcas de Equipos</a></li>
+                <li><a href="/modelo_equipo" class="link-dark rounded">Modelos de Equipos</a></li>
+                <li><a href="/tipo_equipo" class="link-dark rounded">Tipos de Equipos</a></li>
+                <li><a href="#" class="link-dark rounded">Estado de Equipos</a></li>
+              </ul>
             </div>
-        </aside>
+          </li>
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+              <i class="fas fa-users me-2"></i> Gestión de RR.HH
+            </button>
+            <div class="collapse" id="dashboard-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                <li><a href="/funcionario" class="link-dark rounded">Funcionarios</a></li>
+                <li><a href="/asignacion" class="link-dark rounded">Asignaciones</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+              <i class="fas fa-truck me-2"></i> Gestión de Proveedores
+            </button>
+            <div class="collapse" id="orders-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                <li><a href="/proveedor" class="link-dark rounded">Proveedores</a></li>
+                <li><a href="/orden_compra" class="link-dark rounded">Orden de compra</a></li>
+                <li><a href="/tipo_adquisicion" class="link-dark rounded">Tipo de adquisición</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#operations-collapse" aria-expanded="false">
+              <i class="fas fa-cogs me-2"></i> Operaciones
+            </button>
+            <div class="collapse" id="operations-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                <li><a href="/traslado" class="link-dark rounded">Traslados</a></li>
+                <li><a href="/incidencia" class="link-dark rounded">Incidencias</a></li>
+              </ul>
+            </div>
+          </li>
+          <li class="mb-3">
+            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#organization-collapse" aria-expanded="false">
+              <i class="fas fa-sitemap me-2"></i> Organización
+            </button>
+            <div class="collapse" id="organization-collapse">
+              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                <li><a href="/Unidad" class="link-dark rounded">Unidades</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+
+
         <div class="main">
             <div class="dashboard-navbar">
                 <form action="/buscar" method="GET" style="position: absolute; top: 20px; left: 38%;">
-                    <div class="nav-search">
-                        <input name="busqueda" type="text" class="search-query" placeholder="Search...">
-                        <button class="btn" type="submit">Search</button>
-                    </div>
+                  <div class="nav-search">
+                    <input id="search-input" name="busqueda" type="text" class="search-query" placeholder="Buscar Funcionarios">
+                    <button class="btn" type="submit">Search</button>
+                  </div>
+                    <script>
+                      // Array de ejemplos
+                      const placeholders = [
+                        "Buscar N° de serie",
+                        "Buscar Codigos de inventario",
+                        "Buscar Equipos",
+                        "Buscar unidades",
+                        "Buscar incidencias"
+                      ];
+                    
+                      // Referencia al input
+                      const searchInput = document.getElementById("search-input");
+                    
+                      // Índice inicial
+                      let index = 0;
+                    
+                      // Función para rotar el placeholder
+                      function rotatePlaceholder() {
+                        searchInput.placeholder = placeholders[index];
+                        index = (index + 1) % placeholders.length; // Mover al siguiente, reiniciar si llega al final
+                      }
+                    
+                      // Intervalo de 1 segundo
+                      setInterval(rotatePlaceholder, 2000);
+                    </script>
+
                 </form>
                 <div class="navbar-content">
                     <ul class="main-nav">
@@ -136,6 +125,9 @@
                                 <img src="static/img/account.png" alt="Profile" class="avatar">
                             </a>
                             <div class="user-link-dropdown">
+                              {% if privilegio == 1%}
+                              <a href="/registrar">Administrar Usuarios</a>
+                              {% endif %}
                                 <a href="/ingresar" class="card">{{session['user']}}</a>
                                 <a href="/desloguear" class="card">Desloguear</a>
                             </div>
@@ -148,25 +140,26 @@
                 {% block body %}
                 {% endblock %}
             </div>
-            <footer>
-                <div class="footer-wrap">
-                    <div class="copyright-text">
-                        <ul>
-                            <li>
-                                <p>© Copyright 2024 by <strong>JUNJI</strong></p>
-                            </li>
-                            <li>version: 1.0</li>
-                        </ul>
-                    </div>
-                    <ul class="social-icons">
-                        <li><a href="https://www.junji.cl/">Pagina web</a></li>
-                    </ul>
-                </div>
-            </footer>
         </div>
 
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </body>
+
+<footer>
+  <div class="footer-wrap">
+      <div class="copyright-text">
+          <ul>
+              <li>
+                  <p>© Copyright 2024 by <strong>JUNJI</strong></p>
+              </li>
+              <li>version: 1.0</li>
+          </ul>
+      </div>
+      <ul class="social-icons">
+          <li><a href="https://www.junji.cl/">Pagina web</a></li>
+      </ul>
+  </div>
+</footer>
 
 </html>

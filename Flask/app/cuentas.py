@@ -57,7 +57,7 @@ def loguear():
     #para revisar el tamaño de esta
     usuario = cur.fetchall()
     if len(usuario) != 1:
-        flash("contraseña o usuario incorectos")
+        flash("Nombre de usuario o contraseña incorrecta", 'warning')
         return redirect("/ingresar")
     usuario = usuario[0]
     if bcrypt.check_password_hash(usuario['contrasennaUsuario'], contrasenna):
@@ -65,7 +65,7 @@ def loguear():
         session["privilegio"] = usuario['privilegiosAdministrador']
         return redirect("/")
     else:
-        flash("contraseña o usuario incorectos")
+        flash("Nombre de usuario o contraseña incorrecta", 'warning')
         return redirect("/ingresar")
 
 @cuentas.route("/registrar", methods=["GET", "POST"])
