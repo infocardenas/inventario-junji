@@ -12,7 +12,7 @@ schema = {
         'type': 'string',
         'minlength': 1,
         'maxlength': 100,
-        'regex': '^[a-zA-Z0-9 áéíóúÁÉÍÓÚñÑ]*$' # Permite solo letras, números y espacios
+        'regex': '^[a-zA-Z0-9]*$'  # Permite solo letras, números y espacios
     },
     'nombre_tipo_equipo': {
         'type': 'string',
