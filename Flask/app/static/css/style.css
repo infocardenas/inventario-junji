@@ -747,3 +747,22 @@ svg.bi {
 .alert.hidden {
     opacity: 0;
 }
+
+.valid, .invalid {
+    font-size: 14px;
+}
+
+.valid {
+    color: green;
+}
+
+.invalid {
+    color: grey;
+}
+
+.check-results {
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+    margin: 10px 0px;
+}
