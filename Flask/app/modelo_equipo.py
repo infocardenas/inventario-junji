@@ -28,6 +28,8 @@ schema = {
     }
 }
 
+
+
 @modelo_equipo.route("/modelo_equipo")
 @modelo_equipo.route("/modelo_equipo/<page>")
 @loguear_requerido
@@ -44,8 +46,7 @@ def modeloEquipo(page=1):
     INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = me.idMarca_Equipo
                 """)
     data = cur.fetchall()
-    print("data")
-    print(data)
+   
     #cur.execute(
         #""" 
     #SELECT *
@@ -121,6 +122,7 @@ def modeloEquipo(page=1):
     total = cur.fetchone()
     total = int(str(total).split(":")[1].split("}")[0])
 
+
     return render_template(
         "modelo_equipo.html",
         marca_equipo=marca_con_tipo,
@@ -129,6 +131,8 @@ def modeloEquipo(page=1):
         page=page,
         lastpage=page < (total / perpage) + 1,
     )
+
+
 def ingresar_elemento_a_tupla(tupla_mayor, tupla_a_agregar, nombre_tupla_agregar):
     tupla_mayor.update({nombre_tupla_agregar: tupla_a_agregar})
     return tupla_mayor
@@ -289,3 +293,49 @@ def delete_modelo_equipo(id):
         #flash(e.args[1])
         flash("Error al crear")
         return redirect(url_for("modelo_equipo.modeloEquipo"))
+
+
+@modelo_equipo.route("/datos_jerarquicos", methods=["GET"])
+@loguear_requerido
+def obtener_datos_jerarquicos():
+    """Obtiene los datos jerárquicos de marcas, tipos y modelos."""
+    cur = mysql.connection.cursor()
+
+    # Obtener marcas
+    cur.execute("SELECT * FROM marca_equipo")
+    marcas = cur.fetchall()
+
+    datos_jerarquicos = []
+    
+    # Construir jerarquía
+    for marca in marcas:
+        cur.execute("""
+        SELECT te.idTipo_equipo, te.nombreTipo_equipo 
+        FROM tipo_equipo te
+        INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE mte.idMarca_Equipo = %s
+        """, (marca['idMarca_Equipo'],))
+        tipos = cur.fetchall()
+
+        tipos_list = []
+        for tipo in tipos:
+            cur.execute("""
+            SELECT me.idModelo_Equipo, me.nombreModeloequipo
+            FROM modelo_equipo me
+            WHERE me.idTipo_equipo = %s AND me.idMarca_Equipo = %s
+            """, (tipo['idTipo_equipo'], marca['idMarca_Equipo']))
+            modelos = cur.fetchall()
+            tipo['modelos'] = modelos  # Agregar modelos al tipo
+            tipos_list.append(tipo)
+
+        marca['tipos'] = tipos_list  # Agregar tipos a la marca
+        datos_jerarquicos.append(marca)
+
+    cur.close()
+
+    print(datos_jerarquicos)
+
+    # Devolver datos como JSON
+    return {
+        "marcas": datos_jerarquicos
+    }
