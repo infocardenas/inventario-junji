@@ -4,19 +4,7 @@
 
 <div class="row">
     <div class="col-md-5 offset-md-3">
-        <!-- Mensajes Flash -->
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <div class="custom-alert" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-        {% endif %}
-        {% endwith %}
+
 
         {% from "Macros/modal_macro.html" import modal %}
 
@@ -40,9 +28,6 @@
 
         <!-- Botón para mostrar el formulario -->
         <button class="nav-button" onclick="showDiv()">Agregar</button>
-
-        <!-- Mensaje de error -->
-        <div id="error-message" style="display: none;" class="error-message"></div>
 
         <!-- Formulario -->
         <div class="card card-body" id="formulario" style="display: none;">

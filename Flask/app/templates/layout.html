@@ -14,7 +14,18 @@
       <link rel="stylesheet" href="{{url_for('static', filename='css/sidebar.css')}}">
       <script src="{{url_for('static', filename='js/main.js')}}"></script>
   </head>
-
+      <!-- Carga y muestra los errores de flash de manera global -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div>
+      {% for category, message in messages %}
+      {% set alert_type = category %}
+      {% set message = message %}
+      {% include 'alert.html' %}
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
     <div class="container-home">
       <div class="flex-shrink-0 p-3 bg-light sidebar" style="width: 260px;">
         <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">

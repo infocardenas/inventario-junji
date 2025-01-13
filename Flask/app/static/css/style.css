@@ -729,6 +729,16 @@ svg.bi {
     height: 1rem;
 }
 
+.container-alert-error {
+    display: flex;
+    align-items: center;
+}
+.container-alert-error button {
+    width: 5px;
+    height: 5px;
+    margin-left: 5px;
+}
+
 .alert {
     position: fixed;
     bottom: 120px;
@@ -746,4 +756,23 @@ svg.bi {
 
 .alert.hidden {
     opacity: 0;
+}
+
+.valid, .invalid {
+    font-size: 14px;
+}
+
+.valid {
+    color: green;
+}
+
+.invalid {
+    color: grey;
+}
+
+.check-results {
+    display: flex;
+    align-content: center;
+    flex-direction: column;
+    margin: 10px 0px;
 }
