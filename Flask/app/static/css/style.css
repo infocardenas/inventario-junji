@@ -43,8 +43,6 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-<<<<<<< HEAD
-=======
 /* Sidebar layout & functionality */
 
 #sidebar {
@@ -56,7 +54,6 @@ label {
     display: block;
 }
 
->>>>>>> main
 #toggler {
     display: none;
 }
@@ -688,35 +685,6 @@ a.mainbar-link {
     font-size: 14px; /* Tamaño de fuente */
     text-align: center; /* Centrar el texto */
 }
-<<<<<<< HEAD
-.container {
-    background-color: #f8f9fa; /* Fondo gris claro */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
-  }
-  
-  h5 {
-    font-weight: bold;
-  }
-  
-  a {
-    transition: background-color 0.3s ease;
-  }
-  
-  a:hover {
-    background-color: #e9ecef; /* Fondo al pasar el cursor */
-    border-radius: 5px;
-  }
-  
-  .border-end {
-    border-right: 2px solid #dee2e6; /* Separador vertical */
-  }
-  
-  .col-md-4 {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-  
-=======
 .text-error-message {
     color: red;
     font-size: 14px;
@@ -745,4 +713,3 @@ svg.bi {
 .alert.hidden {
     opacity: 0;
 }
->>>>>>> main
