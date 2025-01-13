@@ -43,6 +43,17 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
+/* Sidebar layout & functionality */
+
+#sidebar {
+    display: flex;
+    flex-direction: column;
+    background-color: #59ae87;
+}
+label {
+    display: block;
+}
+
 #toggler {
     display: none;
 }
@@ -674,30 +685,31 @@ a.mainbar-link {
     font-size: 14px; /* Tamaño de fuente */
     text-align: center; /* Centrar el texto */
 }
-.container {
-    background-color: #f8f9fa; /* Fondo gris claro */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra sutil */
-  }
-  
-  h5 {
-    font-weight: bold;
-  }
-  
-  a {
-    transition: background-color 0.3s ease;
-  }
-  
-  a:hover {
-    background-color: #e9ecef; /* Fondo al pasar el cursor */
+.text-error-message {
+    color: red;
+    font-size: 14px;
+}
+
+svg.bi {
+    width: 1rem;
+    height: 1rem;
+}
+
+.alert {
+    position: fixed;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    width: auto;
+    max-width: 80%;
+    margin: 0 10px;
     border-radius: 5px;
-  }
-  
-  .border-end {
-    border-right: 2px solid #dee2e6; /* Separador vertical */
-  }
-  
-  .col-md-4 {
-    padding-left: 20px;
-    padding-right: 20px;
-  }
-  
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    opacity: 1;
+    transition: opacity 2s ease-out, transform 0.5s ease-in;
+}
+
+.alert.hidden {
+    opacity: 0;
+}

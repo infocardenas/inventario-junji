@@ -1,0 +1,37 @@
+{% macro modal(id, title, action, fields, method="POST") %}
+<div class="modal fade" id="{{ id }}" tabindex="-1" aria-labelledby="{{ id }}Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title text-center w-100" id="{{ id }}Label">{{ title }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form action="{{ action }}" method="{{ method }}" class="mi-formulario">
+                    {% for field in fields %}
+                        <div class="mb-3">
+                            <label for="{{ field.id }}" class="form-label">{{ field.label }}</label>
+                            {% if field.type == "select" %}
+                                <select name="{{ field.name }}" id="{{ field.id }}" class="form-select" {% if field.onchange %} onchange="{{ field.onchange }}" {% endif %}>
+                                    <option value="">{{ field.placeholder }}</option>
+                                    {% for option in field.options %}
+                                    <option value="{{ option[field.value_key] }}">{{ option[field.label_key] }}</option>
+                                    {% endfor %}
+                                </select>
+                            {% elif field.type == "input" %}
+                                <input type="text" name="{{ field.name }}" id="{{ field.id }}" class="form-control" placeholder="{{ field.placeholder }}">
+                            {% elif field.type == "textarea" %}
+                                <textarea name="{{ field.name }}" id="{{ field.id }}" class="form-control" rows="3" placeholder="{{ field.placeholder }}"></textarea>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
