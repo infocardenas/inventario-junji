@@ -1,18 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<!-- Mostrar errores a través de flash -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<div>
-    {% for category, message in messages %}
-    {% set alert_type = category %}
-    {% set message = message %}
-    {% include 'alert.html' %}
-    {% endfor %}
-</div>
-{% endif %}
-{% endwith %}
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 

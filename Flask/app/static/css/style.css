@@ -729,6 +729,16 @@ svg.bi {
     height: 1rem;
 }
 
+.container-alert-error {
+    display: flex;
+    align-items: center;
+}
+.container-alert-error button {
+    width: 5px;
+    height: 5px;
+    margin-left: 5px;
+}
+
 .alert {
     position: fixed;
     bottom: 120px;

@@ -18,27 +18,35 @@
     <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Info:">
         <use xlink:href="#info-fill" />
     </svg>
-    <div>{{ message }}</div>
+    <div class="container-alert-error">{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 </div>
 {% elif alert_type == 'success' %}
 <div class="alert alert-success d-flex align-items-center" role="alert">
     <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Success:">
         <use xlink:href="#check-circle-fill" />
     </svg>
-    <div>{{ message }}</div>
+    <div class="container-alert-error">{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 </div>
 {% elif alert_type == 'warning' %}
 <div class="alert alert-warning d-flex align-items-center" role="alert">
     <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Warning:">
         <use xlink:href="#exclamation-triangle-fill" />
     </svg>
-    <div>{{ message }}</div>
+    <div class="container-alert-error">{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 </div>
 {% elif alert_type == 'danger' %}
 <div class="alert alert-danger d-flex align-items-center" role="alert">
     <svg class="bi flex-shrink-0 me-2" role="img" aria-label="Danger:">
         <use xlink:href="#exclamation-triangle-fill" />
     </svg>
-    <div>{{ message }}</div>
+    <div class="container-alert-error">{{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
 </div>
 {% endif %}
