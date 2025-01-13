@@ -208,27 +208,6 @@ tipos_num_telefono = {
   "Telefono": true
 }
 function mostrarSelectModelo(id_select_tipo_equipo) {
-  /*
-  console.log("mostrar")
-  //obtener la id del tipo
-  tipo = document.getElementById("nombre_tipo_equipo").value
-  
-  console.log("tipo")
-  console.log(tipo)
-  //get all divs with class x give class x to relevant divs
-  div = document.getElementById("select_div")   
-  selects = div.querySelectorAll(".select_modelo")
-  //esconder todos los divs menos los relevantes
-  for(let i = 0; i < selects.length; i++) {
-    if(selects[i].id == tipo) {
-      selects[i].style.display = ""
-      console.log(selects[i])
-    }else {
-      selects[i].style.display = "none"
-
-    }
-  }
-  */
   console.log("select_tipo")
   select_tipo = document.getElementById(id_select_tipo_equipo)
   console.log(select_tipo)
@@ -248,9 +227,6 @@ function mostrarSelectModelo(id_select_tipo_equipo) {
       div.style.display = "none"
     }
   }
-
-
-
 }
 
 function mostrarSelectsEspeciales(id_marca) {

@@ -25,54 +25,60 @@
 
         <!-- Contenedor del formulario (inicialmente oculto) -->
         <div id="formContainer" style="display: none;">
-            <div class="card" >
+            <div class="card">
                 <div class="card-body">
                     <form action="/add_equipo" method="POST" id="addEquipoForm" class="row g-3">
-                        <!-- Nombre Marca -->
                         <div class="col-md-6">
-                            <label for="nombre_marca" class="form-label">Nombre Marca <span class="text-danger">*</span></label>
-                            <select class="form-select" name="nombre_marca" id="nombre_marca">
-                                <option value="" selected>Seleccione una Marca</option>
+                            <label class="form-label" for="marca">Nombre Marca <span style="color: red;">*</span></label>
+                            <select class="form-select" name="nombre_marca" id="marca" onchange="mostrarTipo_equipo()">
+                                <option value="" selected>Seleccione el Marca</option>
                                 {% for marca in marcas_equipo %}
                                 <option value="{{ marca.idMarca_Equipo }}">{{ marca.nombreMarcaEquipo }}</option>
                                 {% endfor %}
                             </select>
                         </div>
-
-                       <!-- Tipo de Equipo -->
-                        <div class="col-md-6">
-                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
-    <option value="" selected>Seleccione el Tipo de Equipo</option>
-    {% for tipo in tipo_equipo %}
-    <option value="{{ tipo.nombreTipo_equipo }}">{{ tipo.nombreTipo_equipo }}</option>
-    {% endfor %}
-</select>
-</div>                      </div>
-
-<!-- Modelos (Organizados por Tipo) -->
-<div id="modelos-container">
-    {% for tipo in tipo_equipo %}
-    <div id="modelos_{{ tipo.nombreTipo_equipo }}" class="modelos-tipo" style="display: none;">
-        <select name="modelo_equipo" id="modelo_equipo">
-            <option value="" selected>Seleccione el Modelo</option>
-            {% for modelo in tipo.modelo_equipo %}
-            <option value="{{ modelo.idModelo }}">{{ modelo.nombreModelo }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    {% endfor %}
-</div>
+                        {#}
+                        <div class="col-md-6"></div>
+                        <label class="form-label"  for="nombre_tipo_equipo">Nombre Tipo de Equipo: *</label>
+                        <select class="form-select" name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
+                            <option value="">Seleccione el Tipo de Equipo</option>
+                            {% for tipoe in tipo_equipo %}
+                            <div id="{{}}">
+                                <option value="{{tipoe.nombreTipo_equipo}}">{{tipoe.nombreTipo_equipo}}</option>
+                            </div>
+                            {% endfor %}
+                        </select>
+                        </div> 
+                        #}
+                        <div class="col-md-6" id="select_div">
+                            {% for marca in marcas_equipo %}
+                            {#{marca.nombreMarcaEquipo}#}
+                            {# el div tiene la marca ya que todo lo que se muestra en el div
+                            siguiente solo se muestra si la marca elegida es la que este
+                            asociada a el tipo y modelo de la iteracion correspondiente
+                            #}
+                            <div id="{{marca.idMarca_Equipo}}" class="select_tipo_modelo_rel_marca" style="display:none">
+                                {{select_tipo(marca.tipo_equipo, marca.idMarca_Equipo)}}
+                                {% for tipo in marca.tipo_equipo%}
+                                {#{tipo.nombreTipo_equipo}#}
+                                <div id="div_modelo_{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo" style="display: none;">
+                                    {#{tipo.modelo_equipo}#}
+                                    {{select_modelo(tipo.modelo_equipo, tipo['idTipo_equipo'], marca.idMarca_Equipo)}}
+                                </div>
+                                {% endfor %}
+                            </div>
+                            {% endfor %}
+                        </div>
 
                         <!-- Código Inventario -->
                         <div class="col-md-6">
-                            <label for="codigo_inventario" class="form-label">Código Inventario</label>
+                            <label class="form-label" for="codigo_inventario">Código Inventario</label>
                             <input type="text" class="form-control" name="codigo_inventario" id="codigo_inventario" placeholder="Ingrese el Código de Inventario">
                         </div>
-
-
+        
                         <!-- Unidad -->
                         <div class="col-md-6">
-                            <label for="codigo_Unidad" class="form-label">Unidad <span class="text-danger">*</span></label>
+                            <label class="form-label" for="codigo_Unidad">Unidad <span style="color: red;">*</span></label>
                             <select class="form-select" name="codigo_Unidad" id="codigo_Unidad">
                                 <option value="" selected>Seleccione la Unidad</option>
                                 {% for unidad in Unidad %}
@@ -80,48 +86,31 @@
                                 {% endfor %}
                             </select>
                         </div>
-
-                        <!-- Orden de Compra -->
+        
+                        <!-- Otros campos -->
                         <div class="col-md-6">
-                            <label for="nombre_orden_compra" class="form-label">Orden de Compra <span class="text-danger">*</span></label>
-                            <select class="form-select" name="nombre_orden_compra" id="nombre_orden_compra">
-                                <option value="" selected>Seleccione la Orden de Compra</option>
-                                {% for orden in orden_compra %}
-                                <option value="{{ orden.idOrden_compra }}">{{ orden.nombreOrden_compra }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-
-                        <!-- Mac -->
-                        <div class="col-md-6">
-                            <label for="mac" class="form-label">Mac</label>
+                            <label class="form-label" for="mac">Mac</label>
                             <input type="text" class="form-control" name="mac" id="mac" placeholder="Ingrese la dirección Mac">
                         </div>
-
-                        <!-- Imei -->
                         <div class="col-md-6">
-                            <label for="imei" class="form-label">IMEI</label>
+                            <label class="form-label" for="imei">IMEI</label>
                             <input type="text" class="form-control" name="imei" id="imei" placeholder="Ingrese el IMEI">
                         </div>
-
-                        <!-- Número de Teléfono -->
                         <div class="col-md-6">
-                            <label for="numero" class="form-label">Número de Teléfono</label>
+                            <label class="form-label" for="numero">Número de Teléfono</label>
                             <input type="text" class="form-control" name="numero" id="numero" placeholder="Ingrese el Número de Teléfono">
                         </div>
-
-                        <!-- Número de Serie -->
                         <div class="col-md-6">
-                            <label for="numero_serie" class="form-label">Número de Serie</label>
+                            <label class="form-label" for="numero_serie">Número de Serie</label>
                             <input type="text" class="form-control" name="numero_serie" id="numero_serie" placeholder="Ingrese el Número de Serie">
                         </div>
-
+        
                         <!-- Observación -->
                         <div class="col-12">
-                            <label for="observacion_equipo" class="form-label">Observación</label>
+                            <label class="form-label" for="observacion_equipo">Observación</label>
                             <textarea class="form-control" id="observacion_equipo" name="observacion_equipo" rows="3" placeholder="Ingrese observaciones"></textarea>
                         </div>
-
+        
                         <!-- Botones -->
                         <div class="col-12 text-end">
                             <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancelar</button>
@@ -131,7 +120,7 @@
                 </div>
             </div>
         </div>
-    </div>
+        
 
 
 
