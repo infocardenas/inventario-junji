@@ -77,9 +77,9 @@ def add_marca_equipo():
         except Exception as e:
             print("excepcion al agregar marca equipo: ", e)
             if(e.args[0] == 1062):
-                flash("No se puede repetir el valor de serie")
+                flash("La marca ya se encuentra registrada", 'warning')
             else:
-                flash("Error al crear")
+                flash("Error al registrar la marca", 'danger')
             return redirect(url_for('marca_equipo.marcaEquipo'))
        
 #enviar datos a vista editar

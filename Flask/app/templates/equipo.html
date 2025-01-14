@@ -25,54 +25,41 @@
 
         <!-- Contenedor del formulario (inicialmente oculto) -->
         <div id="formContainer" style="display: none;">
-            <div class="card" >
+            <div class="card">
                 <div class="card-body">
                     <form action="/add_equipo" method="POST" id="addEquipoForm" class="row g-3">
-                        <!-- Nombre Marca -->
                         <div class="col-md-6">
-                            <label for="nombre_marca" class="form-label">Nombre Marca <span class="text-danger">*</span></label>
-                            <select class="form-select" name="nombre_marca" id="nombre_marca">
-                                <option value="" selected>Seleccione una Marca</option>
-                                {% for marca in marcas_equipo %}
-                                <option value="{{ marca.idMarca_Equipo }}">{{ marca.nombreMarcaEquipo }}</option>
-                                {% endfor %}
+                            <label class="form-label" for="marcaSelect">Marca:</label>
+                            <select class="form-select" id="marcaSelect" onchange="cargarTipos()">
+                                <option value="">Seleccione una marca</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <label class="form-label" for="tipoSelect">Tipo:</label>
+                            <select class="form-select" id="tipoSelect" onchange="cargarModelos()">
+                                <option value="">Seleccione un tipo</option>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <input type="hidden" name="modelo_equipo" id="modelo_para_equipo" />
+
+                            <label class="form-label" for="modeloSelect">Modelo:</label>
+                            <select class="form-select" id="modeloSelect" onchange="actualizarModeloSeleccionado()">
+                                <option value="">Seleccione un modelo</option>
                             </select>
                         </div>
 
-                       <!-- Tipo de Equipo -->
-                        <div class="col-md-6">
-                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
-    <option value="" selected>Seleccione el Tipo de Equipo</option>
-    {% for tipo in tipo_equipo %}
-    <option value="{{ tipo.nombreTipo_equipo }}">{{ tipo.nombreTipo_equipo }}</option>
-    {% endfor %}
-</select>
-</div>                      </div>
-
-<!-- Modelos (Organizados por Tipo) -->
-<div id="modelos-container">
-    {% for tipo in tipo_equipo %}
-    <div id="modelos_{{ tipo.nombreTipo_equipo }}" class="modelos-tipo" style="display: none;">
-        <select name="modelo_equipo" id="modelo_equipo">
-            <option value="" selected>Seleccione el Modelo</option>
-            {% for modelo in tipo.modelo_equipo %}
-            <option value="{{ modelo.idModelo }}">{{ modelo.nombreModelo }}</option>
-            {% endfor %}
-        </select>
-    </div>
-    {% endfor %}
-</div>
-
                         <!-- Código Inventario -->
                         <div class="col-md-6">
-                            <label for="codigo_inventario" class="form-label">Código Inventario</label>
+                            <label class="form-label" for="codigo_inventario">Código Inventario</label>
                             <input type="text" class="form-control" name="codigo_inventario" id="codigo_inventario" placeholder="Ingrese el Código de Inventario">
                         </div>
-
-
+        
                         <!-- Unidad -->
                         <div class="col-md-6">
-                            <label for="codigo_Unidad" class="form-label">Unidad <span class="text-danger">*</span></label>
+                            <label class="form-label" for="codigo_Unidad">Unidad <span style="color: red;">*</span></label>
                             <select class="form-select" name="codigo_Unidad" id="codigo_Unidad">
                                 <option value="" selected>Seleccione la Unidad</option>
                                 {% for unidad in Unidad %}
@@ -80,48 +67,46 @@
                                 {% endfor %}
                             </select>
                         </div>
-
-                        <!-- Orden de Compra -->
+        
+                        <!-- Otros campos -->
                         <div class="col-md-6">
-                            <label for="nombre_orden_compra" class="form-label">Orden de Compra <span class="text-danger">*</span></label>
-                            <select class="form-select" name="nombre_orden_compra" id="nombre_orden_compra">
-                                <option value="" selected>Seleccione la Orden de Compra</option>
-                                {% for orden in orden_compra %}
-                                <option value="{{ orden.idOrden_compra }}">{{ orden.nombreOrden_compra }}</option>
+                            <label class="form-label" for="nombre_orden_compra">Orden de Compra: <span style="color: red;">*</span></label>
+                            <select class="form-select" name="nombre_orden_compra">
+                                <option value="">Seleccione el Orden de Compra</option>
+                                {% for ordenc in orden_compra %}
+                                <option value="{{ ordenc.idOrden_compra }}">{{ordenc.nombreOrden_compra}}</option>
                                 {% endfor %}
                             </select>
                         </div>
-
-                        <!-- Mac -->
                         <div class="col-md-6">
-                            <label for="mac" class="form-label">Mac</label>
+                            <label class="form-label" for="mac">Mac</label>
                             <input type="text" class="form-control" name="mac" id="mac" placeholder="Ingrese la dirección Mac">
                         </div>
-
-                        <!-- Imei -->
                         <div class="col-md-6">
-                            <label for="imei" class="form-label">IMEI</label>
+                            <label class="form-label" for="imei">IMEI</label>
                             <input type="text" class="form-control" name="imei" id="imei" placeholder="Ingrese el IMEI">
                         </div>
-
-                        <!-- Número de Teléfono -->
                         <div class="col-md-6">
-                            <label for="numero" class="form-label">Número de Teléfono</label>
+                            <label class="form-label" for="numero">Número de Teléfono</label>
                             <input type="text" class="form-control" name="numero" id="numero" placeholder="Ingrese el Número de Teléfono">
                         </div>
-
-                        <!-- Número de Serie -->
+                        
+                        
                         <div class="col-md-6">
-                            <label for="numero_serie" class="form-label">Número de Serie</label>
+                            <label class="form-label" for="numero_serie">Número de Serie</label>
                             <input type="text" class="form-control" name="numero_serie" id="numero_serie" placeholder="Ingrese el Número de Serie">
                         </div>
-
+                        <div class="col-md-6">
+                            <label class="form-label" for="codigoproveedor">Código de Proveedor: </label>
+                            <input type="text" class="form-control" name="codigoproveedor" placeholder="Ingrese Codigo del Proveedor">
+                            <br>
+                        </div>
                         <!-- Observación -->
                         <div class="col-12">
-                            <label for="observacion_equipo" class="form-label">Observación</label>
+                            <label class="form-label" for="observacion_equipo">Observación</label>
                             <textarea class="form-control" id="observacion_equipo" name="observacion_equipo" rows="3" placeholder="Ingrese observaciones"></textarea>
                         </div>
-
+        
                         <!-- Botones -->
                         <div class="col-12 text-end">
                             <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancelar</button>
@@ -131,116 +116,8 @@
                 </div>
             </div>
         </div>
-    </div>
-
-
-
         
-        <!-- Formulario -->
-        <button class="nav-button" onclick="showDiv()">Agregar</button>
-        <div id="error-message" style="display: none;" class="error-message"></div>
-        <div class="card card-body" id="formulario" style="display: none;">
-            <form action="/add_equipo" method="POST" class="mi-formulario">
-                <div class="form-group">
-                    <div>
-                        <label for="marca">Nombre Marca <span style="color: red;">*</span></label>
-                        <select name="nombre_marca" id="marca" , onchange="mostrarTipo_equipo()">
-                            <option value="">Seleccione el Marca</option>
-                            {% for marca in marcas_equipo %}
-                            <option value="{{marca.idMarca_Equipo}}">{{marca.nombreMarcaEquipo}}</option>
-                            {% endfor%}
-                        </select>
-                    </div>
-                    {#}
-                    <label for="nombre_tipo_equipo">Nombre Tipo de Equipo: *</label>
-                    <select name="nombre_tipo_equipo" id="nombre_tipo_equipo" onchange="mostrarSelectModelo()">
-                        <option value="">Seleccione el Tipo de Equipo</option>
-                        {% for tipoe in tipo_equipo %}
-                        <div id="{{}}">
-                            <option value="{{tipoe.nombreTipo_equipo}}">{{tipoe.nombreTipo_equipo}}</option>
-                        </div>
-                        {% endfor %}
-                    </select>
-                    #}
-                    <div id="select_div">
-                        {% for marca in marcas_equipo %}
-                        {#{marca.nombreMarcaEquipo}#}
-                        {# el div tiene la marca ya que todo lo que se muestra en el div
-                        siguiente solo se muestra si la marca elegida es la que este
-                        asociada a el tipo y modelo de la iteracion correspondiente
-                        #}
-                        <div id="{{marca.idMarca_Equipo}}" class="select_tipo_modelo_rel_marca" style="display:none">
-                            {{select_tipo(marca.tipo_equipo, marca.idMarca_Equipo)}}
-                            {% for tipo in marca.tipo_equipo%}
-                            {#{tipo.nombreTipo_equipo}#}
-                            <div id="div_modelo_{{tipo.nombreTipo_equipo}}" class="select_modelo_rel_tipo" style="display: none;">
-                                {#{tipo.modelo_equipo}#}
-                                {{select_modelo(tipo.modelo_equipo, tipo['idTipo_equipo'], marca.idMarca_Equipo)}}
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    <input style="display: none;" name="modelo_equipo" id="modelo_para_equipo" />
-                    {# select test #}
-                    <label for="codigo_Unidad">Unidad: <span style="color: red;">*</span></label>
-                    <select name="codigo_Unidad">
-                        <option value="">Seleccione la Unidad</option>
-                        {% for ubi in Unidad %}
-                        <option value="{{ ubi.idUnidad }}">{{ubi.nombreUnidad}}</option>
-                        {% endfor %}
-                    </select>
-                    <br>
-                    <div>
-                        <label for="nombre_orden_compra">Orden de Compra: <span style="color: red;">*</span></label>
-                        <select name="nombre_orden_compra">
-                            <option value="">Seleccione el Orden de Compra</option>
-                            {% for ordenc in orden_compra %}
-                            <option value="{{ ordenc.idOrden_compra }}">{{ordenc.nombreOrden_compra}}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    {# Mac solo se debe mostrar si es de tipo telefono fijo#}
-                    <div id="Mac" style="display: none;">
-                        <label for="mac">Mac: </label>
-                        <input class= "validatable-input" type="text" name="mac" maxlength="45">
-                        
-                        <br>
-                    </div>
-                    <div id="Imei" style="display: none;">
-                        <label for="imei">imei: </label>
-                        <input class= "validatable-input" type="text" name="imei" maxlength="45">
-                        <br>
-                    </div>
-                    <div id="Telefono" style="display: none;">
-                        <label for="numero">Número de Telefono: </label>
-                        <input class= "solo-numeros" type="text" name="numero" maxlength="12">
-                        <br>
-                    </div>
-                    <div>
-                        <label>Código Inventario</label>
-                        <input class= "validatable-input" type="text" name="codigo_inventario"
-                            placeholder="Codigo Inventario" maxlength="20">
-                        
-                        <br>
-                    </div>
-                    <div>
-                        <label for="codigoproveedor">Código de Proveedor: </label>
-                        <input type="text" class="validatable-input" name="codigoproveedor" maxlength="45">
-                        <br>
-                    </div>
-                    <label for="numero_serie">Número de Serie: </label>
-                    <input type="text" class="validatable-input" name="numero_serie" placeholder="Numero de serie"
-                        maxlength="12">
-                    <br>
-                    <label for="observacion_equipo">Observación: </label>
-                    <textarea id="observacion_equipo" name="observacion_equipo" rows="2" cols="50" maxlength="250"></textarea>
-                    <br>
-                    <button class="agregar-button" type="submit"> Agregar</button>
-            </form>
-        </div>
-    </div>
-</div>
+<!-- Exportar -->
 <h2>Equipo</h2>
 <button class="nav-button" onclick="showDiv('formularioExcel', ['importar_excel'])">Exportar a Excel</button>
 <button class="nav-button" onclick="showDiv('importar_excel', ['formularioExcel'])">Importar a Excel</button>
@@ -418,6 +295,138 @@
             formContainer.style.display = "none";
         });
     </script>
+
+s<script>
+let datosJerarquicos = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const response = await fetch('/datos_jerarquicos');
+        const data = await response.json();
+        datosJerarquicos = data.marcas;
+        cargarMarcas(); // Llenar el selector de marcas
+    } catch (error) {
+        console.error('Error al cargar datos jerárquicos:', error);
+    }
+});
+
+function cargarMarcas() {
+    const marcaSelect = document.getElementById('marcaSelect');
+    datosJerarquicos.forEach(marca => {
+        const option = document.createElement('option');
+        option.value = marca.idMarca_Equipo;
+        option.textContent = marca.nombreMarcaEquipo;
+        marcaSelect.appendChild(option);
+    });
+}
+function cargarTipos() {
+    const marcaSelect = document.getElementById('marcaSelect');
+    const tipoSelect = document.getElementById('tipoSelect');
+    tipoSelect.innerHTML = '<option value="">Seleccione un tipo</option>';
+
+    const marcaSeleccionada = datosJerarquicos.find(marca => marca.idMarca_Equipo == marcaSelect.value);
+
+    if (marcaSeleccionada) {
+        marcaSeleccionada.tipos.forEach(tipo => {
+            const option = document.createElement('option');
+            option.value = tipo.idTipo_equipo;
+            option.textContent = tipo.nombreTipo_equipo;
+            tipoSelect.appendChild(option);
+        });
+    }
+
+    // Limpiar el selector de modelos
+    const modeloSelect = document.getElementById('modeloSelect');
+    modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+}
+function cargarModelos() {
+    const marcaSelect = document.getElementById('marcaSelect');
+    const tipoSelect = document.getElementById('tipoSelect');
+    const modeloSelect = document.getElementById('modeloSelect');
+    modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+
+    const marcaSeleccionada = datosJerarquicos.find(marca => marca.idMarca_Equipo == marcaSelect.value);
+
+    if (marcaSeleccionada) {
+        const tipoSeleccionado = marcaSeleccionada.tipos.find(tipo => tipo.idTipo_equipo == tipoSelect.value);
+
+        if (tipoSeleccionado) {
+            tipoSeleccionado.modelos.forEach(modelo => {
+                const option = document.createElement('option');
+                option.value = modelo.idModelo_Equipo;
+                option.textContent = modelo.nombreModeloequipo;
+                modeloSelect.appendChild(option);
+            });
+        }
+    }
+}
+
+function actualizarModeloSeleccionado() {
+    const modeloSelect = document.getElementById('modeloSelect');
+    const modeloInput = document.getElementById('modelo_para_equipo');
+
+    // Asegúrate de que el modelo seleccionado se copie en el input oculto
+    if (modeloSelect && modeloInput) {
+        modeloInput.value = modeloSelect.value;
+    }
+}
+function normalizarTexto(texto) {
+    return texto
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // Eliminar marcas diacríticas (tildes)
+}
+
+function manejarCamposSegunTipo() {
+    const tipoSelect = document.getElementById("tipoSelect");
+
+    if (!tipoSelect) {
+        console.error("tipoSelect no está definido.");
+        return;
+    }
+
+    const tipoEquipo = tipoSelect.value;
+    const tipoNormalizado = normalizarTexto(tipoEquipo);
+
+    console.log("Valor seleccionado (original):", tipoEquipo);
+    console.log("Valor seleccionado (normalizado):", tipoNormalizado);
+
+    const macField = document.getElementById("mac")?.parentElement;
+    const imeiField = document.getElementById("imei")?.parentElement;
+    const numeroField = document.getElementById("numero")?.parentElement;
+
+    if (!macField || !imeiField || !numeroField) {
+        console.error("No se encontraron los campos MAC, IMEI o Número.");
+        return;
+    }
+
+    if (tipoNormalizado === "telefono") {
+        macField.style.display = "block";
+        imeiField.style.display = "block";
+        numeroField.style.display = "block";
+        console.log("Campos mostrados.");
+    } else {
+        macField.style.display = "none";
+        imeiField.style.display = "none";
+        numeroField.style.display = "none";
+        console.log("Campos ocultos.");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const tipoSelect = document.getElementById("tipoSelect");
+
+    if (tipoSelect) {
+        tipoSelect.addEventListener("change", manejarCamposSegunTipo);
+        manejarCamposSegunTipo(); // Inicializar al cargar
+    } else {
+        console.error("El elemento tipoSelect no fue encontrado en el DOM.");
+    }
+});
+
+</script>
+
+
     
     {{ paginacion("equipo", page, lastpage) }}
     {% endblock %}

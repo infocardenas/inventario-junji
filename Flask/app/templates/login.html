@@ -1,41 +1,46 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<!-- Mostrar errores a través de flash -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<div>
-    {% for category, message in messages %}
-    {% set alert_type = category %}
-    {% set message = message %}
-    {% include 'alert.html' %}
-    {% endfor %}
-</div>
-{% endif %}
-{% endwith %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
 
 <!-- Formulario de login -->
 <div class="card card-body" id="formulario">
-    <div id="error-message" style="display: none;" class="error-message"></div>
     <form action="/loguear" method="POST" class="mi-formulario">
-        <div class="form-group">
+        <div class="form-container">
             <label for="nombreUsuario">Nombre de Usuario</label>
-            <input type="text" class="validatable-input campo-obligatorio" name="nombreUsuario" placeholder="Nombre_Usuario">
+            <input type="text" class="validatable-input campo-obligatorio" name="nombreUsuario"
+                placeholder="Ingrese su nombre de usuario">
             <div class="text-error-message"></div>
         </div>
 
-        <div class="form-group">
+        <div class="form-container">
             <label for="password">Contraseña</label>
-            <input id="contrasenna" type="password" class="validar-contraseña campo-obligatorio" name="contrasenna" placeholder="">
-            <img style="width: 20px; height:20px" src="../static/img/hidden.png" onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna" />
+            <div>
+                <input id="contrasenna" type="password" class="validar-contraseña campo-obligatorio" name="contrasenna" placeholder="">
+                <img style="width: 20px; height:20px;" src="../static/img/hidden.png" onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna" />
+            </div>
             <div class="text-error-message"></div>
+            <div class="check-results">
+                <span id="lowerCase" class="invalid-input">
+                    <i class="bi bi-shield-x"></i> 1 minúscula</span>
+                <span id="upperCase" class="invalid-input">
+                    <i class="bi bi-shield-x"></i> 1 mayúscula</span>
+                <span id="number" class="invalid-input">
+                    <i class="bi bi-shield-x"></i> 1 número</span>
+                <span id="specialChar" class="invalid-input">
+                    <i class="bi bi-shield-x"></i> 1 símbolo</span>
+                <span id="minLength" class="invalid-input">
+                    <i class="bi bi-shield-x"></i> 8 carácteres</span>
+            </div>
         </div>
 
         <button class="agregar-button">Ingresar</button>
     </form>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="../static/js/main.js"></script>
 
 

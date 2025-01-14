@@ -208,27 +208,6 @@ tipos_num_telefono = {
   "Telefono": true
 }
 function mostrarSelectModelo(id_select_tipo_equipo) {
-  /*
-  console.log("mostrar")
-  //obtener la id del tipo
-  tipo = document.getElementById("nombre_tipo_equipo").value
-  
-  console.log("tipo")
-  console.log(tipo)
-  //get all divs with class x give class x to relevant divs
-  div = document.getElementById("select_div")   
-  selects = div.querySelectorAll(".select_modelo")
-  //esconder todos los divs menos los relevantes
-  for(let i = 0; i < selects.length; i++) {
-    if(selects[i].id == tipo) {
-      selects[i].style.display = ""
-      console.log(selects[i])
-    }else {
-      selects[i].style.display = "none"
-
-    }
-  }
-  */
   console.log("select_tipo")
   select_tipo = document.getElementById(id_select_tipo_equipo)
   console.log(select_tipo)
@@ -248,9 +227,6 @@ function mostrarSelectModelo(id_select_tipo_equipo) {
       div.style.display = "none"
     }
   }
-
-
-
 }
 
 function mostrarSelectsEspeciales(id_marca) {
@@ -512,24 +488,36 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-  //funcion para validar contraseñas
-  function validatePassword() {
-    var input = $(this).val();
-    var regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$])[A-Za-z\d@$]{8,}$/; // Permitir letras, números, @, $, !, %, *, ?, & y un mínimo de 8 caracteres
-    var errorMessage = $("#error-message");
+  function validarContraseña() {
+    const password = $(this).val();
 
-    // Verificar si el input actual es válido
-    if (!regex.test(input)) {
-      errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
+    const upperCasePattern = /[A-Z]/;
+    const lowerCasePattern = /[a-z]/;
+    const numberPattern = /[0-9]/;
+    const specialCharPattern = /[!@#$%^&*(),.?":{}|<>-]/;
+    const minLength = 8;
+
+    updateValidation("upperCase", upperCasePattern.test(password));
+    updateValidation("lowerCase", lowerCasePattern.test(password));
+    updateValidation("number", numberPattern.test(password));
+    updateValidation("specialChar", specialCharPattern.test(password));
+    updateValidation("minLength", password.length >= minLength);
+  }
+
+  function updateValidation(elementId, isValid) {
+    const element = $("#" + elementId);
+    const icon = element.find("i");
+
+    if (isValid) {
+      element.removeClass("invalid").addClass("valid");
+      icon.removeClass("bi-shield-x").addClass("bi-shield-check");
     } else {
-      if ($(".validar-contraseña").filter(function () { return !regex.test($(this).val()); }).length > 0) {
-        errorMessage.text("La contraseña debe tener al menos 8 caracteres, una letra mayúscula, una letra minúscula, un número y un carácter especial.").show();
-      } else {
-        errorMessage.hide();
-      }
+      element.removeClass("valid").addClass("invalid");
+      icon.removeClass("bi-shield-check").addClass("bi-shield-x");
     }
   }
-  $(".validar-contraseña").on("input", validatePassword);
+
+  $(".validar-contraseña").on("input", validarContraseña);
 });
 
 
@@ -683,7 +671,7 @@ $(document).ready(function () {
   });
 });
 
-// Funcion para darle un tiempo de espera y luego desaparer la alerta con css
+// Funcion para darle un tiempo de espera y luego desaparer la alerta
 $(document).ready(function() {
   setTimeout(function () {
     $('.alert').each(function () {
@@ -694,3 +682,5 @@ $(document).ready(function() {
     });
   }, 5000);
   });
+
+

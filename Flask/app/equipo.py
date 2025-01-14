@@ -149,45 +149,50 @@ def crear_lista_modelo_tipo_marca():
 def add_equipo():
     if request.method == "POST":
         datos = {
-            'codigo_inventario' : request.form["codigo_inventario"],
-            'numero_serie' : request.form["numero_serie"],
-            'observacion_equipo' : request.form["observacion_equipo"],
-            'codigoproveedor' : request.form["codigoproveedor"],
-            'mac' : request.form["mac"],
-            'imei' : request.form["imei"],
-            'numero' : request.form["numero"],
-            #nombre_tipo_equipo : request.form["nombre_tipo_equipo"]
-            #nombre_estado_equipo : request.form["nombre_estado_equipo"]
-            'codigo_Unidad' : request.form["codigo_Unidad"],
-            'nombre_orden_compra' : request.form["nombre_orden_compra"],
-            'idModelo_equipo' : request.form["modelo_equipo"],
+            'codigo_inventario': request.form["codigo_inventario"],
+            'numero_serie': request.form["numero_serie"],
+            'observacion_equipo': request.form["observacion_equipo"],
+            'codigoproveedor': request.form["codigoproveedor"],
+            'mac': request.form["mac"],
+            'imei': request.form["imei"],
+            'numero': request.form["numero"],
+            'codigo_Unidad': request.form["codigo_Unidad"],
+            'nombre_orden_compra': request.form["nombre_orden_compra"],
+            'idModelo_equipo': request.form["modelo_equipo"],
+        }
+        # Convertir cadenas vacías a None para los campos opcionales
+        for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo']:
+            if datos[key] == "":
+                datos[key] = None
+
+        # Definir el esquema de validación
+        schema = {
+            'codigo_inventario': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'observacion_equipo': {'type': 'string', 'nullable': True},
+            'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'mac': {'type': 'string', 'regex': '^[0-9]+$','nullable': True},
+            'imei': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
+            'numero': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
+            'codigo_Unidad': {'type': 'string', 'nullable': True},
+            'nombre_orden_compra': {'type': 'string', 'nullable': True},
+            'idModelo_equipo': {'type': 'string', 'nullable': True},
         }
 
-                # Definir el esquema de validación
-        schema = { 
-            'codigo_inventario': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'}, 
-            'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'}, 
-            'observacion_equipo': {'type': 'string', 'nullable': True}, 
-            'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'}, 
-            'mac': {'type': 'string', 'regex': '^[0-9]+$'}, 
-            'imei': {'type': 'string', 'regex': '^[0-9]+$'}, 
-            'numero': {'type': 'string', 'regex': '^[0-9]+$'}, 
-            'codigo_Unidad': {'type': 'string', 'nullable': True}, 
-            'nombre_orden_compra': {'type': 'string', 'nullable': True}, 
-            'idModelo_equipo': {'type': 'string', 'nullable': True},
-            }
 
-        #validator
-        v = Validator(schema)
 
         # Validar los datos usando Cerberus
+        v = Validator(schema)
         if not v.validate(datos):
-            flash("Caracteres no permitidos")
+            # Obtener errores específicos
+            errores = v.errors
+            mensaje_error = "Error en los siguientes campos:\n"
+            for campo, error in errores.items():
+                mensaje_error += f"- {campo}: {', '.join(error)}\n"
+            flash(mensaje_error)
             return redirect(url_for("equipo.Equipo"))
 
-
-        #TODO: Muchos select tienen el mismo nombre y esto provoca un error
-        #no recuerdo si resolvi la linea anterior
+        # Proceder con la inserción de datos en la base de datos
         try:
             cur = mysql.connection.cursor()
             cur.execute(
@@ -203,19 +208,19 @@ def add_equipo():
                     idUnidad, 
                     idOrden_compra, 
                     idModelo_equipo) 
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)""",
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (
-                    datos['codigo_inventario'],
-                    datos ['numero_serie'],
-                    datos['observacion_equipo'],
-                    datos['codigoproveedor'],
-                    datos['mac'],
-                    datos ['imei'],
-                    datos ['numero'],
-                    3,
-                    datos ['codigo_Unidad'],
-                    datos  ['nombre_orden_compra'],
-                    datos ['idModelo_equipo'],
+                    datos['codigo_inventario'] or None,
+                    datos['numero_serie'] or None,
+                    datos['observacion_equipo'] or None,
+                    datos['codigoproveedor'] or None,
+                    datos['mac'] or None,
+                    datos['imei'] or None,
+                    datos['numero'] or None,
+                    1,
+                    datos['codigo_Unidad'] or None,
+                    datos['nombre_orden_compra'] or None,
+                    datos['idModelo_equipo'] or None,
                 ),
             )
             mysql.connection.commit()
@@ -229,15 +234,15 @@ def add_equipo():
                 elif "UNIQUE" in mensaje_error:
                     flash("El número de serie ya existe")
                 else:
-                    flash("Error de duplicacion en la base de datos")
+                    flash("Error de duplicación en la base de datos")
             else:
                 flash("Error de integridad en la base de datos")
             return redirect(url_for('equipo.Equipo'))
-        
+
         except Exception as e:
             flash(f"Error al crear el equipo: {str(e)}")
             return redirect(url_for('equipo.Equipo'))
-        
+
 # envia datos al formulario editar segun id
 @equipo.route("/edit_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
