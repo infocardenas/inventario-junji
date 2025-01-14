@@ -333,8 +333,6 @@ def obtener_datos_jerarquicos():
 
     cur.close()
 
-    print(datos_jerarquicos)
-
     # Devolver datos como JSON
     return {
         "marcas": datos_jerarquicos

@@ -91,6 +91,7 @@
                             <input type="text" class="form-control" name="numero" id="numero" placeholder="Ingrese el Número de Teléfono">
                         </div>
                         
+                        
                         <div class="col-md-6">
                             <label class="form-label" for="numero_serie">Número de Serie</label>
                             <input type="text" class="form-control" name="numero_serie" id="numero_serie" placeholder="Ingrese el Número de Serie">
@@ -295,14 +296,13 @@
         });
     </script>
 
-<script>
+s<script>
 let datosJerarquicos = [];
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
         const response = await fetch('/datos_jerarquicos');
         const data = await response.json();
-        console.log('Datos recibidos:', data); // Verifica aquí si los datos llegan
         datosJerarquicos = data.marcas;
         cargarMarcas(); // Llenar el selector de marcas
     } catch (error) {
@@ -370,39 +370,60 @@ function actualizarModeloSeleccionado() {
         modeloInput.value = modeloSelect.value;
     }
 }
+function normalizarTexto(texto) {
+    return texto
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, ""); // Eliminar marcas diacríticas (tildes)
+}
 
-</script>
+function manejarCamposSegunTipo() {
+    const tipoSelect = document.getElementById("tipoSelect");
 
-<script>
-    // Función para mostrar/ocultar campos según el tipo de equipo seleccionado
-    function manejarCamposSegunTipo() {
-        // Obtener el valor del tipo seleccionado
-        const tipoEquipo = document.getElementById("tipoSelect").value;
-
-        // Obtener los campos que deben mostrarse/ocultarse
-        const macField = document.getElementById("mac").parentElement;
-        const imeiField = document.getElementById("imei").parentElement;
-        const numeroField = document.getElementById("numero").parentElement;
-
-        // Verificar si el tipo es 'Teléfono'
-        if (tipoEquipo.toLowerCase() === "telefono") {
-            // Mostrar campos
-            macField.style.display = "block";
-            imeiField.style.display = "block";
-            numeroField.style.display = "block";
-        } else {
-            // Ocultar campos
-            macField.style.display = "none";
-            imeiField.style.display = "none";
-            numeroField.style.display = "none";
-        }
+    if (!tipoSelect) {
+        console.error("tipoSelect no está definido.");
+        return;
     }
 
-    // Ejecutar la función cuando cambie el select de tipo
-    document.getElementById("tipoSelect").addEventListener("change", manejarCamposSegunTipo);
+    const tipoEquipo = tipoSelect.value;
+    const tipoNormalizado = normalizarTexto(tipoEquipo);
 
-    // Ejecutar la función al cargar la página para inicializar el estado
-    document.addEventListener("DOMContentLoaded", manejarCamposSegunTipo);
+    console.log("Valor seleccionado (original):", tipoEquipo);
+    console.log("Valor seleccionado (normalizado):", tipoNormalizado);
+
+    const macField = document.getElementById("mac")?.parentElement;
+    const imeiField = document.getElementById("imei")?.parentElement;
+    const numeroField = document.getElementById("numero")?.parentElement;
+
+    if (!macField || !imeiField || !numeroField) {
+        console.error("No se encontraron los campos MAC, IMEI o Número.");
+        return;
+    }
+
+    if (tipoNormalizado === "telefono") {
+        macField.style.display = "block";
+        imeiField.style.display = "block";
+        numeroField.style.display = "block";
+        console.log("Campos mostrados.");
+    } else {
+        macField.style.display = "none";
+        imeiField.style.display = "none";
+        numeroField.style.display = "none";
+        console.log("Campos ocultos.");
+    }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const tipoSelect = document.getElementById("tipoSelect");
+
+    if (tipoSelect) {
+        tipoSelect.addEventListener("change", manejarCamposSegunTipo);
+        manejarCamposSegunTipo(); // Inicializar al cargar
+    } else {
+        console.error("El elemento tipoSelect no fue encontrado en el DOM.");
+    }
+});
+
 </script>
 
 
