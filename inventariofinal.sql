@@ -87,7 +87,7 @@ CREATE TABLE `funcionario` (
 --
 
 CREATE TABLE `asignacion` (
-  `idAsignacion` int(11) NOT NULL,
+  `idAsignacion` int(11) NOT NULL AUTO_INCREMENT,
   `fecha_inicioAsignacion` date DEFAULT NULL,
   `ObservacionAsignacion` varchar(250) DEFAULT NULL,
   `rutaactaAsignacion` varchar(45) DEFAULT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE `asignacion` (
 
 
 --
--- Estructura de tabla para la tabla `marca_equipo`
+-- Estructura de tabla para la tabla `marca_equipo`cl
 --
 
 CREATE TABLE `marca_equipo` (
