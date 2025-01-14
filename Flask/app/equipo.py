@@ -160,6 +160,10 @@ def add_equipo():
             'nombre_orden_compra': request.form["nombre_orden_compra"],
             'idModelo_equipo': request.form["modelo_equipo"],
         }
+        # Convertir cadenas vacías a None para los campos opcionales
+        for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo']:
+            if datos[key] == "":
+                datos[key] = None
 
         # Definir el esquema de validación
         schema = {
@@ -169,11 +173,13 @@ def add_equipo():
             'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
             'mac': {'type': 'string', 'regex': '^[0-9]+$','nullable': True},
             'imei': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
-            'numero': {'type': 'string', 'regex': '^[0-9]+$'},
+            'numero': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
             'codigo_Unidad': {'type': 'string', 'nullable': True},
             'nombre_orden_compra': {'type': 'string', 'nullable': True},
             'idModelo_equipo': {'type': 'string', 'nullable': True},
         }
+
+
 
         # Validar los datos usando Cerberus
         v = Validator(schema)
@@ -204,17 +210,17 @@ def add_equipo():
                     idModelo_equipo) 
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (
-                    datos['codigo_inventario'],
-                    datos['numero_serie'],
-                    datos['observacion_equipo'],
-                    datos['codigoproveedor'],
-                    datos['mac'],
-                    datos['imei'],
-                    datos['numero'],
+                    datos['codigo_inventario'] or None,
+                    datos['numero_serie'] or None,
+                    datos['observacion_equipo'] or None,
+                    datos['codigoproveedor'] or None,
+                    datos['mac'] or None,
+                    datos['imei'] or None,
+                    datos['numero'] or None,
                     1,
-                    datos['codigo_Unidad'],
-                    datos['nombre_orden_compra'],
-                    datos['idModelo_equipo'],
+                    datos['codigo_Unidad'] or None,
+                    datos['nombre_orden_compra'] or None,
+                    datos['idModelo_equipo'] or None,
                 ),
             )
             mysql.connection.commit()
