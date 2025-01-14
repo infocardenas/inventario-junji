@@ -66,40 +66,6 @@ label {
     width: max-content;
 }
 
-.sidebar-nav {
-    width: 80px;
-    min-width: 80px;
-    padding: 25px 0;
-    flex: 1 1 auto;
-    transition: all .25s ease-in-out;
-}
-
-#sidebar input[type="checkbox"]:checked~.sidebar-nav {
-    width: 260px;
-    min-width: 260px;
-}
-
-a.sidebar-link {
-    padding: .625rem 1.625rem;
-    color: #FFF;
-    display: block;
-    white-space: nowrap;
-    border-left: 3px solid transparent;
-}
-
-.sidebar-link i {
-    font-size: 1.1re;
-    margin-right: .75rem;
-}
-
-a.sidebar-link:hover {
-    background-color: rgba(255, 255, 255, .075);
-    border-left: 3px solid #59ae87;
-}
-
-#sidebar input[type="checkbox"]:not(:checked)~* .sidebar-link span {
-    display: none;
-}
 
 .main {
     display: flex;
