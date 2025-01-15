@@ -12,7 +12,7 @@ schema_funcionario = {
         'type': 'string',
         'minlength': 1,
         'maxlength': 12,  # Longitud máxima considerando el RUT con guion
-        'regex': '^[0-9]+[-]?[0-9kK]$'  # Permitir números y el carácter '-'
+        'regex': r'^\d{1,3}(\.\d{3})*-\d|k|K$'
     },
     'nombre_funcionario': {
         'type': 'string',
@@ -69,28 +69,32 @@ def Funcionario(page = 1):
 
 
 #agregar funcionario
-@funcionario.route('/add_funcionario', methods = ['POST'])
+@funcionario.route('/add_funcionario', methods=['POST'])
 @administrador_requerido
 def add_funcionario():
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado")
         return redirect("/ingresar")
+    
     if request.method == 'POST':
         data = {
-            'rut_funcionario': request.form['rut_funcionario'],
-            'nombre_funcionario': request.form['nombre_funcionario'],
-            'cargo_funcionario': request.form['cargo_funcionario'],
-            'codigo_Unidad': request.form['codigo_Unidad'],
-            'correo_funcionario': request.form['correo_funcionario']
+            'rut_funcionario': request.form.get('rut_funcionario', '').strip(),
+            'nombre_funcionario': request.form.get('nombre_funcionario', '').strip(),
+            'cargo_funcionario': request.form.get('cargo_funcionario', '').strip(),
+            'codigo_Unidad': request.form.get('codigo_Unidad', '').strip(),
+            'correo_funcionario': request.form.get('correo_funcionario', '').strip()
         }
+
         # Validar los datos usando Cerberus
         v = Validator(schema_funcionario)
         if not v.validate(data):
-            flash("Caracteres no permitidos")
+            errores = v.errors  # Diccionario con los errores específicos por campo
+            for campo, mensaje in errores.items():
+                flash(f"Error en '{campo}': {mensaje[0]}")
             return redirect(url_for('funcionario.Funcionario'))
         
-    
         try:
+            # Insertar datos en la base de datos
             cur = mysql.connection.cursor()
             cur.execute("""
                         INSERT INTO funcionario 
@@ -98,30 +102,29 @@ def add_funcionario():
                         cargoFuncionario, idUnidad, correoFuncionario) 
                         VALUES (%s, %s, %s, %s, %s)
                         """, 
-            (data['rut_funcionario'], data['nombre_funcionario'], data['cargo_funcionario'], 
-                data['codigo_Unidad'], data['correo_funcionario']))
+                        (data['rut_funcionario'], data['nombre_funcionario'], 
+                         data['cargo_funcionario'], data['codigo_Unidad'], 
+                         data['correo_funcionario']))
             mysql.connection.commit()
             flash('Funcionario agregado correctamente')
             return redirect(url_for('funcionario.Funcionario'))
         
         except IntegrityError as e:
-                    error_message = str(e)
-                    if "Duplicate entry" in error_message:
-                        if "PRIMARY" in error_message:
-                            flash("Error: El RUT ya está registrado")
-                        elif "correoFuncionario" in error_message:
-                            flash("Error: El correo electrónico ya está registrado")
-                        else:
-                            flash("Error de duplicación en la base de datos")
-                    else:
-                        flash("Error de integridad en la base de datos")
-                    return redirect(url_for('funcionario.Funcionario'))
-                
+            error_message = str(e)
+            if "Duplicate entry" in error_message:
+                if "PRIMARY" in error_message:
+                    flash("Error: El RUT ya está registrado")
+                elif "correoFuncionario" in error_message:
+                    flash("Error: El correo electrónico ya está registrado")
+                else:
+                    flash("Error de duplicación en la base de datos")
+            else:
+                flash("Error de integridad en la base de datos")
+            return redirect(url_for('funcionario.Funcionario'))
+        
         except Exception as e:
-                    flash(f"Error al crear el funcionario: {str(e)}")
-                    return redirect(url_for('funcionario.Funcionario'))
-            
-    
+            flash(f"Error al crear el funcionario: {str(e)}")
+            return redirect(url_for('funcionario.Funcionario'))
 #enviar datos a vista editar
 @funcionario.route('/edit_funcionario/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
