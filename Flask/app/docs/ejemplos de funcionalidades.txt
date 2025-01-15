@@ -1,0 +1,13 @@
+# Para implementar mensaje de campo obligatorio
+    1. Asignarle la clase 'campo-obligatorio' al input
+    2. Justo debajo del input colocar el siguiente div: <div class="text-error-message"></div>
+    3. Ejemplo de implementación:
+        <label class="form-label">Nombre de la marca</label>
+        <input type="text" class="form-control campo-obligatorio" placeholder="Ingrese la marca del equipo">
+        <div class="text-error-message"></div>
+
+# Para usar las alertas:
+    1. Los mensajes se cargan automáticamente desde el layout.html por lo que no es necesario añadirlo en otras páginas
+    2. Para modificar los mensajes de las alertas se debe revisar en los archivos '.py' correspondiente a la página deseada y añadirle el tipo de alerta: (info, success, warning, danger)
+    3. Ejemplo de uso: 
+        flash('La marca ya se encuentra registrada', 'warning')
