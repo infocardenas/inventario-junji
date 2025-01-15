@@ -127,8 +127,11 @@ def update_marca_equipo(id):
             flash('Marca actualizada exitosamente', 'success')
             return redirect(url_for('marca_equipo.marcaEquipo'))
         except Exception as e:
-            flash("Error al actualizar la marca del equipo", 'danger')
-            #flash(e.args[1])
+            if (e.args[0] == 1062): # Error de llave duplicada en la BD (marca ya registrada)
+                flash("La marca ya se encuentra registrada", 'warning')
+            else:
+                flash("Error al actualizar la marca del equipo", 'danger')
+
             return redirect(url_for('marca_equipo.marcaEquipo'))
 
 #eliminar    
