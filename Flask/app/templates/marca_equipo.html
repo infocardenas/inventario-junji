@@ -6,23 +6,41 @@
     <div class="col-md-5 offset-md-3">
 
 
-        {% from "Macros/modal_macro.html" import modal %}
-
 <!-- Botón para abrir el modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMarcaModal">
     Agregar Marca
 </button>
 
-<!-- Modal para agregar equipo -->
-{{ modal("addMarcaModal", "Agregar Marca", "/add_marca_equipo", [
-    {
-        "type": "input",
-        "id": "nombre_marca",
-        "name": "nombre_marca",
-        "label": "Nombre Marca",
-        "placeholder": "Ingrese una Marca"
-    }
-]) }}
+<!-- Modal -->
+<div class="modal fade" id="addMarcaModal" tabindex="-1" aria-labelledby="addMarcaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addMarcaModalLabel">Agregar Marca</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form_addMarcaModal" action="/add_marca_equipo" method="POST">
+                    <div class="mb-3">
+                        <label for="nombre_marca_equipo" class="form-label">Nombre Marca</label>
+                        <input 
+                            type="text" 
+                            class="form-control campo-obligatorio" 
+                            id="nombre_marca_equipo" 
+                            name="nombre_marca_equipo" 
+                            placeholder="Ingrese una Marca"
+                        >
+                        <span class="text-error-message text-danger" style="display: none;"></span>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="form_addMarcaModal" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 
@@ -77,5 +95,32 @@
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="../static/js/main.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Manejo del submit del formulario del modal
+    document.getElementById("form_addMarcaModal").addEventListener("submit", function (event) {
+        let formularioValido = true;
+
+        // Validar campos obligatorios
+        const campo = document.getElementById("nombre_marca_equipo");
+        const errorMessage = campo.nextElementSibling;
+
+        if (campo.value.trim() === "") {
+            errorMessage.textContent = "Este campo es obligatorio";
+            errorMessage.style.display = "block";
+            formularioValido = false;
+        } else {
+            errorMessage.style.display = "none";
+        }
+
+        // Si el formulario no es válido, prevenir el envío
+        if (!formularioValido) {
+            event.preventDefault();
+        }
+    });
+});
+
+</script>
 
 {% endblock %}

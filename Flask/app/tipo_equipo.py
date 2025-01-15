@@ -140,40 +140,47 @@ def crear_tipo_equipo():
 @tipo_equipo.route("/add_tipo_equipo/<idTipo_equipo>", methods=["POST"])
 @administrador_requerido
 def add_tipo_equipo(idTipo_equipo):
-    print("idTipo_equipo")
-    print(idTipo_equipo)
+    print("idTipo_equipo:", idTipo_equipo)
+
     if request.method == "POST":
-        marcas = request.form.getlist("marcas[]")
+        try:
+            # Obtener los datos del formulario
+            marcas = request.form.getlist("marcas[]")
+            observacion = request.form["observacion"]
 
-        observacion = request.form["observacion"]
-        cur = mysql.connection.cursor()
-        print(observacion)
-        cur.execute(
-            """
-                    UPDATE tipo_equipo 
-                    SET observacionTipoEquipo = %s
-                    WHERE tipo_equipo.idTipo_equipo = %s
-                    """,
-                    
-
-            (
-                observacion,
-                idTipo_equipo,
-            )
-        )
-        mysql.connection.commit()
-        for marca in marcas:
-            print("agregar marca " + marca)
+            # Actualizar tipo_equipo
+            cur = mysql.connection.cursor()
             cur.execute(
                 """
-            INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo)
-            VALUES (%s, %s);
-                        """,
-                (marca, idTipo_equipo),
+                UPDATE tipo_equipo 
+                SET observacionTipoEquipo = %s
+                WHERE tipo_equipo.idTipo_equipo = %s
+                """,
+                (observacion, idTipo_equipo),
             )
-        mysql.connection.commit()
-        flash("Tipo de equipo agregado correctamente")
-        return redirect(url_for("tipo_equipo.tipoEquipo"))
+            mysql.connection.commit()
+
+            # Insertar marcas en marca_tipo_equipo
+            for marca in marcas:
+                print("Agregar marca:", marca)
+                cur.execute(
+                    """
+                    INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo)
+                    VALUES (%s, %s)
+                    """,
+                    (marca, idTipo_equipo),
+                )
+            mysql.connection.commit()
+
+            flash("Tipo de equipo agregado correctamente")
+            return redirect(url_for("tipo_equipo.tipoEquipo"))
+
+        except Exception as e:
+            # Capturar y mostrar el error específico
+            print("Error:", e)
+            flash(f"Error al agregar tipo de equipo: {str(e)}")
+            return redirect(url_for("tipo_equipo.tipoEquipo"))
+
 
 
 # enviar datos a formulario editar para tipo de equipo segun el ide correspondiente

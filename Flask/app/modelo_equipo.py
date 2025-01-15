@@ -3,6 +3,8 @@ from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
+from flask import jsonify
+
 
 modelo_equipo = Blueprint("modelo_equipo", __name__, template_folder="app/templates")
 
@@ -337,3 +339,39 @@ def obtener_datos_jerarquicos():
     return {
         "marcas": datos_jerarquicos
     }
+
+@modelo_equipo.route("/get_marcas", methods=["GET"])
+@loguear_requerido
+def obtener_marcas():
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT * FROM marca_equipo")
+    marcas = cur.fetchall()
+    cur.close()
+    return jsonify(marcas)
+
+@modelo_equipo.route("/get_tipos/<marca_id>", methods=["GET"])
+@loguear_requerido
+def obtener_tipos(marca_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT te.idTipo_equipo, te.nombreTipo_equipo 
+        FROM tipo_equipo te
+        INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE mte.idMarca_Equipo = %s
+    """, (marca_id,))
+    tipos = cur.fetchall()
+    cur.close()
+    return jsonify(tipos)
+
+@modelo_equipo.route("/get_modelos/<tipo_id>", methods=["GET"])
+@loguear_requerido
+def obtener_modelos(tipo_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT me.idModelo_Equipo, me.nombreModeloequipo 
+        FROM modelo_equipo me
+        WHERE me.idTipo_equipo = %s
+    """, (tipo_id,))
+    modelos = cur.fetchall()
+    cur.close()
+    return jsonify(modelos)

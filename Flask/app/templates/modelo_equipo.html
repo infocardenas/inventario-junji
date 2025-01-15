@@ -41,52 +41,39 @@
                         <h5 class="modal-title" id="addModeloModalLabel">Agregar Modelo de Equipo</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-
+        
                     <!-- Formulario en el Modal -->
-                    <form action="/add_modelo_equipo" method="POST">
+                    <form id="addModeloForm" action="/add_modelo_equipo" method="POST">
                         <div class="modal-body">
-                            <!-- Campo de entrada: Nombre del Modelo -->
+                            <!-- Selección de  modelo -->
                             <div class="mb-3">
-                                <label for="nombre_modelo" class="form-label">Nombre del Modelo</label>
-                                <input class="form-control validatable-input campo-obligatorio" type="text" name="nombre_modelo_equipo" placeholder="Modelo"
-                            maxlength="45">
-                            </div>
-
-                            <!-- Campo de selección: Marca del Equipo -->
-                            <div class="mb-3">
-                                <label for="nombre_marca_equipo" class="form-label">Marca del Equipo</label>
-                                <select 
-                                    class="form-select" 
-                                    id="nombre_marca_equipo" 
-                                    name="nombre_marca_equipo" 
-                                    required
+                                <label for="nombre_modelo_equipo" class="form-label">Modelo Equipo:</label>
+                                <input 
+                                    class="form-control validatable-input" 
+                                    type="text" 
+                                    id="nombre_modelo_equipo" 
+                                    name="nombre_modelo_equipo" 
+                                    placeholder="Modelo" 
+                                    maxlength="45"
                                 >
-                                    <option value="">Elija la Marca del Equipo</option>
-                                    {% for marcae in marca_equipo %}
-                                        <option value="{{ marcae.idMarca_Equipo }}">{{ marcae.nombreMarcaEquipo }}</option>
-                                    {% endfor %}
-                                </select>
-                                
                             </div>
-
-                            <!--Campo de seleccion del tipo de equipo-->
+                            <!-- Selección de Marca -->
                             <div class="mb-3">
-                                <label for="nombre_tipo_equipo" class="form-label">Tipo de Equipo</label>
-                                <select
-                                    class="form-select"
-                                    id="nombre_tipo_equipo"
-                                    name="nombre_tipo_equipo"
-                                    required
-                                >
-                                <option value="">Elija el Tipo de Equipo</option>
-                                {% for tipoe in tipo_equipo %}
-                                <option value="{{ tipoe.idTipo_Equipo }}">{{ tipoe.nombreTipoEquipo }}</option>
-                                {% endfor %}
+                                <label for="marcaSelect" class="form-label">Marca:</label>
+                                <select class="form-select" id="marcaSelect" onchange="cargarTipos()">
+                                    <option value="">Seleccione una marca</option>
                                 </select>
                             </div>
-                        </div>
-
-                        <!-- Pie del Modal -->
+        
+                            <!-- Selección de Tipo -->
+                            <div class="mb-3">
+                                <label for="tipoSelect" class="form-label">Tipo:</label>
+                                <select class="form-select" id="tipoSelect" onchange="cargarModelos()" disabled>
+                                    <option value="">Seleccione un tipo</option>
+                                </select>
+                            </div>
+        
+                        <!-- Botones -->
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary">Guardar</button>
@@ -95,6 +82,8 @@
                 </div>
             </div>
         </div>
+        
+
 
         <button class="nav-button" onclick="showDiv()">Agregar</button>
         <div id="error-message" style="display: none;" class="error-message"></div>
@@ -207,6 +196,66 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <script src="../static/js/main.js"></script>
+
+<script>
+    // Cargar marcas al abrir el modal
+document.addEventListener("DOMContentLoaded", function () {
+    cargarMarcas(); // Llama a la función que carga las marcas
+});
+
+// Función para cargar las marcas
+async function cargarMarcas() {
+    const response = await fetch("/get_marcas");
+    const marcas = await response.json();
+    const marcaSelect = document.getElementById("marcaSelect");
+
+    marcaSelect.innerHTML = `<option value="">Seleccione una marca</option>`;
+    marcas.forEach(marca => {
+        const option = document.createElement("option");
+        option.value = marca.idMarca_Equipo;
+        option.textContent = marca.nombreMarcaEquipo;
+        marcaSelect.appendChild(option);
+    });
+
+    limpiarSelect("tipoSelect", "Seleccione un tipo");
+    limpiarSelect("modeloSelect", "Seleccione un modelo");
+}
+
+// Función para cargar los tipos basados en la marca seleccionada
+async function cargarTipos() {
+    const marcaId = document.getElementById("marcaSelect").value;
+    const tipoSelect = document.getElementById("tipoSelect");
+
+    if (!marcaId) {
+        limpiarSelect("tipoSelect", "Seleccione un tipo");
+        limpiarSelect("modeloSelect", "Seleccione un modelo");
+        tipoSelect.disabled = true;
+        return;
+    }
+
+    const response = await fetch(`/get_tipos/${marcaId}`);
+    const tipos = await response.json();
+
+    tipoSelect.innerHTML = `<option value="">Seleccione un tipo</option>`;
+    tipos.forEach(tipo => {
+        const option = document.createElement("option");
+        option.value = tipo.idTipo_equipo;
+        option.textContent = tipo.nombreTipo_equipo;
+        tipoSelect.appendChild(option);
+    });
+
+    tipoSelect.disabled = false;
+    limpiarSelect("modeloSelect", "Seleccione un modelo");
+}
+
+
+// Función para limpiar un select
+function limpiarSelect(id, placeholder) {
+    const select = document.getElementById(id);
+    select.innerHTML = `<option value="">${placeholder}</option>`;
+}
+
+</script>
     {{ paginacion("modelo_equipo", page, lastpage) }}
 
     {% endblock %}

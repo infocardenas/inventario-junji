@@ -36,7 +36,7 @@
                         </div>
                         
                         <div class="col-md-6">
-                            <label class="form-label" for="tipoSelect">Tipo:</label>
+                            <label class="form-label" for="tipoSelect">Tipo Equipo:</label>
                             <select class="form-select" id="tipoSelect" onchange="cargarModelos()">
                                 <option value="">Seleccione un tipo</option>
                             </select>
@@ -51,6 +51,7 @@
                             </select>
                         </div>
 
+                        
                         <!-- Código Inventario -->
                         <div class="col-md-6">
                             <label class="form-label" for="codigo_inventario">Código Inventario</label>
@@ -78,19 +79,6 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="mac">Mac</label>
-                            <input type="text" class="form-control" name="mac" id="mac" placeholder="Ingrese la dirección Mac">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="imei">IMEI</label>
-                            <input type="text" class="form-control" name="imei" id="imei" placeholder="Ingrese el IMEI">
-                        </div>
-                        <div class="col-md-6">
-                            <label class="form-label" for="numero">Número de Teléfono</label>
-                            <input type="text" class="form-control" name="numero" id="numero" placeholder="Ingrese el Número de Teléfono">
-                        </div>
-                        
                         
                         <div class="col-md-6">
                             <label class="form-label" for="numero_serie">Número de Serie</label>
@@ -101,17 +89,36 @@
                             <input type="text" class="form-control" name="codigoproveedor" placeholder="Ingrese Codigo del Proveedor">
                             <br>
                         </div>
+                        
+                        <div id="camposTelefono" style="display: none;">
+                            <h5 class="mb-3">Datos del Teléfono</h5>
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="mac">Mac</label>
+                                    <input type="text" class="form-control" name="mac" id="mac" placeholder="Ingrese la dirección Mac">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="imei">IMEI</label>
+                                    <input type="text" class="form-control" name="imei" id="imei" placeholder="Ingrese el IMEI">
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label" for="numero">Número de Teléfono</label>
+                                    <input type="text" class="form-control" name="numero" id="numero" placeholder="Ingrese el Número de Teléfono">
+                                </div>
+                            </div>
+                        </div>
                         <!-- Observación -->
                         <div class="col-12">
                             <label class="form-label" for="observacion_equipo">Observación</label>
                             <textarea class="form-control" id="observacion_equipo" name="observacion_equipo" rows="3" placeholder="Ingrese observaciones"></textarea>
                         </div>
-        
+                        
                         <!-- Botones -->
                         <div class="col-12 text-end">
                             <button type="button" class="btn btn-secondary" id="cancelFormBtn">Cancelar</button>
                             <button type="submit" class="btn btn-success">Guardar</button>
                         </div>
+
                     </form>
                 </div>
             </div>
@@ -296,38 +303,39 @@
         });
     </script>
 
-s<script>
-let datosJerarquicos = [];
-
+<script>
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const response = await fetch('/datos_jerarquicos');
-        const data = await response.json();
-        datosJerarquicos = data.marcas;
-        cargarMarcas(); // Llenar el selector de marcas
+        await cargarMarcas(); // Llenar el selector de marcas
     } catch (error) {
-        console.error('Error al cargar datos jerárquicos:', error);
+        console.error('Error al cargar marcas:', error);
     }
 });
 
-function cargarMarcas() {
+async function cargarMarcas() {
+    const response = await fetch('/get_marcas');
+    const marcas = await response.json();
     const marcaSelect = document.getElementById('marcaSelect');
-    datosJerarquicos.forEach(marca => {
+    marcaSelect.innerHTML = '<option value="">Seleccione una marca</option>';
+
+    marcas.forEach(marca => {
         const option = document.createElement('option');
         option.value = marca.idMarca_Equipo;
         option.textContent = marca.nombreMarcaEquipo;
         marcaSelect.appendChild(option);
     });
 }
-function cargarTipos() {
-    const marcaSelect = document.getElementById('marcaSelect');
+
+async function cargarTipos() {
+    const marcaId = document.getElementById('marcaSelect').value;
     const tipoSelect = document.getElementById('tipoSelect');
     tipoSelect.innerHTML = '<option value="">Seleccione un tipo</option>';
 
-    const marcaSeleccionada = datosJerarquicos.find(marca => marca.idMarca_Equipo == marcaSelect.value);
+    if (marcaId) {
+        const response = await fetch(`/get_tipos/${marcaId}`);
+        const tipos = await response.json();
 
-    if (marcaSeleccionada) {
-        marcaSeleccionada.tipos.forEach(tipo => {
+        tipos.forEach(tipo => {
             const option = document.createElement('option');
             option.value = tipo.idTipo_equipo;
             option.textContent = tipo.nombreTipo_equipo;
@@ -335,29 +343,25 @@ function cargarTipos() {
         });
     }
 
-    // Limpiar el selector de modelos
     const modeloSelect = document.getElementById('modeloSelect');
     modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
 }
-function cargarModelos() {
-    const marcaSelect = document.getElementById('marcaSelect');
-    const tipoSelect = document.getElementById('tipoSelect');
+
+async function cargarModelos() {
+    const tipoId = document.getElementById('tipoSelect').value;
     const modeloSelect = document.getElementById('modeloSelect');
     modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
 
-    const marcaSeleccionada = datosJerarquicos.find(marca => marca.idMarca_Equipo == marcaSelect.value);
+    if (tipoId) {
+        const response = await fetch(`/get_modelos/${tipoId}`);
+        const modelos = await response.json();
 
-    if (marcaSeleccionada) {
-        const tipoSeleccionado = marcaSeleccionada.tipos.find(tipo => tipo.idTipo_equipo == tipoSelect.value);
-
-        if (tipoSeleccionado) {
-            tipoSeleccionado.modelos.forEach(modelo => {
-                const option = document.createElement('option');
-                option.value = modelo.idModelo_Equipo;
-                option.textContent = modelo.nombreModeloequipo;
-                modeloSelect.appendChild(option);
-            });
-        }
+        modelos.forEach(modelo => {
+            const option = document.createElement('option');
+            option.value = modelo.idModelo_Equipo;
+            option.textContent = modelo.nombreModeloequipo;
+            modeloSelect.appendChild(option);
+        });
     }
 }
 
@@ -370,59 +374,24 @@ function actualizarModeloSeleccionado() {
         modeloInput.value = modeloSelect.value;
     }
 }
-function normalizarTexto(texto) {
-    return texto
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, ""); // Eliminar marcas diacríticas (tildes)
+
+
+
+
+function manejarCamposTelefono() {
+    const tipoSelect = document.getElementById('tipoSelect');
+    const camposTelefono = document.getElementById('camposTelefono');
+
+    // Mostrar u ocultar los campos si el tipo seleccionado es "Teléfono"
+    if (tipoSelect.options[tipoSelect.selectedIndex].text.toLowerCase() === "telefono") {
+    camposTelefono.style.display = "block";
+} else {
+    camposTelefono.style.display = "none";
+}
 }
 
-function manejarCamposSegunTipo() {
-    const tipoSelect = document.getElementById("tipoSelect");
-
-    if (!tipoSelect) {
-        console.error("tipoSelect no está definido.");
-        return;
-    }
-
-    const tipoEquipo = tipoSelect.value;
-    const tipoNormalizado = normalizarTexto(tipoEquipo);
-
-    console.log("Valor seleccionado (original):", tipoEquipo);
-    console.log("Valor seleccionado (normalizado):", tipoNormalizado);
-
-    const macField = document.getElementById("mac")?.parentElement;
-    const imeiField = document.getElementById("imei")?.parentElement;
-    const numeroField = document.getElementById("numero")?.parentElement;
-
-    if (!macField || !imeiField || !numeroField) {
-        console.error("No se encontraron los campos MAC, IMEI o Número.");
-        return;
-    }
-
-    if (tipoNormalizado === "telefono") {
-        macField.style.display = "block";
-        imeiField.style.display = "block";
-        numeroField.style.display = "block";
-        console.log("Campos mostrados.");
-    } else {
-        macField.style.display = "none";
-        imeiField.style.display = "none";
-        numeroField.style.display = "none";
-        console.log("Campos ocultos.");
-    }
-}
-
-document.addEventListener("DOMContentLoaded", () => {
-    const tipoSelect = document.getElementById("tipoSelect");
-
-    if (tipoSelect) {
-        tipoSelect.addEventListener("change", manejarCamposSegunTipo);
-        manejarCamposSegunTipo(); // Inicializar al cargar
-    } else {
-        console.error("El elemento tipoSelect no fue encontrado en el DOM.");
-    }
-});
+// Escucha el cambio en el selector de tipo
+document.getElementById('tipoSelect').addEventListener('change', manejarCamposTelefono);
 
 </script>
 
