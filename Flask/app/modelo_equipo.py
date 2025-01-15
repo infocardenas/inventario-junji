@@ -14,19 +14,17 @@ schema = {
         'type': 'string',
         'minlength': 1,
         'maxlength': 100,
-        'regex': '^[a-zA-Z0-9 áéíóúÁÉÍÓÚñÑ]*$' # Permite solo letras, números y espacios
+        'regex': '^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]*$' # Permite solo letras, números y espacios
     },
-    'nombre_tipo_equipo': {
-        'type': 'string',
-        'minlength': 1,
-        'maxlength': 100,
-        'regex': '^[a-zA-Z0-9]*$'
+    'id_marca_equipo': {
+        'type':'string',
+        'minlength':1,
+        'maxlength':100,
     },
-    'nombre_marca_equipo': {
-        'type': 'string',
-        'minlength': 1,
-        'maxlength': 100,
-        'regex': '^[a-zA-Z0-9]*$'
+    'id_tipo_equipo': {
+        'type':'string',
+        'minlength':1,
+        'maxlength':100,
     }
 }
 
@@ -147,15 +145,19 @@ def add_modelo_equipo():
     if request.method == "POST":
         # Obtener los datos del formulario
         data = {
-            'nombre_modelo_equipo': request.form['nombre_modelo_equipo'],
-            'nombre_tipo_equipo': request.form['nombre_tipo_equipo'],
-            'nombre_marca_equipo': request.form['nombre_marca_equipo']
+                'nombre_modelo_equipo': request.form['nombre_modelo_equipo'],
+                'id_marca_equipo': request.form['nombre_marca_equipo'],
+                'id_tipo_equipo': request.form['nombre_tipo_equipo']
         }
 
         # Validar los datos usando Cerberus
         v = Validator(schema)
         if not v.validate(data):
-            flash("Caracteres no permitidos")
+            errores = v.errors  # Obtener los errores detallados
+            mensaje_error = "Errores de validación:"
+            for campo, detalle in errores.items():
+                mensaje_error += f" {campo}: {detalle};"
+            flash(mensaje_error)  # Mostrar los errores en un mensaje flash
             return redirect(url_for("modelo_equipo.modeloEquipo"))
 
         try:
@@ -166,14 +168,16 @@ def add_modelo_equipo():
                 (nombreModeloequipo, idTipo_equipo, idMarca_Equipo) 
             VALUES (%s, %s, %s)
             """,
-                (data['nombre_modelo_equipo'], data['nombre_tipo_equipo'], data['nombre_marca_equipo'])
+                (data['nombre_modelo_equipo'], data['id_tipo_equipo'], data['id_marca_equipo'])
             )
             cur.connection.commit()
             flash("Modelo agregado correctamente")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
         except Exception as e:
-            flash("Error al crear")
+            flash(f"Error al crear: {str(e)}")  # Mostrar el error exacto
             return redirect(url_for("modelo_equipo.modeloEquipo"))
+
+
 
 # Envias datos a formulario editar
 @modelo_equipo.route("/edit_modelo_equipo/<id>", methods=["POST", "GET"])
@@ -249,9 +253,9 @@ def update_modelo_equipo(id):
     if request.method == "POST":
         # Obtener los datos del formulario
         data = {
-            'nombre_modelo_equipo': request.form["nombre_modelo_equipo"],
-            'nombre_tipo_equipo': request.form["nombre_tipo_equipo"],
-            'nombre_marca_equipo': request.form['nombre_marca_equipo']
+                'nombre_modelo_equipo': request.form['nombre_modelo_equipo'],
+                'id_marca_equipo': request.form['nombre_marca_equipo'],
+                'id_tipo_equipo': request.form['nombre_tipo_equipo']
         }
 # Validar los datos usando Cerberus
         v = Validator(schema)
@@ -268,7 +272,7 @@ def update_modelo_equipo(id):
                 idMarca_Equipo = %s
             WHERE idModelo_Equipo = %s
             """,
-                (data['nombre_modelo_equipo'], data['nombre_tipo_equipo'], data['nombre_marca_equipo'], id),
+                (data['nombre_modelo_equipo'], data['id_tipo_equipo'], data['id_marca_equipo'], id),
             )
             mysql.connection.commit()
             flash("Modelo actualizado correctamente")

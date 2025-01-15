@@ -2,54 +2,43 @@
 {% block body %}
 {% from 'funciones_macro.html' import paginacion, select_para_marca %}
 {% from "Macros/modal_macro.html" import modal %}
-<div class="row">
 
-    <div class="col-md-5">
-        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+<div class="row">
+    <div class="col-md-12">
+        <!-- Mostrar mensajes flash -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
-        {% for message in messages %}
-
-        <div class="custom-alert" role="alert">
-            {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+        <div class="alert-container">
+            {% for message in messages %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
         </div>
-
-        {% endfor %}
         {% endif %}
         {% endwith %}
-        <!-- Se termina la seccion de errores -->
 
-        <!-- ----- 
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<script type="text/javascript" src="https://cdn.datatables.net/v/bs5/jszip-2.5.0/dt-1.11.3/b-2.1.1/b-html5-2.1.1/b-print-2.1.1/cr-1.5.5/r-2.2.9/datatables.min.js"></script>
--->
-                <!-- Botón para abrir el modal -->
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addModeloModal">
+        <!-- Botón para abrir el modal -->
+        <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#addModeloModal">
             Agregar Modelo de Equipo
         </button>
 
-        <!-- Modal -->
+        <!-- Modal para agregar modelo -->
         <div class="modal fade" id="addModeloModal" tabindex="-1" aria-labelledby="addModeloModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <!-- Encabezado del Modal -->
                     <div class="modal-header">
                         <h5 class="modal-title" id="addModeloModalLabel">Agregar Modelo de Equipo</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                     </div>
-        
-                    <!-- Formulario en el Modal -->
                     <form id="addModeloForm" action="/add_modelo_equipo" method="POST">
                         <div class="modal-body">
                             <!-- Selección de  modelo -->
                             <div class="mb-3">
                                 <label for="nombre_modelo_equipo" class="form-label">Modelo Equipo:</label>
                                 <input 
-                                    class="form-control validatable-input" 
+                                    class="form-control" 
                                     type="text" 
                                     id="nombre_modelo_equipo" 
                                     name="nombre_modelo_equipo" 
@@ -60,7 +49,7 @@
                             <!-- Selección de Marca -->
                             <div class="mb-3">
                                 <label for="marcaSelect" class="form-label">Marca:</label>
-                                <select class="form-select" id="marcaSelect" onchange="cargarTipos()">
+                                <select class="form-select" id="marcaSelect" name="nombre_marca_equipo" onchange="cargarTipos()">
                                     <option value="">Seleccione una marca</option>
                                 </select>
                             </div>
@@ -68,12 +57,11 @@
                             <!-- Selección de Tipo -->
                             <div class="mb-3">
                                 <label for="tipoSelect" class="form-label">Tipo:</label>
-                                <select class="form-select" id="tipoSelect" onchange="cargarModelos()" disabled>
+                                <select class="form-select" id="tipoSelect" name="nombre_tipo_equipo" onchange="cargarModelos()" disabled>
                                     <option value="">Seleccione un tipo</option>
                                 </select>
                             </div>
-        
-                        <!-- Botones -->
+                        </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                             <button type="submit" class="btn btn-primary">Guardar</button>
@@ -82,83 +70,44 @@
                 </div>
             </div>
         </div>
-        
 
-
-        <button class="nav-button" onclick="showDiv()">Agregar</button>
-        <div id="error-message" style="display: none;" class="error-message"></div>
-        <div class="card card-body" style="display: none;" id="formulario">
-
-            <form action="/add_modelo_equipo" method="POST" class="mi-formulario" onsubmit="return validarInputs()">
-                <div class="form-group">
-                    <label for="nombre_modelo_equipo"> Modelo Equipo: </label>
-                    <input class="validatable-input" type="text" name="nombre_modelo_equipo" placeholder="Modelo"
-                    maxlength="45">
-
-                </div>
-                {#
-                TODO: Al apretar el boton verde agregar se muestra un boton para seleccionar la marca
-                Despues de seleccionar la marca se muestra el tipo de equipo y el boton gris de agregar.
-
-                - modificar la tupla de marcas para que tenga como uno de sus objetos una tupla de tipos de equipo
-                #}
-
-                {#Usar una macro para crear por cada marca crear un select con el tipo y esconderlo #}
-                <div class="form-group">
-                    <div id="selector_marca">
-                        <label for="nombre_marca_equipo"> Marca Equipo: </label>
-                        <select name="nombre_marca_equipo" id="marca" onchange="mostrarTipo_para_agregar_modelo()">
-                            <option value="">Elija la Marca del Equipo</option>
-                            {% for marcae in marca_equipo %}
-                            <option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>
-                            {% endfor %}
-                        </select>
-                        <br />
-                    </div>
-                    {# crea selectores para tipo de equipo#}
-                    {% for marcae in marca_equipo %}
-                    {{ select_para_marca(marcae) }}
+        <!-- Tabla para mostrar modelos de equipos -->
+        <h2>Modelo de Equipos</h2>
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped" id="posts">
+                <thead>
+                    <tr>
+                        <th>Modelo Equipo</th>
+                        <th>Tipo Equipo</th>
+                        <th>Marca Equipo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="myTableBody">
+                    {% if modelo_equipo %}
+                    {% for modeloe in modelo_equipo %}
+                    <tr>
+                        <td>{{ modeloe.nombreModeloequipo }}</td>
+                        <td>{{ modeloe.nombreTipo_equipo }}</td>
+                        <td>{{ modeloe.nombreMarcaEquipo }}</td>
+                        <td>
+                            <a href="/edit_modelo_equipo/{{ modeloe.idModelo_Equipo }}" class="btn btn-success btn-sm">Editar</a>
+                            <a href="/delete_modelo_equipo/{{ modeloe.idModelo_Equipo }}" class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
+                    </tr>
                     {% endfor %}
-
-                    <div id="selector_tipo_equipo" style="display: none;">
-                        <input name="nombre_tipo_equipo" id="nombre_tipo_equipo" />
-                    </div>
-                </div>
-
-                <button id="enviar" class="agregar-button" style="display: none;"> Agregar</button>
-            </form>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No hay datos disponibles.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
     </div>
-    <h2>Modelo de Equipos</h2>
+</div>
 
-    <div style="overflow-x:auto;">
-        <table id="posts">
-            <thead>
-                <tr>
-                    <th onclick="sortTable(0)">Modelo equipo</th>
-                    {#<th onclick="sortTable(1)">Marca</th>#}
-                    <th onclick="sortTable(1)">Tipo Equipo</th>
-                    <th onclick="sortTable(2)">Marca Equipo</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="myTableBody">
-                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
-                {% for modeloe in modelo_equipo %}
-                <tr>
-                    <td>{{modeloe.nombreModeloequipo}}</td>
-                   {# <td>{{modeloe.nombreMarcaEquipo}}</td> #}
-                    <td>{{modeloe.nombreTipo_equipo}}</td>
-                    <td>{{modeloe.nombreMarcaEquipo}}</td>
-                    <td>
-                        <a href="/edit_modelo_equipo/{{modeloe.idModelo_Equipo}}" class="success-button">Editar</a>
-                        <a href="/delete_modelo_equipo/{{modeloe.idModelo_Equipo}}" class="delete-button">Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+
     <!--
 <script>
     $(document).ready(function() {
