@@ -49,7 +49,7 @@ def marcaEquipo(page=1):
 @administrador_requerido
 def add_marca_equipo():
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     if request.method == 'POST':
 # Obtener los datos del formulario
@@ -64,7 +64,7 @@ def add_marca_equipo():
             errors = v.errors
             # Formatear el mensaje de advertencia
             warning_messages = []
-            flash("Caracteres no permitidos")
+            flash("Formato de entrada no válido", 'warning')
             return redirect(url_for("marca_equipo.marcaEquipo"))  # Redirigir a la misma página
 
 
@@ -93,7 +93,7 @@ def edit_marca_equipo(id):
         return render_template('editMarca_equipo.html', marca_equipo = data[0])
     except Exception as e:
         #flash(e.args[1])
-        flash("Error al crear")
+        flash("Error al editar la marca", 'danger')
         return redirect(url_for('marca_equipo.marcaEquipo'))
 
 #actualizar
@@ -101,7 +101,7 @@ def edit_marca_equipo(id):
 @administrador_requerido
 def update_marca_equipo(id):
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     if request.method == 'POST':
          # Obtener los datos del formulario
@@ -112,7 +112,7 @@ def update_marca_equipo(id):
         # Validar los datos usando Cerberus
         v = Validator(marca_equipo_schema)
         if not v.validate(datos):
-            flash("Caracteres no permitidos: {}".format(v.errors))
+            flash("Formato de entrada no válido", "warning")
             return redirect(url_for("marca_equipo.marcaEquipo"))
 
 
@@ -124,10 +124,10 @@ def update_marca_equipo(id):
             WHERE idMarca_Equipo = %s
             """, (datos['nombre_marca_equipo'], id))
             mysql.connection.commit()
-            flash('Marca actualizada correctamente')
+            flash('Marca actualizada exitosamente', 'success')
             return redirect(url_for('marca_equipo.marcaEquipo'))
         except Exception as e:
-            flash("Error al crear")
+            flash("Error al actualizar la marca del equipo", 'danger')
             #flash(e.args[1])
             return redirect(url_for('marca_equipo.marcaEquipo'))
 
