@@ -72,7 +72,7 @@ def add_marca_equipo():
             cur = mysql.connection.cursor()
             cur.execute("""INSERT INTO marca_equipo (nombreMarcaEquipo) VALUES (%s)""", (datos['nombre_marca_equipo'],))
             mysql.connection.commit()
-            flash('Marca agregada correctamente')
+            flash('Marca agregada exitosamente', 'success')
             return redirect(url_for('marca_equipo.marcaEquipo'))  
         except Exception as e:
             print("excepcion al agregar marca equipo: ", e)
@@ -139,11 +139,11 @@ def delete_marca_equipo(id):
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM marca_equipo WHERE idMarca_equipo = %s', (id,))
         mysql.connection.commit()
-        flash('Marca eliminada correctamente')
+        flash('Marca eliminada exitosamente', 'success')
         return redirect(url_for('marca_equipo.marcaEquipo'))
     except Exception as e:
         #flash(e.args[1])
-        flash("Error al crear")
+        flash("Error al eliminar la marca", 'danger')
         return redirect(url_for('marca_equipo.marcaEquipo'))
     
     
