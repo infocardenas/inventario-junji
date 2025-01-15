@@ -83,7 +83,14 @@
             <td>{{ marcae.nombreMarcaEquipo }}</td>
             <td>
                 <a href="/marca_equipo/edit_marca_equipo/{{ marcae.idMarca_Equipo }}" class="success-button">Editar</a>
-                <a href="/marca_equipo/delete_marca_equipo/{{ marcae.idMarca_Equipo }}" class="delete-button">Eliminar</a>
+                <a href="#"
+                    class="delete-button btn btn-danger"
+                    data-id="{{ marcae.idMarca_Equipo }}"
+                    data-title="Eliminar Marca"
+                    data-message="¿Estás seguro de que deseas eliminar la marca {{ marcae.nombreMarcaEquipo }}?">
+                    Eliminar
+                </a>
+
             </td>
         </tr>
         {% endfor %}
@@ -95,58 +102,5 @@
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="../static/js/main.js"></script>
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Manejo del submit del formulario del modal
-    document.getElementById("form_addMarcaModal").addEventListener("submit", function (event) {
-        let formularioValido = true;
-
-        // Validar campos obligatorios
-        const campo = document.getElementById("nombre_marca_equipo");
-        const errorMessage = campo.nextElementSibling;
-
-        if (campo.value.trim() === "") {
-            errorMessage.textContent = "Este campo es obligatorio";
-            errorMessage.style.display = "block";
-            formularioValido = false;
-        } else {
-            errorMessage.style.display = "none";
-        }
-
-        // Si el formulario no es válido, prevenir el envío
-        if (!formularioValido) {
-            event.preventDefault();
-        }
-    });
-});
-
-</script>
-
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-    // Manejo del submit del formulario del modal
-    document.getElementById("form_addMarcaModal").addEventListener("submit", function (event) {
-        let formularioValido = true;
-
-        // Validar campos obligatorios
-        const campo = document.getElementById("nombre_marca_equipo");
-        const errorMessage = campo.nextElementSibling;
-
-        if (campo.value.trim() === "") {
-            errorMessage.textContent = "Este campo es obligatorio";
-            errorMessage.style.display = "block";
-            formularioValido = false;
-        } else {
-            errorMessage.style.display = "none";
-        }
-
-        // Si el formulario no es válido, prevenir el envío
-        if (!formularioValido) {
-            event.preventDefault();
-        }
-    });
-});
-
-</script>
 
 {% endblock %}

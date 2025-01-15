@@ -684,3 +684,39 @@ $(document).ready(function() {
   });
 
 
+$(document).ready(function () {
+  function configureGenericModal(title, message, confirmCallback) {
+    // Configurar el título y mensaje del modal
+    $("#genericModalLabel").text(title);
+    $("#genericModalMessage").text(message);
+
+    // Asignar la acción de confirmación al botón
+    $("#genericModalConfirmButton").off("click").on("click", function () {
+      if (confirmCallback) {
+        confirmCallback(); // Ejecutar la acción de confirmación
+      }
+      // Cerrar el modal
+      $("#genericModal").modal("hide");
+    });
+
+    // Mostrar el modal
+    $("#genericModal").modal("show");
+  }
+
+  // Asignar eventos a los botones de eliminar
+  $(".delete-button").on("click", function () {
+    const id = $(this).data("id");
+    const title = $(this).data("title") || "Confirmar Acción";
+    const message = $(this).data("message") || "¿Estás seguro de realizar esta acción?";
+    const deleteUrl = `/marca_equipo/delete_marca_equipo/${id}`;
+
+    configureGenericModal(
+      title, // Título dinámico
+      message, // Mensaje dinámico
+      function () {
+        // Acción de confirmación: redirigir a la URL de eliminación
+        window.location.href = deleteUrl;
+      }
+    );
+  });
+});
