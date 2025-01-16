@@ -64,7 +64,7 @@ def Traslado(page=1):
     )
     unidades = cur.fetchall()
     return render_template(
-        "traslado.html",
+        'Operaciones/traslado.html',
         traslado=data,
         unidades=unidades,
         page=page,
@@ -111,7 +111,9 @@ def add_traslado():
                 flash("no hay equipos en esta Unidad")
                 return redirect(url_for("traslado.Traslado"))
             return render_template(
-                "add_traslado.html", equipos=equipos_data, unidades=unidades
+                'Operaciones/add_traslado.html', 
+                equipos=equipos_data, 
+                unidades=unidades
             )
 
         except Exception as e:
@@ -160,7 +162,7 @@ def edit_traslado(id):
         )
         equipos = cur.fetchall()
         return render_template(
-            "editTraslado.html",
+            'Operaciones/editTraslado.html',
             traslado=data[0],
             agregar=True,
             unidades=unidades,
@@ -569,7 +571,11 @@ def buscar(idTraslado):
     unidades = cur.fetchall()
 
     return render_template(
-        "traslado.html", traslado=data, unidades=unidades, page=1, lastpage=True
+        'Operaciones/traslado.html', 
+        traslado=data, 
+        unidades=unidades, 
+        page=1, 
+        lastpage=True
     )
 
 
@@ -588,7 +594,10 @@ def listar_pdf(idTraslado):
         nombreFirmado = "None"
     print("exists")
     return render_template(
-        "firma.html", nombreFirmado=nombreFirmado, id=idTraslado, location="traslado"
+        "GestionR.H/firma.html", 
+        nombreFirmado=nombreFirmado, 
+        id=idTraslado, 
+        location="traslado"
     )
 
 

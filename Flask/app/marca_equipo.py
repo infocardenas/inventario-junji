@@ -40,8 +40,12 @@ def marcaEquipo(page=1):
     total = int(str(total).split(':')[1].split('}')[0])
 
     
-    return render_template('marca_equipo.html', marca_equipo = data, page=page,
-                        lastpage = page < (total/perpage) + 1)
+    return render_template(
+        'Equipo/marca_equipo.html', 
+        marca_equipo = data, 
+        page=page,
+        lastpage = page < (total/perpage) + 1
+        )
 
 
 #agregar
@@ -90,7 +94,10 @@ def edit_marca_equipo(id):
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM marca_equipo WHERE idMarca_Equipo = %s', (id,))
         data = cur.fetchall()
-        return render_template('editMarca_equipo.html', marca_equipo = data[0])
+        return render_template(
+            'Equipo/editMarca_equipo.html', 
+            marca_equipo = data[0]
+            )
     except Exception as e:
         #flash(e.args[1])
         flash("Error al editar la marca", 'danger')

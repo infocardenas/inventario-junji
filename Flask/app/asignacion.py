@@ -58,8 +58,13 @@ def Asignacion(page=1):
     cur.execute('SELECT COUNT(*) FROM asignacion')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
-    return render_template("asignacion.html",  funcionarios=funcionarios, asignacion=data,
-                       page=page, lastpage= page < (total / perpage) + 1)
+    return render_template(
+        'GestionR.H/asignacion.html', 
+        funcionarios=funcionarios, 
+        asignacion=data,
+        page=page, 
+        lastpage= page < (total / perpage) + 1
+        )
 
 @asignacion.route("/add_asignacion", methods=["GET"])
 @asignacion.route("/add_asignacion/<idEquipo>")
@@ -92,7 +97,7 @@ def add_asignacion(idEquipo = "None"):
                 """, ("SIN ASIGNAR",))
     equipos_data = cur.fetchall()
     return render_template(
-        "add_asignacion.html",
+        'GestionR.H/add_asignacion.html',
         equipos=equipos_data,
         funcionarios=funcionarios_data,
         equipoSeleccionado = idEquipo
@@ -133,7 +138,10 @@ def edit_asignacion(id):
         #print(data)
         #print(data['observacionAsignacion'])
         return render_template(
-            "editAsignacion.html", asignacion=data, funcionario=f_data, equipo=eq_data
+            'GestionR.H/editAsignacion.html', 
+            asignacion=data, 
+            funcionario=f_data, 
+            equipo=eq_data
         )
     except Exception as e:
         flash("Error al crear")
@@ -777,9 +785,12 @@ def buscar(idAsignacion):
     )
     funcionarios = cur.fetchall()
 
-    return render_template("asignacion.html",  
-        funcionarios=funcionarios, asignacion=Asignaciones,
-        page=1, lastpage=True
+    return render_template(
+        'GestionR.H/asignacion.html',  
+        funcionarios=funcionarios, 
+        asignacion=Asignaciones,
+        page=1, 
+        lastpage=True
     )
 #@asignacion.route("/asignacion/buscar_devolucion/<idDevolucion>")
 #@loguear_requerido
@@ -857,8 +868,12 @@ def listar_pdf(idAsignacion, devolver="None"):
         #print("#####NombreFirmado = None #######")
         nombreFirmado = "None"
     #print("exists")
-    return render_template("firma.html", 
-        nombreFirmado=nombreFirmado, id=idAsignacion, location=location)
+    return render_template(
+        'GestionR.H/firma.html', 
+        nombreFirmado=nombreFirmado, 
+        id=idAsignacion, 
+        location=location
+        )
 
 
 

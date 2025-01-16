@@ -5,25 +5,10 @@
 <div class="row">
 
     <div>
-        <!-- Esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-
-        <div class="custom-alert" role="alert">
-            {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-        <!-- Se termina la seccion de errores -->
         
         <button id="toggleFormBtn" class="btn btn-primary mb-3">Agregar Equipo</button>
 
-        <!-- Contenedor del formulario (inicialmente oculto) -->
+        <!-- Formulario -->
         <div id="formContainer" style="display: none;">
             <div class="card">
                 <div class="card-body">
@@ -127,7 +112,7 @@
 <!-- Exportar -->
 <h2>Equipo</h2>
 <button class="nav-button" onclick="showDiv('formularioExcel', ['importar_excel'])">Exportar a Excel</button>
-<button class="nav-button" onclick="showDiv('importar_excel', ['formularioExcel'])">Importar a Excel</button>
+<!-- <button class="nav-button" onclick="showDiv('importar_excel', ['formularioExcel'])">Importar a Excel</button>  -->
 <div class="card card-body" id="formularioExcel" style="display: none;">
     <h2>Seleccione que hojas quiere</h2>
     <form action="/test_excel_form" method="POST" class="mi-formulario">

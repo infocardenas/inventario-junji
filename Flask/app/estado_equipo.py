@@ -20,8 +20,11 @@ def estadoEquipo(page = 1):
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
     cur.close()
-    return render_template('estado_equipo.html', estado_equipo = data,
-                           page=page, lastpage= page < (total/perpage)+1)
+    return render_template(
+        'Equipo/estado_equipo.html', 
+        estado_equipo = data,
+        page=page, lastpage= page < (total/perpage)+1
+        )
 
 @estado_equipo.route('/add_estado_equipo', methods = ['POST'])
 @administrador_requerido
@@ -64,7 +67,10 @@ def edit_estado_equipo(id):
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM estado_equipo WHERE idEstado_equipo = %s', (id,))
         data = cur.fetchall()
-        return render_template('editEstado_equipo.html', estado_equipo = data[0])
+        return render_template(
+            'Equipo/editEstado_equipo.html', 
+            estado_equipo = data[0]
+            )
     except Exception as e:
         #flash(e.args[1])
         flash("Error al crear")
@@ -192,7 +198,7 @@ def mostrar_equipos_segun_tipo(tipo):
     modeloe_data = cur.fetchall()
 
     return render_template(
-        "equipo.html",
+        "Equipo/equipo.html",
         equipo=Equipos,
         tipo_equipo=tipoe_data,
         estado_equipo=estadoe_data,

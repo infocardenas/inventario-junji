@@ -720,3 +720,13 @@ $(document).ready(function () {
     );
   });
 });
+
+// Inicializar data table
+$(document).ready(function () {
+  $('.datatable').DataTable({
+      responsive: true, 
+      paging: true,    
+      ordering: true,   
+      info: true        
+  });
+});

@@ -64,8 +64,12 @@ def Funcionario(page = 1):
     cur.execute('SELECT COUNT(*) FROM funcionario')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
-    return render_template('funcionario.html', funcionario = data, 
-                           Unidad = ubi_data, page=page, lastpage= page < (total/perpage)+1)
+    return render_template(
+        'GestionR.H/funcionario.html', 
+        funcionario = data, 
+        Unidad = ubi_data, 
+        page=page, lastpage= page < (total/perpage)+1
+        )
 
 
 #agregar funcionario
@@ -144,7 +148,11 @@ def edit_funcionario(id):
         cur.execute('SELECT * from unidad')
         print(data) 
         ubi_data = cur.fetchall()
-        return render_template('editFuncionario.html', funcionario = data[0], Unidad = ubi_data)
+        return render_template(
+            'GestionR.H/editFuncionario.html', 
+            funcionario = data[0], 
+            Unidad = ubi_data
+            )
     except Exception as e:
         #flash(e.args[1])
         flash("Error al crear")
@@ -244,6 +252,10 @@ def buscar_funcionario(id):
     FROM unidad u 
                 """)
     unidades = cur.fetchall()
-    return render_template('funcionario.html', funcionario = funcionarios, 
-                           Unidad = unidades, page=1, lastpage=True)
+    return render_template(
+        'GestionR.H/funcionario.html', 
+        funcionario = funcionarios, 
+        Unidad = unidades, 
+        page=1, lastpage=True
+        )
 

@@ -80,7 +80,7 @@ def Equipo(page=1):
 
     marcas_llenadas = crear_lista_modelo_tipo_marca()
     return render_template(
-        "equipo.html",
+        "Equipo/equipo.html",
         equipo=equipos,
         tipo_equipo=tipo_equipo,
         modelo_equipo_simple = modelo_equipo,
@@ -277,7 +277,7 @@ def edit_equipo(id):
         cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
         modeloe_data = cur.fetchall()
         return render_template(
-            "editEquipo.html",
+            "Equipo/editEquipo.html",
             equipo=data[0],
             tipo_equipo=tipoe_data,
             estado_equipo=estadoe_data,
@@ -433,7 +433,7 @@ def mostrar_asociados_traslado(idTraslado):
     modeloe_data = cur.fetchall()
 
     return render_template(
-        "equipo.html",
+        "Equipo/equipo.html",
         equipo=data,
         tipo_equipo=tipoe_data,
         estado_equipo=estadoe_data,
@@ -496,7 +496,7 @@ def mostrar_asociados_unidad(idUnidad, page=1):
     modeloe_data = cur.fetchall()
 
     return render_template(
-        "equipo.html",
+        "Equipo/equipo.html",
         equipo=data,
         tipo_equipo=tipoe_data,
         estado_equipo=estadoe_data,
@@ -548,7 +548,7 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
     if(len(asignaciones) == 0):
         
         return render_template(
-            "equipo.html",
+            "Equipo/equipo.html",
             equipo=(),
             tipo_equipo=tipoe_data,
             estado_equipo=estadoe_data,
@@ -584,7 +584,7 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
     )
     data = cur.fetchall()
     return render_template(
-        "equipo.html",
+        "Equipo/equipo.html",
         equipo=data,
         tipo_equipo=tipoe_data,
         estado_equipo=estadoe_data,
@@ -668,7 +668,12 @@ def equipo_detalles(idEquipo):
     else:
         funcionario = None
 
-    return render_template("equipo_detalles.html", equipo=data_equipo, eventos=data_eventos, funcionario=funcionario)
+    return render_template(
+        "Equipo/equipo_detalles.html", 
+        equipo=data_equipo, 
+        eventos=data_eventos, 
+        funcionario=funcionario
+        )
 
 #
     #cur.execute("""
@@ -1460,7 +1465,7 @@ def buscar_equipo(id):
     modeloe_data = cur.fetchall()
 
     return render_template(
-        "equipo.html",
+        "Equipo/equipo.html",
         equipo=Equipos,
         tipo_equipo=tipoe_data,
         estado_equipo=estadoe_data,
@@ -1549,4 +1554,9 @@ def listar_equipos():
     end = start + per_page
     equipos_pagina = equipos[start:end]  # Obtener solo los equipos para la página actual
 
-    return render_template('equipo.html', items=equipos_pagina, total_equipos=total_equipos, page=page)
+    return render_template(
+        'Equipo/equipo.html', 
+        items=equipos_pagina, 
+        total_equipos=total_equipos, 
+        page=page
+        )

@@ -124,7 +124,7 @@ def modeloEquipo(page=1):
 
 
     return render_template(
-        "modelo_equipo.html",
+        "Equipo/modelo_equipo.html",
         marca_equipo=marca_con_tipo,
         modelo_equipo=data,
         tipo_equipo=tipo_data,
@@ -239,7 +239,7 @@ def edit_modelo_equipo(id):
     print("marca")
     print(marcas)
     return render_template(
-        "editModelo_equipo.html", modelo_equipo=data, id=id,
+        "Equipo/editModelo_equipo.html", modelo_equipo=data, id=id,
         marca_equipo=marcas_con_tipo_equipo, tipo_equipo=tipo_data, marcas=marcas)
 
 
