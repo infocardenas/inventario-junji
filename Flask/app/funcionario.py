@@ -73,7 +73,7 @@ def Funcionario(page = 1):
 @administrador_requerido
 def add_funcionario():
     if "user" not in session:
-        flash("No estás autorizado")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     
     if request.method == 'POST':
