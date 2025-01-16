@@ -92,7 +92,12 @@ def add_funcionario():
         if not v.validate(data):
             errores = v.errors  # Diccionario con los errores específicos por campo
             for campo, mensaje in errores.items():
-                flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
+                print(campo)
+                print(mensaje)
+                if "min length is 9" in mensaje:
+                    flash("Error: El RUT ingresado debe contener 7 u 8 dígitos", 'warning')
+                else:
+                    flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
             return redirect(url_for('funcionario.Funcionario'))
         
         try:
