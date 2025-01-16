@@ -116,7 +116,11 @@
                 <td class="toCheck">{{ fun.correoFuncionario }}</td>
                 <td>
                     <a href="/edit_funcionario/{{ fun.rutFuncionario }}" class="success-button">Editar</a>
-                    <a href="/delete_funcionario/{{ fun.rutFuncionario }}" class="delete-button">Eliminar</a>
+                    <a href="#" class="delete-button btn btn-danger" data-url="/delete_funcionario/{{ fun.rutFuncionario }}"
+                        data-title="Eliminar Funcionario"
+                        data-message="¿Estás seguro de que deseas eliminar al funcionario {{ fun.nombreFuncionario }}?">
+                        Eliminar
+                    </a>
                     <a href="/mostrar_asociados_funcionario/{{ fun.rutFuncionario }}" class="info-button">Equipos</a>
                 </td>
             </tr>
