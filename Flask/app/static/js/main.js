@@ -752,9 +752,9 @@ $(document).ready(function () {
     let rutSinFormato = inputRut.val().replace(/[^0-9kK\-]/g, ""); // Permitir números, K/k y guion
     inputRut.val(rutSinFormato); // Actualizar el valor limpio en el campo
 
-    // Mostrar "DV" por defecto si no hay 7 u 8 dígitos
+    // Mostrar "" por defecto si no hay 7 u 8 dígitos
     if (!/^\d{7,8}$/.test(rutSinFormato.replace(/-.*$/, ""))) {
-      $("#rut_verificador").val("DV"); // Valor por defecto
+      $("#rut_verificador").val(""); // Valor por defecto
       return;
     }
 
@@ -768,7 +768,7 @@ $(document).ready(function () {
     const digitoVerificador = $("#rut_verificador").val();
 
     // Validar que el RUT y el dígito verificador estén completos
-    if (/^\d{7,8}$/.test(rutSinFormato) && digitoVerificador !== "DV") {
+    if (/^\d{7,8}$/.test(rutSinFormato)) {
       const rutCompleto = `${rutSinFormato}-${digitoVerificador}`;
       $("#rut_completo").val(rutCompleto); // Asignar al campo oculto
     } else {
