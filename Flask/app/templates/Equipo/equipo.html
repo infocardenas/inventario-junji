@@ -13,61 +13,69 @@
             <div class="card">
                 <div class="card-body">
                     <form action="/add_equipo" method="POST" id="addEquipoForm" class="row g-3">
+                        <div style="color: red;">* Obligatorio</div>
                         <div class="col-md-6">
-                            <label class="form-label" for="marcaSelect">Marca:</label>
-                            <select class="form-select" id="marcaSelect" onchange="cargarTipos()">
+                            <label class="form-label" for="marcaSelect">Marca <span style="color:red;">*</span></label>
+                            <select class="form-select campo-obligatorio" id="marcaSelect" onchange="cargarTipos()">
                                 <option value="">Seleccione una marca</option>
                             </select>
+                            <div class="text-error-message"></div>
                         </div>
                         
                         <div class="col-md-6">
-                            <label class="form-label" for="tipoSelect">Tipo Equipo:</label>
-                            <select class="form-select" id="tipoSelect" onchange="cargarModelos()">
+                            <label class="form-label" for="tipoSelect">Tipo Equipo <span style="color:red;">*</span></label>
+                            <select class="form-select campo-obligatorio" id="tipoSelect" onchange="cargarModelos()">
                                 <option value="">Seleccione un tipo</option>
                             </select>
+                            <div class="text-error-message"></div>
                         </div>
                         
                         <div class="col-md-6">
                             <input type="hidden" name="modelo_equipo" id="modelo_para_equipo" />
 
-                            <label class="form-label" for="modeloSelect">Modelo:</label>
-                            <select class="form-select" id="modeloSelect" onchange="actualizarModeloSeleccionado()">
+                            <label class="form-label" for="modeloSelect">Modelo <span style="color:red;">*</span></label>
+                            <select class="form-select campo-obligatorio" id="modeloSelect" onchange="actualizarModeloSeleccionado()">
                                 <option value="">Seleccione un modelo</option>
                             </select>
+                            <div class="text-error-message"></div>
                         </div>
 
                         
                         <!-- Código Inventario -->
                         <div class="col-md-6">
-                            <label class="form-label" for="codigo_inventario">Código Inventario</label>
-                            <input type="text" class="form-control" name="codigo_inventario" id="codigo_inventario" placeholder="Ingrese el Código de Inventario">
+                            <label class="form-label" for="codigo_inventario">Código Inventario <span style="color:red;">*</span></label>
+                            <input type="text" class="form-control campo-obligatorio" name="codigo_inventario" id="codigo_inventario" placeholder="Ingrese el Código de Inventario">
+                            <div class="text-error-message"></div>
                         </div>
         
                         <!-- Unidad -->
                         <div class="col-md-6">
                             <label class="form-label" for="codigo_Unidad">Unidad <span style="color: red;">*</span></label>
-                            <select class="form-select" name="codigo_Unidad" id="codigo_Unidad">
+                            <select class="form-select campo-obligatorio" name="codigo_Unidad" id="codigo_Unidad">
                                 <option value="" selected>Seleccione la Unidad</option>
                                 {% for unidad in Unidad %}
                                 <option value="{{ unidad.idUnidad }}">{{ unidad.nombreUnidad }}</option>
                                 {% endfor %}
                             </select>
+                            <div class="text-error-message"></div>
                         </div>
         
                         <!-- Otros campos -->
                         <div class="col-md-6">
-                            <label class="form-label" for="nombre_orden_compra">Orden de Compra: <span style="color: red;">*</span></label>
-                            <select class="form-select" name="nombre_orden_compra">
+                            <label class="form-label" for="nombre_orden_compra">Orden de Compra <span style="color: red;">*</span></label>
+                            <select class="form-select campo-obligatorio" name="nombre_orden_compra">
                                 <option value="">Seleccione el Orden de Compra</option>
                                 {% for ordenc in orden_compra %}
                                 <option value="{{ ordenc.idOrden_compra }}">{{ordenc.nombreOrden_compra}}</option>
                                 {% endfor %}
                             </select>
+                            <div class="text-error-message"></div>
                         </div>
                         
                         <div class="col-md-6">
-                            <label class="form-label" for="numero_serie">Número de Serie</label>
-                            <input type="text" class="form-control" name="numero_serie" id="numero_serie" placeholder="Ingrese el Número de Serie">
+                            <label class="form-label" for="numero_serie">Número de Serie <span style="color:red;">*</span></label>
+                            <input type="text" class="form-control campo-obligatorio" name="numero_serie" id="numero_serie" placeholder="Ingrese el Número de Serie">
+                            <div class="text-error-message"></div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label" for="codigoproveedor">Código de Proveedor: </label>

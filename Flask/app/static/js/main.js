@@ -644,9 +644,11 @@ $(document).ready(function () {
       // Verifica si el campo está vacío
       if (inputField.val().trim() === "") {
         errorMessage.text("Este campo es obligatorio").show();
+        inputField.css("border", "2px solid red");
         formularioValido = false;
       } else {
         errorMessage.hide();
+        inputField.css("border", "");
       }
     });
 
@@ -663,6 +665,7 @@ $(document).ready(function () {
 
     if (inputField.val().trim() !== "") {
       errorMessage.hide();
+      inputField.css("border", "");
     }
   });
 
@@ -721,12 +724,63 @@ $(document).ready(function () {
   });
 });
 
-// Inicializar data table
 $(document).ready(function () {
-  $('.datatable').DataTable({
-      responsive: true, 
-      paging: true,    
-      ordering: true,   
-      info: true        
+  function calcularDigitoVerificador(rutSinFormato) {
+    let rut = rutSinFormato.replace(/\D/g, ""); // Eliminar caracteres no numéricos
+    let suma = 0;
+    let multiplicador = 2;
+
+    // Recorrer el RUT desde el final al inicio
+    for (let i = rut.length - 1; i >= 0; i--) {
+      suma += parseInt(rut[i]) * multiplicador;
+      multiplicador = multiplicador === 7 ? 2 : multiplicador + 1; // Ciclo de multiplicadores de 2 a 7
+    }
+
+    // Calcular el resto y determinar el dígito verificador
+    const resto = suma % 11;
+    const digitoVerificador = 11 - resto;
+
+    if (digitoVerificador === 11) return "0";
+    if (digitoVerificador === 10) return "K";
+    return digitoVerificador.toString();
+  }
+
+  function actualizarRutVerificador() {
+    const inputRut = $("#rut_funcionario");
+
+    // Limitar a números y guion, limpiar caracteres inválidos
+    let rutSinFormato = inputRut.val().replace(/[^0-9kK\-]/g, ""); // Permitir números, K/k y guion
+    inputRut.val(rutSinFormato); // Actualizar el valor limpio en el campo
+
+    // Mostrar "DV" por defecto si no hay 7 u 8 dígitos
+    if (!/^\d{7,8}$/.test(rutSinFormato.replace(/-.*$/, ""))) {
+      $("#rut_verificador").val("DV"); // Valor por defecto
+      return;
+    }
+
+    // Calcular el dígito verificador si el RUT tiene 7 u 8 dígitos
+    const digitoVerificador = calcularDigitoVerificador(rutSinFormato.replace(/-.*$/, ""));
+    $("#rut_verificador").val(digitoVerificador);
+  }
+
+  function prepararRutCompleto() {
+    const rutSinFormato = $("#rut_funcionario").val();
+    const digitoVerificador = $("#rut_verificador").val();
+
+    // Validar que el RUT y el dígito verificador estén completos
+    if (/^\d{7,8}$/.test(rutSinFormato) && digitoVerificador !== "DV") {
+      const rutCompleto = `${rutSinFormato}-${digitoVerificador}`;
+      $("#rut_completo").val(rutCompleto); // Asignar al campo oculto
+    } else {
+      $("#rut_completo").val(""); // Limpiar si no es válido
+    }
+  }
+
+  // Actualizar el dígito verificador en tiempo real
+  $("#rut_funcionario").on("input", actualizarRutVerificador);
+
+  // Preparar el RUT completo antes de enviar el formulario
+  $("#form_addFuncionarioModal").on("submit", function () {
+    prepararRutCompleto();
   });
 });

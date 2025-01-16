@@ -171,7 +171,7 @@ def add_modelo_equipo():
                 (data['nombre_modelo_equipo'], data['id_tipo_equipo'], data['id_marca_equipo'])
             )
             cur.connection.commit()
-            flash("Modelo agregado correctamente")
+            flash("Modelo agregado exitosamente", 'success')
             return redirect(url_for("modelo_equipo.modeloEquipo"))
         except Exception as e:
             flash(f"Error al crear: {str(e)}")  # Mostrar el error exacto
@@ -248,7 +248,7 @@ def edit_modelo_equipo(id):
 @administrador_requerido
 def update_modelo_equipo(id):
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     if request.method == "POST":
         # Obtener los datos del formulario
