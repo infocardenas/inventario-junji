@@ -644,9 +644,11 @@ $(document).ready(function () {
       // Verifica si el campo está vacío
       if (inputField.val().trim() === "") {
         errorMessage.text("Este campo es obligatorio").show();
+        inputField.css("border", "2px solid red");
         formularioValido = false;
       } else {
         errorMessage.hide();
+        inputField.css("border", "");
       }
     });
 
@@ -663,6 +665,7 @@ $(document).ready(function () {
 
     if (inputField.val().trim() !== "") {
       errorMessage.hide();
+      inputField.css("border", "");
     }
   });
 
