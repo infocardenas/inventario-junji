@@ -4,7 +4,7 @@
 
 <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
 <div class="row">
-    <div class="col-md-5">
+    <div class="col-md-12">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
@@ -19,73 +19,101 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-        <!-- Se termina la seccion de errores -->
+    
+    
+        <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#addTipoEquipoModal"> Agregar Tipo de Equipo</button>
 
-        <!-- ----- -->
+                <!-- Modal único para crear Tipo de Equipo -->
+                <!-- Modal para crear Tipo de Equipo -->
+        <div class="modal fade" id="addTipoEquipoModal" tabindex="-1" aria-labelledby="addTipoEquipoLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addTipoEquipoLabel">Agregar Tipo de Equipo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <form id="addTipoEquipoForm" action="/crear_tipo_equipo" method="POST">
+                        <div class="modal-body">
+                            <!-- Input para el nombre del tipo de equipo -->
+                            <div class="mb-3">
+                                <label for="nombreTipo_equipo" class="form-label">Nombre del Tipo de Equipo:</label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="nombreTipo_equipo" 
+                                    name="nombreTipo_equipo" 
+                                    placeholder="Ingresa el nombre del tipo de equipo" 
+                                    required>
+                            </div>
 
-        <button class="nav-button" onclick="showDiv()">Agregar</button>
-        <div id="error-message" style="display: none;" class="error-message"></div>
-        <div class="card card-body" id="formulario" style="display: none;">
-            <form action="/crear_tipo_equipo" method="POST" class="mi-formulario">
-                <div class="form-group">
-                    <label for="nombreTipo_equipo">Nombre Tipo Equipo:</label>
-                    <input class="validatable-input" type="text" id="nombreTipo_equipo" name="nombreTipo_equipo" required maxlength="45">
-                    
+                            <!-- Checkboxes para seleccionar marcas -->
+                            <div class="mb-3">
+                                <label class="form-label">Selecciona las Marcas:</label>
+                                <div class="form-check">
+                                    {% for marca in marcas %}
+                                    <div>
+                                        <input 
+                                            class="form-check-input" 
+                                            type="checkbox" 
+                                            id="marca_{{ marca.idMarca_equipo }}" 
+                                            name="marcas[]" 
+                                            value="{{ marca.idMarca_equipo }}">
+                                        <label class="form-check-label" for="marca_{{ marca.idMarca_equipo }}">
+                                            {{ marca.nombreMarcaEquipo }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Textarea para observaciones -->
+                            <div class="mb-3">
+                                <label for="observacion" class="form-label">Observaciones:</label>
+                                <textarea 
+                                    class="form-control" 
+                                    id="observacion" 
+                                    name="observacion" 
+                                    rows="4" 
+                                    placeholder="Agrega observaciones adicionales"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
                 </div>
-                {#<label for="nombre_marca_equipo"> Marca Equipo: </label>#}
-                {#<select name="nombre_marca_equipo" id="">#}
-                    {#<option value="">Elija la Marca del Equipo</option>#}
-                    {#{% for marcae in marcas %}#}
-                    {#<option value="{{ marcae.idMarca_Equipo }}">{{marcae.nombreMarcaEquipo}}</option>#}
-                    {#{% endfor %}#}
-                {#</select>#}
-                <button type="submit" class="agregar-button">
-                    Agregar
-                </button>
-            </form>
+            </div>
         </div>
-    </div>
-    <h2>Tipos de equipo</h2>
-    <div style="overflow-x:auto;">
-        <table id="posts">
+        
+        
+        <h2>Tipos de equipo</h2>
+        <table class="table table-bordered table-striped" id="posts">
             <thead>
                 <tr>
                     <td onclick="sortTable(0)">Nombre tipo de equipo</td>
-                    <td onclick="sortTable(1)">Nombre Marca</td>
+                    <td onclick="sortTable(1)">Marcas Asociadas</td>
                     <td>Acciones</td>
                 </tr>
             </thead>
             <tbody id="myTableBody">
-                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
                 {% for tipoe in tipo_equipo %}
                 <tr>
-                    <td>{{tipoe.nombreTipo_equipo}}</td>
+                    <td>{{ tipoe.nombreTipo_equipo }}</td>
+                    <td>{{ tipoe.marcas if tipoe.marcas else "Sin marcas asociadas" }}</td>
                     <td>
-                        {% for marca in tipoe.marcas %}
-                       {#} 
-                        {% for m in marca %}
-                           {{m}} 
-                        {% endfor %}
-                        #}
-                        
-                            {{marca.nombreMarcaEquipo}} 
-
-                        {% endfor %}
-                    </td>
-                    <td>
-                        <a href="/edit_tipo_equipo/{{tipoe.idTipo_equipo}}" class="success-button">Editar</a>
-                        <a href="/delete_tipo_equipo/{{tipoe.idTipo_equipo}}" class="delete-button">Eliminar</a>
+                        <a href="/edit_tipo_equipo/{{ tipoe.idTipo_equipo }}" class="success-button">Editar</a>
+                        <a href="/delete_tipo_equipo/{{ tipoe.idTipo_equipo }}" class="delete-button">Eliminar</a>
                     </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
 
-        {{ paginacion("tipo_equipo", page, lastpage) }}
-    </div>
-</div>
-
+{{ paginacion("tipo_equipo", page, lastpage) }}
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <script src="../static/js/main.js"></script>
+
+
 {% endblock %}

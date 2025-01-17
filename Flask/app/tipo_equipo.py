@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, session
+from flask import Blueprint, render_template, request, url_for, redirect, flash, session, jsonify
 from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
@@ -18,119 +18,93 @@ tipo_equipo_schema = {
 }
 
 # ruta para enviar los datos y visualizar la pagina principal para tipo de equipo
+# Ruta para visualizar la página principal de tipos de equipo
 @tipo_equipo.route("/tipo_equipo")
-@tipo_equipo.route("/tipo_equipo/<page>")
+@tipo_equipo.route("/tipo_equipo/<int:page>")
 @loguear_requerido
 def tipoEquipo(page=1):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("Se necesita ingresar para acceder a esa ruta")
         return redirect("/ingresar")
+
     perpage = getPerPage()
-    offset = (int(page) - 1) * perpage
+    offset = (page - 1) * perpage
+
     cur = mysql.connection.cursor()
-    total = 0
-    cur.execute("SELECT COUNT(*) FROM tipo_equipo")
-    total = cur.fetchone()
-    total = int(str(total).split(":")[1].split("}")[0])
-    # Se pediran todos las filas de tipo_equipo. Luego se pediran todas las filas de las
-    # marcas asociadas con el tipo de equipo. Luego estas marcas se van a añadir a la
-    # tupla del tipo de equipo de manera que se tenga marca_i=(tupla,) donde i = 0 y ++ cada iteracion
+
+    # Obtener el total de registros para la paginación
+    cur.execute("SELECT COUNT(*) AS total FROM tipo_equipo")
+    total = cur.fetchone()["total"]
+
+    # Obtener tipos de equipo con marcas relacionadas
     cur.execute("""
-        SELECT *
+        SELECT 
+            te.*, 
+            GROUP_CONCAT(me.nombreMarcaEquipo SEPARATOR ', ') AS marcas
         FROM tipo_equipo te
-        LIMIT %s OFFSET %s 
-                """,(perpage, offset)
-    )
+        LEFT JOIN marca_tipo_equipo mte ON te.idTipo_equipo = mte.idTipo_equipo
+        LEFT JOIN marca_equipo me ON mte.idMarca_Equipo = me.idMarca_Equipo
+        GROUP BY te.idTipo_equipo
+        LIMIT %s OFFSET %s
+    """, (perpage, offset))
     tipo_equipo_data = cur.fetchall()
-    tipo_equipo_con_marcas = None
-    # input 1 ({})
-    # input 2 ({})
-    # input1[i] = {}
-    # marcas tiene que ser una tupla de diccionarios
 
-    for i in range(0, len(tipo_equipo_data)):
-        print("tipo con marcas")
-        print(tipo_equipo_con_marcas)
-        cur.execute("""
-        SELECT *
-        FROM marca_equipo me
-        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Equipo = mte.idMarca_Equipo
-        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-        WHERE te.idTipo_equipo = %s
-        """,
-            (tipo_equipo_data[i]["idTipo_equipo"],),
-        )
-        marcas_del_tipo = cur.fetchall()
-        print("marcas_del_tipo")
-        print(marcas_del_tipo)
-        if tipo_equipo_con_marcas == None:
-            newdict = tipo_equipo_data[i]
-            newdict.update({"marcas": marcas_del_tipo})
-            tipo_equipo_con_marcas = (newdict,)
-        else:
-            newdict = tipo_equipo_data[i]
-            newdict.update({"marcas": marcas_del_tipo})
-            print("newdict")
-            print(newdict)
-            print(tipo_equipo_con_marcas)
-            tipo_equipo_con_marcas += (newdict,)
-            print(tipo_equipo_con_marcas)
-
-    # print("tipo_equipo_con_marcas")
-    # print(tipo_equipo_con_marcas)
-    cur.execute("SELECT * FROM marca_equipo")
+    # Obtener todas las marcas para el modal
+    cur.execute("SELECT idMarca_equipo, nombreMarcaEquipo FROM marca_equipo")
     marcas = cur.fetchall()
-    page = int(page)
+
+    # Calcular última página
+    lastpage = (total + perpage - 1) // perpage  # Redondeo hacia arriba
+
     return render_template(
-        "Equipo/tipo_equipo.html",
+        "tipo_equipo.html",
         tipo_equipo=tipo_equipo_data,
         marcas=marcas,
         page=page,
-        lastpage=page < (total / perpage) + 1,
+        lastpage=page < lastpage
     )
 
-
 # agrega un tipo de equipo
-@tipo_equipo.route("/crear_tipo_equipo", methods=["POST"])
+@tipo_equipo.route("/crear_tipo_equipo", methods=["GET", "POST"])
 @administrador_requerido
 def crear_tipo_equipo():
-        
-        data = {
-            'nombreTipo_Equipo': request.form['nombreTipo_equipo']
-        }
- # Validar los datos usando Cerberus
-        v = Validator(tipo_equipo_schema)
-        if not v.validate(data):
-            flash("Caracteres no permitidos")
-            return redirect(url_for("tipo_equipo.tipoEquipo"))
-            
+    if request.method == "POST":
+        # Procesar datos del formulario
+        nombreTipo_Equipo = request.form["nombreTipo_equipo"]
+        marcas_seleccionadas = request.form.getlist("marcas[]")
+        observacion = request.form.get("observacion", "")
+
         cur = mysql.connection.cursor()
         try:
+            # Insertar el tipo de equipo
             cur.execute("""
-                        INSERT INTO tipo_equipo (nombreTipo_equipo) 
-                        VALUES (%s)""",
-                (data["nombreTipo_Equipo"],),
-            )
+                INSERT INTO tipo_equipo (nombreTipo_equipo, observacionTipoEquipo) 
+                VALUES (%s, %s)
+            """, (nombreTipo_Equipo, observacion))
+            tipo_equipo_id = cur.lastrowid
+
+            # Enlazar marcas seleccionadas
+            for marca_id in marcas_seleccionadas:
+                cur.execute("""
+                    INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo) 
+                    VALUES (%s, %s)
+                """, (marca_id, tipo_equipo_id))
+
+            mysql.connection.commit()
+            flash("Tipo de equipo creado correctamente.")
         except Exception as e:
-                #flash(e.args[1])
-                flash("Error al crear")
-                return redirect(url_for("tipo_equipo.tipoEquipo"))
-        mysql.connection.commit()
-        cur.execute(
-            """
-        SELECT *
-        FROM tipo_equipo
-        WHERE tipo_equipo.idTipo_equipo = %s
-                    """,
-            (cur.lastrowid,),
-        )
-        tipo_equipo = cur.fetchone()
-        cur.execute(
-            """
-                SELECT *
-                FROM marca_equipo
-                    """
-        )
+            print(f"Error al crear tipo de equipo: {str(e)}")
+            flash("Error al crear el tipo de equipo.")
+            return redirect(url_for("tipo_equipo.tipoEquipo"))
+
+        return redirect(url_for("tipo_equipo.tipoEquipo"))
+    else:
+        # Obtener todas las marcas para mostrarlas en el modal
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT idMarca_equipo, nombreMarcaEquipo 
+            FROM marca_equipo
+        """)
         marcas = cur.fetchall()
         return render_template(
             "Equipo/enlazar_marcas.html", 
