@@ -3,10 +3,8 @@
 {% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
-
     <div>
-
-        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        <!-- Sección para mostrar errores a través de flash -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
@@ -16,56 +14,139 @@
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-
         {% endfor %}
         {% endif %}
         {% endwith %}
-        <!-- Se termina la seccion de errores -->
+        <!-- Fin sección errores -->
 
-        <!-- ----- -->
-        <button class="nav-button" onclick="showDiv()">Agregar</button>
-        <div id="error-message" style="display: none;" class="error-message"></div>
-        <div class="card card-body" id="formulario", style="display: none;">
-            <form action="/add_proveedor" method="POST" class="mi-formulario">
-                <div class="form-group">
-                    <label for="nombre_proveedor">Nombre Proveedor: </label>
-                    <input class="validatable-input" type="text" name="nombre_proveedor" placeholder="Nombre proveedor"
-                    maxlength="45">
-                    <button class="agregar-button">Agregar</button>
-            </form>
+        <!-- Botón para agregar proveedor -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addProveedorModal">
+            Agregar Proveedor
+        </button>
+
+        <!-- Modal para agregar proveedor -->
+        <div class="modal fade" id="addProveedorModal" tabindex="-1" aria-labelledby="addProveedorModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addProveedorModalLabel">Agregar Proveedor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="form_addProveedorModal" action="/add_proveedor" method="POST">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="nombre_proveedor" class="form-label">Nombre Proveedor</label>
+                                <input 
+                                    type="text" 
+                                    class="form-control campo-obligatorio" 
+                                    id="nombre_proveedor" 
+                                    name="nombre_proveedor" 
+                                    placeholder="Ingrese un Proveedor"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para editar proveedor -->
+        <div class="modal fade" id="editProveedorModal" tabindex="-1" aria-labelledby="editProveedorModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editProveedorModalLabel">Editar Proveedor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <form id="editProveedorForm" method="POST" action="/update_proveedor/{{proveedor.idProveedor}}">
+                        <div class="modal-body">
+                            <input type="hidden" id="edit_idProveedor" name="idProveedor">
+                            <div class="mb-3">
+                                <label for="edit_nombreProveedor" class="form-label">Nombre Proveedor</label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="edit_nombreProveedor" 
+                                    name="nombre_proveedor" 
+                                    placeholder="Ingresa el nombre del proveedor" 
+                                    required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>                    
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Tabla de proveedores -->
     <h2>Proveedores</h2>
-    <div style="overflow-x:auto;">
-        <table id="posts">
-            <thead>
-                <tr>
-                    <td onclick="sortTable(0)">Nombre proveedor</td>
-                    <td>Acciones</td>
-                </tr>
-            </thead>
-            <tbody id="myTableBody">
-                <!-- Se inicia iteracion for para mostrar todos los proveedores -->
-                {% for pro in proveedor %}
-                <tr>
-                    <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
-                    <td>{{pro.nombreProveedor}}</td>
-                    <td>
-                        <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                        <a href="/edit_proveedor/{{pro.idProveedor}}" class="success-button">Editar</a>
-                        <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                        <a href="/delete_proveedor/{{pro.idProveedor}}" class="delete-button">Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-                <!-- Se termina la iteracion for -->
-            </tbody>
-        </table>
+    <table class="table table-hover table-bordered align-middle text-center">
+        <thead class="table-dark">
+            <tr>
+                <th>Nombre del Proveedor</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for pro in proveedor %}
+            <tr>
+                <td>{{ pro.nombreProveedor }}</td>
+                <td>
+                    <button 
+                        class="btn btn-primary edit-button"
+                        data-bs-toggle="modal"
+                        data-bs-target="#editProveedorModal"
+                        data-id="{{ pro.idProveedor }}"
+                        data-nombre="{{ pro.nombreProveedor }}">
+                        Editar
+                    </button>
+                    <a href="/delete_proveedor/{{ pro.idProveedor }}" class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash"></i> Eliminar
+                    </a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const editProveedorForm = document.getElementById("editProveedorForm");
+    const editIdProveedor = document.getElementById("edit_idProveedor");
+    const editNombreProveedor = document.getElementById("edit_nombreProveedor");
 
-<script src="../static/js/main.js"></script>
+    // Configurar el modal con datos dinámicos
+    document.querySelectorAll(".edit-button").forEach(button => {
+        button.addEventListener("click", function () {
+            const idProveedor = this.dataset.id;
+            const nombreProveedor = this.dataset.nombre;
 
-        {{ paginacion("proveedor", page, lastpage) }}
+            // Llenar el modal con los datos del proveedor
+            editIdProveedor.value = idProveedor;
+            editNombreProveedor.value = nombreProveedor;
 
-        {% endblock %}
+            // Configurar la acción del formulario
+            editProveedorForm.action = `/update_proveedor/${idProveedor}`;
+
+            // Imprimir valores para depuración
+            console.log("ID del proveedor:", idProveedor);
+            console.log("Nombre del proveedor:", nombreProveedor);
+            console.log("Action del formulario:", editProveedorForm.action);
+        });
+    });
+});
+
+</script>
+
+{{ paginacion("proveedor", page, lastpage) }}
+
+{% endblock %}

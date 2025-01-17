@@ -19,6 +19,62 @@
 
 <!-- ----- -->
 
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUsuarioModal">
+        Agregar Usuario
+    </button>
+    
+    <div class="modal fade" id="addUsuarioModal" tabindex="-1" aria-labelledby="addUsuarioModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addUsuarioModalLabel">Agregar Usuario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="form_addUsuarioModal" action="/crear_cuenta" method="POST">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="nombreUsuario">Nombre de Usuario</label>
+                            <input 
+                            type="text" 
+                            class="validar-user form-control" 
+                            name="nombreUsuario" 
+                            placeholder="Nombre Usuario">
+                        </div>
+                        <div class="mb-3">
+                            <label for="password">Contraseña: </label>
+                            <input 
+                            class="form-control"
+                            id="contrasenna" 
+                            type="password" 
+                            class="validar-contraseña" 
+                            name="contrasenna" 
+                            placeholder="Contraseña">
+                            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
+                                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna"/>
+                        </div>
+                        <div class="mb-3">
+                            <label>Repetir Contraseña: </label>
+                            <input 
+                            class="form-control"
+                            id="contrasenna_repetir" 
+                            type="password" 
+                            class="validar-contraseña" 
+                            name="repetir" 
+                            placeholder="Contraseña">
+                            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
+                                onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir"/>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
 <a class="nav-button" href="/">Volver</a>
 <button class="nav-button" onclick="showDiv()">Agregar</button>

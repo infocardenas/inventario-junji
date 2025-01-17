@@ -4,7 +4,7 @@
 
 <div class="row">
 
-    <div class="col-md-5">
+    <div class="col-md-12">
         <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
@@ -22,50 +22,53 @@
         {% endwith %}
         <!-- Se termina la seccion de errores -->
 
-        <!-- ----- -->
-        <div id="error-message" style="display: none;" class="error-message"></div>
-        <div class="card card-body" id="formulario" style="display: none;">
-            <form action="/add_estado_equipo" method="POST" class="mi-formulario">
-                <div class="form-group">
-                    <label for="nombre_estado_equipo">Estado de Equipo: </label>
-                    <input type="text" name="nombre_estado_equipo" placeholder="Nombre estado" maxlength="45"
-                        class="validatable-input">
-                    <br>
-                    <label for="fecha_modificacion">Fecha de Modificación: </label>
-                    <input type="date" name="fecha_modificacion">
-                    <br>
-                    <button class="agregar-button"> Agregar</button>
-                </div>
-            </form>
+            <!-- ----- -->
+            <div id="error-message" style="display: none;" class="error-message"></div>
+            <div class="card card-body" id="formulario" style="display: none;">
+                <form action="/add_estado_equipo" method="POST" class="mi-formulario">
+                    <div class="form-group">
+                        <label for="nombre_estado_equipo">Estado de Equipo: </label>
+                        <input type="text" name="nombre_estado_equipo" placeholder="Nombre estado" maxlength="45"
+                            class="validatable-input">
+                        <br>
+                        <label for="fecha_modificacion">Fecha de Modificación: </label>
+                        <input type="date" name="fecha_modificacion">
+                        <br>
+                        <button class="agregar-button"> Agregar</button>
+                    </div>
+                </form>
+            </div>
+
+        <h2>Estado de Equipo</h2>
+        <div style="overflow-x:auto;">
+            <table id="posts">
+                <thead>
+                    <tr>
+                        <td onclick="sortTable(0)">Nombre estado</td>
+                        <td>Acciones</td>
+                    </tr>
+                </thead>
+                <tbody id="myTableBody">
+                    <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
+                    {% for ee in estado_equipo %}
+                    <tr>
+                        <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
+                        <td>{{ee.nombreEstado_equipo}}</td>
+                        <td>
+                            <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
+                            <a href="/edit_estado_equipo/{{ee.idEstado_equipo}}" class="success-button">Editar</a>
+                            <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
+                            <a href="delete_estado_equipo/{{ee.idEstado_equipo}}" class="delete-button">Eliminar</a>
+                            <a href="/mostrar_equipos_segun_tipo/{{ee.nombreEstado_equipo}}" class="info-button">Equipos</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    <!-- Se termina la iteracion for -->
+                </tbody>
+            </table>
         </div>
     </div>
-    <h2>Estado de Equipo</h2>
-    <div style="overflow-x:auto;">
-        <table id="posts">
-            <thead>
-                <tr>
-                    <td onclick="sortTable(0)">Nombre estado</td>
-                    <td>Acciones</td>
-                </tr>
-            </thead>
-            <tbody id="myTableBody">
-                <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
-                {% for ee in estado_equipo %}
-                <tr>
-                    <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
-                    <td>{{ee.nombreEstado_equipo}}</td>
-                    <td>
-                        <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                        <a href="/edit_estado_equipo/{{ee.idEstado_equipo}}" class="success-button">Editar</a>
-                        <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                        <a href="delete_estado_equipo/{{ee.idEstado_equipo}}" class="delete-button">Eliminar</a>
-                        <a href="/mostrar_equipos_segun_tipo/{{ee.nombreEstado_equipo}}" class="info-button">Equipos</a>
-                    </td>
-                </tr>
-                {% endfor %}
-                <!-- Se termina la iteracion for -->
-            </tbody>
-        </table>
+</div>
 
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>

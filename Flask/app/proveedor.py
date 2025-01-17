@@ -14,36 +14,40 @@ schema_proveedor = {
         'type': 'string',
         'minlength': 1,
         'maxlength': 100,
-        'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+        'regex': '^[a-zA-Z0-9 ]*$'  # Permitimos letras, números y espacios
     }
 }
 
 #se especifica la ruta principal para la vista de proveedor 
-@proveedor.route('/proveedor')
-@proveedor.route('/proveedor/<page>')
+@proveedor.route('/proveedor', methods=['GET'])
+@proveedor.route('/proveedor/<int:page>', methods=['GET'])
 @loguear_requerido
-def Proveedor(page = 1):
+def Proveedor(page=1):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
+    
     page = int(page)
     perpage = getPerPage()
-    offset  = (page -1) * perpage
-    #el cursor permite interactuar con la base de datos
+    offset = (page - 1) * perpage
+
     cur = mysql.connection.cursor()
-    cur.execute('SELECT * FROM proveedor LIMIT %s OFFSET %s',(perpage, offset))
-    #almacenamos los datos consultados en una variable
+    # Obtener la lista de proveedores con paginación
+    cur.execute('SELECT * FROM proveedor LIMIT %s OFFSET %s', (perpage, offset))
     data = cur.fetchall()
-    #se retorna la vista con render_template y la informacion de la base de datos de los proveedores para ser manipulados
+
+    # Contar el total de proveedores
     cur.execute('SELECT COUNT(*) FROM proveedor')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
+
     return render_template(
-        'GestionP/proveedor.html', 
-        proveedor = data, 
-        page = page, 
-        lastpage = page < (total/perpage)+1
-        )
+        'GestionP/proveedor.html',
+        proveedor=data,
+        page=page,
+        lastpage=page < (total / perpage) + 1
+    )
+
 
 #se especifica la ruta para agregar proveedores, como tambien el metodo por el cual extrae los datos desde el formulario
 @proveedor.route('/add_proveedor', methods = ['POST'])  
@@ -84,60 +88,85 @@ def add_proveedor():
             #generado el error redirije a la pagina principal
             return redirect(url_for('proveedor.Proveedor'))
 
+
 #ruta para enviar datos a la vista de editarProveedor con el id correspondiente
-@proveedor.route('/edit_proveedor/<id>', methods = ['POST', 'GET'])
-#en esta funcion se agrega el id como parametro
+@proveedor.route('/edit_proveedor/<id>', methods=['GET', 'POST'])
 @administrador_requerido
 def edit_proveedor(id):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
+    
     try:
         cur = mysql.connection.cursor()
-        #%s sirve como marcador de posicion para las variables que mencionaremos a prosteriori, 
-        #como esta pensada para varios datos, estos deben ser mencionados dentro de una tupla, si es un solo dato mencionamos el dato y agregamos una coma ,
         cur.execute('SELECT * FROM proveedor WHERE idProveedor = %s', (id,))
         data = cur.fetchall()
-        #como llamaremos seleccionamos los datos del proveedor dependiendo el valor de data[0] (el id que seleccionamos)
+
+        # Renderizar la plantilla principal con los datos del proveedor
         return render_template(
-            'GestionP/editProveedor.html' , 
-            proveedor = data[0]
-            )
+            'GestionP/proveedor.html',
+            editar_proveedor=data  # Pasar datos del proveedor a editar
+        )
     except Exception as e:
-            #flash(e.args[1])
-            flash("Error al crear")
-            return redirect(url_for('proveedor.Proveedor'))
+        print(f"Error al obtener proveedor: {e}")
+        flash("Error al cargar los datos del proveedor")
+        return redirect(url_for('proveedor.Proveedor'))
+
+
 
 #ruta para poder actualizar los datos de proveedor dependiendo del id
-@proveedor.route('/update_proveedor/<id>', methods = ['POST'])
+@proveedor.route('/update_proveedor/<id>', methods=['POST'])
 @administrador_requerido
 def actualizar_proveedor(id):
-    if request.method == 'POST':
-         # Obtener el dato del formulario
-        data = {
-            'nombre_proveedor': request.form['nombre_proveedor']
-        }
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
 
-        # Validar los datos usando Cerberus
+    try:
+        # Imprimir ID recibido
+        print(f"ID del proveedor recibido: {id}")
+
+        # Obtener el dato del formulario
+        nombre_proveedor = request.form.get('nombre_proveedor', '').strip()
+
+        # Imprimir datos recibidos del formulario
+        print(f"Nombre del proveedor recibido: {nombre_proveedor}")
+
+        # Validar el dato
+        data = {'nombre_proveedor': nombre_proveedor}
         v = Validator(schema_proveedor)
         if not v.validate(data):
+            print(f"Errores de validación: {v.errors}")
             flash("Caracteres no permitidos")
             return redirect(url_for('proveedor.Proveedor'))
-        
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute(""" 
+
+        # Ejecutar la actualización en la base de datos
+        cur = mysql.connection.cursor()
+        query = """
             UPDATE proveedor 
             SET nombreProveedor = %s
-            WHERE idProveedor = %s                                    
-            """, (data["nombre_proveedor"], id))
-            mysql.connection.commit()
-            flash('Proveedor actualizado correctamente')
-            return redirect(url_for('proveedor.Proveedor'))
-        except Exception as e:
-            #flash(e.args[1])
-            flash("Error al crear")
-            return redirect(url_for('proveedor.Proveedor'))
+            WHERE idProveedor = %s
+        """
+        print(f"Consulta SQL: {query}")
+        print(f"Parámetros: (nombreProveedor={nombre_proveedor}, idProveedor={id})")
+        
+        cur.execute(query, (nombre_proveedor, id))
+        mysql.connection.commit()
+
+        # Confirmar que la actualización se realizó
+        cur.execute('SELECT * FROM proveedor WHERE idProveedor = %s', (id,))
+        proveedor_actualizado = cur.fetchone()
+        print(f"Proveedor después de la actualización: {proveedor_actualizado}")
+
+        flash('Proveedor actualizado correctamente')
+        return redirect(url_for('proveedor.Proveedor'))
+
+    except Exception as e:
+        print(f"Error al actualizar proveedor: {e}")
+        flash("Error al actualizar el proveedor")
+        return redirect(url_for('proveedor.Proveedor'))
+
+
     
 #ruta para poder eliminar un proveedor por id
 @proveedor.route('/delete_proveedor/<id>', methods = ['POST', 'GET'])

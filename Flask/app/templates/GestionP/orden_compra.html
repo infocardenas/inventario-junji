@@ -4,7 +4,7 @@
 
 <div class="row">
 
-    <div class="col-md-5"><!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+    <div class="col-md-12"><!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
@@ -21,86 +21,126 @@
         {% endwith %}
         <!-- Se termina la seccion de errores -->
 
-<!-- ----- -->
-<button class="nav-button" onclick="showDiv()">Agregar</button>
-<div id="error-message" style="display: none;" class="error-message"></div>
-<div class="card card-body" id="formulario", style="display: none;">
-    <form action="/add_ordenc" method="POST" class="mi-formulario">
-    <div class="form-group">
-    <label for="id_ordenc">ID de Orden: </label>
-    <input type="text" class="validar-id-orden" name="id_ordenc" id="id_ordenc" placeholder="Serie orden de compra"
-    maxlength="45">
-    <br>
-    <label for="nombre_ordenc">Nombre de Orden: </label>
-    <input type="text" name="nombre_ordenc" placeholder="Nombre orden de compra"
-    maxlength="45" class="validatable-input">
-   <br>
-   <label for="fecha_compra_ordenc">Fecha de Orden de Compra: </label>
-    <input type="date" name="fecha_compra_ordenc" placeholder="">
-    <br>
-    <label for="fecha_fin_ordenc">Fecha Final de Orden de Compra: </label>
-    <input type="date" name="fecha_fin_ordenc" placeholder="">
-    <br>
-{#    <label for="rutadocu_ordenc">Ruta Documento: </label>
-    <input type="text" name="rutadocu_ordenc" placeholder="">
-    <br>
-    #}
-    <label for="nombre_tipo_adquisicion_ordenc">Tipo de Adquisición: </label>
-    <select name="nombre_tipo_adquisicion_ordenc" id="" >
-        <option value="">Elija el tipo de adquisicion</option>
-        {% for tip in tipo_adquisicion %}
-            <option value="{{tip.idTipo_adquisicion}}">{{tip.nombreTipo_adquisicion}}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <label for="nombre_proveedor_ordenc">Nombre de Proveedor: </label>
-    <select name="nombre_proveedor_ordenc" id="" >
-        <option value="">Elija el Proveedor</option>
-        {% for pro in proveedor %}
-            <option value="{{ pro.idProveedor }}">{{pro.nombreProveedor}}</option>
-        {% endfor %}
-    </select>
-    <br>
-    <button class="agregar-button"> Agregar</button>    
-</form>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addOrdenCompraModal">
+            Agregar Proveedor
+        </button>
+
+        <!--Modal para orden de compras-->
+        <div class="modal fade" id="addOrdenCompraModal" tabindex="-1" aria-labelledby="addOrdenCompraModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addOrdenCompraModalLabel">Agregar Proveedor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="form_addOrdenCompraModal" action="/add_ordenc" method="POST">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="id_ordenc" class="form-label">Nombre Proveedor</label>
+                                <input 
+                                    class="form-control" 
+                                    type="text" 
+                                    class="validar-id-orden" 
+                                    id="id_ordenc" 
+                                    name="id_ordenc" 
+                                    placeholder="Serie orden de compra"
+                                    required>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nombre_ordenc">Nombre de Orden: </label>
+                                <input 
+                                    class="form-control" 
+                                    type="text" 
+                                    name="nombre_ordenc" 
+                                    placeholder="Nombre orden de compra"
+                                    maxlength="45" 
+                                    class="validatable-input">
+                            </div>
+                            <div class="mb-3">
+                                <label for="fecha_compra_ordenc">Fecha de Orden de Compra: </label>
+                                <input 
+                                class="form-control" 
+                                type="date" 
+                                name="fecha_compra_ordenc" 
+                                placeholder="">
+                            </div>
+                            <div class="mb-3">
+                                <label for="fecha_fin_ordenc">Fecha Final de Orden de Compra: </label>
+                                <input 
+                                class="form-control" 
+                                type="date" 
+                                name="fecha_fin_ordenc" 
+                                placeholder="">
+                            </div>
+                            <div class="mb-3">
+                                <label for="nombre_tipo_adquisicion_ordenc">Tipo de Adquisición: </label>
+                                <select name="nombre_tipo_adquisicion_ordenc" id="" class="form-control" >
+                                    <option value="">Elija el tipo de adquisicion</option>
+                                    {% for tip in tipo_adquisicion %}
+                                        <option value="{{tip.idTipo_adquisicion}}">{{tip.nombreTipo_adquisicion}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="nombre_proveedor_ordenc">Nombre de Proveedor: </label>
+                                <select name="nombre_proveedor_ordenc" id="" class="form-control" >
+                                    <option value="">Elija el Proveedor</option>
+                                    {% for pro in proveedor %}
+                                        <option value="{{ pro.idProveedor }}">{{pro.nombreProveedor}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
+        <h2>Orden de Compra</h2>
+        <div style="overflow-x:auto;">
+            <table id="posts">
+                <thead>
+                    <tr>
+                        <td onclick="sortTable(0)">Código de orden</td>
+                        <td onclick="sortTable(1)">Nombre de orden</td>
+                        <td onclick="sortTable(2)">Fecha de Orden de compra</td>
+                        <td onclick="sortTable(3)">Fecha Final de Orden de compra</td>
+                        <td onclick="sortTable(4)">Tipo de adquisicion</td>
+                        <td onclick="sortTable(5)">Nombre de proveedor</td>
+                        <td>Acciones</td>
+                    </tr>
+                </thead>
+                <tbody id="myTableBody">
+                    <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+                    {% for ordenc in orden_compra %}
+                    <tr>
+                        <td>{{ordenc.idOrden_compra}}</td>
+                        <td>{{ordenc.nombreOrden_compra}}</td>
+                        <td>{{ordenc.fechacompraOrden_compra}}</td>
+                        <td>{{ordenc.fechafin_ORDEN_COMPRA}}</td>
+                        {% if orden_compra.idTipo_adquisicion == tipo_adquisicion.idTipo_adquisicion%}
+                        <td>{{ordenc.nombreTipo_adquisicion}}</td>
+                        {% endif %}
+                        {% if orden_compra.idOrden_compra == proveedor.idProveedor %}
+                        <td>{{ordenc.nombreProveedor}}</td>
+                        {% endif %}
+                        <td>
+                            <a href="/edit_ordenc/{{ordenc.idOrden_compra}}" class="success-button">Editar</a>
+                            <a href="/delete_ordenc/{{ordenc.idOrden_compra}}" class="delete-button">Eliminar</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
-</div>
-<h2>Orden de Compra</h2>
-<div style="overflow-x:auto;">
-  <table id="posts">
-    <thead>
-        <tr>
-            <td onclick="sortTable(0)">Código de orden</td>
-            <td onclick="sortTable(1)">Nombre de orden</td>
-            <td onclick="sortTable(2)">Fecha de Orden de compra</td>
-            <td onclick="sortTable(3)">Fecha Final de Orden de compra</td>
-            <td onclick="sortTable(4)">Tipo de adquisicion</td>
-            <td onclick="sortTable(5)">Nombre de proveedor</td>
-            <td>Acciones</td>
-        </tr>
-    </thead>
-    <tbody id="myTableBody">
-        <!-- Se inicia iteracion for para mostrar todos los proveedores -->
-        {% for ordenc in orden_compra %}
-        <tr>
-            <td>{{ordenc.idOrden_compra}}</td>
-            <td>{{ordenc.nombreOrden_compra}}</td>
-            <td>{{ordenc.fechacompraOrden_compra}}</td>
-            <td>{{ordenc.fechafin_ORDEN_COMPRA}}</td>
-            {% if orden_compra.idTipo_adquisicion == tipo_adquisicion.idTipo_adquisicion%}
-                <td>{{ordenc.nombreTipo_adquisicion}}</td>
-            {% endif %}
-            {% if orden_compra.idOrden_compra == proveedor.idProveedor %}
-            <td>{{ordenc.nombreProveedor}}</td>
-        {% endif %}
-            <td>
-                <a href="/edit_ordenc/{{ordenc.idOrden_compra}}" class="success-button">Editar</a>
-                <a href="/delete_ordenc/{{ordenc.idOrden_compra}}"class="delete-button">Eliminar</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 

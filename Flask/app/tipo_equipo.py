@@ -57,7 +57,7 @@ def tipoEquipo(page=1):
     lastpage = (total + perpage - 1) // perpage  # Redondeo hacia arriba
 
     return render_template(
-        "tipo_equipo.html",
+        "Equipo/tipo_equipo.html",
         tipo_equipo=tipo_equipo_data,
         marcas=marcas,
         page=page,
