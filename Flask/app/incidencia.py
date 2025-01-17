@@ -38,8 +38,12 @@ def Incidencia(page = 1):
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
     unidades = cur.fetchall()
-    return render_template("incidencia.html", Incidencia=data,
-                           page=page, lastpage= page < (total/perpage)+1)
+    return render_template(
+        'Operaciones/incidencia.html', 
+        Incidencia=data,
+        page=page, 
+        lastpage= page < (total/perpage)+1
+        )
 
 #form que se accede desde equipo para crear incidencia
 @incidencia.route("/incidencia/form/<idEquipo>")
@@ -54,7 +58,10 @@ def incidencia_form(idEquipo):
     equipo = cur.fetchone()
     print("equipo")
     print(equipo)
-    return render_template("add_incidencia.html", equipo=equipo)
+    return render_template(
+        'Operaciones/add_incidencia.html', 
+        equipo=equipo
+        )
 
 #recibe el form de la incidencia y crea la fila de una incidencia en la bbdd, redirige a la pestaña de agregar documentos
 @incidencia.route("/incidencia/add_incidencia", methods = ['POST'])
@@ -114,7 +121,10 @@ def edit_incidencia(id):
             WHERE incidencia.idIncidencia = %s
                 """, (id,))
     incidencia = cur.fetchone()
-    return render_template("edit_incidencia.html", incidencia=incidencia)
+    return render_template(
+        "Operaciones/edit_incidencia.html", 
+        incidencia=incidencia
+        )
 
      
 @incidencia.route("/incidencia/update_incidencia/<id>", methods=["POST"])
@@ -224,8 +234,12 @@ def listar_pdf(idIncidencia):
         mysql.connection.commit()
         print("equipo")
         print(data_equipo)
-        return render_template("mostrar_pdf_incidencia.html", idIncidencia=idIncidencia,
-                documentos=(), equipo=data_equipo)
+        return render_template(
+            'Operaciones/mostrar_pdf_incidencia.html', 
+            idIncidencia=idIncidencia,
+            documentos=(), 
+            equipo=data_equipo
+            )
 
         
     #except:
@@ -254,8 +268,13 @@ def listar_pdf(idIncidencia):
                 """, (len(pdfTupla), idIncidencia))
     mysql.connection.commit()
     
-    return render_template("mostrar_pdf_incidencia.html", idIncidencia=idIncidencia, 
-                           documentos=pdfTupla, equipo=data_equipo, location='incidencia')
+    return render_template(
+        'Operaciones/mostrar_pdf_incidencia.html', 
+        idIncidencia=idIncidencia, 
+        documentos=pdfTupla, 
+        equipo=data_equipo, 
+        location='incidencia'
+        )
             
 @incidencia.route("/incidencia/mostrar_pdf/<id>/<nombrePdf>")
 @loguear_requerido
@@ -340,5 +359,9 @@ def buscar(idIncidencia):
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
     unidades = cur.fetchall()
-    return render_template("incidencia.html", Incidencia=data,
-                           page=1, lastpage= True)
+    return render_template(
+        "Operaciones/incidencia.html", 
+        Incidencia=data,
+        page=1, 
+        lastpage= True
+        )

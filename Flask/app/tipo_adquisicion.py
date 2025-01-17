@@ -22,8 +22,11 @@ def tipoAdquisicion(page = 1):
     cur.execute('SELECT COUNT(*) FROM equipo')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
-    return render_template('tipo_adquisicion.html', 
-                tipo_adquisicion = data, page=page, lastpage= page < (total/perpage)+1)
+    return render_template(
+        'GestionP/tipo_adquisicion.html', 
+        tipo_adquisicion = data, 
+        page=page, lastpage= page < (total/perpage)+1
+        )
 
 #agrega un registro para tipo de adquisicion
 @tipo_adquisicion.route('/add_tipoa', methods = ['POST'])    
@@ -70,7 +73,10 @@ def edit_tipoa(id):
         cur.execute('SELECT * FROM tipo_adquisicion WHERE idTipo_adquisicion = %s', (id,))
         data = cur.fetchall()
         print(data)
-        return render_template('editTipo_adquisicion.html' , tipo_adquisicion = data[0])
+        return render_template(
+            'GestionP/editTipo_adquisicion.html' , 
+            tipo_adquisicion = data[0]
+            )
     except Exception as e:
             #flash(e.args[1])
             flash("Error al crear")

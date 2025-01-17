@@ -82,7 +82,7 @@ def tipoEquipo(page=1):
     marcas = cur.fetchall()
     page = int(page)
     return render_template(
-        "tipo_equipo.html",
+        "Equipo/tipo_equipo.html",
         tipo_equipo=tipo_equipo_data,
         marcas=marcas,
         page=page,
@@ -133,7 +133,9 @@ def crear_tipo_equipo():
         )
         marcas = cur.fetchall()
         return render_template(
-            "enlazar_marcas.html", tipo_equipo=tipo_equipo, marcas=marcas
+            "Equipo/enlazar_marcas.html", 
+            tipo_equipo=tipo_equipo, 
+            marcas=marcas
         )
 
 
@@ -259,7 +261,7 @@ def edit_tipo_equipo(id):
         #print("Marcas Sin Modificadas")
         #print(marca_equipo)
         return render_template(
-            "editTipo_equipo.html",
+            "Equipo/editTipo_equipo.html",
             tipo_equipo=data[0],
             marcas=marcasModificadas,
         )

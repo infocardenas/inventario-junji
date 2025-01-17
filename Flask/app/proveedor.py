@@ -38,8 +38,12 @@ def Proveedor(page = 1):
     cur.execute('SELECT COUNT(*) FROM proveedor')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
-    return render_template('proveedor.html', proveedor = data, 
-                           page = page, lastpage = page < (total/perpage)+1)
+    return render_template(
+        'GestionP/proveedor.html', 
+        proveedor = data, 
+        page = page, 
+        lastpage = page < (total/perpage)+1
+        )
 
 #se especifica la ruta para agregar proveedores, como tambien el metodo por el cual extrae los datos desde el formulario
 @proveedor.route('/add_proveedor', methods = ['POST'])  
@@ -95,7 +99,10 @@ def edit_proveedor(id):
         cur.execute('SELECT * FROM proveedor WHERE idProveedor = %s', (id,))
         data = cur.fetchall()
         #como llamaremos seleccionamos los datos del proveedor dependiendo el valor de data[0] (el id que seleccionamos)
-        return render_template('editProveedor.html' , proveedor = data[0])
+        return render_template(
+            'GestionP/editProveedor.html' , 
+            proveedor = data[0]
+            )
     except Exception as e:
             #flash(e.args[1])
             flash("Error al crear")

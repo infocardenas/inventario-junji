@@ -73,10 +73,11 @@ CREATE TABLE `unidad` (
 CREATE TABLE `funcionario` (
   `rutFuncionario` varchar(20) NOT NULL,
   `nombreFuncionario` varchar(45) NOT NULL,
-  `cargoFuncionario` varchar(45) DEFAULT NULL,
+  `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TECNICO', 'DIRECTIVO') NOT NULL,
   `idUnidad` int(11) DEFAULT NULL,
   `correoFuncionario` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`rutFuncionario`),
+  UNIQUE KEY `unique_correoFuncionario` (`correoFuncionario`),
   CONSTRAINT `funcionario_ibfk_1` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

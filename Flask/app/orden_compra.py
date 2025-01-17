@@ -41,9 +41,13 @@ def ordenCompra(page = 1):
     cur.execute('SELECT * FROM tipo_adquisicion')
     ta_data = cur.fetchall()
     cur.close()
-    return render_template('orden_compra.html', orden_compra = data, proveedor = datas,
-                            tipo_adquisicion = ta_data,
-                            page=page, lastpage= page < (total/perpage)+1)
+    return render_template(
+        'GestionP/orden_compra.html', 
+        orden_compra = data, 
+        proveedor = datas,
+        tipo_adquisicion = ta_data,
+        page=page, lastpage= page < (total/perpage)+1
+        )
 
 #agrega un registro para orden de compra
 @orden_compra.route('/add_ordenc', methods = ['POST'])
@@ -118,7 +122,12 @@ def edit_ordenc(id):
         cur.execute('SELECT * FROM tipo_adquisicion')
         dataso = cur.fetchall()
         cur.close()
-        return render_template('editOrden_compra.html', orden_compra = data[0], tipo_adquisicion = dataso, proveedor = datas)
+        return render_template(
+            'GestionP/editOrden_compra.html', 
+            orden_compra = data[0], 
+            tipo_adquisicion = dataso, 
+            proveedor = datas
+            )
     except Exception as e:
         #flash(e.args[1])
         flash("Error al crear")

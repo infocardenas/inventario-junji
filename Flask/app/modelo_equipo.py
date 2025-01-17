@@ -124,7 +124,7 @@ def modeloEquipo(page=1):
 
 
     return render_template(
-        "modelo_equipo.html",
+        "Equipo/modelo_equipo.html",
         marca_equipo=marca_con_tipo,
         modelo_equipo=data,
         tipo_equipo=tipo_data,
@@ -171,7 +171,7 @@ def add_modelo_equipo():
                 (data['nombre_modelo_equipo'], data['id_tipo_equipo'], data['id_marca_equipo'])
             )
             cur.connection.commit()
-            flash("Modelo agregado correctamente")
+            flash("Modelo agregado exitosamente", 'success')
             return redirect(url_for("modelo_equipo.modeloEquipo"))
         except Exception as e:
             flash(f"Error al crear: {str(e)}")  # Mostrar el error exacto
@@ -239,7 +239,7 @@ def edit_modelo_equipo(id):
     print("marca")
     print(marcas)
     return render_template(
-        "editModelo_equipo.html", modelo_equipo=data, id=id,
+        "Equipo/editModelo_equipo.html", modelo_equipo=data, id=id,
         marca_equipo=marcas_con_tipo_equipo, tipo_equipo=tipo_data, marcas=marcas)
 
 
@@ -248,7 +248,7 @@ def edit_modelo_equipo(id):
 @administrador_requerido
 def update_modelo_equipo(id):
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     if request.method == "POST":
         # Obtener los datos del formulario

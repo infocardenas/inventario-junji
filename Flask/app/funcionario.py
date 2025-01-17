@@ -10,32 +10,30 @@ from MySQLdb import IntegrityError
 schema_funcionario = {
     'rut_funcionario': {
         'type': 'string',
-        'minlength': 1,
-        'maxlength': 12,  # Longitud máxima considerando el RUT con guion
-        'regex': r'^\d{1,3}(\.\d{3})*-\d|k|K$'
+        'minlength': 9,
+        'maxlength': 10,
+        'regex': r'^\d{7,8}-[0-9kK]$'  # Aceptar formato 1234567-K o 12345678-9
     },
     'nombre_funcionario': {
         'type': 'string',
         'minlength': 1,
         'maxlength': 100,
-        'regex': '^[a-zA-Z ]*$'  # Permitir solo letras y espacios
+        'regex': r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$'  # Permitir letras, tildes y espacios
     },
     'cargo_funcionario': {
         'type': 'string',
-        'minlength': 1,
-        'maxlength': 100,
-        'regex': '^[a-zA-Z ]*$'  # Permitir solo letras y espacios
+        'allowed': ['ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TECNICO'],  # Valores permitidos
     },
     'codigo_Unidad': {
         'type': 'string',
         'minlength': 1,
-        'maxlength': 10  
+        'maxlength': 10
     },
     'correo_funcionario': {
         'type': 'string',
         'minlength': 5,
         'maxlength': 100,
-        'regex': '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+[a-zA-Z]{2,}$'  # Permitir formato de correo electrónico
+        'regex': r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'  # Permitir formato de correo electrónico
     }
 }
 
@@ -64,8 +62,12 @@ def Funcionario(page = 1):
     cur.execute('SELECT COUNT(*) FROM funcionario')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
-    return render_template('funcionario.html', funcionario = data, 
-                           Unidad = ubi_data, page=page, lastpage= page < (total/perpage)+1)
+    return render_template(
+        'GestionR.H/funcionario.html', 
+        funcionario = data, 
+        Unidad = ubi_data, 
+        page=page, lastpage= page < (total/perpage)+1
+        )
 
 
 #agregar funcionario
@@ -73,7 +75,7 @@ def Funcionario(page = 1):
 @administrador_requerido
 def add_funcionario():
     if "user" not in session:
-        flash("No estás autorizado")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     
     if request.method == 'POST':
@@ -90,7 +92,7 @@ def add_funcionario():
         if not v.validate(data):
             errores = v.errors  # Diccionario con los errores específicos por campo
             for campo, mensaje in errores.items():
-                flash(f"Error en '{campo}': {mensaje[0]}")
+                flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
             return redirect(url_for('funcionario.Funcionario'))
         
         try:
@@ -106,24 +108,24 @@ def add_funcionario():
                          data['cargo_funcionario'], data['codigo_Unidad'], 
                          data['correo_funcionario']))
             mysql.connection.commit()
-            flash('Funcionario agregado correctamente')
+            flash('Funcionario agregado correctamente', "success")
             return redirect(url_for('funcionario.Funcionario'))
         
         except IntegrityError as e:
             error_message = str(e)
             if "Duplicate entry" in error_message:
                 if "PRIMARY" in error_message:
-                    flash("Error: El RUT ya está registrado")
+                    flash("Error: El RUT ya está registrado", 'warning')
                 elif "correoFuncionario" in error_message:
-                    flash("Error: El correo electrónico ya está registrado")
+                    flash("Error: El correo electrónico ya está registrado", 'warning')
                 else:
-                    flash("Error de duplicación en la base de datos")
+                    flash("Error de duplicación en la base de datos", 'warning')
             else:
-                flash("Error de integridad en la base de datos")
+                flash("Error de integridad en la base de datos", 'danger')
             return redirect(url_for('funcionario.Funcionario'))
         
         except Exception as e:
-            flash(f"Error al crear el funcionario: {str(e)}")
+            flash(f"Error al crear el funcionario: {str(e)}", 'danger')
             return redirect(url_for('funcionario.Funcionario'))
 #enviar datos a vista editar
 @funcionario.route('/edit_funcionario/<id>', methods = ['POST', 'GET'])
@@ -144,7 +146,11 @@ def edit_funcionario(id):
         cur.execute('SELECT * from unidad')
         print(data) 
         ubi_data = cur.fetchall()
-        return render_template('editFuncionario.html', funcionario = data[0], Unidad = ubi_data)
+        return render_template(
+            'GestionR.H/editFuncionario.html', 
+            funcionario = data[0], 
+            Unidad = ubi_data
+            )
     except Exception as e:
         #flash(e.args[1])
         flash("Error al crear")
@@ -244,6 +250,10 @@ def buscar_funcionario(id):
     FROM unidad u 
                 """)
     unidades = cur.fetchall()
-    return render_template('funcionario.html', funcionario = funcionarios, 
-                           Unidad = unidades, page=1, lastpage=True)
+    return render_template(
+        'GestionR.H/funcionario.html', 
+        funcionario = funcionarios, 
+        Unidad = unidades, 
+        page=1, lastpage=True
+        )
 

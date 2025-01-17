@@ -40,8 +40,12 @@ def marcaEquipo(page=1):
     total = int(str(total).split(':')[1].split('}')[0])
 
     
-    return render_template('marca_equipo.html', marca_equipo = data, page=page,
-                        lastpage = page < (total/perpage) + 1)
+    return render_template(
+        'Equipo/marca_equipo.html', 
+        marca_equipo = data, 
+        page=page,
+        lastpage = page < (total/perpage) + 1
+        )
 
 
 #agregar
@@ -49,7 +53,7 @@ def marcaEquipo(page=1):
 @administrador_requerido
 def add_marca_equipo():
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     if request.method == 'POST':
 # Obtener los datos del formulario
@@ -64,7 +68,7 @@ def add_marca_equipo():
             errors = v.errors
             # Formatear el mensaje de advertencia
             warning_messages = []
-            flash("Caracteres no permitidos")
+            flash("Formato de entrada no válido", 'warning')
             return redirect(url_for("marca_equipo.marcaEquipo"))  # Redirigir a la misma página
 
 
@@ -72,7 +76,7 @@ def add_marca_equipo():
             cur = mysql.connection.cursor()
             cur.execute("""INSERT INTO marca_equipo (nombreMarcaEquipo) VALUES (%s)""", (datos['nombre_marca_equipo'],))
             mysql.connection.commit()
-            flash('Marca agregada correctamente')
+            flash('Marca agregada exitosamente', 'success')
             return redirect(url_for('marca_equipo.marcaEquipo'))  
         except Exception as e:
             print("excepcion al agregar marca equipo: ", e)
@@ -90,10 +94,13 @@ def edit_marca_equipo(id):
         cur = mysql.connection.cursor()
         cur.execute('SELECT * FROM marca_equipo WHERE idMarca_Equipo = %s', (id,))
         data = cur.fetchall()
-        return render_template('editMarca_equipo.html', marca_equipo = data[0])
+        return render_template(
+            'Equipo/editMarca_equipo.html', 
+            marca_equipo = data[0]
+            )
     except Exception as e:
         #flash(e.args[1])
-        flash("Error al crear")
+        flash("Error al editar la marca", 'danger')
         return redirect(url_for('marca_equipo.marcaEquipo'))
 
 #actualizar
@@ -101,7 +108,7 @@ def edit_marca_equipo(id):
 @administrador_requerido
 def update_marca_equipo(id):
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     if request.method == 'POST':
          # Obtener los datos del formulario
@@ -112,7 +119,7 @@ def update_marca_equipo(id):
         # Validar los datos usando Cerberus
         v = Validator(marca_equipo_schema)
         if not v.validate(datos):
-            flash("Caracteres no permitidos: {}".format(v.errors))
+            flash("Formato de entrada no válido", "warning")
             return redirect(url_for("marca_equipo.marcaEquipo"))
 
 
@@ -124,11 +131,14 @@ def update_marca_equipo(id):
             WHERE idMarca_Equipo = %s
             """, (datos['nombre_marca_equipo'], id))
             mysql.connection.commit()
-            flash('Marca actualizada correctamente')
+            flash('Marca actualizada exitosamente', 'success')
             return redirect(url_for('marca_equipo.marcaEquipo'))
         except Exception as e:
-            flash("Error al crear")
-            #flash(e.args[1])
+            if (e.args[0] == 1062): # Error de llave duplicada en la BD (marca ya registrada)
+                flash("La marca ya se encuentra registrada", 'warning')
+            else:
+                flash("Error al actualizar la marca del equipo", 'danger')
+
             return redirect(url_for('marca_equipo.marcaEquipo'))
 
 #eliminar    
@@ -139,11 +149,11 @@ def delete_marca_equipo(id):
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM marca_equipo WHERE idMarca_equipo = %s', (id,))
         mysql.connection.commit()
-        flash('Marca eliminada correctamente')
+        flash('Marca eliminada exitosamente', 'success')
         return redirect(url_for('marca_equipo.marcaEquipo'))
     except Exception as e:
         #flash(e.args[1])
-        flash("Error al crear")
+        flash("Error al eliminar la marca", 'danger')
         return redirect(url_for('marca_equipo.marcaEquipo'))
     
     
