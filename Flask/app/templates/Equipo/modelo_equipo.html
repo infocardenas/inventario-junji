@@ -1,23 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
-{% from 'funciones_macro.html' import paginacion, select_para_marca %}
+{% from 'funciones_macro.html' import select_para_marca %}
 
 <div class="row">
     <div class="col-md-12">
-        <!-- Mostrar mensajes flash -->
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <div class="alert-container">
-            {% for message in messages %}
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-            {% endfor %}
-        </div>
-        {% endif %}
-        {% endwith %}
-
         <!-- Botón para abrir el modal -->
         <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#addModeloModal">
             Agregar Modelo de Equipo
@@ -71,28 +57,43 @@
         </div>
 
         <!-- Tabla para mostrar modelos de equipos -->
-        <h2>Modelo de Equipos</h2>
         <div class="table-responsive">
-            <table class="table table-bordered table-striped data" id="posts">
+            <!-- Contenedor para los controles -->
+            <div class="d-flex align-items-center justify-content-between">
+                <!-- Selector de cantidad de filas -->
+                <div class="length-selector" style="flex-shrink: 0;"></div>
+
+                <!-- Buscador centrado -->
+                <div class="datatable-search" style="flex-grow: 1; text-align: center;"></div>
+
+                <!-- Botón Select de Acciones -->
+                <div class="actions-button" style="flex-shrink: 0;">
+                    <select id="action-select" class="form-select form-select-sm" style="width: auto;">
+                        <option value="">Acciones</option>
+                        <option value="export">Exportar</option>
+                        <option value="delete-selected">Eliminar seleccionados</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Tabla -->
+            <table class="table table-bordered tdable-stripe datatable" id="posts">
                 <thead>
                     <tr>
+                        <th><input type="checkbox" id="select-all"></th>
                         <th>Modelo Equipo</th>
                         <th>Tipo Equipo</th>
                         <th>Marca Equipo</th>
-                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="myTableBody">
                     {% if modelo_equipo %}
                     {% for modeloe in modelo_equipo %}
                     <tr>
+                        <td><input type="checkbox" class="row-checkbox"></td>
                         <td>{{ modeloe.nombreModeloequipo }}</td>
                         <td>{{ modeloe.nombreTipo_equipo }}</td>
                         <td>{{ modeloe.nombreMarcaEquipo }}</td>
-                        <td>
-                            <a href="/edit_modelo_equipo/{{ modeloe.idModelo_Equipo }}" class="btn btn-success btn-sm">Editar</a>
-                            <a href="/delete_modelo_equipo/{{ modeloe.idModelo_Equipo }}" class="btn btn-danger btn-sm">Eliminar</a>
-                        </td>
                     </tr>
                     {% endfor %}
                     {% else %}
@@ -103,74 +104,18 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</div>
+
+            
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
-<script src="../static/js/main.js"></script>
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
-
 <script>
-    // Cargar marcas al abrir el modal
-document.addEventListener("DOMContentLoaded", function () {
-    cargarMarcas(); // Llama a la función que carga las marcas
-});
-
-// Función para cargar las marcas
-async function cargarMarcas() {
-    const response = await fetch("/get_marcas");
-    const marcas = await response.json();
-    const marcaSelect = document.getElementById("marcaSelect");
-
-    marcaSelect.innerHTML = `<option value="">Seleccione una marca</option>`;
-    marcas.forEach(marca => {
-        const option = document.createElement("option");
-        option.value = marca.idMarca_Equipo;
-        option.textContent = marca.nombreMarcaEquipo;
-        marcaSelect.appendChild(option);
+    document.addEventListener("DOMContentLoaded", function () {
+        cargarMarcas();
     });
-
-    limpiarSelect("tipoSelect", "Seleccione un tipo");
-    limpiarSelect("modeloSelect", "Seleccione un modelo");
-}
-
-// Función para cargar los tipos basados en la marca seleccionada
-async function cargarTipos() {
-    const marcaId = document.getElementById("marcaSelect").value;
-    const tipoSelect = document.getElementById("tipoSelect");
-
-    if (!marcaId) {
-        limpiarSelect("tipoSelect", "Seleccione un tipo");
-        limpiarSelect("modeloSelect", "Seleccione un modelo");
-        tipoSelect.disabled = true;
-        return;
-    }
-
-    const response = await fetch(`/get_tipos/${marcaId}`);
-    const tipos = await response.json();
-
-    tipoSelect.innerHTML = `<option value="">Seleccione un tipo</option>`;
-    tipos.forEach(tipo => {
-        const option = document.createElement("option");
-        option.value = tipo.idTipo_equipo;
-        option.textContent = tipo.nombreTipo_equipo;
-        tipoSelect.appendChild(option);
-    });
-
-    tipoSelect.disabled = false;
-    limpiarSelect("modeloSelect", "Seleccione un modelo");
-}
-
-
-// Función para limpiar un select
-function limpiarSelect(id, placeholder) {
-    const select = document.getElementById(id);
-    select.innerHTML = `<option value="">${placeholder}</option>`;
-}
-
 </script>
-    {{ paginacion("modelo_equipo", page, lastpage) }}
+
 
     {% endblock %}
