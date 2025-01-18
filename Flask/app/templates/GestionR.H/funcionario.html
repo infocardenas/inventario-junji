@@ -14,7 +14,7 @@
     </div>
     <!-- Botón para abrir el modal -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFuncionarioModal">
-        Agregar Funcionario
+        Agregar funcionario
     </button>
 </div>
 
@@ -24,45 +24,45 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="addFuncionarioModalLabel">Agregar Funcionario</h5>
+                <h5 class="modal-title" id="addFuncionarioModalLabel">Agregar funcionario</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form id="form_addFuncionarioModal" action="/add_funcionario" method="POST">
+                <form class="rut-form" id="form_addFuncionarioModal" action="/add_funcionario" method="POST">
                     <div class="mb-3">
-                        <label for="rut_funcionario" class="form-label">Rut Funcionario</label>
+                        <label for="rut_funcionario" class="form-label">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
                         <div style="display: flex; align-items: center;">
                             <!-- Input para el RUT sin formato -->
-                            <input type="text" class="form-control campo-obligatorio" id="rut_funcionario"
-                                name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guion"
+                            <input type="text" class="form-control campo-obligatorio rut-input" id="rut_funcionario"
+                                name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guión"
                                 maxlength="8" style="width: 70%;">
 
                             <!-- Input deshabilitado para mostrar el dígito verificador -->
                             <span style="width: 10%; display: flex; justify-content: center;">-</span>
-                            <input type="text" class="form-control" id="rut_verificador" disabled
+                            <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled
                                 style="width: 20%; text-align: center;">
                         </div>
                         <div class="text-error-message"></div>
                     </div>
 
                     <!-- Campo oculto para el RUT completo -->
-                    <input type="hidden" id="rut_completo" name="rut_funcionario">
+                    <input type="hidden" class="rut_completo" id="rut_completo" name="rut_funcionario">
 
 
                     <div class="mb-3">
-                        <label for="nombre_funcionario" class="form-label">Nombre Funcionario</label>
+                        <label for="nombre_funcionario" class="form-label">Nombre completo<span style="color: red; margin-left: 5px">*</span></label>
                         <input type="text" class="form-control campo-obligatorio" id="nombre_funcionario"
-                            name="nombre_funcionario" placeholder="Nombre Funcionario" maxlength="45">
+                            name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" maxlength="45">
                         <div class="text-error-message"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="correo_funcionario" class="form-label">Correo Funcionario</label>
+                        <label for="correo_funcionario" class="form-label">Correo electrónico<span style="color: red; margin-left: 5px">*</span></label>
                         <input type="email" class="form-control campo-obligatorio" id="correo_funcionario"
-                            name="correo_funcionario" placeholder="Correo Funcionario" maxlength="45">
+                            name="correo_funcionario" placeholder="correo@junji.cl / correo@junjired.cl" maxlength="45">
                         <div class="text-error-message"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="cargo_funcionario" class="form-label">Cargo</label>
+                        <label for="cargo_funcionario" class="form-label">Cargo<span style="color: red; margin-left: 5px">*</span></label>
                         <select class="form-control campo-obligatorio" id="cargo_funcionario" name="cargo_funcionario">
                             <option value="">Seleccione un cargo</option>
                             <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
@@ -73,7 +73,7 @@
                         <div class="text-error-message"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="codigo_Unidad" class="form-label">Unidad</label>
+                        <label for="codigo_Unidad" class="form-label">Unidad<span style="color: red; margin-left: 5px">*</span></label>
                         <select class="form-control campo-obligatorio" id="codigo_Unidad" name="codigo_Unidad">
                             <option value="">Seleccione una unidad</option>
                             {% for ubi in Unidad %}
@@ -85,12 +85,90 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <button type="submit" form="form_addFuncionarioModal" class="btn btn-primary">Guardar</button>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Modal para editar funcionario -->
+<div class="modal fade" id="editFuncionarioModal" tabindex="-1" aria-labelledby="editFuncionarioModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editFuncionarioModalLabel">Editar Funcionario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form class="rut-form" id="form_editFuncionarioModal" action="/edit_funcionario" method="POST">
+                    <!-- Campo para el RUT -->
+                    <div class="mb-3">
+                        <label for="edit_rut_funcionario" class="form-label">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="text" class="form-control campo-obligatorio rut-input" id="edit_rut_funcionario"
+                                name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guion"
+                                maxlength="8" style="width: 70%;">
+                            <span style="width: 10%; display: flex; justify-content: center;">-</span>
+                            <input type="text" class="form-control rut-verificador" id="edit_rut_verificador" disabled
+                                style="width: 20%; text-align: center;">
+                        </div>
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <!-- Campo oculto para el RUT completo -->
+                    <input type="hidden" id="rut_actual" name="rut_actual">
+                    <input type="hidden" id="rut_completo" class="rut_completo" name="rut_completo">
+
+                    <!-- Otros campos -->
+                
+                    <div class="mb-3">
+                        <label for="edit_nombre_funcionario" class="form-label">Nombre completo<span style="color: red; margin-left: 5px">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio" id="edit_nombre_funcionario"
+                            name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" maxlength="45">
+                        <div class="text-error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_correo_funcionario" class="form-label">Correo electrónico<span style="color: red; margin-left: 5px">*</span></label>
+                        <input type="email" class="form-control campo-obligatorio" id="edit_correo_funcionario"
+                            name="correo_funcionario" placeholder="correo@junji.cl / correo@junjired.cl" maxlength="45">
+                        <div class="text-error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_cargo_funcionario" class="form-label">Cargo<span style="color: red; margin-left: 5px">*</span></label>
+                        <select class="form-control campo-obligatorio" id="edit_cargo_funcionario"
+                            name="cargo_funcionario">
+                            <option value="">Seleccione un cargo</option>
+                            <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
+                            <option value="AUXILIAR">AUXILIAR</option>
+                            <option value="PROFESIONAL">PROFESIONAL</option>
+                            <option value="TECNICO">TECNICO</option>
+                        </select>
+                        <div class="text-error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_codigo_Unidad" class="form-label">Unidad<span style="color: red; margin-left: 5px">*</span></label>
+                        <select class="form-control campo-obligatorio" id="edit_codigo_Unidad" name="codigo_Unidad">
+                            <option value="">Seleccione una unidad</option>
+                            {% for ubi in Unidad %}
+                            <option value="{{ ubi.idUnidad }}">{{ ubi.nombreUnidad }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="text-error-message"></div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="form_editFuncionarioModal" class="btn btn-primary btn-rectangular">
+                    Guardar cambios
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <!-- Tabla de funcionarios -->
 <div style="overflow-x:auto;">
@@ -115,9 +193,14 @@
                 <td class="toCheck">{{ fun.nombreUnidad }}</td>
                 <td class="toCheck">{{ fun.correoFuncionario }}</td>
                 <td>
-                    <a href="/edit_funcionario/{{ fun.rutFuncionario }}" class="success-button">Editar</a>
-                    <a href="#" class="delete-button btn btn-danger" data-url="/delete_funcionario/{{ fun.rutFuncionario }}"
-                        data-title="Eliminar Funcionario"
+                    <!-- Botón de editar -->
+                    <button class="btn btn-success edit-button" data-bs-toggle="modal"
+                        data-bs-target="#editFuncionarioModal" data-rut="{{ fun.rutFuncionario }}"
+                        data-nombre="{{ fun.nombreFuncionario }}" data-correo="{{ fun.correoFuncionario }}"
+                        data-cargo="{{ fun.cargoFuncionario }}" data-unidad="{{ fun.idUnidad }}">Editar</button>
+                    <!-- Botón de eliminar -->
+                    <a href="#" class="delete-button btn btn-danger"
+                        data-url="/delete_funcionario/{{ fun.rutFuncionario }}" data-title="Eliminar Funcionario"
                         data-message="¿Estás seguro de que deseas eliminar al funcionario {{ fun.nombreFuncionario }}?">
                         Eliminar
                     </a>

@@ -14,6 +14,20 @@ $(document).ready(function() {
   $('#table').DataTable(); //Para inicializar datatables de la manera más simple
 });
 */
+function mostrarError(inputField, mensaje) {
+  const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
+
+  errorMessage.text(mensaje).show(); // Mostrar el mensaje de error
+  inputField.css("border", "2px solid red"); // Resaltar el campo con borde rojo
+}
+
+function limpiarError(inputField) {
+  const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
+
+  errorMessage.hide(); // Ocultar el mensaje de error
+  inputField.css("border", ""); // Quitar el borde rojo
+}
+
 function fechaPorDefecto() {
   //Crea un objeto date para obtener la fecha actual
   date = new Date();
@@ -631,13 +645,13 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 });
 
-// Función para que muestre un mensaje de campo obligatorio
 $(document).ready(function () {
   $("form").on("submit", function (event) {
     let formularioValido = true;
+    const form = $(this); // Seleccionar solo el formulario que se está enviando
 
-    // Recorre todos los campos con clase '.campo-obligatorio'
-    $(".campo-obligatorio").each(function () {
+    // Recorre solo los campos con clase '.campo-obligatorio' dentro del formulario actual
+    form.find(".campo-obligatorio").each(function () {
       const inputField = $(this);
       const errorMessage = inputField.siblings(".text-error-message");
 
@@ -652,7 +666,7 @@ $(document).ready(function () {
       }
     });
 
-    // Valida de que no se envíe el formulario con campos vacíos
+    // Valida que no se envíe el formulario con campos vacíos
     if (!formularioValido) {
       event.preventDefault();
     }
@@ -670,7 +684,12 @@ $(document).ready(function () {
   });
 
   $(".agregar-button").on("click", function () {
-    $("form").submit();
+    const targetForm = $(this).data("target-form"); // Si defines un atributo para el formulario objetivo
+    if (targetForm) {
+      $(`#${targetForm}`).submit();
+    } else {
+      $("form").submit();
+    }
   });
 });
 
@@ -715,17 +734,15 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   function calcularDigitoVerificador(rutSinFormato) {
-    let rut = rutSinFormato.replace(/\D/g, ""); // Eliminar caracteres no numéricos
+    let rut = rutSinFormato.replace(/\D/g, "");
     let suma = 0;
     let multiplicador = 2;
 
-    // Recorrer el RUT desde el final al inicio
     for (let i = rut.length - 1; i >= 0; i--) {
       suma += parseInt(rut[i]) * multiplicador;
-      multiplicador = multiplicador === 7 ? 2 : multiplicador + 1; // Ciclo de multiplicadores de 2 a 7
+      multiplicador = multiplicador === 7 ? 2 : multiplicador + 1;
     }
 
-    // Calcular el resto y determinar el dígito verificador
     const resto = suma % 11;
     const digitoVerificador = 11 - resto;
 
@@ -734,42 +751,82 @@ $(document).ready(function () {
     return digitoVerificador.toString();
   }
 
-  function actualizarRutVerificador() {
-    const inputRut = $("#rut_funcionario");
+  function actualizarRutVerificador(rutInput) {
+    const inputRut = $(rutInput);
+    const inputVerificador = inputRut.siblings(".rut-verificador");
 
-    // Limitar a números y guion, limpiar caracteres inválidos
-    let rutSinFormato = inputRut.val().replace(/[^0-9kK\-]/g, ""); // Permitir números, K/k y guion
-    inputRut.val(rutSinFormato); // Actualizar el valor limpio en el campo
+    const rutSinFormato = inputRut.val().replace(/[^0-9]/g, "");
+    inputRut.val(rutSinFormato);
 
-    // Mostrar "" por defecto si no hay 7 u 8 dígitos
-    if (!/^\d{7,8}$/.test(rutSinFormato.replace(/-.*$/, ""))) {
-      $("#rut_verificador").val(""); // Valor por defecto
+    if (!/^\d{7,8}$/.test(rutSinFormato)) {
+      inputVerificador.val("");
+      mostrarError(inputRut, "El RUT debe contener 7 u 8 números.");
       return;
     }
 
-    // Calcular el dígito verificador si el RUT tiene 7 u 8 dígitos
-    const digitoVerificador = calcularDigitoVerificador(rutSinFormato.replace(/-.*$/, ""));
-    $("#rut_verificador").val(digitoVerificador);
+    const digitoVerificador = calcularDigitoVerificador(rutSinFormato);
+    inputVerificador.val(digitoVerificador);
+    limpiarError(inputRut); // Limpiar cualquier error si el RUT es válido
   }
 
-  function prepararRutCompleto() {
-    const rutSinFormato = $("#rut_funcionario").val();
-    const digitoVerificador = $("#rut_verificador").val();
+  function prepararRutCompleto(form) {
+    const inputRut = $(form).find(".rut-input");
+    const inputVerificador = $(form).find(".rut-verificador");
+    const hiddenInput = $(form).find(".rut_completo");
+    const rutSinFormato = inputRut.val();
+    const digitoVerificador = inputVerificador.val();
 
-    // Validar que el RUT y el dígito verificador estén completos
-    if (/^\d{7,8}$/.test(rutSinFormato)) {
-      const rutCompleto = `${rutSinFormato}-${digitoVerificador}`;
-      $("#rut_completo").val(rutCompleto); // Asignar al campo oculto
+    if (/^\d{7,8}$/.test(rutSinFormato) && /^[0-9Kk]$/.test(digitoVerificador)) {
+      hiddenInput.val(`${rutSinFormato}-${digitoVerificador}`);
     } else {
-      $("#rut_completo").val(""); // Limpiar si no es válido
+      hiddenInput.val("");
+      mostrarError(inputRut, "El RUT debe contener 7 u 8 números");
     }
   }
 
-  // Actualizar el dígito verificador en tiempo real
-  $("#rut_funcionario").on("input", actualizarRutVerificador);
+  // Validar el formulario al enviarlo
+  $("form").on("submit", function (event) {
+    prepararRutCompleto(this);
 
-  // Preparar el RUT completo antes de enviar el formulario
-  $("#form_addFuncionarioModal").on("submit", function () {
-    prepararRutCompleto();
+    const rutCompleto = $(this).find(".rut_completo").val();
+
+    if (!rutCompleto) {
+      event.preventDefault(); // Detener el envío del formulario si el RUT no es válido
+    }
+  });
+
+  // Actualizar el dígito verificador al escribir en el input
+  $(".rut-input").on("input", function () {
+    actualizarRutVerificador(this);
+  });
+
+  // Limpiar mensajes de error en tiempo real
+  $(".rut-input").on("input change", function () {
+    limpiarError($(this));
+  });
+});
+
+
+
+$(document).ready(function () {
+  $(".edit-button").on("click", function () {
+    // Obtener valores del botón
+    const rutCompleto = $(this).data("rut");
+    const nombre = $(this).data("nombre");
+    const correo = $(this).data("correo");
+    const cargo = $(this).data("cargo");
+    const unidad = $(this).data("unidad");
+
+    // Separar el RUT en cuerpo y dígito verificador
+    const [rutSinFormato, digitoVerificador] = rutCompleto.split("-");
+
+    // Asignar valores a los campos del formulario en el modal
+    $("#edit_rut_funcionario").val(rutSinFormato); // Rut sin el dígito verificador
+    $("#edit_rut_verificador").val(digitoVerificador); // Dígito verificador
+    $("#rut_actual").val(rutCompleto); // Rut completo en el campo oculto
+    $("#edit_nombre_funcionario").val(nombre);
+    $("#edit_correo_funcionario").val(correo);
+    $("#edit_cargo_funcionario").val(cargo);
+    $("#edit_codigo_Unidad").val(unidad);
   });
 });

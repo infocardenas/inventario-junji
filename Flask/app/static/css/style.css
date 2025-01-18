@@ -740,3 +740,15 @@ svg.bi {
     flex-direction: column;
     margin: 10px 0px;
 }
+
+/* Colores del botón principal de Bootstrap */
+.btn.btn-primary {
+    background-color: #59ae87 !important;
+    border-color: #59ae87 !important;
+    color: #fff !important;
+}
+
+.btn.btn-primary:hover {
+    background-color: #4a946e !important;
+    border-color: #4a946e !important;
+}
