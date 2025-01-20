@@ -173,60 +173,6 @@ def edit_funcionario():
         flash(f"Error al editar el funcionario: {str(e)}", 'danger')
         return redirect(url_for('funcionario.Funcionario'))
 
-#actualizar funcionario por id
-# @funcionario.route('/update_funcionario/<id>', methods = ['POST'])
-# @administrador_requerido
-# def update_funcionario(id):
-#     if request.method == 'POST':
-#         # Obtener los datos del formulario
-#         data = {
-#             'rut_funcionario': request.form['rut_funcionario'],
-#             'nombre_funcionario': request.form['nombre_funcionario'],
-#             'correo_funcionario': request.form['correo_funcionario'],
-#             'cargo_funcionario': request.form['cargo_funcionario'],
-#             'codigo_Unidad': request.form['codigo_Unidad']
-#         }
-
-#         # Validar los datos usando Cerberus
-#         v = Validator(schema_funcionario)
-#         if not v.validate(data):
-#             flash("El formato de entrada no es válido", 'warning')
-#             return redirect(url_for('funcionario.Funcionario'))
-
-
-#         try:
-#             cur = mysql.connection.cursor()
-#             cur.execute("""
-#             UPDATE funcionario
-#             SET rutFuncionario = %s,
-#                 nombreFuncionario = %s,
-#                 cargoFuncionario = %s,
-#                 idUnidad = %s,
-#                 correoFuncionario = %s
-#             WHERE rutFuncionario = %s
-#             """, (data["rut_funcionario"], data["nombre_funcionario"], data["cargo_funcionario"], 
-#                 data["codigo_Unidad"], data["correo_funcionario"], id))
-#             mysql.connection.commit()
-#             flash('Funcionario actualizado correctamente', 'success')
-        
-#             return redirect(url_for('funcionario.Funcionario'))
-#         except IntegrityError as e:
-#             error_message = str(e)
-#             if "Duplicate entry" in error_message:
-#                 if "PRIMARY" in error_message:
-#                     flash("Error: El RUT ya está registrado", 'warning')
-#                 elif "correoFuncionario" in error_message:
-#                     flash("Error: El correo electrónico ya está registrado", 'warning')
-#                 else:
-#                     flash("Error de duplicación en la base de datos", 'warning')
-#             else:
-#                 flash("Error de integridad en la base de datos", 'danger')
-#             return redirect(url_for('funcionario.Funcionario'))
-        
-#         except Exception as e:
-#             flash(f"Error al actualizar el funcionario: {str(e)}", 'warning')
-#             return redirect(url_for('funcionario.Funcionario'))
-
 #eliminar registro segun id
 @funcionario.route('/delete_funcionario/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
