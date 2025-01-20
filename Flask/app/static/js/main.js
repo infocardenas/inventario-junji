@@ -710,20 +710,6 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-  $('.datatable').each(function () {
-      if (!$.fn.DataTable.isDataTable(this)) {
-          $(this).DataTable({
-              responsive: true, // Tabla adaptativa
-              paging: true,     // Paginación activada
-              ordering: true,   // Ordenamiento activado
-              info: true,       // Mostrar información general
-              language: {       // Traducción al español
-                  search: "Buscar:",
-                  lengthMenu: "Mostrar _MENU_ filas",
-                  info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-              }
-          });
-      }
   function calcularDigitoVerificador(rutSinFormato) {
     let rut = rutSinFormato.replace(/\D/g, ""); // Eliminar caracteres no numéricos
     let suma = 0;
@@ -781,6 +767,24 @@ $(document).ready(function () {
   // Preparar el RUT completo antes de enviar el formulario
   $("#form_addFuncionarioModal").on("submit", function () {
     prepararRutCompleto();
+  });
+});
+
+$(document).ready(function () {
+  $('.datatable').each(function () {
+      if (!$.fn.DataTable.isDataTable(this)) {
+          $(this).DataTable({
+              responsive: true, // Tabla adaptativa
+              paging: true,     // Paginación activada
+              ordering: true,   // Ordenamiento activado
+              info: true,       // Mostrar información general
+              language: {       // Traducción al español
+                  search: "Buscar:",
+                  lengthMenu: "Mostrar _MENU_ filas",
+                  info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+              }
+          });
+      }
   });
 });
 
