@@ -59,11 +59,11 @@ function showDiv(id = "formulario", Esconder = []) {
   //Si esta escondido mostrarlo de lo contrario esconder
   if (div.style.display === "none") {
     div.style.display = "block";
-  }else {
+  } else {
     div.style.display = "none"
   }
   //Esconder otras ids
-  for(let i = 0; i < Esconder.length; i++) {
+  for (let i = 0; i < Esconder.length; i++) {
     id_esconder = Esconder[i]
     console.log(id_esconder)
     div = document.getElementById(id_esconder)
@@ -418,9 +418,9 @@ function mostrarBotonAgregarAlUsarSelect() {
   boton = document.getElementById("enviar")
   boton.style.display = "block"
   console.log(boton)
-  
+
 }
-function mostrar_agregar(id_select)  {
+function mostrar_agregar(id_select) {
   //mostrar el boton de agregar
   select = document.getElementById(id_select)
   boton = document.getElementById('enviar')
@@ -437,20 +437,20 @@ function seleccionarTipoEquipoEditarModelo(id_select) {
   input = document.getElementById("nombre_tipo_equipo")
   console.log("input")
   console.log(input)
-  select = document.getElementById("s_" + id_select) 
+  select = document.getElementById("s_" + id_select)
   console.log("select")
   console.log(select)
   Options = select.options
   console.log("options")
   console.log(Options)
   console.log("")
-  for(let i = 0; i < Options.length; i++) {
+  for (let i = 0; i < Options.length; i++) {
     option = Options[i]
     console.log(option)
-    if(option.value === input.value) {
+    if (option.value === input.value) {
       console.log("selected")
       option.selected = true
-    }else {
+    } else {
       console.log("not selected")
       option.selected = false
     }
@@ -629,19 +629,19 @@ $(document).ready(function () {
 });
 
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
   // Selecciona el input con la clase 'search-box'
   const searchBox = document.querySelector('.search-box');
 
   // Agrega un event listener para el evento 'keydown'
-  searchBox.addEventListener('keydown', function(event) {
-      // Verifica si la tecla presionada es 'Enter' (código 13)
-      if (event.keyCode === 13) {
-          // Previene la acción por defecto (enviar el formulario)
-          event.preventDefault();
-          // Puedes agregar aquí cualquier otra acción que desees realizar
-          console.log('Enter bloqueado');
-      }
+  searchBox.addEventListener('keydown', function (event) {
+    // Verifica si la tecla presionada es 'Enter' (código 13)
+    if (event.keyCode === 13) {
+      // Previene la acción por defecto (enviar el formulario)
+      event.preventDefault();
+      // Puedes agregar aquí cualquier otra acción que desees realizar
+      console.log('Enter bloqueado');
+    }
   });
 });
 
@@ -694,7 +694,7 @@ $(document).ready(function () {
 });
 
 // Funcion para darle un tiempo de espera y luego desaparer la alerta
-$(document).ready(function() {
+$(document).ready(function () {
   setTimeout(function () {
     $('.alert').each(function () {
       $(this).addClass('hidden');
@@ -703,7 +703,7 @@ $(document).ready(function() {
       }, 2000);
     });
   }, 5000);
-  });
+});
 
 $(document).ready(function () {
   function configureGenericModal(title, message, confirmUrl) {
@@ -833,165 +833,165 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $('.datatable').each(function () {
-      if (!$.fn.DataTable.isDataTable(this)) {
-          $(this).DataTable({
-              responsive: true, // Tabla adaptativa
-              paging: true,     // Paginación activada
-              ordering: true,   // Ordenamiento activado
-              info: true,       // Mostrar información general
-              language: {       // Traducción al español
-                  search: "Buscar:",
-                  lengthMenu: "Mostrar _MENU_ filas",
-                  info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
-              }
-          });
-      }
+    if (!$.fn.DataTable.isDataTable(this)) {
+      $(this).DataTable({
+        responsive: true, // Tabla adaptativa
+        paging: true,     // Paginación activada
+        ordering: true,   // Ordenamiento activado
+        info: true,       // Mostrar información general
+        language: {       // Traducción al español
+          search: "Buscar:",
+          lengthMenu: "Mostrar _MENU_ filas",
+          info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+        }
+      });
+    }
   });
 });
 
-    // Cargar marcas al abrir el modal
-    document.addEventListener("DOMContentLoaded", function () {
-      cargarMarcas(); // Llama a la función que carga las marcas
+// Cargar marcas al abrir el modal
+document.addEventListener("DOMContentLoaded", function () {
+  cargarMarcas(); // Llama a la función que carga las marcas
+});
+
+// Función para cargar las marcas
+async function cargarMarcas() {
+  const response = await fetch("/get_marcas");
+  const marcas = await response.json();
+  const marcaSelect = document.getElementById("marcaSelect");
+
+  marcaSelect.innerHTML = `<option value="">Seleccione una marca</option>`;
+  marcas.forEach(marca => {
+    const option = document.createElement("option");
+    option.value = marca.idMarca_Equipo;
+    option.textContent = marca.nombreMarcaEquipo;
+    marcaSelect.appendChild(option);
   });
-  
-  // Función para cargar las marcas
-  async function cargarMarcas() {
-      const response = await fetch("/get_marcas");
-      const marcas = await response.json();
-      const marcaSelect = document.getElementById("marcaSelect");
-  
-      marcaSelect.innerHTML = `<option value="">Seleccione una marca</option>`;
-      marcas.forEach(marca => {
-          const option = document.createElement("option");
-          option.value = marca.idMarca_Equipo;
-          option.textContent = marca.nombreMarcaEquipo;
-          marcaSelect.appendChild(option);
-      });
-  
-      limpiarSelect("tipoSelect", "Seleccione un tipo");
-      limpiarSelect("modeloSelect", "Seleccione un modelo");
+
+  limpiarSelect("tipoSelect", "Seleccione un tipo");
+  limpiarSelect("modeloSelect", "Seleccione un modelo");
+}
+
+// Función para cargar los tipos basados en la marca seleccionada
+async function cargarTipos() {
+  const marcaId = document.getElementById("marcaSelect").value;
+  const tipoSelect = document.getElementById("tipoSelect");
+
+  if (!marcaId) {
+    limpiarSelect("tipoSelect", "Seleccione un tipo");
+    limpiarSelect("modeloSelect", "Seleccione un modelo");
+    tipoSelect.disabled = true;
+    return;
   }
-  
-  // Función para cargar los tipos basados en la marca seleccionada
-  async function cargarTipos() {
-      const marcaId = document.getElementById("marcaSelect").value;
-      const tipoSelect = document.getElementById("tipoSelect");
-  
-      if (!marcaId) {
-          limpiarSelect("tipoSelect", "Seleccione un tipo");
-          limpiarSelect("modeloSelect", "Seleccione un modelo");
-          tipoSelect.disabled = true;
-          return;
-      }
-  
-      const response = await fetch(`/get_tipos/${marcaId}`);
-      const tipos = await response.json();
-  
-      tipoSelect.innerHTML = `<option value="">Seleccione un tipo</option>`;
-      tipos.forEach(tipo => {
-          const option = document.createElement("option");
-          option.value = tipo.idTipo_equipo;
-          option.textContent = tipo.nombreTipo_equipo;
-          tipoSelect.appendChild(option);
-      });
-  
-      tipoSelect.disabled = false;
-      limpiarSelect("modeloSelect", "Seleccione un modelo");
-  }
-  
-  
-  // Función para limpiar un select
-  function limpiarSelect(id, placeholder) {
-      const select = document.getElementById(id);
-      select.innerHTML = `<option value="">${placeholder}</option>`;
-  }
-  
+
+  const response = await fetch(`/get_tipos/${marcaId}`);
+  const tipos = await response.json();
+
+  tipoSelect.innerHTML = `<option value="">Seleccione un tipo</option>`;
+  tipos.forEach(tipo => {
+    const option = document.createElement("option");
+    option.value = tipo.idTipo_equipo;
+    option.textContent = tipo.nombreTipo_equipo;
+    tipoSelect.appendChild(option);
+  });
+
+  tipoSelect.disabled = false;
+  limpiarSelect("modeloSelect", "Seleccione un modelo");
+}
 
 
-  document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        await cargarMarcas(); // Llenar el selector de marcas
-    } catch (error) {
-        console.error('Error al cargar marcas:', error);
-    }
+// Función para limpiar un select
+function limpiarSelect(id, placeholder) {
+  const select = document.getElementById(id);
+  select.innerHTML = `<option value="">${placeholder}</option>`;
+}
+
+
+
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    await cargarMarcas(); // Llenar el selector de marcas
+  } catch (error) {
+    console.error('Error al cargar marcas:', error);
+  }
 });
 
 async function cargarMarcas() {
-    const response = await fetch('/get_marcas');
-    const marcas = await response.json();
-    const marcaSelect = document.getElementById('marcaSelect');
-    marcaSelect.innerHTML = '<option value="">Seleccione una marca</option>';
+  const response = await fetch('/get_marcas');
+  const marcas = await response.json();
+  const marcaSelect = document.getElementById('marcaSelect');
+  marcaSelect.innerHTML = '<option value="">Seleccione una marca</option>';
 
-    marcas.forEach(marca => {
-        const option = document.createElement('option');
-        option.value = marca.idMarca_Equipo;
-        option.textContent = marca.nombreMarcaEquipo;
-        marcaSelect.appendChild(option);
-    });
+  marcas.forEach(marca => {
+    const option = document.createElement('option');
+    option.value = marca.idMarca_Equipo;
+    option.textContent = marca.nombreMarcaEquipo;
+    marcaSelect.appendChild(option);
+  });
 }
 
 async function cargarTipos() {
-    const marcaId = document.getElementById('marcaSelect').value;
-    const tipoSelect = document.getElementById('tipoSelect');
-    tipoSelect.innerHTML = '<option value="">Seleccione un tipo</option>';
+  const marcaId = document.getElementById('marcaSelect').value;
+  const tipoSelect = document.getElementById('tipoSelect');
+  tipoSelect.innerHTML = '<option value="">Seleccione un tipo</option>';
 
-    if (marcaId) {
-        const response = await fetch(`/get_tipos/${marcaId}`);
-        const tipos = await response.json();
+  if (marcaId) {
+    const response = await fetch(`/get_tipos/${marcaId}`);
+    const tipos = await response.json();
 
-        tipos.forEach(tipo => {
-            const option = document.createElement('option');
-            option.value = tipo.idTipo_equipo;
-            option.textContent = tipo.nombreTipo_equipo;
-            tipoSelect.appendChild(option);
-        });
-    }
+    tipos.forEach(tipo => {
+      const option = document.createElement('option');
+      option.value = tipo.idTipo_equipo;
+      option.textContent = tipo.nombreTipo_equipo;
+      tipoSelect.appendChild(option);
+    });
+  }
 
-    const modeloSelect = document.getElementById('modeloSelect');
-    modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+  const modeloSelect = document.getElementById('modeloSelect');
+  modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
 }
 
 async function cargarModelos() {
-    const tipoId = document.getElementById('tipoSelect').value;
-    const modeloSelect = document.getElementById('modeloSelect');
-    modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+  const tipoId = document.getElementById('tipoSelect').value;
+  const modeloSelect = document.getElementById('modeloSelect');
+  modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
 
-    if (tipoId) {
-        const response = await fetch(`/get_modelos/${tipoId}`);
-        const modelos = await response.json();
+  if (tipoId) {
+    const response = await fetch(`/get_modelos/${tipoId}`);
+    const modelos = await response.json();
 
-        modelos.forEach(modelo => {
-            const option = document.createElement('option');
-            option.value = modelo.idModelo_Equipo;
-            option.textContent = modelo.nombreModeloequipo;
-            modeloSelect.appendChild(option);
-        });
-    }
+    modelos.forEach(modelo => {
+      const option = document.createElement('option');
+      option.value = modelo.idModelo_Equipo;
+      option.textContent = modelo.nombreModeloequipo;
+      modeloSelect.appendChild(option);
+    });
+  }
 }
 
 function actualizarModeloSeleccionado() {
-    const modeloSelect = document.getElementById('modeloSelect');
-    const modeloInput = document.getElementById('modelo_para_equipo');
+  const modeloSelect = document.getElementById('modeloSelect');
+  const modeloInput = document.getElementById('modelo_para_equipo');
 
-    // Asegúrate de que el modelo seleccionado se copie en el input oculto
-    if (modeloSelect && modeloInput) {
-        modeloInput.value = modeloSelect.value;
-    }
+  // Asegúrate de que el modelo seleccionado se copie en el input oculto
+  if (modeloSelect && modeloInput) {
+    modeloInput.value = modeloSelect.value;
+  }
 }
 
 
 
 
 function manejarCamposTelefono() {
-    const tipoSelect = document.getElementById('tipoSelect');
-    const camposTelefono = document.getElementById('camposTelefono');
+  const tipoSelect = document.getElementById('tipoSelect');
+  const camposTelefono = document.getElementById('camposTelefono');
 
-    // Mostrar u ocultar los campos si el tipo seleccionado es "Teléfono"
-    if (tipoSelect.options[tipoSelect.selectedIndex].text.toLowerCase() === "telefono") {
+  // Mostrar u ocultar los campos si el tipo seleccionado es "Teléfono"
+  if (tipoSelect.options[tipoSelect.selectedIndex].text.toLowerCase() === "telefono") {
     camposTelefono.style.display = "block";
-} else {
+  } else {
     camposTelefono.style.display = "none";
-}
+  }
 }
 
 // Escucha el cambio en el selector de tipo
