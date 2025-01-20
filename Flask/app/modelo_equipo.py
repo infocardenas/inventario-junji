@@ -301,48 +301,6 @@ def delete_modelo_equipo(id):
         return redirect(url_for("modelo_equipo.modeloEquipo"))
 
 
-@modelo_equipo.route("/datos_jerarquicos", methods=["GET"])
-@loguear_requerido
-def obtener_datos_jerarquicos():
-    """Obtiene los datos jerárquicos de marcas, tipos y modelos."""
-    cur = mysql.connection.cursor()
-
-    # Obtener marcas
-    cur.execute("SELECT * FROM marca_equipo")
-    marcas = cur.fetchall()
-
-    datos_jerarquicos = []
-    
-    # Construir jerarquía
-    for marca in marcas:
-        cur.execute("""
-        SELECT te.idTipo_equipo, te.nombreTipo_equipo 
-        FROM tipo_equipo te
-        INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
-        WHERE mte.idMarca_Equipo = %s
-        """, (marca['idMarca_Equipo'],))
-        tipos = cur.fetchall()
-
-        tipos_list = []
-        for tipo in tipos:
-            cur.execute("""
-            SELECT me.idModelo_Equipo, me.nombreModeloequipo
-            FROM modelo_equipo me
-            WHERE me.idTipo_equipo = %s AND me.idMarca_Equipo = %s
-            """, (tipo['idTipo_equipo'], marca['idMarca_Equipo']))
-            modelos = cur.fetchall()
-            tipo['modelos'] = modelos  # Agregar modelos al tipo
-            tipos_list.append(tipo)
-
-        marca['tipos'] = tipos_list  # Agregar tipos a la marca
-        datos_jerarquicos.append(marca)
-
-    cur.close()
-
-    # Devolver datos como JSON
-    return {
-        "marcas": datos_jerarquicos
-    }
 
 @modelo_equipo.route("/get_marcas", methods=["GET"])
 @loguear_requerido
