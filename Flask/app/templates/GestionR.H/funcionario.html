@@ -56,11 +56,28 @@
                         <div class="text-error-message"></div>
                     </div>
                     <div class="mb-3">
-                        <label for="correo_funcionario" class="form-label">Correo electrónico<span style="color: red; margin-left: 5px">*</span></label>
-                        <input type="email" class="form-control campo-obligatorio" id="correo_funcionario"
-                            name="correo_funcionario" placeholder="correo@junji.cl / correo@junjired.cl" maxlength="45">
-                        <div class="text-error-message"></div>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <!-- Conjunto para correo y dominio -->
+                            <label for="edit_correo_funcionario" class="form-label" style="flex: 2;"> Correo electrónico<span style="color: red; margin-left: 5px">*</span></label>
+                            <label for="correo_dominio" class="form-label" style="flex: 1; text-align: left;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <!-- Campo para la parte local del correo -->
+                            <input type="text" class="form-control campo-obligatorio correo-input" id="edit_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
+
+                            <!-- Selección del dominio -->
+                            <select class="form-control correo-dominio" id="correo_dominio" name="correo_dominio" style="flex: 1;">
+                                <option value="@junji.cl">@junji.cl</option>
+                                <option value="@junjired.cl">@junjired.cl</option>
+                            </select>
+                        </div>
+                        <div class="text-error-message" style="color: red; font-size: 0.9rem; margin-top: 5px; display: none;"></div>
+                        
+                        <!-- Campo oculto para el correo completo. Necesario para concatenar el correo con el dominio -->
+                        <input type="hidden" id="correo_oculto" name="correo_funcionario">
                     </div>
+
+
                     <div class="mb-3">
                         <label for="cargo_funcionario" class="form-label">Cargo<span style="color: red; margin-left: 5px">*</span></label>
                         <select class="form-control campo-obligatorio" id="cargo_funcionario" name="cargo_funcionario">
@@ -81,6 +98,7 @@
                             {% endfor %}
                         </select>
                         <div class="text-error-message"></div>
+                        <span style=" color: red; font-size: 0.9rem;">* Obligatorio</span>
                     </div>
                 </form>
             </div>
@@ -156,6 +174,7 @@
                             {% endfor %}
                         </select>
                         <div class="text-error-message"></div>
+                        <span syle="color: red">* Obligatorio</span>
                     </div>
                 </form>
             </div>

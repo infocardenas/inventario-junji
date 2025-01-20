@@ -831,6 +831,28 @@ $(document).ready(function () {
   });
 });
 
+// Combina la parte del correo con el dominio
+$(document).ready(function () {
+  function combinarCorreoCompleto() {
+    const inputCorreo = $("#edit_correo_funcionario");
+    const dominioSeleccionado = $("#correo_dominio").val();
+    const correoCompleto = inputCorreo.val().trim() + dominioSeleccionado;
+
+    // Actualiza el campo oculto con el correo completo
+    $("#correo_oculto").val(correoCompleto);
+  }
+
+  // Actualiza el correo completo en tiempo real
+  $(".correo-input, #correo_dominio").on("input change", function () {
+    combinarCorreoCompleto();
+  });
+
+  // Asegura de que el correo completo esté listo antes de enviar el formulario
+  $("form").on("submit", function () {
+    combinarCorreoCompleto();
+  });
+});
+
 $(document).ready(function () {
   $('.datatable').each(function () {
     if (!$.fn.DataTable.isDataTable(this)) {
