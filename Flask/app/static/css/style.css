@@ -263,8 +263,23 @@ label {
 .table-container {
     margin: 20px; /* Centrar el contenedor horizontalmente y agregar margen */
     width: 100%; /* Ancho del contenedor */
+}
+
+.length-selector {
+    margin-right: auto; /* Alinear a la izquierda */
   }
   
+  .datatable-search {
+    text-align: center; /* Centrar buscador */
+  }
+  
+  .actions-button {
+    margin-left: auto; /* Alinear a la derecha */
+  }
+  
+  #action-select {
+    min-width: 150px;
+  }
 
 #posts {
     border-collapse: collapse;
