@@ -149,7 +149,6 @@ def edit_funcionario():
         cargo_funcionario = request.form.get('cargo_funcionario').strip()
         codigo_unidad = request.form.get('codigo_Unidad').strip()
 
-        print(nuevo_rut)
         # Validar datos básicos
         if not rut_actual or not nuevo_rut or not nombre_funcionario or not correo_funcionario or not cargo_funcionario or not codigo_unidad:
             flash("Todos los campos son obligatorios", 'warning')

@@ -829,31 +829,33 @@ $(document).ready(function () {
     $("#rut_actual").val(rutCompleto); // Rut completo en el campo oculto
     $("#edit_nombre_funcionario").val(nombre);
     $("#edit_correo_funcionario").val(parteLocalCorreo); // Solo la parte local del correo
-    $("#correo_dominio").val(`@${dominioCorreo}`); // Asigna el dominio al selector
+    $("#edit_correo_dominio").val(`@${dominioCorreo}`); // Asigna el dominio al selector
     $("#edit_cargo_funcionario").val(cargo);
     $("#edit_codigo_Unidad").val(unidad);
   });
 });
 
-// Combina la parte del correo con el dominio
 $(document).ready(function () {
-  function combinarCorreoCompleto() {
-    const inputCorreo = $("#correo_funcionario");
-    const dominioSeleccionado = $("#correo_dominio").val();
+  function combinarCorreoCompleto(modal) {
+    // Selecciona los elementos específicos dentro del modal
+    const inputCorreo = $(modal).find(".correo-input");
+    const dominioSeleccionado = $(modal).find(".correo-dominio").val();
     const correoCompleto = inputCorreo.val().trim() + dominioSeleccionado;
 
     // Actualiza el campo oculto con el correo completo
-    $("#correo_oculto").val(correoCompleto);
+    $(modal).find(".correo-oculto").val(correoCompleto);
   }
 
-  // Actualiza el correo completo en tiempo real
-  $(".correo-input, .correo_dominio").on("input change", function () {
-    combinarCorreoCompleto();
+  // Actualiza el correo completo en tiempo real para el modal actual (agregar o editar)
+  $(".correo-input, .correo-dominio").on("input change", function () {
+    const modal = $(this).closest(".modal"); // Identifica el modal actual (agregar o editar)
+    combinarCorreoCompleto(modal);
   });
 
-  // Asegura de que el correo completo esté listo antes de enviar el formulario
+  // Asegura que el correo completo esté listo antes de enviar el formulario
   $("form").on("submit", function () {
-    combinarCorreoCompleto();
+    const modal = $(this).closest(".modal"); // Identifica el modal actual (agregar o editar)
+    combinarCorreoCompleto(modal);
   });
 });
 

@@ -52,18 +52,18 @@
                     <!-- Correo electrónico -->
                     <div class="mb-3">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <label for="correo_funcionario" class="form-label" style="flex: 2;">Correo electrónico<span style="color: red; margin-left: 5px">*</span></label>
-                            <label for="correo_dominio" class="form-label" style="flex: 1; text-align: left;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
+                            <label for="add_correo_funcionario" class="form-label" style="flex: 2;">Correo electrónico<span style="color: red; margin-left: 5px">*</span></label>
+                            <label for="add_correo_dominio" class="form-label" style="flex: 1; text-align: left;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <input type="text" class="form-control campo-obligatorio correo-input" id="correo_funcionario" placeholder="correo" maxlength="45" style="flex: 2;">
-                            <select class="form-control correo-dominio" id="correo_dominio" style="flex: 1;">
+                            <input type="text" class="form-control campo-obligatorio correo-input" id="add_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
+                            <select class="form-control correo-dominio" id="add_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
                         </div>
-                        <div class="text-error-message"style="color: red; font-size: 0.9rem; margin-top: 5px; display: none;"></div>
-                        <input type="hidden" class="correo_oculto" id="correo_oculto" name="correo_funcionario">
+                        <div class="text-error-message" style="color: red; font-size: 0.9rem; margin-top: 5px; display: none;"></div>
+                        <input type="hidden" class="correo-oculto" id="add_correo_oculto" name="correo_funcionario">
                     </div>
 
                     <!-- Cargo del funcionario -->
@@ -102,8 +102,7 @@
 </div>
 
 <!-- Modal para editar funcionario -->
-<div class="modal fade" id="editFuncionarioModal" tabindex="-1" aria-labelledby="editFuncionarioModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="editFuncionarioModal" tabindex="-1" aria-labelledby="editFuncionarioModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -112,16 +111,14 @@
             </div>
             <div class="modal-body">
                 <form class="rut-form" id="form_editFuncionarioModal" action="/edit_funcionario" method="POST">
-                    <!-- Campo para el RUT -->
+                    
+                    <!-- RUT del funcionario -->
                     <div class="mb-3">
                         <label for="edit_rut_funcionario" class="form-label">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
                         <div style="display: flex; align-items: center;">
-                            <input type="text" class="form-control campo-obligatorio rut-input" id="edit_rut_funcionario"
-                                name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guion"
-                                maxlength="8" style="width: 70%;">
+                            <input type="text" class="form-control campo-obligatorio rut-input" id="edit_rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guion" maxlength="8" style="width: 70%;">
                             <span style="width: 10%; display: flex; justify-content: center;">-</span>
-                            <input type="text" class="form-control rut-verificador" id="edit_rut_verificador" disabled
-                                style="width: 20%; text-align: center;">
+                            <input type="text" class="form-control rut-verificador" id="edit_rut_verificador" disabled style="width: 20%; text-align: center;">
                         </div>
                         <div class="text-error-message"></div>
                     </div>
@@ -130,42 +127,34 @@
                     <input type="hidden" id="rut_actual" name="rut_actual">
                     <input type="hidden" id="rut_completo" class="rut_completo" name="rut_completo">
 
-                    <!-- Otros campos -->
-                
+                    <!-- Nombre del funcionario -->
                     <div class="mb-3">
                         <label for="edit_nombre_funcionario" class="form-label">Nombre completo<span style="color: red; margin-left: 5px">*</span></label>
-                        <input type="text" class="form-control campo-obligatorio" id="edit_nombre_funcionario"
-                            name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" maxlength="45">
+                        <input type="text" class="form-control campo-obligatorio" id="edit_nombre_funcionario" name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" maxlength="45">
                         <div class="text-error-message"></div>
                     </div>
+
+                    <!-- Correo electrónico -->
                     <div class="mb-3">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <!-- Conjunto para correo y dominio -->
-                            <label for="edit_correo_funcionario" class="form-label" style="flex: 2;"> Correo electrónico<span
-                                    style="color: red; margin-left: 5px">*</span></label>
-                            <label for="correo_dominio" class="form-label" style="flex: 1; text-align: left;">Dominio<span
-                                    style="color: red; margin-left: 5px">*</span></label>
+                            <label for="edit_correo_funcionario" class="form-label" style="flex: 2;">Correo electrónico<span style="color: red; margin-left: 5px">*</span></label>
+                            <label for="edit_correo_dominio" class="form-label" style="flex: 1; text-align: left;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <!-- Campo para la parte local del correo -->
-                            <input type="text" class="form-control campo-obligatorio correo-input" id="edit_correo_funcionario"
-                                name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
-                    
-                            <!-- Selección del dominio -->
-                            <select class="form-control correo-dominio" id="correo_dominio" name="correo_dominio" style="flex: 1;">
+                            <input type="text" class="form-control campo-obligatorio correo-input" id="edit_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
+                            <select class="form-control correo-dominio" id="edit_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
                         </div>
                         <div class="text-error-message" style="color: red; font-size: 0.9rem; margin-top: 5px; display: none;"></div>
-                    
-                        <!-- Campo oculto para el correo completo. Necesario para concatenar el correo con el dominio -->
-                        <input type="hidden" id="correo_oculto" name="correo_funcionario">
+                        <input type="hidden" class="correo-oculto" id="edit_correo_oculto" name="correo_funcionario">
                     </div>
+
+                    <!-- Cargo del funcionario -->
                     <div class="mb-3">
                         <label for="edit_cargo_funcionario" class="form-label">Cargo<span style="color: red; margin-left: 5px">*</span></label>
-                        <select class="form-control campo-obligatorio" id="edit_cargo_funcionario"
-                            name="cargo_funcionario">
+                        <select class="form-control campo-obligatorio" id="edit_cargo_funcionario" name="cargo_funcionario">
                             <option value="">Seleccione un cargo</option>
                             <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
                             <option value="AUXILIAR">AUXILIAR</option>
@@ -174,6 +163,8 @@
                         </select>
                         <div class="text-error-message"></div>
                     </div>
+
+                    <!-- Unidad -->
                     <div class="mb-3">
                         <label for="edit_codigo_Unidad" class="form-label">Unidad<span style="color: red; margin-left: 5px">*</span></label>
                         <select class="form-control campo-obligatorio" id="edit_codigo_Unidad" name="codigo_Unidad">
@@ -183,15 +174,13 @@
                             {% endfor %}
                         </select>
                         <div class="text-error-message"></div>
-                        <span style=" color: red; font-size: 0.9rem;">* Obligatorio</span>
+                        <span style="color: red; font-size: 0.9rem;">* Obligatorio</span>
                     </div>
                 </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="submit" form="form_editFuncionarioModal" class="btn btn-primary btn-rectangular">
-                    Guardar cambios
-                </button>
+                <button type="submit" form="form_editFuncionarioModal" class="btn btn-primary btn-rectangular">Guardar cambios</button>
             </div>
         </div>
     </div>
