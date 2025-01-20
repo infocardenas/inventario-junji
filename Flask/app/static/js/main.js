@@ -810,22 +810,26 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   $(".edit-button").on("click", function () {
-    // Obtener valores del botón
+    // Obtiene valores del botón
     const rutCompleto = $(this).data("rut");
     const nombre = $(this).data("nombre");
     const correo = $(this).data("correo");
     const cargo = $(this).data("cargo");
     const unidad = $(this).data("unidad");
 
-    // Separar el RUT en cuerpo y dígito verificador
+    // Separa el RUT en cuerpo y dígito verificador
     const [rutSinFormato, digitoVerificador] = rutCompleto.split("-");
 
-    // Asignar valores a los campos del formulario en el modal
+    // Divide el correo en parte local y dominio
+    const [parteLocalCorreo, dominioCorreo] = correo.split("@");
+
+    // Asigna valores a los campos del formulario en el modal
     $("#edit_rut_funcionario").val(rutSinFormato); // Rut sin el dígito verificador
     $("#edit_rut_verificador").val(digitoVerificador); // Dígito verificador
     $("#rut_actual").val(rutCompleto); // Rut completo en el campo oculto
     $("#edit_nombre_funcionario").val(nombre);
-    $("#edit_correo_funcionario").val(correo);
+    $("#edit_correo_funcionario").val(parteLocalCorreo); // Solo la parte local del correo
+    $("#correo_dominio").val(`@${dominioCorreo}`); // Asigna el dominio al selector
     $("#edit_cargo_funcionario").val(cargo);
     $("#edit_codigo_Unidad").val(unidad);
   });
