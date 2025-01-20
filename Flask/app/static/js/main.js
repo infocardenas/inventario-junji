@@ -838,7 +838,7 @@ $(document).ready(function () {
 // Combina la parte del correo con el dominio
 $(document).ready(function () {
   function combinarCorreoCompleto() {
-    const inputCorreo = $("#edit_correo_funcionario");
+    const inputCorreo = $("#correo_funcionario");
     const dominioSeleccionado = $("#correo_dominio").val();
     const correoCompleto = inputCorreo.val().trim() + dominioSeleccionado;
 
@@ -847,7 +847,7 @@ $(document).ready(function () {
   }
 
   // Actualiza el correo completo en tiempo real
-  $(".correo-input, #correo_dominio").on("input change", function () {
+  $(".correo-input, .correo_dominio").on("input change", function () {
     combinarCorreoCompleto();
   });
 
