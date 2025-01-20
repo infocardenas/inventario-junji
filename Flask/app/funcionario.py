@@ -43,7 +43,7 @@ schema_funcionario = {
 @loguear_requerido
 def Funcionario(page = 1):
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     page = int(page)
     perpage = getPerPage()
@@ -92,7 +92,12 @@ def add_funcionario():
         if not v.validate(data):
             errores = v.errors  # Diccionario con los errores específicos por campo
             for campo, mensaje in errores.items():
-                flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
+                print(campo)
+                print(mensaje)
+                if "min length is 9" in mensaje:
+                    flash("Error: El RUT ingresado debe contener 7 u 8 dígitos", 'warning')
+                else:
+                    flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
             return redirect(url_for('funcionario.Funcionario'))
         
         try:
@@ -127,88 +132,100 @@ def add_funcionario():
         except Exception as e:
             flash(f"Error al crear el funcionario: {str(e)}", 'danger')
             return redirect(url_for('funcionario.Funcionario'))
-#enviar datos a vista editar
-@funcionario.route('/edit_funcionario/<id>', methods = ['POST', 'GET'])
+
+@funcionario.route('/edit_funcionario', methods=['POST'])
 @administrador_requerido
-def edit_funcionario(id):
+def edit_funcionario():
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
+    
     try:
+        # Obtener datos del formulario
+        rut_actual = request.form.get('rut_actual').strip()  # RUT actual almacenado
+        nuevo_rut = request.form.get('rut_completo').strip()  # Nuevo RUT enviado por el formulario
+        nombre_funcionario = request.form.get('nombre_funcionario').strip()
+        correo_funcionario = request.form.get('correo_funcionario').strip()
+        cargo_funcionario = request.form.get('cargo_funcionario').strip()
+        codigo_unidad = request.form.get('codigo_Unidad').strip()
+
+        print(nuevo_rut)
+        # Validar datos básicos
+        if not rut_actual or not nuevo_rut or not nombre_funcionario or not correo_funcionario or not cargo_funcionario or not codigo_unidad:
+            flash("Todos los campos son obligatorios", 'warning')
+            return redirect(url_for('funcionario.Funcionario'))
+        
+        # Actualizar el funcionario en la base de datos
         cur = mysql.connection.cursor()
-        cur.execute(""" 
-        SELECT *
-        FROM funcionario f
-        INNER JOIN unidad u on f.idUnidad = u.idUnidad
-        WHERE rutFuncionario = %s
-        """, (id,))
-        data = cur.fetchall()
-        cur.execute('SELECT * from unidad')
-        print(data) 
-        ubi_data = cur.fetchall()
-        return render_template(
-            'GestionR.H/editFuncionario.html', 
-            funcionario = data[0], 
-            Unidad = ubi_data
-            )
+        cur.execute("""
+            UPDATE funcionario
+            SET rutFuncionario = %s, nombreFuncionario = %s, correoFuncionario = %s, 
+                cargoFuncionario = %s, idUnidad = %s
+            WHERE rutFuncionario = %s
+        """, (nuevo_rut, nombre_funcionario, correo_funcionario, cargo_funcionario, codigo_unidad, rut_actual))
+        mysql.connection.commit()
+        cur.close()
+
+        flash("Funcionario editado exitosamente", 'success')
+        return redirect(url_for('funcionario.Funcionario'))
+
     except Exception as e:
-        #flash(e.args[1])
-        flash("Error al crear")
+        flash(f"Error al editar el funcionario: {str(e)}", 'danger')
         return redirect(url_for('funcionario.Funcionario'))
 
 #actualizar funcionario por id
-@funcionario.route('/update_funcionario/<id>', methods = ['POST'])
-@administrador_requerido
-def update_funcionario(id):
-    if request.method == 'POST':
-        # Obtener los datos del formulario
-        data = {
-            'rut_funcionario': request.form['rut_funcionario'],
-            'nombre_funcionario': request.form['nombre_funcionario'],
-            'correo_funcionario': request.form['correo_funcionario'],
-            'cargo_funcionario': request.form['cargo_funcionario'],
-            'codigo_Unidad': request.form['codigo_Unidad']
-        }
+# @funcionario.route('/update_funcionario/<id>', methods = ['POST'])
+# @administrador_requerido
+# def update_funcionario(id):
+#     if request.method == 'POST':
+#         # Obtener los datos del formulario
+#         data = {
+#             'rut_funcionario': request.form['rut_funcionario'],
+#             'nombre_funcionario': request.form['nombre_funcionario'],
+#             'correo_funcionario': request.form['correo_funcionario'],
+#             'cargo_funcionario': request.form['cargo_funcionario'],
+#             'codigo_Unidad': request.form['codigo_Unidad']
+#         }
 
-        # Validar los datos usando Cerberus
-        v = Validator(schema_funcionario)
-        if not v.validate(data):
-            flash("Caracteres no permitidos")
-            return redirect(url_for('funcionario.Funcionario'))
+#         # Validar los datos usando Cerberus
+#         v = Validator(schema_funcionario)
+#         if not v.validate(data):
+#             flash("El formato de entrada no es válido", 'warning')
+#             return redirect(url_for('funcionario.Funcionario'))
 
 
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute("""
-            UPDATE funcionario
-            SET rutFuncionario = %s,
-                nombreFuncionario = %s,
-                cargoFuncionario = %s,
-                idUnidad = %s,
-                correoFuncionario = %s
-            WHERE rutFuncionario = %s
-            """, (data["rut_funcionario"], data["nombre_funcionario"], data["cargo_funcionario"], 
-                data["codigo_Unidad"], data["correo_funcionario"], id))
-            mysql.connection.commit()
-            flash('Funcionario actualizado correctamente')
+#         try:
+#             cur = mysql.connection.cursor()
+#             cur.execute("""
+#             UPDATE funcionario
+#             SET rutFuncionario = %s,
+#                 nombreFuncionario = %s,
+#                 cargoFuncionario = %s,
+#                 idUnidad = %s,
+#                 correoFuncionario = %s
+#             WHERE rutFuncionario = %s
+#             """, (data["rut_funcionario"], data["nombre_funcionario"], data["cargo_funcionario"], 
+#                 data["codigo_Unidad"], data["correo_funcionario"], id))
+#             mysql.connection.commit()
+#             flash('Funcionario actualizado correctamente', 'success')
         
-            return redirect(url_for('funcionario.Funcionario'))
-        except IntegrityError as e:
-            error_message = str(e)
-            if "Duplicate entry" in error_message:
-                if "PRIMARY" in error_message:
-                    flash("Error: El RUT ya está registrado")
-                elif "correoFuncionario" in error_message:
-                    flash("Error: El correo electrónico ya está registrado")
-                else:
-                    flash("Error de duplicación en la base de datos")
-            else:
-                flash("Error de integridad en la base de datos")
-            return redirect(url_for('funcionario.Funcionario'))
+#             return redirect(url_for('funcionario.Funcionario'))
+#         except IntegrityError as e:
+#             error_message = str(e)
+#             if "Duplicate entry" in error_message:
+#                 if "PRIMARY" in error_message:
+#                     flash("Error: El RUT ya está registrado", 'warning')
+#                 elif "correoFuncionario" in error_message:
+#                     flash("Error: El correo electrónico ya está registrado", 'warning')
+#                 else:
+#                     flash("Error de duplicación en la base de datos", 'warning')
+#             else:
+#                 flash("Error de integridad en la base de datos", 'danger')
+#             return redirect(url_for('funcionario.Funcionario'))
         
-        except Exception as e:
-            flash(f"Error al actualizar el funcionario: {str(e)}")
-            return redirect(url_for('funcionario.Funcionario'))
+#         except Exception as e:
+#             flash(f"Error al actualizar el funcionario: {str(e)}", 'warning')
+#             return redirect(url_for('funcionario.Funcionario'))
 
 #eliminar registro segun id
 @funcionario.route('/delete_funcionario/<id>', methods = ['POST', 'GET'])
@@ -218,7 +235,7 @@ def delete_funcionario(id):
         cur = mysql.connection.cursor()
         cur.execute('DELETE FROM funcionario WHERE rutFuncionario = %s', (id,))
         mysql.connection.commit()
-        flash('Funcionario eliminado correctamente')
+        flash('Funcionario eliminado correctamente', 'success')
         return redirect(url_for('funcionario.Funcionario'))
     except Exception as e:
         flash(e.args[1])
