@@ -569,66 +569,6 @@ $(document).ready(function () {
   $(".solo-numeros").on("input", validateNumbersInput);
 });
 
-$(document).ready(function () {
-  function validarRut() {
-    const inputField = $(this);
-    let rawInput = inputField.val(); // Captura el valor ingresado
-    const errorMessage = $(".text-error-message");
-
-    // Eliminar caracteres no válidos
-    rawInput = rawInput.replace(/[^0-9kK]/g, '').toUpperCase();
-
-    // Si el RUT es muy corto, no hacer nada
-    if (rawInput.length <= 1) {
-      errorMessage.hide();
-      return;
-    }
-
-    // Parte numérica y dígito verificador
-    const cuerpo = rawInput.slice(0, -1);
-    const dv = rawInput.slice(-1);
-
-    // Limitar el cuerpo del RUT a un máximo de 8 caracteres
-    if (cuerpo.length > 8) {
-      rawInput = cuerpo.slice(0, 8) + dv;
-      inputField.val(rawInput);
-    }
-
-    // Formatear el cuerpo del RUT con puntos
-    let formateado = cuerpo.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
-
-    // Formatear el RUT con el dígito verificador al final
-    rawInput = `${formateado}-${dv}`;
-
-    // Validación de errores:
-    // Validar si el RUT tiene más de 8 dígitos antes del guion
-    if (cuerpo.length > 8) {
-      errorMessage.text("El RUT no puede tener más de 8 dígitos antes del guion.").show();
-      return;
-    }
-
-    // Si el dígito verificador tiene más de un carácter
-    if (dv.length > 1) {
-      errorMessage.text("El dígito verificador solo puede tener un carácter.").show();
-      return;
-    }
-
-    // Validar que el dígito verificador sea un número o la letra K
-    if (!/^[0-9kK]$/.test(dv)) {
-      errorMessage.text("El dígito verificador debe ser un número o la letra K.").show();
-      return;
-    }
-
-    // Si todo es correcto, actualizar el valor del input
-    inputField.val(rawInput);
-    errorMessage.hide();
-  }
-
-  // Aplicar la validación al campo RUT cuando el usuario escriba
-  $(".rut-input").on("input", validarRut);
-});
-
-
 document.addEventListener('DOMContentLoaded', function () {
   // Selecciona el input con la clase 'search-box'
   const searchBox = document.querySelector('.search-box');
@@ -653,16 +593,13 @@ $(document).ready(function () {
     // Recorre solo los campos con clase '.campo-obligatorio' dentro del formulario actual
     form.find(".campo-obligatorio").each(function () {
       const inputField = $(this);
-      const errorMessage = inputField.siblings(".text-error-message");
 
       // Verifica si el campo está vacío
       if (inputField.val().trim() === "") {
-        errorMessage.text("Este campo es obligatorio").show();
-        inputField.css("border", "2px solid red");
+        mostrarError(inputField, "Este campo es obligatorio");
         formularioValido = false;
       } else {
-        errorMessage.hide();
-        inputField.css("border", "");
+        limpiarError(inputField);
       }
     });
 
@@ -675,11 +612,9 @@ $(document).ready(function () {
   // Verifica cuando cambia el valor del campo y lo oculta cuando hay texto
   $(".campo-obligatorio").on("input change", function () {
     const inputField = $(this);
-    const errorMessage = inputField.siblings(".text-error-message");
 
     if (inputField.val().trim() !== "") {
-      errorMessage.hide();
-      inputField.css("border", "");
+      limpiarError(inputField);
     }
   });
 
@@ -758,15 +693,22 @@ $(document).ready(function () {
     const rutSinFormato = inputRut.val().replace(/[^0-9]/g, "");
     inputRut.val(rutSinFormato);
 
+    if (!rutSinFormato) {
+      // Si el campo está vacío
+      inputVerificador.val(""); // Limpia el dígito verificador
+      limpiarError(inputRut); // Limpia cualquier error
+      return;
+    }
+
     if (!/^\d{7,8}$/.test(rutSinFormato)) {
-      inputVerificador.val("");
-      mostrarError(inputRut, "El RUT debe contener 7 u 8 números.");
+      inputVerificador.val(""); // Limpia el dígito verificador
+      mostrarError(inputRut, "El RUT debe contener 7 u 8 números");
       return;
     }
 
     const digitoVerificador = calcularDigitoVerificador(rutSinFormato);
     inputVerificador.val(digitoVerificador);
-    limpiarError(inputRut); // Limpiar cualquier error si el RUT es válido
+    limpiarError(inputRut); // Limpia cualquier error si el RUT es válido
   }
 
   function prepararRutCompleto(form) {
@@ -775,6 +717,13 @@ $(document).ready(function () {
     const hiddenInput = $(form).find(".rut_completo");
     const rutSinFormato = inputRut.val();
     const digitoVerificador = inputVerificador.val();
+
+    if (!rutSinFormato) {
+      // Si el campo está vacío
+      hiddenInput.val("");
+      mostrarError(inputRut, "Este campo es obligatorio");
+      return;
+    }
 
     if (/^\d{7,8}$/.test(rutSinFormato) && /^[0-9Kk]$/.test(digitoVerificador)) {
       hiddenInput.val(`${rutSinFormato}-${digitoVerificador}`);
