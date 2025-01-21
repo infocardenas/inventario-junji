@@ -10,7 +10,8 @@
         </button>
 
         <!-- Modal para agregar modelo -->
-        <div class="modal fade" id="addModeloModal" tabindex="-1" aria-labelledby="addModeloModalLabel" aria-hidden="true">
+        <div class="modal fade" id="addModeloModal" tabindex="-1" aria-labelledby="addModeloModalLabel"
+            aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -22,27 +23,22 @@
                             <!-- Selección de  modelo -->
                             <div class="mb-3">
                                 <label for="nombre_modelo_equipo" class="form-label">Modelo Equipo:</label>
-                                <input 
-                                    class="form-control" 
-                                    type="text" 
-                                    id="nombre_modelo_equipo" 
-                                    name="nombre_modelo_equipo" 
-                                    placeholder="Modelo" 
-                                    maxlength="45"
-                                >
+                                <input class="form-control" type="text" id="nombre_modelo_equipo"
+                                    name="nombre_modelo_equipo" placeholder="Modelo" maxlength="45">
                             </div>
                             <!-- Selección de Marca -->
                             <div class="mb-3">
                                 <label for="marcaSelect" class="form-label">Marca:</label>
-                                <select class="form-select" id="marcaSelect" name="nombre_marca_equipo" onchange="cargarTipos()">
+                                <select class="form-select" id="marcaSelect" name="nombre_marca_equipo"
+                                    onchange="cargarTipos()">
                                     <option value="">Seleccione una marca</option>
                                 </select>
                             </div>
-        
+
                             <!-- Selección de Tipo -->
                             <div class="mb-3">
                                 <label for="tipoSelect" class="form-label">Tipo:</label>
-                                <select class="form-select" id="tipoSelect" name="nombre_tipo_equipo" onchange="cargarModelos()" disabled>
+                                <select class="form-select" id="tipoSelect" name="nombre_tipo_equipo">
                                     <option value="">Seleccione un tipo</option>
                                 </select>
                             </div>
@@ -57,43 +53,30 @@
         </div>
 
         <!-- Tabla para mostrar modelos de equipos -->
+        <h2>Modelo de Equipos</h2>
         <div class="table-responsive">
-            <!-- Contenedor para los controles -->
-            <div class="d-flex align-items-center justify-content-between">
-                <!-- Selector de cantidad de filas -->
-                <div class="length-selector" style="flex-shrink: 0;"></div>
-
-                <!-- Buscador centrado -->
-                <div class="datatable-search" style="flex-grow: 1; text-align: center;"></div>
-
-                <!-- Botón Select de Acciones -->
-                <div class="actions-button" style="flex-shrink: 0;">
-                    <select id="action-select" class="form-select form-select-sm" style="width: auto;">
-                        <option value="">Acciones</option>
-                        <option value="export">Exportar</option>
-                        <option value="delete-selected">Eliminar seleccionados</option>
-                    </select>
-                </div>
-            </div>
-
-            <!-- Tabla -->
-            <table class="table table-bordered tdable-stripe datatable" id="posts">
+            <table class="table table-bordered table-striped data" id="posts">
                 <thead>
                     <tr>
-                        <th><input type="checkbox" id="select-all"></th>
                         <th>Modelo Equipo</th>
                         <th>Tipo Equipo</th>
                         <th>Marca Equipo</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="myTableBody">
                     {% if modelo_equipo %}
                     {% for modeloe in modelo_equipo %}
                     <tr>
-                        <td><input type="checkbox" class="row-checkbox"></td>
                         <td>{{ modeloe.nombreModeloequipo }}</td>
                         <td>{{ modeloe.nombreTipo_equipo }}</td>
                         <td>{{ modeloe.nombreMarcaEquipo }}</td>
+                        <td>
+                            <a href="/edit_modelo_equipo/{{ modeloe.idModelo_Equipo }}"
+                                class="btn btn-success btn-sm">Editar</a>
+                            <a href="/delete_modelo_equipo/{{ modeloe.idModelo_Equipo }}"
+                                class="btn btn-danger btn-sm">Eliminar</a>
+                        </td>
                     </tr>
                     {% endfor %}
                     {% else %}
@@ -104,10 +87,13 @@
                 </tbody>
             </table>
         </div>
+    </div>
+</div>
 
-            
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <script src="{{ url_for('static', filename='js/modeloEquipo.js') }}"></script>
 
@@ -118,4 +104,4 @@
 </script>
 
 
-    {% endblock %}
+{% endblock %}
