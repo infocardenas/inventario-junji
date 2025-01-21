@@ -8,6 +8,12 @@ from MySQLdb import IntegrityError
 
 # Definir el esquema de validación para funcionario
 schema_funcionario = {
+    'rut_actual': {
+        'type': 'string',
+        'minlength': 9,
+        'maxlength': 10,
+        'regex': r'^\d{7,8}-[0-9kK]$'  # Aceptar formato 1234567-K o 12345678-9
+    },
     'rut_funcionario': {
         'type': 'string',
         'minlength': 9,
@@ -142,18 +148,28 @@ def edit_funcionario():
     
     try:
         # Obtener datos del formulario
-        rut_actual = request.form.get('rut_actual').strip()  # RUT actual almacenado
-        nuevo_rut = request.form.get('rut_completo').strip()  # Nuevo RUT enviado por el formulario
-        nombre_funcionario = request.form.get('nombre_funcionario').strip()
-        correo_funcionario = request.form.get('correo_funcionario').strip()
-        cargo_funcionario = request.form.get('cargo_funcionario').strip()
-        codigo_unidad = request.form.get('codigo_Unidad').strip()
+        data = {
+            'rut_actual': request.form.get('edit_rut_actual').strip(),
+            'rut_funcionario': request.form.get('rut_completo', '').strip(),
+            'nombre_funcionario': request.form.get('nombre_funcionario', '').strip(),
+            'correo_funcionario': request.form.get('correo_funcionario', '').strip(),
+            'cargo_funcionario': request.form.get('cargo_funcionario', '').strip(),
+            'codigo_Unidad': request.form.get('codigo_Unidad', '').strip()
+        }
 
-        # Validar datos básicos
-        if not rut_actual or not nuevo_rut or not nombre_funcionario or not correo_funcionario or not cargo_funcionario or not codigo_unidad:
+        # Valida que los campos no estén vacíos
+        if not all(data.values()):
             flash("Todos los campos son obligatorios", 'warning')
             return redirect(url_for('funcionario.Funcionario'))
-        
+
+        validator = Validator(schema_funcionario)
+        if not validator.validate(data):
+            # Obtiene el primer campo con error y su mensaje
+            campo, mensajes = next(iter(validator.errors.items()))
+            flash(f"Error en {campo}: {mensajes[0]}", 'warning')  # Muestra solo el primer error
+            return redirect(url_for('funcionario.Funcionario'))
+
+
         # Actualizar el funcionario en la base de datos
         cur = mysql.connection.cursor()
         cur.execute("""
@@ -161,7 +177,7 @@ def edit_funcionario():
             SET rutFuncionario = %s, nombreFuncionario = %s, correoFuncionario = %s, 
                 cargoFuncionario = %s, idUnidad = %s
             WHERE rutFuncionario = %s
-        """, (nuevo_rut, nombre_funcionario, correo_funcionario, cargo_funcionario, codigo_unidad, rut_actual))
+        """, (data['rut_funcionario'], data['nombre_funcionario'], data['correo_funcionario'], data['cargo_funcionario'], data['codigo_Unidad'], data['rut_actual']))
         mysql.connection.commit()
         cur.close()
 

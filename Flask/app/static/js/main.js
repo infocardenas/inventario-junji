@@ -534,24 +534,24 @@ $(document).ready(function () {
   $(".validar-contraseña").on("input", validarContraseña);
 });
 
-
 $(document).ready(function () {
-  // Función de validación
-  function validateLettersInput() {
-    const input = $(this).val();
-    const regex = /^[a-zA-Z\s]*$/; // Permitir letras y espacios
-    const errorMessage = $("#error-message");
+  function validarSoloLetras(inputField) {
+    const regex = /^[a-zA-Z\s]*$/; // Permitir solo letras y espacios
+    const input = inputField.val();
+    const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
 
     if (!regex.test(input)) {
-      errorMessage.text("Solo se permiten letras y espacios.").show();
+      inputField.val(input.replace(/[^a-zA-Z\s]/g, ""));
+      errorMessage.text("Solo se permiten letras y espacios").show();
     } else {
       errorMessage.hide();
     }
   }
 
-  $(".solo-letras").on("input", validateLettersInput);
+  $(".validar-letras").on("input", function () {
+    validarSoloLetras($(this));
+  });
 });
-
 
 $(document).ready(function () {
   // Función de validación
@@ -775,7 +775,7 @@ $(document).ready(function () {
     // Asigna valores a los campos del formulario en el modal
     $("#edit_rut_funcionario").val(rutSinFormato); // Rut sin el dígito verificador
     $("#edit_rut_verificador").val(digitoVerificador); // Dígito verificador
-    $("#rut_actual").val(rutCompleto); // Rut completo en el campo oculto
+    $("#edit_rut_actual").val(rutCompleto); // Rut completo en el campo oculto
     $("#edit_nombre_funcionario").val(nombre);
     $("#edit_correo_funcionario").val(parteLocalCorreo); // Solo la parte local del correo
     $("#edit_correo_dominio").val(`@${dominioCorreo}`); // Asigna el dominio al selector

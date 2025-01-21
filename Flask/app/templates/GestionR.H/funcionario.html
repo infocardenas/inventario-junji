@@ -45,7 +45,7 @@
                     <!-- Nombre del funcionario -->
                     <div class="mb-3">
                         <label for="nombre_funcionario" class="form-label">Nombre completo<span style="color: red; margin-left: 5px">*</span></label>
-                        <input type="text" class="form-control campo-obligatorio" id="nombre_funcionario" name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" maxlength="45">
+                        <input type="text" class="form-control campo-obligatorio validar-letras" id="nombre_funcionario" name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" maxlength="45">
                         <div class="text-error-message"></div>
                     </div>
 
@@ -124,13 +124,13 @@
                     </div>
 
                     <!-- Campo oculto para el RUT completo -->
-                    <input type="hidden" id="rut_actual" name="rut_actual">
+                    <input type="hidden" id="edit_rut_actual" name="edit_rut_actual">
                     <input type="hidden" id="rut_completo" class="rut_completo" name="rut_completo">
 
                     <!-- Nombre del funcionario -->
                     <div class="mb-3">
                         <label for="edit_nombre_funcionario" class="form-label">Nombre completo<span style="color: red; margin-left: 5px">*</span></label>
-                        <input type="text" class="form-control campo-obligatorio" id="edit_nombre_funcionario" name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" maxlength="45">
+                        <input type="text" class="form-control campo-obligatorio validar-letras" id="edit_nombre_funcionario" name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" maxlength="45">
                         <div class="text-error-message"></div>
                     </div>
 
