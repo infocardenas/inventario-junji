@@ -13,6 +13,24 @@ function limpiarError(inputField) {
   inputField.css("border", ""); // Quitar el borde rojo
 }
 
+function limpiarErroresEnModal(modal) {
+  // Recorre todos los elementos del modal que puedan tener errores
+  $(modal).find(".text-error-message").each(function () {
+    $(this).hide(); // Oculta los mensajes de error
+  });
+
+  $(modal).find("input, select, textarea").css("border", "");
+}
+
+$(document).ready(function () {
+  $(".modal").on("hide.bs.modal", function () {
+    const modal = this;
+    setTimeout(function () {
+      limpiarErroresEnModal(modal);
+    }, 1000);
+  });
+});
+
 function fechaPorDefecto() {
   //Crea un objeto date para obtener la fecha actual
   date = new Date();
