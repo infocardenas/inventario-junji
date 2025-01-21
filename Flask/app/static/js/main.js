@@ -48,7 +48,6 @@ function fechaPorDefecto() {
     .setAttribute("value", formatedDate);
 
 }
-console.log("jsLink")
 
 function showDiv(id = "formulario", Esconder = []) {
   console.log("showDiv")
@@ -569,22 +568,6 @@ $(document).ready(function () {
   $(".solo-numeros").on("input", validateNumbersInput);
 });
 
-document.addEventListener('DOMContentLoaded', function () {
-  // Selecciona el input con la clase 'search-box'
-  const searchBox = document.querySelector('.search-box');
-
-  // Agrega un event listener para el evento 'keydown'
-  searchBox.addEventListener('keydown', function (event) {
-    // Verifica si la tecla presionada es 'Enter' (código 13)
-    if (event.keyCode === 13) {
-      // Previene la acción por defecto (enviar el formulario)
-      event.preventDefault();
-      // Puedes agregar aquí cualquier otra acción que desees realizar
-      console.log('Enter bloqueado');
-    }
-  });
-});
-
 $(document).ready(function () {
   $("form").on("submit", function (event) {
     let formularioValido = true;
@@ -694,7 +677,6 @@ $(document).ready(function () {
     inputRut.val(rutSinFormato);
 
     if (!rutSinFormato) {
-      // Si el campo está vacío
       inputVerificador.val(""); // Limpia el dígito verificador
       limpiarError(inputRut); // Limpia cualquier error
       return;
@@ -719,7 +701,6 @@ $(document).ready(function () {
     const digitoVerificador = inputVerificador.val();
 
     if (!rutSinFormato) {
-      // Si el campo está vacío
       hiddenInput.val("");
       mostrarError(inputRut, "Este campo es obligatorio");
       return;
@@ -733,8 +714,7 @@ $(document).ready(function () {
     }
   }
 
-  // Validar el formulario al enviarlo
-  $("form").on("submit", function (event) {
+  $("form.funcionarios").on("submit", function (event) {
     prepararRutCompleto(this);
 
     const rutCompleto = $(this).find(".rut_completo").val();
@@ -744,7 +724,6 @@ $(document).ready(function () {
     }
   });
 
-  // Actualizar el dígito verificador al escribir en el input
   $(".rut-input").on("input", function () {
     actualizarRutVerificador(this);
   });
