@@ -1,19 +1,14 @@
 from flask import Blueprint, request, render_template, flash, url_for, redirect, session
 from db import mysql
-from funciones import validarRut, getPerPage, validarCorreo
+from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
-funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
 from cerberus import Validator
-from MySQLdb import IntegrityError 
+from MySQLdb import IntegrityError
 
-# Definir el esquema de validación para funcionario
-schema_funcionario = {
-    'rut_actual': {
-        'type': 'string',
-        'minlength': 9,
-        'maxlength': 10,
-        'regex': r'^\d{7,8}-[0-9kK]$'  # Aceptar formato 1234567-K o 12345678-9
-    },
+funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
+
+# Esquemas de validación
+schema_agregar_funcionario = {
     'rut_funcionario': {
         'type': 'string',
         'minlength': 9,
@@ -43,7 +38,15 @@ schema_funcionario = {
     }
 }
 
-#envias los datos a la vista pricipal de funcionario
+schema_editar_funcionario = schema_agregar_funcionario.copy()
+schema_editar_funcionario['rut_actual'] = {
+    'type': 'string',
+    'minlength': 9,
+    'maxlength': 10,
+    'regex': r'^\d{7,8}-[0-9kK]$'
+}
+
+# Vista principal de funcionario
 @funcionario.route('/funcionario')
 @funcionario.route('/funcionario/<page>')
 @loguear_requerido
@@ -93,15 +96,12 @@ def add_funcionario():
             'correo_funcionario': request.form.get('correo_funcionario', '').strip()
         }
 
-        # Validar los datos usando Cerberus
-        v = Validator(schema_funcionario)
+        v = Validator(schema_agregar_funcionario)
         if not v.validate(data):
             errores = v.errors  # Diccionario con los errores específicos por campo
             for campo, mensaje in errores.items():
-                print(campo)
-                print(mensaje)
                 if "min length is 9" in mensaje:
-                    flash("Error: El RUT ingresado debe contener 7 u 8 dígitos", 'warning')
+                    flash("Error: El RUT debe contener 7 u 8 dígitos", 'warning')
                 else:
                     flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
             return redirect(url_for('funcionario.Funcionario'))
@@ -139,6 +139,7 @@ def add_funcionario():
             flash(f"Error al crear el funcionario: {str(e)}", 'danger')
             return redirect(url_for('funcionario.Funcionario'))
 
+# Editar funcionario
 @funcionario.route('/edit_funcionario', methods=['POST'])
 @administrador_requerido
 def edit_funcionario():
@@ -147,9 +148,8 @@ def edit_funcionario():
         return redirect("/ingresar")
     
     try:
-        # Obtener datos del formulario
         data = {
-            'rut_actual': request.form.get('edit_rut_actual').strip(),
+            'rut_actual': request.form.get('edit_rut_actual', '').strip(),
             'rut_funcionario': request.form.get('rut_completo', '').strip(),
             'nombre_funcionario': request.form.get('nombre_funcionario', '').strip(),
             'correo_funcionario': request.form.get('correo_funcionario', '').strip(),
@@ -162,7 +162,7 @@ def edit_funcionario():
             flash("Todos los campos son obligatorios", 'warning')
             return redirect(url_for('funcionario.Funcionario'))
 
-        validator = Validator(schema_funcionario)
+        validator = Validator(schema_editar_funcionario)
         if not validator.validate(data):
             # Obtiene el primer campo con error y su mensaje
             campo, mensajes = next(iter(validator.errors.items()))
