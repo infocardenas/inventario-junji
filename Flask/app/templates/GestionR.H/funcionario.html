@@ -56,8 +56,8 @@
                             <label for="add_correo_dominio" class="form-label" style="flex: 1; text-align: left;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 0 10px">
-                            <input type="text" class="form-control campo-obligatorio correo-input" id="add_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
-                            <select class="form-control correo-dominio" id="add_correo_dominio" name="correo_dominio" style="flex: 1;">
+                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario" id="add_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
+                            <select class="form-control correo-dominio-funcionario" id="add_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
@@ -110,7 +110,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <form class="rut-form" id="form_editFuncionarioModal" action="/edit_funcionario" method="POST">
+                <form class="funcionarios" id="form_editFuncionarioModal" action="/edit_funcionario" method="POST">
                     
                     <!-- RUT del funcionario -->
                     <div class="mb-3">
@@ -141,8 +141,8 @@
                             <label for="edit_correo_dominio" class="form-label" style="flex: 1; text-align: left;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <input type="text" class="form-control campo-obligatorio correo-input" id="edit_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
-                            <select class="form-control correo-dominio" id="edit_correo_dominio" name="correo_dominio" style="flex: 1;">
+                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario" id="edit_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
+                            <select class="form-control correo-dominio-funcionario" id="edit_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>

@@ -787,8 +787,8 @@ $(document).ready(function () {
 $(document).ready(function () {
   function combinarCorreoCompleto(modal) {
     // Selecciona los elementos específicos dentro del modal
-    const inputCorreo = $(modal).find(".correo-input");
-    const dominioSeleccionado = $(modal).find(".correo-dominio").val();
+    const inputCorreo = $(modal).find(".correo-input-funcionario");
+    const dominioSeleccionado = $(modal).find(".correo-dominio-funcionario").val();
     const correoCompleto = inputCorreo.val().trim() + dominioSeleccionado;
 
     // Actualiza el campo oculto con el correo completo
@@ -796,13 +796,13 @@ $(document).ready(function () {
   }
 
   // Actualiza el correo completo en tiempo real para el modal actual (agregar o editar)
-  $(".correo-input, .correo-dominio").on("input change", function () {
+  $(".correo-input-funcionario, .correo-dominio-funcionario").on("input change", function () {
     const modal = $(this).closest(".modal"); // Identifica el modal actual (agregar o editar)
     combinarCorreoCompleto(modal);
   });
 
-  // Asegura que el correo completo esté listo antes de enviar el formulario
-  $("form").on("submit", function () {
+  // Filtra el evento submit solo para los formularios relacionados
+  $("form.funcionarios").on("submit", function () {
     const modal = $(this).closest(".modal"); // Identifica el modal actual (agregar o editar)
     combinarCorreoCompleto(modal);
   });
