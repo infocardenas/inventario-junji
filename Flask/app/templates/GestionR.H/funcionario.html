@@ -6,11 +6,9 @@
 <!-- Fila para botón y barra de búsqueda -->
 <div>
     <!-- Barra de búsqueda -->
-    <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-        <form action="/buscar_funcionario" method="POST">
-            <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador"
-                onkeyup="busqueda('myTableBody')" />
-        </form>
+    <div style="display: flex; justify-content: center;">
+        <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador"
+            onkeyup="busqueda('myTableBody')" />
     </div>
     <!-- Botón para abrir el modal -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFuncionarioModal">
