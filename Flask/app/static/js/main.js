@@ -1,3 +1,6 @@
+function navigateTo(url) {
+  window.location.href = url;
+}
 
 function mostrarError(inputField, mensaje) {
   const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
