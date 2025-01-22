@@ -34,14 +34,18 @@ def Asignacion(page=1):
         """ 
     SELECT  
         a.idAsignacion,
+        f.nombreFuncionario,
+        te.nombreTipo_equipo,
         a.fecha_inicioAsignacion,
         a.observacionAsignacion,
-        a.rutaactaAsignacion,
-        f.nombreFuncionario,
         a.fechaDevolucion,
         a.ActivoAsignacion
     FROM asignacion a
     INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+    LEFT JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+    LEFT JOIN equipo e ON e.idEquipo = ea.idEquipo
+    LEFT JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+    LEFT JOIN tipo_equipo te ON me.idModelo_Equipo = te.idTipo_equipo
     LIMIT %s OFFSET %s
         """, (perpage, offset)
     )
