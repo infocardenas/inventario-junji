@@ -2,88 +2,93 @@
 {% block body %}
 {% from 'funciones_macro.html' import paginacion %}
 
-<div class="col-md-12">
-    <a href="/add_asignacion" class="nav-button">Crear Asignación</a>
-
-    <h2>Asignaciones</h2>
-    <div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
-        <div style="display:flex;">
-            <form action="/buscar_asignacion" method="POST">
-                <input name="palabra" type="text" class="search-box" placeholder="Buscar asignación..." id="buscador"
-                    onkeyup="busqueda('myTableBody')" />
-            </form>
-        </div>
+<h2>Asignaciones</h2>
+<!-- Fila para botón y barra de búsqueda -->
+<div>
+    <!-- Barra de búsqueda -->
+    <div style="display:flex; justify-content:center;">
+        <input name="palabra" type="text" class="search-box" placeholder="Buscar asignación..." id="buscador" onkeyup="busqueda('myTableBody')" />
     </div>
-    
-    <div style="overflow-x:auto;">
-        <table id="posts">
-            <thead>
-                <tr>
-                    <td onclick="sortTable(0)">Fecha Inicio</td>
-                    <td onclick="sortTable(1)">Observación</td>
-                    <td>Actas</td>
-                    <td onclick="sortTable(3)">NombreFuncionario</td>
-                    <td onclick="sortTable(4)">FechaDevolucion</td>
-                    <td>Acciones</td>
-                </tr>
-            </thead>
-            <tbody id="myTableBody">
-                <!-- Se inicia iteración for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
-                {% for asig in asignacion %}
-                <tr>
-                    <!-- En el siguiente <td> se seleccionará el atributo que queremos mostrar en pantalla indicando el índice del nombre del proveedor en este caso -->
-                    <td>{{asig.fecha_inicioAsignacion}}</td>
-                    <td>{{asig.observacionAsignacion}}</td>
-                    <td>
-                        <!-- Dropdown para opciones de asignación -->
-                        <div class="dropdown">
-                            <button class="options-button">Asignaciones</button>
-                            <div class="dropdown-options">
-                                <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}" class="info-button desplegable-button">Asignación</a>
-                                <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}" class="success-button desplegable-button">Firmar</a>
-                            </div>
-                        </div>
-
-                        {% if asig.ActivoAsignacion != 1 %}
-                        <!-- Si la asignación no está activa, se muestran opciones para devolución -->
-                        <div class="dropdown">
-                            <button class="options-button">Devoluciones</button>
-                            <div class="dropdown-options">
-                                <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}" class="info-button desplegable-button">Devolución</a>
-                                <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver" class="success-button desplegable-button">Firmar</a>
-                            </div>
-                        </div>
-                        {% else %}
-                        <!-- Si la asignación está activa, muestra el botón para devolverla -->
-                        <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}" class="success-button">Devolver</a>
-                        {% endif %}
-                    </td>
-                    <td class="toCheck">{{asig.nombreFuncionario}}</td>
-                    <td>
-                        {% if asig.fechaDevolucion == None %}
-                        Sin Devolver
-                        {% else %}
-                        {{asig.fechaDevolucion}}
-                        {% endif %}
-                    </td>
-                    <td>
-                        <!-- Se indica la ruta de la función editar y agregando el id a través del índice proveedor.0 -->
-                        {# El botón de editar no se ocupa porque el acta tendría que generarse de nuevo de todos modos #}
-                        {# <a href="/asignacion/edit_asignacion/{{ asig.idAsignacion }}" class="success-button">Editar</a> #}
-
-                        <!-- El botón de eliminación utiliza la clase "btn-delete" para la confirmación de eliminación del proveedor según su id -->
-                        <a href="/delete_asignacion/{{asig.idAsignacion}}" class="delete-button">Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-                <!-- Se termina la iteración for -->
-            </tbody>
-        </table>
-    </div>
+    <!-- Botón para redirigir a agregar asignación -->
+    <button type="button" onclick="navigateTo('/add_asignacion')" class="btn btn-primary">
+        Agregar asignación
+    </button>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<!-- Tabla de asignaciones -->
+<div style="overflow-x:auto;">
+    <table id="posts">
+        <!-- Encabezado de la tabla -->
+        <thead>
+            <tr>
+                <td onclick="sortTable(0)">Funcionario</td>
+                <td onclick="sortTable(1)">Fecha de asignación</td>
+                <td onclick="sortTable(2)">Observación</td>
+                <td>Actas</td>
+                <td onclick="sortTable(4)">Fecha de devolución</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <!-- Contenido de la tabla -->
+        <tbody id="myTableBody">
+            {% for asig in asignacion %}
+            <tr>
+                <td class="toCheck">{{asig.nombreFuncionario}}</td>
+                <td>{{asig.fecha_inicioAsignacion}}</td>
+                <td>{{asig.observacionAsignacion}}</td>
+
+                <!-- Botones -->
+                <td>
+                    <div class="dropdown">
+                        <button class="options-button">Asignaciones</button>
+                        <div class="dropdown-options">
+                            <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}"
+                                class="info-button desplegable-button">Asignación</a>
+                            <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}"
+                                class="success-button desplegable-button">Firmar</a>
+                        </div>
+                    </div>
+
+                    {% if asig.ActivoAsignacion != 1 %}
+                    <!-- Si la asignación no está activa, se muestran opciones para devolución -->
+                    <div class="dropdown">
+                        <button class="options-button">Devoluciones</button>
+                        <div class="dropdown-options">
+                            <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}"
+                                class="info-button desplegable-button">Devolución</a>
+                            <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver"
+                                class="success-button desplegable-button">Firmar</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <!-- Si la asignación está activa, muestra el botón para devolverla -->
+                    <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}"
+                        class="success-button">Devolver</a>
+                    {% endif %}
+                </td>
+                <!-- Fin botones -->
+
+                <td>
+                    {% if asig.fechaDevolucion == None %}
+                    Sin Devolver
+                    {% else %}
+                    {{asig.fechaDevolucion}}
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="/delete_asignacion/{{asig.idAsignacion}}" class="delete-button">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+            <!-- Se termina la iteración for -->
+        </tbody>
+    </table>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="../static/js/asignaciones.controller.js"></script>
-{{ paginacion("asignacion", page, lastpage) }}  <!-- Llama a la macro 'paginacion' para mostrar los controles de paginación -->
+{{ paginacion("asignacion", page, lastpage) }}
+<!-- Llama a la macro 'paginacion' para mostrar los controles de paginación -->
 
 {% endblock %}
