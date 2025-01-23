@@ -43,7 +43,7 @@ $(document).ready(function () {
             <h5>Datos de la asignación</h5>
             <table class="table table-bordered">
                 <tr>
-                    <td><strong>Fecha de inicio</strong></td>
+                    <td><strong>Fecha de asignación</strong></td>
                     <td>${data.asignacion.fecha_inicio}</td>
                 </tr>
                 <tr>
@@ -63,15 +63,15 @@ $(document).ready(function () {
             <h5>Datos del equipo</h5>
             <table class="table table-bordered">
                 <tr>
-                    <td><strong>Tipo Equipo</strong></td>
+                    <td><strong>Tipo</strong></td>
                     <td>${data.equipo.tipo_equipo}</td>
                 </tr>
                 <tr>
-                    <td><strong>Marca equipo</strong></td>
+                    <td><strong>Marca</strong></td>
                     <td>${data.equipo.marca_equipo}</td>
                 </tr>
                 <tr>
-                    <td><strong>Modelo equipo</strong></td>
+                    <td><strong>Modelo</strong></td>
                     <td>${data.equipo.modelo_equipo}</td>
                 </tr>
             </table>
