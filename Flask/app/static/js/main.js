@@ -541,13 +541,13 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   function validarSoloLetras(inputField) {
-    const regex = /^[a-zA-Z\s]*$/; // Permitir solo letras y espacios
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     const input = inputField.val();
     const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
 
     if (!regex.test(input)) {
-      inputField.val(input.replace(/[^a-zA-Z\s]/g, ""));
-      errorMessage.text("Solo se permiten letras y espacios").show();
+      inputField.val(input.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""));
+      errorMessage.text("Solo se permiten letras, tildes y espacios").show();
     } else {
       errorMessage.hide();
     }

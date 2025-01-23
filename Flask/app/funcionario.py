@@ -19,7 +19,7 @@ schema_agregar_funcionario = {
         'type': 'string',
         'minlength': 1,
         'maxlength': 100,
-        'regex': r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ ]+$'  # Permitir letras, tildes y espacios
+        'regex': r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$'  # Permitir letras, tildes y espacios
     },
     'cargo_funcionario': {
         'type': 'string',
