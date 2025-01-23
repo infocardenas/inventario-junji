@@ -37,13 +37,13 @@
                 <td class="toCheck">{{asig.nombreFuncionario}}</td>
                 
                 <!-- Tipo de equipo. Si no tiene asignado un equipo coloca un '-' -->
-                <td>{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
+                <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
 
                 <!-- Fecha de asignación del equipo -->
-                <td>{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
+                <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
 
                 <!-- Fecha de devolución del equipo. Si no se ha devuelto coloca un 'Sin devolver' -->
-                <td>{{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}</td>
+                <td class="toCheck">{{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}</td>
 
                 <!-- Botones de actas -->
                 <td>
