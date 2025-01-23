@@ -1,134 +1,133 @@
 <!DOCTYPE html>
 <html lang="en">
 
-  <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <!-- CSS de Bootstrap -->
-      <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
-      <!-- CSS de DataTables -->
-      <link href="https://cdn.datatables.net/2.2.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
-      <title>Inventario JUNJI</title>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS de Bootstrap -->
+    <link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+    <!-- CSS de DataTables -->
+    <link href="https://cdn.datatables.net/2.2.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
+    <title>Inventario JUNJI</title>
 
-      <link rel="icon" href="{{url_for('static', filename='img/logo_junji.jpg')}}" />
-      <link href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}" rel="stylesheet">
-      <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
-      <link rel="stylesheet" href="{{url_for('static', filename='css/sidebar.css')}}">
-  </head>
-      <!-- Carga y muestra los errores de flash de manera global -->
+    <link rel="icon" href="{{url_for('static', filename='img/logo_junji.jpg')}}" />
+    <link href="{{ url_for('static', filename='css/bootstrap-icons.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/sidebar.css')}}">
+</head>
+
+<body>
+    <!-- Carga y muestra los errores de flash de manera global -->
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <div>
-      {% for category, message in messages %}
-      {% set alert_type = category %}
-      {% set message = message %}
-      {% include 'alert.html' %}
-      {% endfor %}
+        {% for category, message in messages %}
+        {% set alert_type = category %}
+        {% set message = message %}
+        {% include 'alert.html' %}
+        {% endfor %}
     </div>
     {% endif %}
     {% endwith %}
     <div class="container-home">
-      <div class="flex-shrink-0 p-3 bg-light sidebar" style="width: 260px;">
-        <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-          <span class="fs-5 fw-semibold">Gestor de inventario</span>
-        </a>
-        <ul class="list-unstyled ps-0">
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
-              <i class="fas fa-tools me-2"></i> Equipos
-            </button>
-            <div class="collapse" id="home-collapse">
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                <li><a href="/equipo" class="link-dark rounded">Equipos</a></li>
-                <li><a href="/marca_equipo" class="link-dark rounded">Marcas de Equipos</a></li>
-                <li><a href="/modelo_equipo" class="link-dark rounded">Modelos de Equipos</a></li>
-                <li><a href="/tipo_equipo" class="link-dark rounded">Tipos de Equipos</a></li>
-                <li><a href="/estado_equipo" class="link-dark rounded">Estado de Equipos</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-              <i class="fas fa-users me-2"></i> Gestión de RR.HH
-            </button>
-            <div class="collapse" id="dashboard-collapse">
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                <li><a href="/funcionario" class="link-dark rounded">Funcionarios</a></li>
-                <li><a href="/asignacion" class="link-dark rounded">Asignaciones</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-              <i class="fas fa-truck me-2"></i> Gestión de Proveedores
-            </button>
-            <div class="collapse" id="orders-collapse">
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                <li><a href="/proveedor" class="link-dark rounded">Proveedores</a></li>
-                <li><a href="/orden_compra" class="link-dark rounded">Orden de compra</a></li>
-                <li><a href="/tipo_adquisicion" class="link-dark rounded">Tipo de adquisición</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#operations-collapse" aria-expanded="false">
-              <i class="fas fa-cogs me-2"></i> Operaciones
-            </button>
-            <div class="collapse" id="operations-collapse">
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                <li><a href="/traslado" class="link-dark rounded">Traslados</a></li>
-                <li><a href="/incidencia" class="link-dark rounded">Incidencias</a></li>
-              </ul>
-            </div>
-          </li>
-          <li class="mb-3">
-            <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#organization-collapse" aria-expanded="false">
-              <i class="fas fa-sitemap me-2"></i> Organización
-            </button>
-            <div class="collapse" id="organization-collapse">
-              <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                <li><a href="/Unidad" class="link-dark rounded">Unidades</a></li>
-              </ul>
-            </div>
-          </li>
-        </ul>
-      </div>
-
-
+        <div class="flex-shrink-0 p-3 bg-light sidebar" style="width: 260px;">
+            <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
+                <span class="fs-5 fw-semibold">Gestor de inventario</span>
+            </a>
+            <ul class="list-unstyled ps-0">
+                <li class="mb-4"> <!-- Aumentar el margen inferior -->
+                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+                        <i class="bi bi-tools me-2"></i> Equipos
+                    </button>
+                    <div class="collapse" id="home-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2"><a href="/equipo" class="link-dark rounded">Equipos</a></li>
+                            <li class="mb-2"><a href="/marca_equipo" class="link-dark rounded">Marcas de Equipos</a></li>
+                            <li class="mb-2"><a href="/modelo_equipo" class="link-dark rounded">Modelos de Equipos</a></li>
+                            <li class="mb-2"><a href="/tipo_equipo" class="link-dark rounded">Tipos de Equipos</a></li>
+                            <li class="mb-2"><a href="/estado_equipo" class="link-dark rounded">Estado de Equipos</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="mb-4"> <!-- Aumentar el margen inferior -->
+                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+                        <i class="bi bi-person-lines-fill me-2"></i> Gestión de RR.HH
+                    </button>
+                    <div class="collapse" id="dashboard-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2"><a href="/funcionario" class="link-dark rounded">Funcionarios</a></li>
+                            <li class="mb-2"><a href="/asignacion" class="link-dark rounded">Asignaciones</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="mb-4"> <!-- Aumentar el margen inferior -->
+                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+                        <i class="bi bi-truck me-2"></i> Gestión de Proveedores
+                    </button>
+                    <div class="collapse" id="orders-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2"><a href="/proveedor" class="link-dark rounded">Proveedores</a></ li>
+                            <li class="mb-2"><a href="/orden_compra" class="link-dark rounded">Orden de compra</a></li>
+                            <li class="mb-2"><a href="/tipo_adquisicion" class="link-dark rounded">Tipo de adquisición</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="mb-4"> <!-- Aumentar el margen inferior -->
+                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#operations-collapse" aria-expanded="false">
+                        <i class="bi bi-gear-fill me-2"></i> Operaciones
+                    </button>
+                    <div class="collapse" id="operations-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2"><a href="/traslado" class="link-dark rounded">Traslados</a></li>
+                            <li class="mb-2"><a href="/incidencia" class="link-dark rounded">Incidencias</a></li>
+                        </ul>
+                    </div>
+                </li>
+                <li class="mb-4"> <!-- Aumentar el margen inferior -->
+                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#organization-collapse" aria-expanded="false">
+                        <i class="bi bi-sitemap me-2"></i> Organización
+                    </button>
+                    <div class="collapse" id="organization-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2"><a href="/Unidad" class="link-dark rounded">Unidades</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
 
         <div class="main">
             <div class="dashboard-navbar">
                 <form action="/buscar" method="GET" style="position: absolute; top: 20px; left: 38%;">
-                  <div class="nav-search">
-                    <input id="search-input" name="busqueda" type="text" class="search-query" placeholder="Buscar Funcionarios">
-                    <button class="btn" type="submit">Search</button>
-                  </div>
+                    <div class="nav-search">
+                        <input id="search-input" name="busqueda" type="text" class="search-query" placeholder="Buscar Funcionarios">
+                        <button class="btn" type="submit">Search</button>
+                    </div>
                     <script>
-                      // Array de ejemplos
-                      const placeholders = [
-                        "Buscar N° de serie",
-                        "Buscar Codigos de inventario",
-                        "Buscar Equipos",
-                        "Buscar unidades",
-                        "Buscar incidencias"
-                      ];
-                    
-                      // Referencia al input
-                      const searchInput = document.getElementById("search-input");
-                    
-                      // Índice inicial
-                      let index = 0;
-                    
-                      // Función para rotar el placeholder
-                      function rotatePlaceholder() {
-                        searchInput.placeholder = placeholders[index];
-                        index = (index + 1) % placeholders.length; // Mover al siguiente, reiniciar si llega al final
-                      }
-                    
-                      // Intervalo de 1 segundo
-                      setInterval(rotatePlaceholder, 2000);
-                    </script>
+                        // Array de ejemplos
+                        const placeholders = [
+                            "Buscar N° de serie",
+                            "Buscar Codigos de inventario",
+                            "Buscar Equipos",
+                            "Buscar unidades",
+                            "Buscar incidencias"
+                        ];
 
+                        // Referencia al input
+                        const searchInput = document.getElementById("search-input");
+
+                        // Índice inicial
+                        let index = 0;
+
+                        // Función para rotar el placeholder
+                        function rotatePlaceholder() {
+                            searchInput.placeholder = placeholders[index];
+                            index = (index + 1) % placeholders.length; // Mover al siguiente, reiniciar si llega al final
+                        }
+
+                        // Intervalo de 1 segundo
+                        setInterval(rotatePlaceholder, 2000);
+                    </script>
                 </form>
                 <div class="navbar-content">
                     <ul class="main-nav">
@@ -137,9 +136,9 @@
                                 <img src="static/img/account.png" alt="Profile" class="avatar">
                             </a>
                             <div class="user-link-dropdown">
-                              {% if privilegio == 1%}
-                              <a href="/registrar">Administrar Usuarios</a>
-                              {% endif %}
+                                {% if privilegio == 1 %}
+                                <a href="/registrar">Administrar Usuarios</a>
+                                {% endif %}
                                 <a href="/ingresar" class="card">{{session['user']}}</a>
                                 <a href="/desloguear" class="card">Desloguear</a>
                             </div>
@@ -152,30 +151,30 @@
                 {% endblock %}
             </div>
         </div>
-
     </div>
+
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.min.js"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     {% include 'advertencia_eliminar.html' %}
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script> 
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 </body>
 
 <footer>
-  <div class="footer-wrap">
-      <div class="copyright-text">
-          <ul>
-              <li>
-                  <p>© Copyright 2024 by <strong>JUNJI</strong></p>
-              </li>
-              <li>version: 1.0</li>
-          </ul>
-      </div>
-      <ul class="social-icons">
-          <li><a href="https://www.junji.cl/">Pagina web</a></li>
-      </ul>
-  </div>
+    <div class="footer-wrap">
+        <div class="copyright-text">
+            <ul>
+                <li>
+                    <p>© Copyright 2024 by <strong>JUNJI</strong></p>
+                </li>
+                <li>version: 1.0</li>
+ </ul>
+        </div>
+        <ul class="social-icons">
+            <li><a href="https://www.junji.cl/">Pagina web</a></li>
+        </ul>
+    </div>
 </footer>
 
 </html>

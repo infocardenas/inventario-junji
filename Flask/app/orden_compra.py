@@ -134,63 +134,90 @@ def edit_ordenc(id):
         return redirect(url_for('orden_compra.ordenCompra'))
     
 #actualizar
-@orden_compra.route('/update_ordenc/<id>', methods = ['POST'])
+@orden_compra.route('/update_ordenc/<id>', methods=['POST'])
 @administrador_requerido
 def update_ordenc(id):
     if request.method == 'POST':
-        fecha_compra_ordenc = request.form['fecha_compra_ordenc'],
-        fecha_fin_ordenc = request.form['fecha_fin_ordenc'],
-        data ={
-        'id_orden_compra' : request.form['id_orden_compra'],
-        'nombre_ordenc' : request.form['nombre_ordenc'],
-        'nombre_tipo_adquisicion_ordenc' : request.form['nombre_tipo_adquisicion_ordenc'],
-        'nombre_proveedor_ordenc' : request.form['nombre_proveedor_ordenc'],
-        }
-
-        orden_compra_schema = {
-            'id_orden_compra': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 -]*$'  # Permitir solo letras, números y espacios
-            },
-            'nombre_ordenc': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
-            },
-            'nombre_tipo_adquisicion_ordenc': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
-            },
-            'nombre_proveedor_ordenc': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
-            }
-        }
-
-        v = Validator(orden_compra_schema)
-        if not v.validate(data):
-            flash("Caracteres no permitidos")
-            return redirect(url_for('orden_compra.ordenCompra'))
-
-
+        # Obtener los datos del formulario
         try:
+            fecha_compra_ordenc = request.form['fecha_compra_ordenc']
+            fecha_fin_ordenc = request.form['fecha_fin_ordenc']
+            data = {
+                'id_orden_compra': request.form['id_orden_compra'],
+                'nombre_ordenc': request.form['nombre_ordenc'],
+                'nombre_tipo_adquisicion_ordenc': request.form['nombre_tipo_adquisicion_ordenc'],
+                'nombre_proveedor_ordenc': request.form['nombre_proveedor_ordenc'],
+            }
+
+            # Esquema para validar los datos
+            orden_compra_schema = {
+                'id_orden_compra': {
+                    'type': 'string',
+                    'regex': '^[a-zA-Z0-9 -]*$'  # Permitir solo letras, números y espacios
+                },
+                'nombre_ordenc': {
+                    'type': 'string',
+                    'regex': '^[a-zA-Z0-9 ]*$'  # Permitir solo letras, números y espacios
+                },
+                'nombre_tipo_adquisicion_ordenc': {
+                    'type': 'string',
+                    'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+                },
+                'nombre_proveedor_ordenc': {
+                    'type': 'string',
+                    'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+                }
+            }
+
+            # Validar los datos usando el esquema
+            v = Validator(orden_compra_schema)
+            if not v.validate(data):
+                # Depuración de errores de validación
+                flash(f"Errores en los datos proporcionados: {v.errors}")
+                return redirect(url_for('orden_compra.ordenCompra'))
+
+            # Depuración de datos validados
+            print(f"Datos validados para la actualización: {data}")
+            print(f"Fecha de compra: {fecha_compra_ordenc}, Fecha final: {fecha_fin_ordenc}")
+
+            # Ejecutar la actualización en la base de datos
             cur = mysql.connection.cursor()
             cur.execute('''
             UPDATE orden_compra 
             SET idOrden_compra = %s,
                 nombreOrden_compra = %s,
                 fechacompraOrden_compra = %s,
-                fechafin_ORDEN_COMPRA= %s,
+                fechafin_ORDEN_COMPRA = %s,
                 idProveedor = %s,
                 idTipo_adquisicion = %s
             WHERE idOrden_compra = %s
-            ''', (data['nombre_ordenc'],data['nombre_tipo_adquisicion_ordenc'], data['nombre_proveedor_ordenc'],fecha_compra_ordenc, fecha_fin_ordenc, id))
+            ''', (
+                data['id_orden_compra'], 
+                data['nombre_ordenc'], 
+                fecha_compra_ordenc, 
+                fecha_fin_ordenc, 
+                data['nombre_proveedor_ordenc'], 
+                data['nombre_tipo_adquisicion_ordenc'], 
+                id
+            ))
             mysql.connection.commit()
+
+            # Confirmar éxito
             flash('Orden de compra actualizada correctamente')
             return redirect(url_for('orden_compra.ordenCompra'))
-        except Exception as e:
-            #flash(e.args[1])
-            flash("Error al crear")
+
+        except KeyError as key_error:
+            # Depuración de error por falta de clave
+            print(f"Faltan datos en el formulario: {key_error}")
+            flash(f"Faltan datos obligatorios: {key_error}")
             return redirect(url_for('orden_compra.ordenCompra'))
+
+        except Exception as e:
+            # Depuración de errores generales
+            print(f"Error durante la actualización: {e}")
+            flash(f"Error al actualizar la orden de compra: {str(e)}")
+            return redirect(url_for('orden_compra.ordenCompra'))
+
         
 #eliminar    
 @orden_compra.route('/delete_ordenc/<id>', methods = ['POST', 'GET'])
