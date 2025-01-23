@@ -16,6 +16,20 @@ function limpiarError(inputField) {
   inputField.css("border", ""); // Quitar el borde rojo
 }
 
+// Limpia los valores de todos los inputs, selects y textareas dentro del modal
+function limpiarInputsEnModal(modal) {
+  $(modal).find("input, select, textarea").each(function () {
+    const element = $(this);
+
+    // Reinicia el valor de los campos
+    if (element.is("input") || element.is("textarea")) {
+      element.val(""); // Limpia el contenido de inputs y textareas
+    } else if (element.is("select")) {
+      element.prop("selectedIndex", 0); // Resetea el select a la primera opción
+    }
+  });
+}
+
 function limpiarErroresEnModal(modal) {
   // Recorre todos los elementos del modal que puedan tener errores
   $(modal).find(".text-error-message").each(function () {
@@ -30,6 +44,7 @@ $(document).ready(function () {
     const modal = this;
     setTimeout(function () {
       limpiarErroresEnModal(modal);
+      limpiarInputsEnModal(modal);
     }, 1000);
   });
 });
