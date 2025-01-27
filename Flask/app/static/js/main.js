@@ -1,3 +1,6 @@
+function navigateTo(url) {
+  window.location.href = url;
+}
 
 function mostrarError(inputField, mensaje) {
   const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
@@ -11,6 +14,20 @@ function limpiarError(inputField) {
 
   errorMessage.hide(); // Ocultar el mensaje de error
   inputField.css("border", ""); // Quitar el borde rojo
+}
+
+// Limpia los valores de todos los inputs, selects y textareas dentro del modal
+function limpiarInputsEnModal(modal) {
+  $(modal).find("input, select, textarea").each(function () {
+    const element = $(this);
+
+    // Reinicia el valor de los campos
+    if (element.is("input") || element.is("textarea")) {
+      element.val(""); // Limpia el contenido de inputs y textareas
+    } else if (element.is("select")) {
+      element.prop("selectedIndex", 0); // Resetea el select a la primera opción
+    }
+  });
 }
 
 function limpiarErroresEnModal(modal) {
@@ -27,6 +44,7 @@ $(document).ready(function () {
     const modal = this;
     setTimeout(function () {
       limpiarErroresEnModal(modal);
+      limpiarInputsEnModal(modal);
     }, 1000);
   });
 });
@@ -538,13 +556,13 @@ $(document).ready(function () {
 
 $(document).ready(function () {
   function validarSoloLetras(inputField) {
-    const regex = /^[a-zA-Z\s]*$/; // Permitir solo letras y espacios
+    const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     const input = inputField.val();
     const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
 
     if (!regex.test(input)) {
-      inputField.val(input.replace(/[^a-zA-Z\s]/g, ""));
-      errorMessage.text("Solo se permiten letras y espacios").show();
+      inputField.val(input.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""));
+      errorMessage.text("Solo se permiten letras, tildes y espacios").show();
     } else {
       errorMessage.hide();
     }

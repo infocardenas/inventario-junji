@@ -6,11 +6,9 @@
 <!-- Fila para botón y barra de búsqueda -->
 <div>
     <!-- Barra de búsqueda -->
-    <div style="display: flex; justify-content: center; margin-bottom: 10px;">
-        <form action="/buscar_funcionario" method="POST">
-            <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador"
-                onkeyup="busqueda('myTableBody')" />
-        </form>
+    <div style="display: flex; justify-content: center;">
+        <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador"
+            onkeyup="busqueda('myTableBody')" />
     </div>
     <!-- Botón para abrir el modal -->
     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFuncionarioModal">
@@ -52,12 +50,12 @@
                     <!-- Correo electrónico -->
                     <div class="mb-3">
                         <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <label for="add_correo_funcionario" class="form-label" style="flex: 2;">Correo electrónico<span style="color: red; margin-left: 5px">*</span></label>
-                            <label for="add_correo_dominio" class="form-label" style="flex: 1; text-align: left;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
+                            <label for="add_correo_funcionario" class="form-label" style="flex: 3;">Correo electrónico<span style="color: red; margin-left: 5px">*</span></label>
+                            <label for="add_correo_dominio" class="form-label" style="flex: 2; text-align: left; margin-left: 5%;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 0 10px">
                             <input type="text" class="form-control campo-obligatorio correo-input-funcionario" id="add_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
-                            <select class="form-control correo-dominio-funcionario" id="add_correo_dominio" name="correo_dominio" style="flex: 1;">
+                            <select class="form-select correo-dominio-funcionario" id="add_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
@@ -69,7 +67,7 @@
                     <!-- Cargo del funcionario -->
                     <div class="mb-3">
                         <label for="cargo_funcionario" class="form-label">Cargo<span style="color: red; margin-left: 5px">*</span></label>
-                        <select class="form-control campo-obligatorio" id="cargo_funcionario" name="cargo_funcionario">
+                        <select class="form-select campo-obligatorio" id="cargo_funcionario" name="cargo_funcionario">
                             <option value="">Seleccione un cargo</option>
                             <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
                             <option value="AUXILIAR">AUXILIAR</option>
@@ -82,7 +80,7 @@
                     <!-- Unidad -->
                     <div class="mb-3">
                         <label for="codigo_Unidad" class="form-label">Unidad<span style="color: red; margin-left: 5px">*</span></label>
-                        <select class="form-control campo-obligatorio" id="codigo_Unidad" name="codigo_Unidad">
+                        <select class="form-select campo-obligatorio" id="codigo_Unidad" name="codigo_Unidad">
                             <option value="">Seleccione una unidad</option>
                             {% for ubi in Unidad %}
                             <option value="{{ ubi.idUnidad }}">{{ ubi.nombreUnidad }}</option>
@@ -142,7 +140,7 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <input type="text" class="form-control campo-obligatorio correo-input-funcionario" id="edit_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
-                            <select class="form-control correo-dominio-funcionario" id="edit_correo_dominio" name="correo_dominio" style="flex: 1;">
+                            <select class="form-select correo-dominio-funcionario" id="edit_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
@@ -154,7 +152,7 @@
                     <!-- Cargo del funcionario -->
                     <div class="mb-3">
                         <label for="edit_cargo_funcionario" class="form-label">Cargo<span style="color: red; margin-left: 5px">*</span></label>
-                        <select class="form-control campo-obligatorio" id="edit_cargo_funcionario" name="cargo_funcionario">
+                        <select class="form-select campo-obligatorio" id="edit_cargo_funcionario" name="cargo_funcionario">
                             <option value="">Seleccione un cargo</option>
                             <option value="ADMINISTRATIVO">ADMINISTRATIVO</option>
                             <option value="AUXILIAR">AUXILIAR</option>
@@ -167,7 +165,7 @@
                     <!-- Unidad -->
                     <div class="mb-3">
                         <label for="edit_codigo_Unidad" class="form-label">Unidad<span style="color: red; margin-left: 5px">*</span></label>
-                        <select class="form-control campo-obligatorio" id="edit_codigo_Unidad" name="codigo_Unidad">
+                        <select class="form-select campo-obligatorio" id="edit_codigo_Unidad" name="codigo_Unidad">
                             <option value="">Seleccione una unidad</option>
                             {% for ubi in Unidad %}
                             <option value="{{ ubi.idUnidad }}">{{ ubi.nombreUnidad }}</option>

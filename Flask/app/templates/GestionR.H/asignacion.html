@@ -1,117 +1,114 @@
 {% extends "layout.html" %}
 {% block body %}
 {% from 'funciones_macro.html' import paginacion %}
-<div class="row">
 
-    <div class="col-md-12">
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        {% for message in messages %}
-
-        <div class="custom-alert" role="alert">
-            {{ message }}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-
-        {% endfor %}
-        {% endif %}
-        {% endwith %}
-        {#
-        En el else existe un boton que al presionarse la variable agreagar pasa a verdadero
-        y se muestra el formulario para agregar un item.
-        #}
-        <a href="/add_asignacion" class="nav-button">Crear Asignación</a>
-
-
-        <h2>Asignaciones</h2>
-            <div style="margin: auto; padding: 0px; width:0px; background:black; text-align:center">
-                <div style="display:flex;">
-                    <form action="/buscar_asignacion" method="POST">
-                        <input name="palabra" type="text" class="search-box" placeholder="Buscar asigancion..." id="buscador"
-                            onkeyup="busqueda('myTableBody')" />
-                    </form>
-                </div>
-            
-            </div>
-            <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
-            <div style="overflow-x:auto;">
-                <table id="posts">
-                    <thead>
-                        <tr>
-                            <td onclick="sortTable(0)">Fecha Inicio</td>
-                            <td onclick="sortTable(1)">Observación</td>
-                            <td>Actas</td>
-                            <td onclick="sortTable(3)">NombreFuncionario</td>
-                            <td onclick="sortTable(4)">FechaDevolucion</td>
-                            <td>Acciones</td>
-                        </tr>
-                    </thead>
-                    <tbody id="myTableBody">
-                        <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
-                        {% for asig in asignacion %}
-                        <tr>
-                            <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
-                            <td>{{asig.fecha_inicioAsignacion}}</td>
-                            <td>{{asig.observacionAsignacion}}</td>
-                            <td>
-                                <div class="dropdown">
-                                    <button class="options-button">Asignaciones</button>
-                                    <div class="dropdown-options">
-                                        <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}"
-                                            class="info-button desplegable-button">Asignación</a>
-                                        <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}" 
-                                        class="success-button desplegable-button">
-                                            Firmar</a>
-                                    </div>
-                                </div>
-                                {% if asig.ActivoAsignacion != 1 %}
-                                <div class="dropdown">
-                                    <button class="options-button">Devoluciones</button>
-                                    <div class="dropdown-options">
-                                        <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}"
-                                            class="info-button desplegable-button">Devolución</a>
-                                        <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver" 
-                                            class="success-button desplegable-button">
-                                            Firmar</a>
-                                    </div>
-                                </div>
-                                {% else %}
-                                <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}"
-                                    class="success-button">Devolver</a>
-                                {% endif %}
-                            </td>
-                            <td class="toCheck">{{asig.nombreFuncionario}}</td>
-                            <td>
-                                {% if asig.fechaDevolucion == None%}
-                                Sin Devolver
-                                {% else %}
-                                {{asig.fechaDevolucion}}
-                                {% endif %}
-                            </td>
-                            <td>
-                                <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                            {# El boton de editar no se ocupa porque el acta tendria que generarse denuevo de todos modos#}
-                            {#   <a href="/asignacion/edit_asignacion/{{ asig.idAsignacion }}"
-                                    class="success-button">Editar</a>
-                            #}
-
-                                <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                                <a href="/delete_asignacion/{{asig.idAsignacion}}" class="delete-button">Eliminar</a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                        <!-- Se termina la iteracion for -->
-                    </tbody>
-                </table>
-            </div>
+<h2>Asignaciones</h2>
+<!-- Fila para botón y barra de búsqueda -->
+<div>
+    <!-- Barra de búsqueda -->
+    <div style="display:flex; justify-content:center;">
+        <input name="palabra" type="text" class="search-box" placeholder="Buscar asignación..." id="buscador" onkeyup="busqueda('myTableBody')" />
     </div>
+    <!-- Botón para redirigir a agregar asignación -->
+    <button type="button" onclick="navigateTo('/add_asignacion')" class="btn btn-primary">
+        Agregar asignación
+    </button>
 </div>
-            
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
-    <script src="../static/js/main.js"></script>
-            {{ paginacion("asignacion", page, lastpage) }}
+<!-- Tabla de asignaciones -->
+<div style="overflow-x:auto;">
+    <table id="posts">
+        <!-- Encabezado de la tabla -->
+        <thead>
+            <tr>
+                <td onclick="sortTable(0)">Funcionario</td>
+                <td onclick="sortTable(1)">Tipo de equipo</td>
+                <td onclick="sortTable(2)">Fecha de asignación</td>
+                <td onclick="sortTable(3)">Fecha de devolución</td>
+                <td>Actas</td>
+                <td>Acciones</td>
+            </tr>
+        </thead>
+        <!-- Contenido de la tabla -->
+        <tbody id="myTableBody">
+            {% for asig in asignacion %}
+            <tr>
+                <!-- Nombre del funcionario -->
+                <td class="toCheck">{{asig.nombreFuncionario}}</td>
+                
+                <!-- Tipo de equipo. Si no tiene asignado un equipo coloca un '-' -->
+                <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
 
-            {% endblock %}
+                <!-- Fecha de asignación del equipo -->
+                <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
+
+                <!-- Fecha de devolución del equipo. Si no se ha devuelto coloca un 'Sin devolver' -->
+                <td class="toCheck">{{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}</td>
+
+                <!-- Botones de actas -->
+                <td>
+                    <div class="dropdown">
+                        <button class="options-button">Asignaciones</button>
+                        <div class="dropdown-options">
+                            <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}"
+                                class="info-button desplegable-button">Asignación</a>
+                            <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}"
+                                class="success-button desplegable-button">Firmar</a>
+                        </div>
+                    </div>
+
+                    {% if asig.ActivoAsignacion != 1 %}
+                    <!-- Si la asignación no está activa, se muestran opciones para devolución -->
+                    <div class="dropdown">
+                        <button class="options-button">Devoluciones</button>
+                        <div class="dropdown-options">
+                            <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}"
+                                class="info-button desplegable-button">Devolución</a>
+                            <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver"
+                                class="success-button desplegable-button">Firmar</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <!-- Si la asignación está activa, muestra el botón para devolverla -->
+                    <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}"
+                        class="success-button">Devolver</a>
+                    {% endif %}
+                </td>
+                <!-- Fin botones de actas -->
+
+                <!-- Acciones -->
+                <td>
+                    <a href="#" class="view-details" data-title="Asignación #{{ asig.idAsignacion }}" data-info='{{ {
+                        "funcionario": {
+                            "rut": asig.rutFuncionario,
+                            "nombre": asig.nombreFuncionario,
+                            "cargo": asig.cargoFuncionario
+                        },
+                        "asignacion": {
+                            "id": asig.idAsignacion,
+                            "fecha_inicio": asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') if asig.fecha_inicioAsignacion else "N/A",
+                            "fecha_devolucion": asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else "Sin devolver",
+                            "observacion": asig.observacionAsignacion
+                        },
+                        "equipo": {
+                            "tipo_equipo": asig.nombreTipo_equipo if asig.nombreTipo_equipo else "No asignado",
+                            "modelo_equipo": asig.nombreModeloequipo if asig.nombreModeloequipo else "No asignado",
+                            "marca_equipo": asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado"
+                        }
+                    } | tojson | safe }}'>
+                        Detalles
+                    </a>
+                    <a href="/delete_asignacion/{{asig.idAsignacion}}" class="delete-button">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% include 'visualizar.modal.html' %}
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="../static/js/asignaciones.controller.js"></script>
+{{ paginacion("asignacion", page, lastpage) }}
+{% endblock %}

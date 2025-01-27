@@ -36,16 +36,30 @@ def Asignacion(page=1):
         a.idAsignacion,
         a.fecha_inicioAsignacion,
         a.observacionAsignacion,
-        a.rutaactaAsignacion,
-        f.nombreFuncionario,
         a.fechaDevolucion,
-        a.ActivoAsignacion
+        a.ActivoAsignacion,
+        f.rutFuncionario,
+        f.nombreFuncionario,
+        f.cargoFuncionario,
+        me.nombreModeloequipo,
+        mae.nombreMarcaEquipo,
+        te.nombreTipo_equipo
     FROM asignacion a
     INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+    LEFT JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+    LEFT JOIN equipo e ON e.idEquipo = ea.idEquipo
+    LEFT JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+    LEFT JOIN tipo_equipo te ON me.idModelo_Equipo = te.idTipo_equipo
+    LEFT JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
+    LEFT JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
     LIMIT %s OFFSET %s
         """, (perpage, offset)
     )
     data = cur.fetchall()
+    for row in data:
+        row['fecha_inicio'] = row['fecha_inicioAsignacion'].strftime('%d-%m-%Y') if row['fecha_inicioAsignacion'] else 'N/A'
+        row['fecha_devolucion'] = row['fechaDevolucion'].strftime('%d-%m-%Y') if row['fechaDevolucion'] else 'Sin devolver'
+
     cur.execute(
         """ SELECT 
             f.rutFuncionario,
