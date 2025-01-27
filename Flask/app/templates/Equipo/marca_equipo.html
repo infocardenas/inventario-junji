@@ -11,61 +11,68 @@
     Agregar Marca
 </button>
 
-<!-- Modal -->
-<div class="modal fade" id="addMarcaModal" tabindex="-1" aria-labelledby="addMarcaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="addMarcaModalLabel">Agregar Marca</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form id="form_addMarcaModal" action="/add_marca_equipo" method="POST">
-                    <div class="mb-3">
-                        <label for="nombre_marca_equipo" class="form-label">Nombre Marca</label>
-                        <input 
-                            type="text" 
-                            class="form-control campo-obligatorio" 
-                            id="nombre_marca_equipo" 
-                            name="nombre_marca_equipo" 
-                            placeholder="Ingrese una Marca"
-                        >
-                        <div class="text-error-message"></div>
+        <!-- Modal -->
+        <div class="modal fade" id="addMarcaModal" tabindex="-1" aria-labelledby="addMarcaModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addMarcaModalLabel">Agregar Marca</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="submit" form="form_addMarcaModal" class="btn btn-primary">Guardar</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-
-
-        <!-- Botón para mostrar el formulario -->
-
-        <!-- Formulario -->
-        <div class="card card-body" id="formulario" style="display: none;">
-            <form id="marcaEquipoForm" action="/add_marca_equipo" method="POST" class="mi-formulario">
-                <div class="form-group">
-                    <label for="nombre_marca">Nombre Marca:</label>
-                    <input
-                        class="validatable-input"
-                        type="text"
-                        name="nombre_marca_equipo"
-                        id="nombre_marca_equipo"
-                        placeholder="Nombre marca"
-                        maxlength="45"
-                        required
-                    >
+                    <div class="modal-body">
+                        <form id="form_addMarcaModal" action="/add_marca_equipo" method="POST">
+                            <div class="mb-3">
+                                <label for="nombre_marca_equipo" class="form-label">Nombre Marca</label>
+                                <input 
+                                    type="text" 
+                                    class="form-control campo-obligatorio" 
+                                    id="nombre_marca_equipo" 
+                                    name="nombre_marca_equipo" 
+                                    placeholder="Ingrese una Marca"
+                                >
+                                <div class="text-error-message"></div>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" form="form_addMarcaModal" class="btn btn-primary">Guardar</button>
+                    </div>
                 </div>
-                <button type="submit" class="agregar-button">Agregar</button>
-            </form>
+            </div>
+        </div>
+
+        <!-- Modal para editar marcas -->
+        <div class="modal fade" id="editMarcaModal" tabindex="-1" aria-labelledby="editMarcaModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editMarcaModalLabel">Editar Marca</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <form id="editMarcaForm" method="POST" action="/update_marca_equipo/{{marca_equipo.idMarca_Equipo}}">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="edit_nombreMarca" class="form-label">Nombre Marca</label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="edit_nombreMarca" 
+                                    name="nombre_marca_equipo" 
+                                    placeholder="Ingresa el nombre de la marca" 
+                                    required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>                    
+                </div>
+            </div>
         </div>
     </div>
-</div>
+
 
 <h2>Marca Equipos</h2>
 
@@ -81,7 +88,14 @@
         <tr>
             <td>{{ marcae.nombreMarcaEquipo }}</td>
             <td>
-                <a href="/marca_equipo/edit_marca_equipo/{{ marcae.idMarca_Equipo }}" class="success-button">Editar</a>
+                <button 
+                class="btn btn-primary edit-button"
+                data-bs-toggle="modal"
+                data-bs-target="#editMarcaModal"
+                data-id="{{ marcae.idMarca_Equipo }}"
+                data-nombre="{{ marcae.nombreMarcaEquipo }}">
+                Editar
+                </button>
                 <a href="#"
                     class="delete-button btn btn-danger"
                     data-id="{{ marcae.idMarca_Equipo }}"
@@ -102,30 +116,24 @@
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="../static/js/main.js"></script>
 <script>
-document.addEventListener("DOMContentLoaded", function () {
-    // Manejo del submit del formulario del modal
-    document.getElementById("form_addMarcaModal").addEventListener("submit", function (event) {
-        let formularioValido = true;
-
-        // Validar campos obligatorios
-        const campo = document.getElementById("nombre_marca_equipo");
-        const errorMessage = campo.nextElementSibling;
-
-        if (campo.value.trim() === "") {
-            errorMessage.textContent = "Este campo es obligatorio";
-            errorMessage.style.display = "block";
-            formularioValido = false;
-        } else {
-            errorMessage.style.display = "none";
-        }
-
-        // Si el formulario no es válido, prevenir el envío
-        if (!formularioValido) {
-            event.preventDefault();
-        }
+    document.addEventListener("DOMContentLoaded", function () {
+        const editMarcaForm = document.getElementById("editMarcaForm");
+        const editNombreMarca = document.getElementById("edit_nombreMarca");
+    
+        // Configurar el modal con datos dinámicos
+        document.querySelectorAll(".edit-button").forEach(button => {
+            button.addEventListener("click", function () {
+                const idMarca = this.dataset.id;
+                const nombreMarca = this.dataset.nombre;
+    
+                // Llenar el modal con los datos de la marca seleccionada
+                editNombreMarca.value = nombreMarca;
+    
+                // Configurar la acción del formulario con el ID dinámico
+                editMarcaForm.action = `/update_marca_equipo/${idMarca}`;
+            });
+        });
     });
-});
-
-</script>
-
+    </script>
+    
 {% endblock %}

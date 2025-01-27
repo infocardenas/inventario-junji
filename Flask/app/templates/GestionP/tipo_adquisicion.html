@@ -39,8 +39,8 @@
                             <div class="modal-body">
                                 <div class="mb-3">
                                     <label for="nombre_tipoa"> Tipo de Adquisición</label>
-                                    <input type="text" name="nombre_tipoa" placeholder="Nombre tipo adquisicion"
-                                        class="validatable-input form-control">
+                                    <input type="text" name="nombre_tipoa" id="nombre_tipoa" placeholder="Nombre tipo adquisicion"
+                                        class="form-control">
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -49,6 +49,30 @@
                             </div>
                         </form>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal para editar tipo de adquisición -->
+        <div class="modal fade" id="editTipoAdquisicionModal" tabindex="-1" aria-labelledby="editTipoAdquisicionModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editTipoAdquisicionModalLabel">Editar Tipo de Adquisición</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <form id="form_editTipoAdquisicionModal" action="" method="POST">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="edit_nombre_tipoa">Nombre Tipo de Adquisición</label>
+                                <input class="form-control" type="text" id="edit_nombre_tipoa" name="nombre_tipoa">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" form="form_editTipoAdquisicionModal" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -68,7 +92,15 @@
                     <tr>
                         <td>{{ta.nombreTipo_adquisicion}}</td>
                         <td>
-                            <a href="/edit_tipoa/{{ta.idTipo_adquisicion}}" class="success-button">Editar</a>
+                            <button type="button" 
+                            class="btn btn-warning" 
+                            data-bs-toggle="modal" 
+                            data-bs-target="#editTipoAdquisicionModal"
+                            data-id="{{ta.idTipo_adquisicion}}"
+                            data-nombre="{{ta.nombreTipo_adquisicion}}"
+                            >
+                                Editar
+                            </button>
                             <a href="/delete_tipoa/{{ta.idTipo_adquisicion}}" class="delete-button">Eliminar</a>
                         </td>
                     </tr>
@@ -83,5 +115,24 @@
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
         <script src="../static/js/main.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+    const editForm = document.getElementById("form_editTipoAdquisicionModal");
+
+    document.querySelectorAll(".btn-warning").forEach(button => {
+        button.addEventListener("click", function () {
+            const nombre = this.dataset.nombre;
+            const id = this.dataset.id; // Captura el id del botón
+
+            // Llenar el formulario con los datos
+            document.getElementById("edit_nombre_tipoa").value = nombre;
+
+            // Actualizar la acción del formulario
+            editForm.action = `/update_tipoa/${id}`;
+        });
+    });
+});
+</script>
         {{ paginacion("tipo_adquisicion", page, lastpage) }}
         {% endblock %}
