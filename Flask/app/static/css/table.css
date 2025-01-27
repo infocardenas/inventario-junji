@@ -1,0 +1,113 @@
+/* Estilo para el encabezado de la tabla */
+thead {
+    background-color: #59ae87;
+    color: white;
+    height: 1000px;
+}
+
+/* Estilo global para todos los encabezados de tabla */
+th {
+    cursor: pointer;
+    text-align: center;
+    user-select: none;
+    padding: 10px;
+    height: 45px;
+}
+tr{
+    text-align: center;
+}
+
+/* Opcional: Agregar un efecto visual al pasar el mouse */
+th:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+    /* Fondo gris claro al pasar el mouse */
+    transition: background-color 0.3s ease;
+    /* Suavizar el efecto */
+}
+
+
+/* Ancho fijo para la columna de los checkboxes */
+.checkbox-column {
+    width: 100px;
+    text-align: center;
+}
+
+/* Estilo base para las checkboxes */
+.checkbox-table {
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #46a071;
+    border-radius: 3px;
+    cursor: pointer;
+    position: relative;
+    background-color: #ffffff;
+}
+
+/* Estado marcado: cambia el fondo */
+.checkbox-table:checked {
+    background-color: #59ae87;
+    border-color: #46a071;
+}
+
+/* Estado marcado: agrega el tic */
+.checkbox-table:checked::before {
+    content: '✔';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Efecto hover (opcional) */
+.checkbox-table:hover {
+    border-color: #59ae87;
+    background-color: #e0f4e8;
+}
+
+/* Indicador de orden */
+.sort-icon {
+    font-size: 14px;
+    /* Tamaño visible */
+    margin-left: 5px;
+    /* Separación del texto */
+    color: white;
+    /* Asegúrate de que sea blanco */
+    display: inline-block;
+    /* Para alinearlo correctamente */
+    vertical-align: middle;
+    /* Asegura un buen centrado */
+}
+
+/* Contenedor para las flechas */
+.sort-icons {
+    font-size: 16›px;
+}
+
+/* Iconos inactivos (borde) */
+.bi-caret-up,
+.bi-caret-down {
+    color: white;
+    opacity: 0.5;
+}
+
+/* Iconos activos (relleno) */
+.bi-caret-up-fill,
+.bi-caret-down-fill {
+    color: white;
+    opacity: 1;
+    font-size: 18px;
+}
+
+/* Asegurar que las flechas no se desplacen al hacer clic */
+.sortable-column {
+    position: relative;
+}
+
+/* Ocultar íconos inactivos */
+.hidden {
+    display: none;
+}

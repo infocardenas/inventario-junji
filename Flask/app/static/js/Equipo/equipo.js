@@ -41,13 +41,17 @@ async function cargarTipos() {
 }
 
 async function cargarModelos() {
+  console.log("cargarModelos llamado");
+  const marcaId = document.getElementById("marcaSelect").value;
   const tipoId = document.getElementById("tipoSelect").value;
   const modeloSelect = document.getElementById("modeloSelect");
   modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
 
-  if (tipoId) {
-    const response = await fetch(`/get_modelos/${tipoId}`);
+  if (marcaId && tipoId) {
+    console.log(`Cargando modelos para marcaId: ${marcaId}, tipoId: ${tipoId}`); // Depuración
+    const response = await fetch(`/get_modelos/${marcaId}/${tipoId}`);
     const modelos = await response.json();
+    console.log("Modelos recibidos:", modelos);
 
     modelos.forEach((modelo) => {
       const option = document.createElement("option");
@@ -57,6 +61,8 @@ async function cargarModelos() {
     });
   }
 }
+
+
 
 function actualizarModeloSeleccionado() {
   const modeloSelect = document.getElementById("modeloSelect");

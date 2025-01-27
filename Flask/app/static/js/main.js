@@ -313,29 +313,6 @@ function mostrarTipo_equipo() {
     }
   }
 
-
-  /*
-  select = document.getElementById("marca_equipo")
-  idMarca = select.value;
-  console.log("mostarTipo_equipo" + idMarca)
-
-  //Obten todos los divs de la clase select_modelo
-  divs_select_para_marca = document.querySelectorAll('.select_modelo')
-  //parece que el objeto retornado es un dicionario por lo que un 
-  //for in no funciona pero las claves son numeros naturales + 0
-  //console.log(divs_select_para_marca)
-  //console.log(divs_select_para_marca[0])
-  
-  for(let i = 0; i < divs_select_para_marca.length; i++) {
-    div = divs_select_para_marca[i]
-    div.style.display = "none"
-  }
-  objective_div = document.getElementById(idMarca)
-  objective_div.style.display = "block"
-
-  boton = document.getElementById("enviar")
-  boton.style.display = "block"
-  */
 }
 //Envia el tipo a 
 function enviarTipo(valor) {
@@ -355,14 +332,6 @@ function enviarTipo(valor) {
 function abrir_cerrar_ojo(id_ojo, repetir) {
   ojo_contrasenna = document.getElementById(id_ojo)
   src = ojo_contrasenna.src
-  //console.log("src")
-  //console.log(src)
-  //relative_tmp = location.href.split("/")
-  //relative_path = relative_tmp[0] + "//" + relative_tmp[2]
-  //console.log("absURL")
-  //console.log(relative_path)
-  //console.log(document.URL)
-  //console.log(location.href)
   img_name = src.split("/")
   console.log("img_name")
   console.log(img_name)
@@ -387,15 +356,6 @@ function abrir_cerrar_ojo(id_ojo, repetir) {
 
 
 }
-//Envia el tipo a 
-//Hay una forma mas facil pero ya lo hice asi
-
-
-
-
-
-
-
 
 function enviarModelo(valor) {
   console.log("test")
@@ -645,7 +605,24 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-  function configureGenericModal(title, message, confirmUrl) {
+  // Función para mostrar un modal genérico con solo un botón de cerrar
+  window.MensajeGenericoModal = function (title, message) {
+    // Configurar el título y el mensaje
+    $("#genericModalLabel").text(title);
+    $("#genericModalMessage").text(message);
+    
+
+    // Quitar cualquier evento existente en el botón de confirmación y ocultarlo
+    $("#genericModalConfirmButton").hide();
+
+    // Mostrar el modal
+    $("#genericModal").modal("show");
+  };
+});
+
+$(document).ready(function () {
+  // Definir y exponer configureGenericModal globalmente
+  window.configureGenericModal = function (title, message, confirmUrl) {
     // Configurar el título y mensaje del modal
     $("#genericModalLabel").text(title);
     $("#genericModalMessage").text(message);
@@ -659,7 +636,7 @@ $(document).ready(function () {
     });
 
     $("#genericModal").modal("show");
-  }
+  };
 
   // Asignar eventos a los botones de eliminar
   $(".delete-button").on("click", function () {
@@ -670,6 +647,7 @@ $(document).ready(function () {
     configureGenericModal(title, message, confirmUrl);
   });
 });
+
 
 $(document).ready(function () {
   function calcularDigitoVerificador(rutSinFormato) {

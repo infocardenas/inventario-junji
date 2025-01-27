@@ -85,7 +85,7 @@ def add_marca_equipo():
             else:
                 flash("Error al registrar la marca", 'danger')
             return redirect(url_for('marca_equipo.marcaEquipo'))
-       
+
 #enviar datos a vista editar
 @marca_equipo.route('/marca_equipo/edit_marca_equipo/<id>', methods = ['POST', 'GET'])
 @administrador_requerido
@@ -142,19 +142,26 @@ def update_marca_equipo(id):
             return redirect(url_for('marca_equipo.marcaEquipo'))
 
 #eliminar    
-@marca_equipo.route('/marca_equipo/delete_marca_equipo/<id>', methods = ['POST', 'GET'])
+@marca_equipo.route('/marca_equipo/delete_marca_equipo/<ids>', methods = ['POST', 'GET'])
 @administrador_requerido
-def delete_marca_equipo(id):
+def delete_marca_equipo(ids):
     try:
+        # Dividir los IDs separados por comas
+        id_list = ids.split(',')
+        
+        # Crear una consulta SQL para eliminar múltiples IDs
         cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM marca_equipo WHERE idMarca_equipo = %s', (id,))
+        query = 'DELETE FROM marca_equipo WHERE idMarca_equipo IN (%s)' % ','.join(['%s'] * len(id_list))
+        cur.execute(query, id_list)
         mysql.connection.commit()
-        flash('Marca eliminada exitosamente', 'success')
+
+        flash('Marcas eliminadas exitosamente', 'success')
         return redirect(url_for('marca_equipo.marcaEquipo'))
     except Exception as e:
-        #flash(e.args[1])
-        flash("Error al eliminar la marca", 'danger')
+    # Capturar el error completo
+        error_message = f"Error al eliminar las marcas: {str(e)}"
+        flash(error_message, 'danger')  # Mostrar el error completo en el flash
+        print(error_message)  # Opcional: Imprimir el error en la consola del servidor para depuración
         return redirect(url_for('marca_equipo.marcaEquipo'))
-    
-    
+
 

@@ -100,9 +100,11 @@ def add_ordenc():
             flash("Orden de compra agregada correctamente")
             return redirect(url_for('orden_compra.ordenCompra'))
         except Exception as e:
-            #flash(e.args[1])
-            flash("Error al crear")
+            error_message = f"Error: {str(e)}"
+            print(error_message)  # Imprime el error en la consola
+            flash(error_message)
             return redirect(url_for('orden_compra.ordenCompra'))
+
 #Envias datos a formulario editar
 @orden_compra.route('/edit_ordenc/<id>', methods = ['POST', 'GET'])
 @administrador_requerido

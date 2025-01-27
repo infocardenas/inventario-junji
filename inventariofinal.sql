@@ -129,11 +129,13 @@ CREATE TABLE `tipo_equipo` (
 --
 
 CREATE TABLE `marca_tipo_equipo` (
+  `idMarcaTipo` int(11) NOT NULL AUTO_INCREMENT,
   `idMarca_Equipo` int(11) NOT NULL,
   `idTipo_equipo` int(11) NOT NULL,
-  PRIMARY KEY (`idMarca_Equipo`, `idTipo_equipo`),
-  CONSTRAINT `marca_tipo_equipo_ibfk_1` FOREIGN KEY (`idMarca_Equipo`) REFERENCES `marca_equipo` (`idMarca_Equipo`),
-  CONSTRAINT `marca_tipo_equipo_ibfk_2` FOREIGN KEY (`idTipo_equipo`) REFERENCES `tipo_equipo` (`idTipo_equipo`)
+  PRIMARY KEY (`idMarcaTipo`),
+  UNIQUE KEY `unique_marca_tipo` (`idMarca_Equipo`, `idTipo_equipo`),
+  CONSTRAINT `marca_tipo_equipo_ibfk_1` FOREIGN KEY (`idMarca_Equipo`) REFERENCES `marca_equipo` (`idMarca_Equipo`) ON DELETE CASCADE,
+  CONSTRAINT `marca_tipo_equipo_ibfk_2` FOREIGN KEY (`idTipo_equipo`) REFERENCES `tipo_equipo` (`idTipo_equipo`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -144,11 +146,9 @@ CREATE TABLE `marca_tipo_equipo` (
 CREATE TABLE `modelo_equipo` (
   `idModelo_Equipo` int(11) NOT NULL AUTO_INCREMENT,
   `nombreModeloequipo` varchar(45) UNIQUE,
-  `idTipo_Equipo` int(11) DEFAULT NULL,
-  `idMarca_Equipo` int(11) DEFAULT NULL,
+  `idMarca_Tipo_Equipo` int(11) NOT NULL, 
   PRIMARY KEY (`idModelo_Equipo`),
-  CONSTRAINT `modelo_equipo_ibfk_1` FOREIGN KEY (`idTipo_Equipo`) REFERENCES `tipo_equipo` (`idTipo_equipo`),
-  CONSTRAINT `modelo_equipo_ibfk_2` FOREIGN KEY (`idMarca_Equipo`) REFERENCES `marca_equipo` (`idMarca_Equipo`)
+  CONSTRAINT `modelo_equipo_FK_1` FOREIGN KEY (`idMarca_Tipo_Equipo`) REFERENCES `marca_tipo_equipo` (`idMarcaTipo`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -303,7 +303,8 @@ CREATE TABLE `devolucion` (
   `rutaactaDevolucion` varchar(45) DEFAULT NULL,
   `ActivoDevolucion` tinyint(4) DEFAULT NULL,
   `rutFuncionario` varchar(10) NOT NULL,
-  PRIMARY KEY (`idDevolucion`)
+  PRIMARY KEY (`idDevolucion`),
+  CONSTRAINT `fk_devolucion_funcionario` FOREIGN KEY (`rutFuncionario`) REFERENCES `funcionario` (`rutFuncionario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -348,7 +349,96 @@ CREATE TABLE `super_equipo` (
 --
 DROP TABLE IF EXISTS `super_equipo`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `super_equipo`  AS SELECT `e`.`idEquipo` AS `idEquipo`, `e`.`Cod_inventarioEquipo` AS `Cod_inventarioEquipo`, `e`.`Num_serieEquipo` AS `Num_serieEquipo`, `e`.`ObservacionEquipo` AS `ObservacionEquipo`, `e`.`codigoproveedor_equipo` AS `codigoproveedor_equipo`, `e`.`macEquipo` AS `macEquipo`, `e`.`imeiEquipo` AS `imeiEquipo`, `e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`, `te`.`idTipo_equipo` AS `idTipo_equipo`, `te`.`nombreTipo_equipo` AS `nombreTipo_equipo`, `ee`.`idEstado_equipo` AS `idEstado_equipo`, `ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`, `u`.`idUnidad` AS `idUnidad`, `u`.`nombreUnidad` AS `nombreUnidad`, `oc`.`idOrden_compra` AS `idOrden_compra`, `oc`.`nombreOrden_compra` AS `nombreOrden_compra`, `moe`.`idModelo_Equipo` AS `idModelo_equipo`, `moe`.`nombreModeloequipo` AS `nombreModeloequipo`, '' AS `nombreFuncionario`, '' AS `rutFuncionario` FROM (((((`equipo` `e` join `modelo_equipo` `moe` on(`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)) left join `tipo_equipo` `te` on(`te`.`idTipo_equipo` = `moe`.`idTipo_Equipo`)) join `estado_equipo` `ee` on(`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)) join `unidad` `u` on(`u`.`idUnidad` = `e`.`idUnidad`)) join `orden_compra` `oc` on(`oc`.`idOrden_compra` = `e`.`idOrden_compra`)) WHERE `ee`.`nombreEstado_equipo` not like 'EN USO'union select `e`.`idEquipo` AS `idEquipo`,`e`.`Cod_inventarioEquipo` AS `Cod_inventarioEquipo`,`e`.`Num_serieEquipo` AS `Num_serieEquipo`,`e`.`ObservacionEquipo` AS `ObservacionEquipo`,`e`.`codigoproveedor_equipo` AS `codigoproveedor_equipo`,`e`.`macEquipo` AS `macEquipo`,`e`.`imeiEquipo` AS `imeiEquipo`,`e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`,`te`.`idTipo_equipo` AS `idTipo_equipo`,`te`.`nombreTipo_equipo` AS `nombreTipo_equipo`,`ee`.`idEstado_equipo` AS `idEstado_equipo`,`ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`,`u`.`idUnidad` AS `idUnidad`,`u`.`nombreUnidad` AS `nombreUnidad`,`oc`.`idOrden_compra` AS `idOrden_compra`,`oc`.`nombreOrden_compra` AS `nombreOrden_compra`,`moe`.`idModelo_Equipo` AS `idModelo_equipo`,`moe`.`nombreModeloequipo` AS `nombreModeloequipo`,`f`.`nombreFuncionario` AS `nombreFuncionario`,`f`.`rutFuncionario` AS `rutFuncionario` from ((((((((`equipo` `e` join `modelo_equipo` `moe` on(`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)) left join `tipo_equipo` `te` on(`te`.`idTipo_equipo` = `moe`.`idTipo_Equipo`)) join `unidad` `u` on(`u`.`idUnidad` = `e`.`idUnidad`)) join `orden_compra` `oc` on(`oc`.`idOrden_compra` = `e`.`idOrden_compra`)) join `equipo_asignacion` `ea` on(`ea`.`idEquipo` = `e`.`idEquipo`)) join `estado_equipo` `ee` on(`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)) join `asignacion` `a` on(`a`.`idAsignacion` = `ea`.`idAsignacion`)) join `funcionario` `f` on(`f`.`rutFuncionario` = `a`.`rutFuncionario`)) where `ee`.`nombreEstado_equipo` like 'EN USO' and `a`.`ActivoAsignacion` = 1  ;
+
+CREATE ALGORITHM=UNDEFINED 
+DEFINER=`root`@`localhost` 
+SQL SECURITY DEFINER 
+VIEW `super_equipo` AS 
+SELECT 
+    `e`.`idEquipo` AS `idEquipo`, 
+    `e`.`Cod_inventarioEquipo` AS `Cod_inventarioEquipo`,
+    `e`.`Num_serieEquipo` AS `Num_serieEquipo`, 
+    `e`.`ObservacionEquipo` AS `ObservacionEquipo`, 
+    `e`.`codigoproveedor_equipo` AS `codigoproveedor_equipo`, 
+    `e`.`macEquipo` AS `macEquipo`, 
+    `e`.`imeiEquipo` AS `imeiEquipo`, 
+    `e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`, 
+    `te`.`idTipo_equipo` AS `idTipo_equipo`, 
+    `te`.`nombreTipo_equipo` AS `nombreTipo_equipo`,
+    `ee`.`idEstado_equipo` AS `idEstado_equipo`, 
+    `ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`, 
+    `u`.`idUnidad` AS `idUnidad`, 
+    `u`.`nombreUnidad` AS `nombreUnidad`, 
+    `oc`.`idOrden_compra` AS `idOrden_compra`, 
+    `oc`.`nombreOrden_compra` AS `nombreOrden_compra`, 
+    `moe`.`idModelo_Equipo` AS `idModelo_equipo`, 
+    `moe`.`nombreModeloequipo` AS `nombreModeloequipo`, 
+    '' AS `nombreFuncionario`, 
+    '' AS `rutFuncionario`
+FROM 
+    `equipo` `e`
+    JOIN `modelo_equipo` `moe` 
+        ON (`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)
+    JOIN `marca_tipo_equipo` `mte`
+        ON (`moe`.`idMarca_Tipo_Equipo` = `mte`.`idMarcaTipo`)
+    JOIN `tipo_equipo` `te`
+        ON (`mte`.`idTipo_equipo` = `te`.`idTipo_equipo`)
+    JOIN `estado_equipo` `ee` 
+        ON (`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)
+    JOIN `unidad` `u` 
+        ON (`u`.`idUnidad` = `e`.`idUnidad`)
+    JOIN `orden_compra` `oc` 
+        ON (`oc`.`idOrden_compra` = `e`.`idOrden_compra`)
+WHERE 
+    `ee`.`nombreEstado_equipo` NOT LIKE 'EN USO'
+
+UNION 
+
+SELECT 
+    `e`.`idEquipo` AS `idEquipo`, 
+    `e`.`Cod_inventarioEquipo` AS `Cod_inventarioEquipo`,
+    `e`.`Num_serieEquipo` AS `Num_serieEquipo`, 
+    `e`.`ObservacionEquipo` AS `ObservacionEquipo`, 
+    `e`.`codigoproveedor_equipo` AS `codigoproveedor_equipo`, 
+    `e`.`macEquipo` AS `macEquipo`, 
+    `e`.`imeiEquipo` AS `imeiEquipo`, 
+    `e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`, 
+    `te`.`idTipo_equipo` AS `idTipo_equipo`, 
+    `te`.`nombreTipo_equipo` AS `nombreTipo_equipo`,
+    `ee`.`idEstado_equipo` AS `idEstado_equipo`, 
+    `ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`, 
+    `u`.`idUnidad` AS `idUnidad`, 
+    `u`.`nombreUnidad` AS `nombreUnidad`, 
+    `oc`.`idOrden_compra` AS `idOrden_compra`, 
+    `oc`.`nombreOrden_compra` AS `nombreOrden_compra`, 
+    `moe`.`idModelo_Equipo` AS `idModelo_equipo`, 
+    `moe`.`nombreModeloequipo` AS `nombreModeloequipo`, 
+    `f`.`nombreFuncionario` AS `nombreFuncionario`, 
+    `f`.`rutFuncionario` AS `rutFuncionario`
+FROM 
+    `equipo` `e`
+    JOIN `modelo_equipo` `moe` 
+        ON (`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)
+    JOIN `marca_tipo_equipo` `mte`
+        ON (`moe`.`idMarca_Tipo_Equipo` = `mte`.`idMarcaTipo`)
+    JOIN `tipo_equipo` `te`
+        ON (`mte`.`idTipo_equipo` = `te`.`idTipo_equipo`)
+    JOIN `unidad` `u` 
+        ON (`u`.`idUnidad` = `e`.`idUnidad`)
+    JOIN `orden_compra` `oc` 
+        ON (`oc`.`idOrden_compra` = `e`.`idOrden_compra`)
+    JOIN `equipo_asignacion` `ea` 
+        ON (`ea`.`idEquipo` = `e`.`idEquipo`)
+    JOIN `estado_equipo` `ee` 
+        ON (`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)
+    JOIN `asignacion` `a` 
+        ON (`a`.`idAsignacion` = `ea`.`idAsignacion`)
+    JOIN `funcionario` `f` 
+        ON (`f`.`rutFuncionario` = `a`.`rutFuncionario`)
+WHERE 
+    `ee`.`nombreEstado_equipo` LIKE 'EN USO'
+    AND `a`.`ActivoAsignacion` = 1;
+
 
 --
 -- Volcado de datos para la tabla `usuario`

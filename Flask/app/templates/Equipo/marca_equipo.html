@@ -3,8 +3,12 @@
 {% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
-    <div class="col-md-5 offset-md-3">
+    <div>
 
+        <!-- Botón para abrir el modal -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMarcaModal">
+            Agregar Marca
+        </button>
 
 <!-- Botón para abrir el modal -->
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addMarcaModal">
@@ -23,13 +27,8 @@
                         <form id="form_addMarcaModal" action="/add_marca_equipo" method="POST">
                             <div class="mb-3">
                                 <label for="nombre_marca_equipo" class="form-label">Nombre Marca</label>
-                                <input 
-                                    type="text" 
-                                    class="form-control campo-obligatorio" 
-                                    id="nombre_marca_equipo" 
-                                    name="nombre_marca_equipo" 
-                                    placeholder="Ingrese una Marca"
-                                >
+                                <input type="text" class="form-control campo-obligatorio" id="nombre_marca_equipo"
+                                    name="nombre_marca_equipo" placeholder="Ingrese una Marca">
                                 <div class="text-error-message"></div>
                             </div>
                         </form>
@@ -38,6 +37,62 @@
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                         <button type="submit" form="form_addMarcaModal" class="btn btn-primary">Guardar</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <h2 class="mb-4">Marcas de Equipos</h2>
+            <div class="table-toolbar">
+                <select class="actions-select" onchange="handleActionChange(this)">
+                    <option value="" selected disabled>Acciones</option>
+                    <option value="edit">Editar</option>
+                    <option value="delete">Eliminar</option>
+                </select>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-column" onclick="toggleSelectAll()">Todo</th>
+                            <th onclick="sortTable(1,this)" class="sortable-column">
+                                Nombre Marca
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="myTableBody">
+                        {% if marca_equipo %}
+                        {% for marcae in marca_equipo %}
+                        <tr data-id="{{ marcae.idMarca_Equipo }}">
+                            <td class="checkbox-column">
+                                <input type="checkbox" class="checkbox-table row-checkbox">
+                            </td>
+                            <td>{{ marcae.nombreMarcaEquipo }}</td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4" class="text-center">No hay datos disponibles.</td>
+                        </tr>
+                        {% endif %}
+                    </tfoot>
+
+                </table>
+            </div>
+        </div>
+
+
+        <!-- Botón para mostrar el formulario -->
+
+        <!-- Formulario -->
+        <div class="card card-body" id="formulario" style="display: none;">
+            <form id="marcaEquipoForm" action="/add_marca_equipo" method="POST" class="mi-formulario">
+                <div class="form-group">
+                    <label for="nombre_marca">Nombre Marca:</label>
+                    <input class="validatable-input" type="text" name="nombre_marca_equipo" id="nombre_marca_equipo"
+                        placeholder="Nombre marca" maxlength="45" required>
                 </div>
             </div>
         </div>
@@ -74,66 +129,11 @@
     </div>
 
 
-<h2>Marca Equipos</h2>
-
-<table id="posts">
-    <thead>
-        <tr>
-            <td onclick="sortTable(0)">Nombre Marca</td>
-            <td>Acciones</td>
-        </tr>
-    </thead>
-    <tbody id="myTableBody">
-        {% for marcae in marca_equipo %}
-        <tr>
-            <td>{{ marcae.nombreMarcaEquipo }}</td>
-            <td>
-                <button 
-                class="btn btn-primary edit-button"
-                data-bs-toggle="modal"
-                data-bs-target="#editMarcaModal"
-                data-id="{{ marcae.idMarca_Equipo }}"
-                data-nombre="{{ marcae.nombreMarcaEquipo }}">
-                Editar
-                </button>
-                <a href="#"
-                    class="delete-button btn btn-danger"
-                    data-id="{{ marcae.idMarca_Equipo }}"
-                    data-title="Eliminar Marca"
-                    data-message="¿Estás seguro de que deseas eliminar la marca {{ marcae.nombreMarcaEquipo }}?">
-                    Eliminar
-                </a>
-
-            </td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-{{ paginacion("marca_equipo", page, lastpage) }}
 
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-<script src="../static/js/main.js"></script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const editMarcaForm = document.getElementById("editMarcaForm");
-        const editNombreMarca = document.getElementById("edit_nombreMarca");
-    
-        // Configurar el modal con datos dinámicos
-        document.querySelectorAll(".edit-button").forEach(button => {
-            button.addEventListener("click", function () {
-                const idMarca = this.dataset.id;
-                const nombreMarca = this.dataset.nombre;
-    
-                // Llenar el modal con los datos de la marca seleccionada
-                editNombreMarca.value = nombreMarca;
-    
-                // Configurar la acción del formulario con el ID dinámico
-                editMarcaForm.action = `/update_marca_equipo/${idMarca}`;
-            });
-        });
-    });
-    </script>
-    
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script src="{{ url_for('static', filename='js/Equipo/marcaEquipo.js') }}"></script>
+
+
 {% endblock %}

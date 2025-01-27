@@ -13,18 +13,16 @@ schema = {
     'nombre_modelo_equipo': {
         'type': 'string',
         'minlength': 1,
-        'maxlength': 100,
+        'maxlength': 45,
         'regex': '^[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ ]*$' # Permite solo letras, números y espacios
     },
-    'id_marca_equipo': {
-        'type':'string',
-        'minlength':1,
-        'maxlength':100,
-    },
     'id_tipo_equipo': {
-        'type':'string',
-        'minlength':1,
-        'maxlength':100,
+        'type':'integer',
+        'required': True
+    },
+    'id_marca_equipo': {
+        'type':'integer',
+        'required': True
     }
 }
 
@@ -39,55 +37,17 @@ def modeloEquipo(page=1):
     offset = (page - 1) * perpage
 
     cur = mysql.connection.cursor()
-    cur.execute("""
-    SELECT *
-    FROM modelo_equipo me
-    INNER JOIN tipo_equipo te ON te.idTipo_equipo = me.idTipo_equipo
-    INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = me.idMarca_Equipo
+    cur.execute(""" 
+                SELECT me.*, te.nombreTipo_equipo, mae.nombreMarcaEquipo
+                FROM modelo_equipo me
+                INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
+                INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+                INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo;
+
                 """)
     data = cur.fetchall()
-   
-    #cur.execute(
-        #""" 
-    #SELECT *
-    #FROM modelo_equipo moe
-    #INNER JOIN tipo_equipo te ON te.idTipo_equipo = moe.idTipo_equipo
-    #INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
-    #INNER JOIN marca_equipo me ON me.idMarca_Equipo = mte.idMarca_Equipo
-    #LIMIT {} OFFSET {} 
-    #""".format(
-            #perpage, offset
-        #)
-    #)
-    #data = cur.fetchall()
-    #cur.execute("SELECT * FROM marca_equipo")
-    #mae_data = cur.fetchall()
-    #marcas_con_tipo_equipo = None
-    #for i in range(0, len(mae_data)):
-        #marca = mae_data[i]
-        ##añadir la tupla de tipo como elemento de la tupla de marca
-        #cur.execute("""
-            #SELECT te.idTipo_equipo, te.nombreTipo_equipo, observacionTipoEquipo
-            #FROM marca_tipo_equipo mte
-            #INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
-            #WHERE mte.idMarca_Equipo = %s
-                    #""", (marca['idMarca_Equipo'],))
-        #tipo_equipo_data = cur.fetchall()
-
-        #if marcas_con_tipo_equipo == None:
-            #newdict = marca
-            #newdict.update({'tipo_equipo': tipo_equipo_data})
-            #marcas_con_tipo_equipo = (newdict,)
-        #else:
-            #newdict = marca
-            #newdict.update({'tipo_equipo': tipo_equipo_data})
-            #marcas_con_tipo_equipo += (newdict,)
-    #print("marcas_con_tipo_equipo")
-    #print(marcas_con_tipo_equipo)
-
     cur.execute("SELECT * FROM marca_equipo")
     marca_data = cur.fetchall()
-    #marca_data = ({id: x, nombre:y, valor:z})
     marca_con_tipo = []
     for i in range(0, len(marca_data)):
         marca = marca_data[i]
@@ -98,23 +58,13 @@ def modeloEquipo(page=1):
         WHERE mte.idMarca_Equipo = %s
                     """, (marca['idMarca_Equipo'],))
         tipos_asociados = cur.fetchall()
-        #tipo_asociado = ({id: x, nombre: y, valor:z})
 
-        #print('marca')
-        #print(marca)
-        #print('tipos_asociados')
-        #print(tipos_asociados)
         nueva_marca = ingresar_elemento_a_tupla(marca, tipos_asociados, 'tipo_equipo')
-        #agregar nueva marca a marca con tipo. ¿pasar de lista a tupla?
         marca_con_tipo.append(nueva_marca)
 
     marca_con_tipo = tuple(marca_con_tipo)
-    #print("marca_con_tipo")
-    #print(marca_con_tipo)
 
 
-    #tiene que ser de tipo 
-    #({dato_marca, ..., tipo_equipo})
         
     cur.execute("SELECT * FROM tipo_equipo")
     tipo_data = cur.fetchall()
@@ -140,43 +90,84 @@ def ingresar_elemento_a_tupla(tupla_mayor, tupla_a_agregar, nombre_tupla_agregar
 
 # agregar un regisro para modelo de equipo
 @modelo_equipo.route("/add_modelo_equipo", methods=["POST"])
-@administrador_requerido
+#@administrador_requerido
 def add_modelo_equipo():
     if request.method == "POST":
-        # Obtener los datos del formulario
         data = {
-                'nombre_modelo_equipo': request.form['nombre_modelo_equipo'],
-                'id_marca_equipo': request.form['nombre_marca_equipo'],
-                'id_tipo_equipo': request.form['nombre_tipo_equipo']
+            'nombre_modelo_equipo': request.form['nombre_modelo_equipo'],
+            'id_tipo_equipo': int(request.form['nombre_tipo_equipo']),
+            'id_marca_equipo': int(request.form['nombre_marca_equipo'])
         }
+        print("Datos recibidos del formulario:", data)
 
-        # Validar los datos usando Cerberus
         v = Validator(schema)
         if not v.validate(data):
-            errores = v.errors  # Obtener los errores detallados
+            errores = v.errors
             mensaje_error = "Errores de validación:"
             for campo, detalle in errores.items():
                 mensaje_error += f" {campo}: {detalle};"
-            flash(mensaje_error)  # Mostrar los errores en un mensaje flash
+            print("Errores de validación:", v.errors)
+            print("Validación fallida, redirigiendo...")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
 
+        cur = None  # Inicializar el cursor
         try:
             cur = mysql.connection.cursor()
+
+            # Verificar o insertar en marca_tipo_equipo
+            print("Validando relación marca-tipo...")
             cur.execute(
                 """
-            INSERT INTO modelo_equipo 
-                (nombreModeloequipo, idTipo_equipo, idMarca_Equipo) 
-            VALUES (%s, %s, %s)
-            """,
-                (data['nombre_modelo_equipo'], data['id_tipo_equipo'], data['id_marca_equipo'])
+                SELECT idMarcaTipo 
+                FROM marca_tipo_equipo 
+                WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
+                """,
+                (data['id_marca_equipo'], data['id_tipo_equipo'])
             )
-            cur.connection.commit()
-            flash("Modelo agregado exitosamente", 'success')
-            return redirect(url_for("modelo_equipo.modeloEquipo"))
+            marca_tipo = cur.fetchone()
+
+            if not marca_tipo:  # Si no existe la relación, crearla
+                print("Relación no existe, creando en marca_tipo_equipo...")
+                cur.execute(
+                    """
+                    INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo) 
+                    VALUES (%s, %s)
+                    """,
+                    (data['id_marca_equipo'], data['id_tipo_equipo'])
+                )
+                mysql.connection.commit()  # Confirmar para obtener el ID
+                cur.execute("SELECT LAST_INSERT_ID() AS idMarcaTipo")
+                marca_tipo = cur.fetchone()
+
+            id_marca_tipo = marca_tipo['idMarcaTipo']
+            print(f"ID de marca-tipo obtenido: {id_marca_tipo}")
+
+            # Insertar el modelo en modelo_equipo
+            print(f"Insertando modelo: {data['nombre_modelo_equipo']}, Marca-Tipo ID: {id_marca_tipo}")
+            cur.execute(
+                """
+                INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_Tipo_Equipo) 
+                VALUES (%s, %s)
+                """,
+                (data['nombre_modelo_equipo'], id_marca_tipo)
+            )
+
+            # Confirmar las transacciones
+            mysql.connection.commit()
+            print("Transacciones confirmadas")
+
         except Exception as e:
-            flash(f"Error al crear: {str(e)}")  # Mostrar el error exacto
+            print(f"Error durante la ejecución: {str(e)}")
+            flash(f"Error al crear el modelo: {str(e)}")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
 
+        finally:
+            if cur:
+                cur.close()  # Asegurarse de cerrar el cursor
+                print("Cursor cerrado")
+
+        flash("Modelo agregado exitosamente", 'success')
+        return redirect(url_for("modelo_equipo.modeloEquipo"))
 
 
 # Envias datos a formulario editar
@@ -184,63 +175,57 @@ def add_modelo_equipo():
 @administrador_requerido
 def edit_modelo_equipo(id):
     cur = mysql.connection.cursor()
+    # Consulta principal para obtener el modelo de equipo
     cur.execute(
         """ 
-    SELECT *
-    FROM modelo_equipo moe
-    LEFT OUTER JOIN tipo_equipo te ON te.idTipo_Equipo = moe.idTipo_Equipo
-    LEFT OUTER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_Equipo  
-    LEFT OUTER JOIN marca_equipo mae on mte.idMarca_equipo = mae.idMarca_Equipo
-    WHERE idModelo_Equipo = %s AND moe.idMarca_Equipo = mte.idMarca_Equipo
-    """,
+        SELECT *
+        FROM modelo_equipo moe
+        LEFT OUTER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = moe.idMarca_Tipo_Equipo
+        LEFT OUTER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+        LEFT OUTER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+        WHERE moe.idModelo_Equipo = %s;
+        """,
         (id,)
     )
     data = cur.fetchone()
+
+    # Obtener todas las marcas
     cur.execute("SELECT * FROM marca_equipo")
     mae_data = cur.fetchall()
-    #print("mae_data")
-    #print(mae_data)
-    #print(len(mae_data))
-    marcas_con_tipo_equipo = None
-    for i in range(0, len(mae_data)):
-        #print("marca_iterada" + str(i))
-        #print(marcas_con_tipo_equipo)
-        marca = mae_data[i]
-        #añadir la tupla de tipo como elemento de la tupla de marca
+
+    # Obtener tipos de equipo relacionados con cada marca
+    marcas_con_tipo_equipo = []
+    for marca in mae_data:
         cur.execute("""
-            SELECT te.idTipo_equipo, te.nombreTipo_equipo, observacionTipoEquipo
+            SELECT te.idTipo_equipo, te.nombreTipo_equipo, te.observacionTipoEquipo
             FROM marca_tipo_equipo mte
             INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
-            WHERE mte.idMarca_Equipo = %s
-                    """, (marca['idMarca_Equipo'],))
+            WHERE mte.idMarca_Equipo = %s;
+        """, (marca['idMarca_Equipo'],))
         tipo_equipo_data = cur.fetchall()
+        marca['tipo_equipo'] = tipo_equipo_data
+        marcas_con_tipo_equipo.append(marca)
 
-        if marcas_con_tipo_equipo == None:
-            newdict = marca
-            newdict.update({'tipo_equipo': tipo_equipo_data})
-            marcas_con_tipo_equipo = (newdict,)
-        else:
-            newdict = marca
-            newdict.update({'tipo_equipo': tipo_equipo_data})
-            marcas_con_tipo_equipo += (newdict,)
-        
     cur.close()
+
+    # Obtener todas las marcas y tipos de equipo para el formulario
     curs = mysql.connection.cursor()
     curs.execute("SELECT * FROM tipo_equipo")
     tipo_data = curs.fetchall()
-    curs.execute("""
-    SELECT * FROM marca_equipo
-                 """)
+    curs.execute("SELECT * FROM marca_equipo")
     marcas = curs.fetchall()
     curs.close()
-    print("editModelo_equipo")
-    print("modelo")
-    print(data)
-    print("marca")
-    print(marcas)
+
+    # Renderizar la plantilla
     return render_template(
-        "Equipo/editModelo_equipo.html", modelo_equipo=data, id=id,
-        marca_equipo=marcas_con_tipo_equipo, tipo_equipo=tipo_data, marcas=marcas)
+        "Equipo/editModelo_equipo.html",
+        modelo_equipo=data,
+        id=id,
+        marca_equipo=marcas_con_tipo_equipo,
+        tipo_equipo=tipo_data,
+        marcas=marcas
+    )
+
 
 
 # actualizar
@@ -317,23 +302,27 @@ def obtener_tipos(marca_id):
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT te.idTipo_equipo, te.nombreTipo_equipo 
-        FROM tipo_equipo te
-        INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
+        FROM marca_tipo_equipo mte
+        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
         WHERE mte.idMarca_Equipo = %s
     """, (marca_id,))
     tipos = cur.fetchall()
     cur.close()
     return jsonify(tipos)
 
-@modelo_equipo.route("/get_modelos/<tipo_id>", methods=["GET"])
+
+@modelo_equipo.route("/get_modelos/<marca_id>/<tipo_id>", methods=["GET"])
 @loguear_requerido
-def obtener_modelos(tipo_id):
+def obtener_modelos(marca_id, tipo_id):
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT me.idModelo_Equipo, me.nombreModeloequipo 
         FROM modelo_equipo me
-        WHERE me.idTipo_equipo = %s
-    """, (tipo_id,))
+        INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
+        WHERE mte.idTipo_equipo = %s AND mte.idMarca_Equipo = %s
+    """, (tipo_id, marca_id))
     modelos = cur.fetchall()
     cur.close()
     return jsonify(modelos)
+
+
