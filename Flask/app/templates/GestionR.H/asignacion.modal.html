@@ -35,7 +35,7 @@
                         <div class="d-flex">
                             <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar por nombre o ID">
                             <button type="button" class="btn btn-primary ms-2 asignacion-button" onclick="asignarSeleccionados()">Asignar</button>
-                            <button type="button" class="btn btn-info ms-2 asignacion-button" onclick="verDetalles()">Detalles</button>
+                            <button type="button" class="btn btn-info ms-2 asignacion-button" onclick="verDetalles()" data-bs-target="#modalViewDetails" data-bs-toggle="modal" data-bs-dismiss="modal">Detalles</button>
                         </div>
                     </div>
                     
@@ -52,7 +52,8 @@
                             </thead>
                             <tbody id="equiposTable">
                                 {% for equipo in equipos_sin_asignar %}
-                                <tr>
+                                <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
+                                    data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}">
                                     <td><input type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
                                     <td>{{ equipo.nombreTipo_equipo }}</td>
                                     <td>{{ equipo.nombreMarcaEquipo }}</td>
@@ -71,6 +72,52 @@
                         </ul>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalViewDetails" tabindex="-1" aria-labelledby="modalViewDetailsLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalViewDetailsLabel">Detalles del equipo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered">
+                    <tr>
+                        <td><strong>Tipo</strong></td>
+                        <td id="detalleTipo"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Marca</strong></td>
+                        <td id="detalleMarca"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Modelo</strong></td>
+                        <td id="detalleModelo"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Código Inventario</strong></td>
+                        <td id="detalleCodigoInventario"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Número de Serie</strong></td>
+                        <td id="detalleNumeroSerie"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Código Proveedor</strong></td>
+                        <td id="detalleCodigoProveedor"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Unidad</strong></td>
+                        <td id="detalleUnidad"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" data-bs-target="#addAsignacionModal" data-bs-toggle="modal" data-bs-dismiss="modal">Volver</button>
             </div>
         </div>
     </div>

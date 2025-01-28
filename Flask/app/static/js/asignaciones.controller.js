@@ -143,50 +143,81 @@ function asignarSeleccionados() {
         const marca = row.children[2].innerText;
         const modelo = row.children[3].innerText;
 
+        // Obtener los atributos `data-*` para restaurar después
+        const codigoInventario = row.dataset.codigoInventario || "N/A";
+        const numeroSerie = row.dataset.numeroSerie || "N/A";
+        const codigoProveedor = row.dataset.codigoProveedor || "N/A";
+        const unidad = row.dataset.unidad || "N/A";
+
+        // Crear un <li> para los equipos asignados
         const li = document.createElement('li');
         li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
         li.innerHTML = `
             <span>${tipo} ${marca} ${modelo}</span>
-            <button type="button" class="btn btn-danger btn-sm" onclick="quitarEquipo(this, '${chk.value}', '${tipo}', '${marca}', '${modelo}')">Quitar</button>
+            <button type="button" class="btn btn-danger btn-sm" 
+                onclick="quitarEquipo(this, '${chk.value}', '${tipo}', '${marca}', '${modelo}', '${codigoInventario}', '${numeroSerie}', '${codigoProveedor}', '${unidad}')">
+                Quitar
+            </button>
         `;
+
         document.getElementById('equiposAsignadosList').appendChild(li);
-        row.remove();
+        row.remove(); // Remover fila de la tabla
     });
 
     refreshCheckboxListeners(); // Actualizar listeners después de modificar la tabla
 }
 
 
-function quitarEquipo(button, idEquipo, tipo, marca, modelo) {
+
+function quitarEquipo(button, idEquipo, tipo, marca, modelo, codigoInventario, numeroSerie, codigoProveedor, unidad) {
     const li = button.closest('li');
     li.remove();
 
     const equiposTable = document.getElementById('equiposTable');
     const newRow = document.createElement('tr');
+
+    // Rellenar los datos de la fila incluyendo los atributos `data-*`
+    newRow.setAttribute('data-codigo-inventario', codigoInventario || "N/A");
+    newRow.setAttribute('data-numero-serie', numeroSerie || "N/A");
+    newRow.setAttribute('data-codigo-proveedor', codigoProveedor || "N/A");
+    newRow.setAttribute('data-unidad', unidad || "N/A");
+
     newRow.innerHTML = `
         <td><input type="checkbox" name="equipoSeleccionado" value="${idEquipo}"></td>
         <td>${tipo}</td>
         <td>${marca}</td>
         <td>${modelo}</td>
     `;
+
     equiposTable.appendChild(newRow);
 
-    refreshCheckboxListeners(); // Actualizar listeners después de modificar la tabla
+    refreshCheckboxListeners(); // Asegúrate de actualizar los listeners
 }
+
 
 function verDetalles() {
     const marcados = document.querySelectorAll('input[name="equipoSeleccionado"]:checked');
+    
+    // Validar que solo un equipo esté seleccionado
     if (marcados.length !== 1) {
-        alert("Por favor, selecciona un solo equipo para ver detalles.");
+        alert("Por favor, selecciona un único equipo para ver detalles.");
         return;
     }
 
+    // Obtener la fila del equipo seleccionado
     const row = marcados[0].closest('tr');
     const tipo = row.children[1].innerText;
     const marca = row.children[2].innerText;
     const modelo = row.children[3].innerText;
 
-    alert(`Detalles del equipo:\nTipo: ${tipo}\nMarca: ${marca}\nModelo: ${modelo}`);
+    // Rellenar los datos en el modal
+    document.getElementById('detalleTipo').textContent = tipo;
+    document.getElementById('detalleMarca').textContent = marca;
+    document.getElementById('detalleModelo').textContent = modelo;
+    document.getElementById('detalleCodigoInventario').textContent = row.dataset.codigoInventario || "N/A";
+    document.getElementById('detalleNumeroSerie').textContent = row.dataset.numeroSerie || "N/A";
+    document.getElementById('detalleCodigoProveedor').textContent = row.dataset.codigoProveedor || "N/A";
+    document.getElementById('detalleUnidad').textContent = row.dataset.unidad || "N/A";
 }
 
 // Búsqueda dinámica
