@@ -99,53 +99,93 @@ $(document).ready(function () {
     });
 });
 
-// Funciones del modal para agregar una asignación de equipo
+document.addEventListener("DOMContentLoaded", () => {
+    // Refresh checkbox listeners and button states
+    refreshCheckboxListeners();
+});
+
+function refreshCheckboxListeners() {
+    const equipoCheckboxes = document.querySelectorAll('input[name="equipoSeleccionado"]');
+    const asignarBtn = document.querySelector('button[onclick="asignarSeleccionados()"]');
+    const detallesBtn = document.querySelector('button[onclick="verDetalles()"]');
+
+    function toggleButtons() {
+        const seleccionados = Array.from(equipoCheckboxes).filter(checkbox => checkbox.checked).length;
+
+        asignarBtn.disabled = seleccionados === 0;
+        detallesBtn.disabled = seleccionados !== 1;
+    }
+
+    // Actualizar listeners de cambio en los checkboxes
+    equipoCheckboxes.forEach(checkbox => {
+        checkbox.removeEventListener('change', toggleButtons);
+        checkbox.addEventListener('change', toggleButtons);
+    });
+
+    // Habilitar clic en filas
+    enableRowClick();
+
+    // Actualizar botones al cargar
+    toggleButtons();
+}
+
+
 function asignarSeleccionados() {
-    // 1. Obtener todos los checkboxes marcados
     const marcados = document.querySelectorAll('input[name="equipoSeleccionado"]:checked');
     if (marcados.length === 0) {
         alert("Por favor, selecciona al menos un equipo para asignar.");
         return;
     }
 
-    // 2. Recorrerlos y agregarlos a la lista de equipos asignados
     marcados.forEach(chk => {
-        // Obtener la fila de la tabla
         const row = chk.closest('tr');
-
-        // Extraer datos de la fila (por ejemplo, Tipo, Marca, Modelo)
         const tipo = row.children[1].innerText;
         const marca = row.children[2].innerText;
         const modelo = row.children[3].innerText;
 
-        // Crear un <li> para mostrar el equipo
         const li = document.createElement('li');
-        li.classList.add('list-group-item');
-        li.textContent = `${tipo} ${marca} ${modelo}`;
-
-        // Agregar el <li> al contenedor de equipos asignados
+        li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+        li.innerHTML = `
+            <span>${tipo} ${marca} ${modelo}</span>
+            <button type="button" class="btn btn-danger btn-sm" onclick="quitarEquipo(this, '${chk.value}', '${tipo}', '${marca}', '${modelo}')">Quitar</button>
+        `;
         document.getElementById('equiposAsignadosList').appendChild(li);
-
-        // Opcional: podrías ocultar o eliminar la fila del equipo ya asignado
         row.remove();
     });
+
+    refreshCheckboxListeners(); // Actualizar listeners después de modificar la tabla
+}
+
+
+function quitarEquipo(button, idEquipo, tipo, marca, modelo) {
+    const li = button.closest('li');
+    li.remove();
+
+    const equiposTable = document.getElementById('equiposTable');
+    const newRow = document.createElement('tr');
+    newRow.innerHTML = `
+        <td><input type="checkbox" name="equipoSeleccionado" value="${idEquipo}"></td>
+        <td>${tipo}</td>
+        <td>${marca}</td>
+        <td>${modelo}</td>
+    `;
+    equiposTable.appendChild(newRow);
+
+    refreshCheckboxListeners(); // Actualizar listeners después de modificar la tabla
 }
 
 function verDetalles() {
-    // 1. Verifica cuántos checkboxes están seleccionados
     const marcados = document.querySelectorAll('input[name="equipoSeleccionado"]:checked');
     if (marcados.length !== 1) {
         alert("Por favor, selecciona un solo equipo para ver detalles.");
         return;
     }
 
-    // 2. Obtener la información de la fila
     const row = marcados[0].closest('tr');
     const tipo = row.children[1].innerText;
     const marca = row.children[2].innerText;
     const modelo = row.children[3].innerText;
 
-    // 3. Muestra esos detalles en un nuevo modal o un alert, según prefieras
     alert(`Detalles del equipo:\nTipo: ${tipo}\nMarca: ${marca}\nModelo: ${modelo}`);
 }
 
@@ -159,3 +199,25 @@ document.getElementById('searchEquipo').addEventListener('input', function () {
         row.style.display = text.includes(filter) ? '' : 'none';
     });
 });
+
+function enableRowClick() {
+    const rows = document.querySelectorAll('#equiposTable tr');
+
+    // Remover listeners existentes para evitar duplicados
+    rows.forEach(row => {
+        row.removeEventListener('click', rowClickHandler);
+        row.addEventListener('click', rowClickHandler);
+    });
+}
+
+function rowClickHandler(event) {
+    // Evitar que el evento se dispare si el clic es sobre el checkbox
+    if (event.target.tagName === 'INPUT' && event.target.type === 'checkbox') return;
+
+    // Encontrar el checkbox en la fila y alternar su estado
+    const checkbox = this.querySelector('input[type="checkbox"]');
+    if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change')); // Disparar evento 'change' manualmente
+    }
+}
