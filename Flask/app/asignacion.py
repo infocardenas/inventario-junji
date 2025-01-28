@@ -101,10 +101,15 @@ def add_asignacion(idEquipo = "None"):
     #tienen que ser los sin asignar por que los otros ya estan asignados a otros 
     #funcionarios
     cur.execute("""
-                SELECT * 
+                SELECT e.*, 
+                    me.nombreModeloequipo, 
+                    te.nombreTipo_equipo, 
+                    u.nombreUnidad, 
+                    ee.nombreEstado_equipo
                 FROM equipo e
                 INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-                INNER JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
+                INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+                INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
                 INNER JOIN unidad u ON e.idUnidad = u.idUnidad
                 INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
                 WHERE ee.nombreEstado_equipo = %s
@@ -317,14 +322,18 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos_id, realizar_
         #Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el excel
 
         cur.execute("""
-                    SELECT *
-                    FROM equipo
-                    INNER JOIN modelo_equipo me on me.idModelo_Equipo = equipo.idModelo_Equipo
-                    INNER JOIN tipo_equipo te on me.idTipo_equipo = te.idTipo_equipo
-                    INNER JOIN estado_equipo ee on ee.idEstado_equipo = equipo.idEstado_equipo
-                    INNER JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
-                    INNER JOIN marca_equipo mae on mae.idMarca_equipo = mte.idMarca_equipo
-                    WHERE equipo.idEquipo = %s
+                    SELECT e.*, 
+                        me.nombreModeloequipo, 
+                        te.nombreTipo_equipo, 
+                        mae.nombreMarcaEquipo, 
+                        ee.nombreEstado_equipo
+                    FROM equipo e
+                    INNER JOIN modelo_equipo me ON me.idModelo_Equipo = e.idModelo_Equipo
+                    INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+                    INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+                    INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+                    INNER JOIN estado_equipo ee ON ee.idEstado_equipo = e.idEstado_equipo
+                    WHERE e.idEquipo = %s
                     """, (equipo_id,))
         equipoTupla = cur.fetchone()
         TuplaEquipos = TuplaEquipos + (equipoTupla,)
@@ -587,14 +596,19 @@ def devolver(id):
     tupla_equipos = ()
     for equipo_asignacion in equipo_asignacion_data:
         cur.execute("""
-        SELECT * 
+        SELECT e.*, 
+            me.nombreModeloequipo, 
+            te.nombreTipo_equipo, 
+            mae.nombreMarcaEquipo, 
+            ee.nombreEstado_equipo, 
+            u.nombreUnidad
         FROM equipo e
         INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-        INNER JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
+        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
         INNER JOIN unidad u ON e.idUnidad = u.idUnidad
-        INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
-        INNER JOIN marca_tipo_equipo mte ON te.idTipo_equipo = mte.idTipo_equipo
-        INNER JOIN marca_equipo mae on mae.idMarca_equipo = mte.idMarca_equipo
+        INNER JOIN estado_equipo ee ON ee.idEstado_equipo = e.idEstado_Equipo
         WHERE e.idEquipo = %s
                     """, (str(equipo_asignacion['idEquipo']),))
         equipo = cur.fetchone()

@@ -134,8 +134,8 @@ CREATE TABLE `marca_tipo_equipo` (
   `idTipo_equipo` int(11) NOT NULL,
   PRIMARY KEY (`idMarcaTipo`),
   UNIQUE KEY `unique_marca_tipo` (`idMarca_Equipo`, `idTipo_equipo`),
-  CONSTRAINT `marca_tipo_equipo_ibfk_1` FOREIGN KEY (`idMarca_Equipo`) REFERENCES `marca_equipo` (`idMarca_Equipo`) ON DELETE CASCADE,
-  CONSTRAINT `marca_tipo_equipo_ibfk_2` FOREIGN KEY (`idTipo_equipo`) REFERENCES `tipo_equipo` (`idTipo_equipo`) ON DELETE CASCADE
+  CONSTRAINT `marca_tipo_equipo_ibfk_1` FOREIGN KEY (`idMarca_Equipo`) REFERENCES `marca_equipo` (`idMarca_Equipo`) ON DELETE RESTRICT,
+  CONSTRAINT `marca_tipo_equipo_ibfk_2` FOREIGN KEY (`idTipo_equipo`) REFERENCES `tipo_equipo` (`idTipo_equipo`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -148,7 +148,7 @@ CREATE TABLE `modelo_equipo` (
   `nombreModeloequipo` varchar(45) UNIQUE,
   `idMarca_Tipo_Equipo` int(11) NOT NULL, 
   PRIMARY KEY (`idModelo_Equipo`),
-  CONSTRAINT `modelo_equipo_FK_1` FOREIGN KEY (`idMarca_Tipo_Equipo`) REFERENCES `marca_tipo_equipo` (`idMarcaTipo`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `modelo_equipo_FK_1` FOREIGN KEY (`idMarca_Tipo_Equipo`) REFERENCES `marca_tipo_equipo` (`idMarcaTipo`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -221,7 +221,7 @@ CREATE TABLE `equipo` (
   CONSTRAINT `equipo_ibfk_2` FOREIGN KEY (`idEstado_equipo`) REFERENCES `estado_equipo` (`idEstado_equipo`),
   CONSTRAINT `equipo_ibfk_3` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`),
   CONSTRAINT `equipo_ibfk_4` FOREIGN KEY (`idOrden_compra`) REFERENCES `orden_compra` (`idOrden_compra`),
-  CONSTRAINT `equipo_ibfk_5` FOREIGN KEY (`idModelo_equipo`) REFERENCES `modelo_equipo` (`idModelo_Equipo`)
+  CONSTRAINT `equipo_ibfk_5` FOREIGN KEY (`idModelo_equipo`) REFERENCES `modelo_equipo` (`idModelo_Equipo`) ON DELETE RESTRICT
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

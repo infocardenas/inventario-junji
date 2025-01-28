@@ -85,15 +85,23 @@ def add_traslado():
             cur = mysql.connection.cursor()
             cur.execute(
                 """
-                SELECT *
+                SELECT e.*, 
+                    me.nombreModeloequipo, 
+                    te.nombreTipo_equipo, 
+                    mae.nombreMarcaEquipo, 
+                    ee.nombreEstado_equipo,
+                    u.nombreUnidad
                 FROM equipo e
-                INNER JOIN unidad u on u.idUnidad = e.idUnidad
-                INNER JOIN modelo_equipo me on me.idModelo_equipo = e.idModelo_equipo 
-                INNER JOIN tipo_equipo te on te.idTipo_equipo = me.idTipo_equipo
+                INNER JOIN unidad u ON u.idUnidad = e.idUnidad
+                INNER JOIN modelo_equipo me ON me.idModelo_equipo = e.idModelo_equipo
+                INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+                INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+                INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
                 INNER JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
                 WHERE e.idUnidad = %s
                 AND (ee.nombreEstado_equipo = "SIN ASIGNAR"
                 OR ee.nombreEstado_equipo = "EN USO")
+
                         """,
                 (Origen,),
             )
@@ -153,10 +161,15 @@ def edit_traslado(id):
         unidades = cur.fetchall()
         cur.execute(
             """
-            SELECT * 
+            SELECT e.*, 
+                me.nombreModeloequipo, 
+                te.nombreTipo_equipo, 
+                mae.nombreMarcaEquipo
             FROM equipo e
-            INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
-            INNER JOIN tipo_equipo te on te.idTipo_equipo = me.idTipo_equipo
+            INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
+            INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+            INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+            INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
             ORDER BY e.idEquipo
                     """
         )
@@ -306,11 +319,17 @@ def crear_traslado_generico(fechatraslado, Destino, Origen, equipos):
 
         cur.execute(
             """
-                        SELECT *
+                        SELECT e.*, 
+                            me.nombreModeloequipo, 
+                            te.nombreTipo_equipo, 
+                            mae.nombreMarcaEquipo, 
+                            ee.nombreEstado_equipo
                         FROM equipo e
                         INNER JOIN modelo_equipo me ON me.idModelo_equipo = e.idModelo_equipo
-                        INNER JOIN tipo_equipo te on te.idTipo_equipo = me.idTipo_equipo
-                        INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_equipo
+                        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+                        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+                        INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+                        INNER JOIN estado_equipo ee ON ee.idEstado_equipo = e.idEstado_equipo
                         WHERE e.idEquipo = %s
                         """,
             (idEquipo,),

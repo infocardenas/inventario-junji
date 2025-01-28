@@ -21,23 +21,23 @@ def Incidencia(page = 1):
     cur = mysql.connection.cursor()
     cur.execute(
         """
-                SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
-                    i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
-                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreTipo_Equipo, 
-                    me.nombreModeloEquipo,
-                    i.numDocumentos, e.idEquipo
-                FROM incidencia i 
-                INNER JOIN equipo e on i.idEquipo = e.idEquipo
-                INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
-                INNER JOIN tipo_equipo te on me.idTipo_Equipo = te.idTipo_Equipo
-                LIMIT %s OFFSET %s
+            SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
+                i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
+                e.cod_inventarioEquipo, e.Num_serieEquipo, 
+                te.nombreTipo_equipo, me.nombreModeloequipo,
+                i.numDocumentos, e.idEquipo
+            FROM incidencia i
+            INNER JOIN equipo e ON i.idEquipo = e.idEquipo
+            INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
+            INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+            INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+            LIMIT %s OFFSET %s
         """, (perpage, offset)
     )
     data = cur.fetchall()
-    cur.execute('SELECT COUNT(*) FROM incidencia')
-    total = cur.fetchone()
-    total = int(str(total).split(':')[1].split('}')[0])
-    unidades = cur.fetchall()
+    cur.execute('SELECT COUNT(*) AS total FROM incidencia')
+    total = cur.fetchone()['total']
+
     return render_template(
         'Operaciones/incidencia.html', 
         Incidencia=data,
@@ -339,29 +339,32 @@ def buscar(idIncidencia):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
+    
     cur = mysql.connection.cursor()
-    cur.execute(
-        """
-                SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
-                    i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
-                    e.cod_inventarioEquipo, e.Num_serieEquipo, te.nombreTipo_Equipo, 
-                    me.nombreModeloEquipo,
-                    i.numDocumentos, e.idEquipo
-                FROM incidencia i 
-                INNER JOIN equipo e on i.idEquipo = e.idEquipo
-                INNER JOIN modelo_equipo me on e.idModelo_Equipo = me.idModelo_Equipo
-                INNER JOIN tipo_equipo te on me.idTipo_Equipo = te.idTipo_Equipo
-                WHERE i.idIncidencia = %s
-        """, (idIncidencia,)
-    )
-    data = cur.fetchall()
-    cur.execute('SELECT COUNT(*) FROM incidencia')
-    total = cur.fetchone()
-    total = int(str(total).split(':')[1].split('}')[0])
-    unidades = cur.fetchall()
+    
+    # Obtener la incidencia por su ID
+    cur.execute("""
+        SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
+            i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
+            e.cod_inventarioEquipo, e.Num_serieEquipo, 
+            te.nombreTipo_equipo, me.nombreModeloequipo,
+            i.numDocumentos, e.idEquipo
+        FROM incidencia i
+        INNER JOIN equipo e ON i.idEquipo = e.idEquipo
+        INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
+        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE i.idIncidencia = %s
+    """, (idIncidencia,))
+    data = cur.fetchone()  # Cambiado a fetchone() porque idIncidencia es único.
+
+    # Obtener el total de incidencias
+    cur.execute('SELECT COUNT(*) AS total FROM incidencia')
+    total = cur.fetchone()['total']  # Simplificado.
+
     return render_template(
         "Operaciones/incidencia.html", 
-        Incidencia=data,
+        Incidencia=[data],  # Envolvemos en una lista para mantener compatibilidad con el template.
         page=1, 
-        lastpage= True
-        )
+        lastpage=True
+    )

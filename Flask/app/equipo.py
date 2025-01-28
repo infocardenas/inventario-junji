@@ -326,29 +326,29 @@ def update_equipo(id):
             'nombre_modelo_equipo': request.form["nombre_modelo_equipo"],
         }
 
-        schema = {
-            'codigo_inventario': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
-            'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
-            'observacion_equipo': {'type': 'string', 'nullable': True},
-            'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
-            'mac': {'type': 'string', 'regex': '^[0-9]+$'},
-            'imei': {'type': 'string', 'regex': '^[0-9]+$'},
-            'numero': {'type': 'string', 'regex': '^[0-9]+$'},
-            'nombre_estado_equipo': {'type': 'string'},
-            'codigo_Unidad': {'type': 'string', 'nullable': True},
-            'nombre_orden_compra': {'type': 'string', 'nullable': True},
-            'nombre_modelo_equipo': {'type': 'string', 'nullable': True},
-        }
-
-
-        v = Validator(schema)
-        # Validación de caracteres no permitidos
-        if not v.validate(datos):
-            flash("Caracteres no permitidos")
-            return redirect(url_for("equipo.Equipo"))
-
+        # Validación del modelo
         try:
             cur = mysql.connection.cursor()
+
+            # Verificar modelo
+            cur.execute("""
+                SELECT idModelo_Equipo FROM modelo_equipo WHERE nombreModeloequipo = %s
+            """, (datos['nombre_modelo_equipo'],))
+            modelo = cur.fetchone()
+            if not modelo:
+                flash("El modelo seleccionado no existe")
+                return redirect(url_for("equipo.Equipo"))
+
+            # Verificar estado
+            cur.execute("""
+                SELECT idEstado_equipo FROM estado_equipo WHERE nombreEstado_equipo = %s
+            """, (datos['nombre_estado_equipo'],))
+            estado = cur.fetchone()
+            if not estado:
+                flash("El estado seleccionado no existe")
+                return redirect(url_for("equipo.Equipo"))
+
+            # Actualizar equipo
             cur.execute(
                 """
                 UPDATE equipo
@@ -361,7 +361,8 @@ def update_equipo(id):
                     numerotelefonicoEquipo = %s,
                     idUnidad = %s,
                     idOrden_compra = %s,
-                    idModelo_equipo = %s
+                    idModelo_equipo = %s,
+                    idEstado_equipo = %s
                 WHERE idEquipo = %s
                 """,
                 (
@@ -372,10 +373,10 @@ def update_equipo(id):
                     datos['mac'],
                     datos['imei'],
                     datos['numero'],
-                    datos['nombre_estado_equipo'],
                     datos['codigo_Unidad'],
                     datos['nombre_orden_compra'],
-                    datos['nombre_modelo_equipo'],
+                    modelo['idModelo_Equipo'],  # Nuevo
+                    estado['idEstado_equipo'],  # Nuevo
                     id,
                 ),
             )
@@ -385,9 +386,9 @@ def update_equipo(id):
         except Exception as error:
             flash(f"Error al actualizar el equipo: {str(error)}")
             return redirect(url_for("equipo.Equipo"))
+
         
 
-# elimina registro a traves de id correspondiente
 @equipo.route("/delete_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
 def delete_equipo(id):
@@ -396,13 +397,21 @@ def delete_equipo(id):
         return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
+
+        # Validar dependencias
+        cur.execute("SELECT COUNT(*) AS count FROM asignaciones WHERE idEquipo = %s", (id,))
+        dependencias = cur.fetchone()['count']
+        if dependencias > 0:
+            flash("No se puede eliminar el equipo porque tiene dependencias")
+            return redirect(url_for("equipo.Equipo"))
+
+        # Eliminar equipo
         cur.execute("DELETE FROM equipo WHERE idEquipo = %s", (id,))
         mysql.connection.commit()
         flash("Equipo eliminado correctamente")
         return redirect(url_for("equipo.Equipo"))
     except Exception as e:
-        flash("Error al Eliminar, equipo puede tener dependencias")
-        #flash(e.args[1])
+        flash("Error al eliminar, el equipo puede tener dependencias")
         return redirect(url_for("equipo.Equipo"))
 
 
