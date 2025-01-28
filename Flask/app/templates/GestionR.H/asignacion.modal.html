@@ -34,13 +34,13 @@
                         <label for="searchEquipo">Buscar equipo</label>
                         <div class="d-flex">
                             <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar por nombre o ID">
-                            <button type="button" class="btn btn-primary ms-2" onclick="asignarSeleccionados()">Asignar</button>
-                            <button type="button" class="btn btn-info ms-2" onclick="verDetalles()">Detalles</button>
+                            <button type="button" class="btn btn-primary ms-2 asignacion-button" onclick="asignarSeleccionados()">Asignar</button>
+                            <button type="button" class="btn btn-info ms-2 asignacion-button" onclick="verDetalles()">Detalles</button>
                         </div>
                     </div>
                     
                     <!-- Tabla con scroll vertical -->
-                    <div class="mb-3" style="height: 120px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
+                    <div class="mb-3" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
                         <table class="table table-sm table-hover mb-0" style="table-layout: fixed;">
                             <thead class="table-light">
                                 <tr>
@@ -65,7 +65,7 @@
 
                     <!-- Tabla o lista para mostrar los equipos asignados -->
                     <div class="mb-3">
-                        <h6>Equipos asignados</h6>
+                        <label>Equipos asignados</label>
                         <ul class="list-group" id="equiposAsignadosList">
                             <!-- Aquí se irán agregando los equipos seleccionados -->
                         </ul>

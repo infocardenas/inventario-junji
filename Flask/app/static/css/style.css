@@ -767,3 +767,11 @@ svg.bi {
     display: flex;
     align-items: center;
 }
+
+.asignacion-button {
+    transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+.asignacion-button:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
