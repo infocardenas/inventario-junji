@@ -695,7 +695,7 @@ a.mainbar-link {
 }
 .text-error-message {
     color: red;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 svg.bi {
@@ -761,4 +761,9 @@ svg.bi {
 .btn.btn-primary:hover {
     background-color: #4a946e !important;
     border-color: #4a946e !important;
+}
+
+.fecha-asignacion input {
+    display: flex;
+    align-items: center;
 }
