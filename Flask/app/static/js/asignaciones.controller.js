@@ -98,3 +98,64 @@ $(document).ready(function () {
         $("#modal-view").modal("show");
     });
 });
+
+// Funciones del modal para agregar una asignación de equipo
+function asignarSeleccionados() {
+    // 1. Obtener todos los checkboxes marcados
+    const marcados = document.querySelectorAll('input[name="equipoSeleccionado"]:checked');
+    if (marcados.length === 0) {
+        alert("Por favor, selecciona al menos un equipo para asignar.");
+        return;
+    }
+
+    // 2. Recorrerlos y agregarlos a la lista de equipos asignados
+    marcados.forEach(chk => {
+        // Obtener la fila de la tabla
+        const row = chk.closest('tr');
+
+        // Extraer datos de la fila (por ejemplo, Tipo, Marca, Modelo)
+        const tipo = row.children[1].innerText;
+        const marca = row.children[2].innerText;
+        const modelo = row.children[3].innerText;
+
+        // Crear un <li> para mostrar el equipo
+        const li = document.createElement('li');
+        li.classList.add('list-group-item');
+        li.textContent = `${tipo} ${marca} ${modelo}`;
+
+        // Agregar el <li> al contenedor de equipos asignados
+        document.getElementById('equiposAsignadosList').appendChild(li);
+
+        // Opcional: podrías ocultar o eliminar la fila del equipo ya asignado
+        row.remove();
+    });
+}
+
+function verDetalles() {
+    // 1. Verifica cuántos checkboxes están seleccionados
+    const marcados = document.querySelectorAll('input[name="equipoSeleccionado"]:checked');
+    if (marcados.length !== 1) {
+        alert("Por favor, selecciona un solo equipo para ver detalles.");
+        return;
+    }
+
+    // 2. Obtener la información de la fila
+    const row = marcados[0].closest('tr');
+    const tipo = row.children[1].innerText;
+    const marca = row.children[2].innerText;
+    const modelo = row.children[3].innerText;
+
+    // 3. Muestra esos detalles en un nuevo modal o un alert, según prefieras
+    alert(`Detalles del equipo:\nTipo: ${tipo}\nMarca: ${marca}\nModelo: ${modelo}`);
+}
+
+// Búsqueda dinámica
+document.getElementById('searchEquipo').addEventListener('input', function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#equiposTable tr');
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});

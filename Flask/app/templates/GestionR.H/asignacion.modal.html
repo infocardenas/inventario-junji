@@ -1,0 +1,77 @@
+<div class="modal fade" id="addAsignacionModal" tabindex="-1" aria-labelledby="">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAsignacionModalLabel">Agregar asignación de equipo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Contenido -->
+            <div class="modal-body">
+                <form class="asignaciones" id="form_addAsignacionModal" action="/asignacion/create_asignacion" method="POST">
+                    <!-- Fecha de asignación -->
+                    <div class="mb-3 fecha-asignacion">
+                        <label for="fecha-asignacion">Fecha asignación<span style="color: red; margin-left: 5px">*</span></label>
+                        <input type="date" name="fecha-asignacion" class="form-control campo-obligatorio">
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <!-- RUT del funcionario -->
+                    <div class="mb-3">
+                        <label for="rut_funcionario">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
+                        <div style="display: flex; align-items: center;">
+                            <input type="text" class="form-control campo-obligatorio rut-input" id="rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guión" maxlength="8" style="width: 70%;">
+                            <span style="width: 10%; display: flex; justify-content: center;">-</span>
+                            <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
+                        </div>
+                        <div class="text-error-message"></div>
+                    </div>
+                    <input type="hidden" class="rut_completo" id="rut_completo" name="rut_funcionario">
+
+                    <!-- Todos los equipos sin asignar -->
+                    <!-- Barra de búsqueda -->
+                    <div class="mb-3">
+                        <label for="searchEquipo">Buscar equipo</label>
+                        <div class="d-flex">
+                            <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar por nombre o ID">
+                            <button type="button" class="btn btn-primary ms-2" onclick="asignarSeleccionados()">Asignar</button>
+                            <button type="button" class="btn btn-info ms-2" onclick="verDetalles()">Detalles</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Tabla con scroll vertical -->
+                    <div class="mb-3" style="height: 120px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
+                        <table class="table table-sm table-hover mb-0" style="table-layout: fixed;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th scope="col" style="width: 30px">#</th>
+                                    <th scope="col">Tipo</th>
+                                    <th scope="col">Marca</th>
+                                    <th scope="col">Modelo</th>
+                                </tr>
+                            </thead>
+                            <tbody id="equiposTable">
+                                {% for equipo in equipos_sin_asignar %}
+                                <tr>
+                                    <td><input type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
+                                    <td>{{ equipo.nombreTipo_equipo }}</td>
+                                    <td>{{ equipo.nombreMarcaEquipo }}</td>
+                                    <td>{{ equipo.nombreModeloequipo }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Tabla o lista para mostrar los equipos asignados -->
+                    <div class="mb-3">
+                        <h6>Equipos asignados</h6>
+                        <ul class="list-group" id="equiposAsignadosList">
+                            <!-- Aquí se irán agregando los equipos seleccionados -->
+                        </ul>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

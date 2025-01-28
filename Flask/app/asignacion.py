@@ -72,10 +72,31 @@ def Asignacion(page=1):
     cur.execute('SELECT COUNT(*) FROM asignacion')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
+    cur.execute(
+        """
+    SELECT 
+        te.nombreTipo_equipo,
+        mae.nombreMarcaEquipo,
+        me.nombreModeloequipo,
+        e.Cod_inventarioEquipo,
+        e.Num_serieEquipo,
+        e.codigoproveedor_equipo,
+        u.nombreUnidad
+    FROM equipo e
+    JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+    JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
+    JOIN marca_equipo mae ON me.idMarca_Equipo = mae.idMarca_Equipo
+    JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
+    JOIN unidad u ON e.idUnidad = u.idUnidad
+    WHERE ee.nombreEstado_equipo = 'SIN ASIGNAR';
+        """
+    )
+    equipos_sin_asignar = cur.fetchall()
     return render_template(
         'GestionR.H/asignacion.html', 
         funcionarios=funcionarios, 
         asignacion=data,
+        equipos_sin_asignar = equipos_sin_asignar,
         page=page, 
         lastpage= page < (total / perpage) + 1
         )
