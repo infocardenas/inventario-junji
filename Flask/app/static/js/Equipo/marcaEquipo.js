@@ -1,46 +1,44 @@
-function handleActionChange(selectElement) {
-    const selectedValue = selectElement.value; // Valor de la opción seleccionada
-    const selectedRows = Array.from(document.querySelectorAll('.row-checkbox:checked')); // Checkboxes seleccionados
+$(document).ready(function () {
+    $(".actions-select").on("change", function () {
+        const action = $(this).val(); // Obtener la acción seleccionada
+        const selectedRows = $(".row-checkbox:checked").closest("tr"); // Filas seleccionadas
 
-    if (selectedRows.length === 0) {
-        MensajeGenericoModal("Sin selección", "Por favor, selecciona al menos una fila para realizar esta acción.");
-        selectElement.value = ""; // Restablecer el select
-        return;
-    }
-
-    // Obtener los IDs de las filas seleccionadas
-    const selectedIds = selectedRows.map(checkbox => {
-        const row = checkbox.closest('tr'); // Encuentra la fila padre
-        return row.dataset.id; // Devuelve el ID de la fila
-    });
-
-    if (selectedValue === "edit") {
-        if (selectedIds.length > 1) {
-            MensajeGenericoModal(
-                "Edición no permitida",
-                "Solo puedes editar una fila a la vez. Selecciona una sola fila."
-            );
-        } else {
-            const id = selectedIds[0];
-            window.location.href = `/marca_equipo/edit_marca_equipo/${id}`; // Redirigir a la edición
+        if (!selectedRows.length) {
+            alert("Por favor, selecciona una o más filas antes de realizar una acción."); // Validación básica
+            $(this).val(""); // Resetear el select
+            return;
         }
-    } else if (selectedValue === "delete") {
-        // Obtener los nombres de las marcas seleccionadas
-        const selectedNames = selectedRows.map(checkbox => {
-            const row = checkbox.closest('tr'); // Encuentra la fila padre
-            return row.querySelector('td:nth-child(2)').innerText.trim(); // Obtiene el texto de la segunda celda
-        });
 
-        // Configurar el modal para confirmación de eliminación
-        configureGenericModal(
-            "Eliminar Marca",
-            `¿Estás seguro de que deseas eliminar la/s marca/s: ${selectedNames.join(", ")}?`,
-            `/marca_equipo/delete_marca_equipo/${selectedIds.join(",")}` // Ruta con los IDs seleccionados
-        );
+        // Obtener los IDs de las marcas seleccionadas
+        const ids = selectedRows.map(function () {
+            return $(this).data("id");
+        }).get().join(',');
 
-    }
+        if (action === "delete") {
+            // Mostrar el modal de confirmación
+            configureGenericModal(
+                "Eliminar Marca(s)",
+                `¿Estás seguro de que deseas eliminar las marcas seleccionadas? Esto eliminará también las relaciones asociadas.`,
+                `/marca_equipo/delete_marca_equipo/${ids}` // URL de eliminación
+            );
+        } else if (action === "edit") {
+            if (selectedRows.length > 1) {
+                alert("Solo puedes editar una marca a la vez.");
+                $(this).val("");
+                return;
+            }
 
+            // Configurar el modal de edición para una sola fila
+            const selectedRow = selectedRows.first();
+            const id = selectedRow.data("id");
+            const nombre = selectedRow.find("td:nth-child(2)").text();
 
-    // Restablecer el select a su estado inicial
-    selectElement.value = "";
-}
+            $("#editMarcaModal").modal("show");
+            $("#editMarcaModalLabel").text(`Editar Marca: ${nombre}`);
+            $("#edit_nombreMarca").val(nombre);
+            $("#editMarcaForm").attr("action", `/update_marca_equipo/${id}`);
+        }
+
+        $(this).val(""); // Resetear el select después de usarlo
+    });
+});
