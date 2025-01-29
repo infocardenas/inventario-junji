@@ -21,11 +21,16 @@ function limpiarInputsEnModal(modal) {
   $(modal).find("input, select, textarea").each(function () {
     const element = $(this);
 
-    // Reinicia el valor de los campos
-    if (element.is("input") || element.is("textarea")) {
-      element.val(""); // Limpia el contenido de inputs y textareas
-    } else if (element.is("select")) {
-      element.prop("selectedIndex", 0); // Resetea el select a la primera opción
+    if (!element.hasClass("no-delete-value")) {
+      if (element.is("input") || element.is("textarea")) {
+        element.val("");
+      } else if (element.is("select")) {
+        element.prop("selectedIndex", 0);
+      }
+    }
+
+    if (element.is("input[type='checkbox']")) {
+      element.prop("checked", false);
     }
   });
 }
@@ -40,12 +45,33 @@ function limpiarErroresEnModal(modal) {
 }
 
 $(document).ready(function () {
-  $(".modal").on("hide.bs.modal", function () {
+  $(".modal").on("hide.bs.modal", function (event) {
     const modal = this;
-    setTimeout(function () {
-      limpiarErroresEnModal(modal);
-      limpiarInputsEnModal(modal);
-    }, 1000);
+
+    const target = $(event.relatedTarget);
+    const isSwitchingModal = target && target.data("bs-toggle") === "modal";
+
+    // Si no es un cambio entre modales, limpiar inputs y errores
+    if (!isSwitchingModal) {
+      setTimeout(function () {
+        limpiarInputsEnModal(modal);
+        limpiarErroresEnModal(modal);
+      }, 500);
+    }
+  });
+
+  // Configurar al abrir el modal de detalles
+  $("#modalViewDetails").on("show.bs.modal", function () {
+    // Evitar limpieza cuando vuelvas al modal principal
+    $("#addAsignacionModal").off("hide.bs.modal");
+  });
+
+  // Volver a habilitar la limpieza cuando se cierre el modal de detalles
+  $("#modalViewDetails").on("hide.bs.modal", function () {
+    $("#addAsignacionModal").on("hide.bs.modal", function () {
+      limpiarInputsEnModal(this);
+      limpiarErroresEnModal(this);
+    });
   });
 });
 
