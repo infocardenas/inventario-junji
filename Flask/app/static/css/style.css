@@ -695,7 +695,7 @@ a.mainbar-link {
 }
 .text-error-message {
     color: red;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 svg.bi {
@@ -761,4 +761,28 @@ svg.bi {
 .btn.btn-primary:hover {
     background-color: #4a946e !important;
     border-color: #4a946e !important;
+}
+
+.fecha-asignacion input {
+    display: flex;
+    align-items: center;
+}
+
+.asignacion-button {
+    transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
+}
+.asignacion-button:disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+.asignacion-button-info {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: white;
+}
+
+.asignacion-button-info:hover {
+    background-color: #003d7a;
+    border-color: #003d7a;
+    color: white;
 }

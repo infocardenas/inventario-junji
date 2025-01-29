@@ -713,7 +713,7 @@ $(document).ready(function () {
     }
   }
 
-  $("form.funcionarios").on("submit", function (event) {
+  $("form.funcionarios, form.asignaciones").on("submit", function (event) {
     prepararRutCompleto(this);
 
     const rutCompleto = $(this).find(".rut_completo").val();

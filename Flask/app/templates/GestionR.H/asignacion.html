@@ -10,8 +10,11 @@
         <input name="palabra" type="text" class="search-box" placeholder="Buscar asignación..." id="buscador" onkeyup="busqueda('myTableBody')" />
     </div>
     <!-- Botón para redirigir a agregar asignación -->
-    <button type="button" onclick="navigateTo('/add_asignacion')" class="btn btn-primary">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAsignacionModal">
         Agregar asignación
+    </button>
+    <button type="button" onclick="navigateTo('/add_asignacion')" class="btn btn-primary">
+        Agregar asignación antigüo
     </button>
 </div>
 
@@ -107,6 +110,7 @@
 </div>
 
 {% include 'visualizar.modal.html' %}
+{% include 'GestionR.H/asignacion.modal.html' %}
 
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="../static/js/asignaciones.controller.js"></script>

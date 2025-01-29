@@ -72,10 +72,32 @@ def Asignacion(page=1):
     cur.execute('SELECT COUNT(*) FROM asignacion')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
+    cur.execute(
+        """
+    SELECT 
+        te.nombreTipo_equipo,
+        mae.nombreMarcaEquipo,
+        me.nombreModeloequipo,
+        e.idEquipo,
+        e.Cod_inventarioEquipo,
+        e.Num_serieEquipo,
+        e.codigoproveedor_equipo,
+        u.nombreUnidad
+    FROM equipo e
+    JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+    JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
+    JOIN marca_equipo mae ON me.idMarca_Equipo = mae.idMarca_Equipo
+    JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
+    JOIN unidad u ON e.idUnidad = u.idUnidad
+    WHERE ee.nombreEstado_equipo = 'SIN ASIGNAR';
+        """
+    )
+    equipos_sin_asignar = cur.fetchall()
     return render_template(
         'GestionR.H/asignacion.html', 
         funcionarios=funcionarios, 
         asignacion=data,
+        equipos_sin_asignar = equipos_sin_asignar,
         page=page, 
         lastpage= page < (total / perpage) + 1
         )
@@ -250,27 +272,18 @@ def delete_asignacion(id):
         #flash(e.args[1])
         return redirect(url_for("asignacion.Asignacion"))
 
-#Este metodo extrae la informacion del formulario
+# Esta función extrae la informacion del formulario
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
 def create_asignacion():
     if request.method == "POST":
-        # Extraer datos del formulario
-        fechaasignacion = request.form['fechaasignacion']
-        observacion = request.form['observacion']
-        #rutadocumento = request.form['']
-        #activo_asignacion = request.form['activo_asignacion']
-        rut=request.form['rut']
-        print("rut")
-        print(rut)
-        if(rut == ""):
-            flash("No se ingreso el rut")
-            return redirect("/asignacion")
-        # Conectarse a la base de datos y realizar la inserción en la tabla ASIGNACION
-        # Obtener la lista de equipos asignados desde el formulario
-        realizar_traslado = request.form.get('realizar_traslado')
-        equipos = request.form.getlist('asignaciones[]')
-        return creacionAsignacion(fechaasignacion, observacion, rut, equipos, realizar_traslado)
+        fecha_asignacion = request.form.get('fecha-asignacion') 
+        rut_funcionario = request.form.get('rut_funcionario')
+        observacion = request.form.get('observacion', '')
+        equipos = request.form.getlist('equiposAsignados[]')
+        realizar_traslado = request.form.get('traslado')
+
+        return creacionAsignacion(fecha_asignacion, observacion, rut_funcionario, equipos, realizar_traslado)
 
 
 #Este metodo es el que crea la asignacion
