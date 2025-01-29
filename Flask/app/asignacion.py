@@ -42,16 +42,16 @@ def Asignacion(page=1):
         f.nombreFuncionario,
         f.cargoFuncionario,
         me.nombreModeloequipo,
-        mae.nombreMarcaEquipo,
-        te.nombreTipo_equipo
+        te.nombreTipo_equipo,
+        mae.nombreMarcaEquipo
     FROM asignacion a
     INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
     LEFT JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
     LEFT JOIN equipo e ON e.idEquipo = ea.idEquipo
     LEFT JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
-    LEFT JOIN tipo_equipo te ON me.idModelo_Equipo = te.idTipo_equipo
-    LEFT JOIN marca_tipo_equipo mte ON mte.idTipo_equipo = te.idTipo_equipo
-    LEFT JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+    LEFT JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+    LEFT JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+    LEFT JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
     LIMIT %s OFFSET %s
         """, (perpage, offset)
     )
@@ -75,18 +75,19 @@ def Asignacion(page=1):
     cur.execute(
         """
     SELECT 
-        te.nombreTipo_equipo,
-        mae.nombreMarcaEquipo,
-        me.nombreModeloequipo,
         e.idEquipo,
         e.Cod_inventarioEquipo,
         e.Num_serieEquipo,
         e.codigoproveedor_equipo,
+        me.nombreModeloequipo,
+        te.nombreTipo_equipo,
+        mae.nombreMarcaEquipo,
         u.nombreUnidad
     FROM equipo e
     JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
-    JOIN tipo_equipo te ON me.idTipo_Equipo = te.idTipo_equipo
-    JOIN marca_equipo mae ON me.idMarca_Equipo = mae.idMarca_Equipo
+    JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+    JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+    JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
     JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
     JOIN unidad u ON e.idUnidad = u.idUnidad
     WHERE ee.nombreEstado_equipo = 'SIN ASIGNAR';
