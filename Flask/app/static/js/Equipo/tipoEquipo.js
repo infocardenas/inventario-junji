@@ -1,22 +1,17 @@
 $(document).ready(function () {
     $(".actions-select").on("change", function () {
         const action = $(this).val();
-        const selectedRows = $(".row-checkbox:checked").closest("tr"); 
-
-        console.log("Acción seleccionada:", action); // Verificar acción seleccionada
-        console.log("Filas seleccionadas:", selectedRows.length); // Verificar si hay filas seleccionadas
+        const selectedRows = $(".row-checkbox:checked").closest("tr");
 
         if (!selectedRows.length) {
-            alert("Por favor, selecciona una o más filas antes de realizar una acción.");
-            $(this).val(""); 
+            alert("Por favor, selecciona una fila antes de realizar una acción.");
+            $(this).val("");
             return;
         }
 
         const ids = selectedRows.map(function () {
             return $(this).data("id");
         }).get();
-
-        console.log("IDs capturados:", ids); // Verificar los IDs capturados
 
         if (action === "delete") {
             configureGenericModal(
@@ -31,19 +26,38 @@ $(document).ready(function () {
                 return;
             }
 
+            // Capturar los datos de la fila seleccionada
             const selectedRow = selectedRows.first();
             const id = selectedRow.data("id");
             const nombre = selectedRow.data("nombre");
             const marcas = selectedRow.data("marcas");
+            const observacion = selectedRow.data("observacion");
 
-            console.log("Editando ID:", id); // Verificar ID al editar
-            console.log("Nombre capturado:", nombre);
-            console.log("Marcas capturadas:", marcas);
+            console.log("Editando ID:", id);
+            console.log("Nombre:", nombre);
+            console.log("Marcas:", marcas);
+            console.log("Observación:", observacion);
 
-            $("#editTipoModal").modal("show");
-            $("#editTipoModalLabel").text(`Editar Tipo: ${nombre}`);
-            $("#edit_nombreTipo").val(nombre);
-            $("#editTipoForm").attr("action", `/update_tipo_equipo/${id}`);
+            // Rellenar el formulario dentro del modal
+            $("#editTipoEquipoLabel").text(`Editar Tipo de Equipo: ${nombre}`);
+            $("#edit_nombreTipo_equipo").val(nombre);
+            $("#edit_observacion").val(observacion || "");  // Evita valores `null`
+
+            // Desmarcar todos los checkboxes antes de marcar los seleccionados
+            $("#editTipoEquipoModal input[name='marcas[]']").prop("checked", false);
+
+            if (marcas) {
+                const marcasSeleccionadas = JSON.parse(marcas); // Convertir de string a JSON si es necesario
+                marcasSeleccionadas.forEach(marca => {
+                    $(`#edit_marca_${marca.idMarca_equipo}`).prop("checked", true);
+                });
+            }
+
+            // Configurar la acción del formulario
+            $("#editTipoEquipoForm").attr("action", `/update_tipo_equipo/${id}`);
+
+            // Abrir el modal
+            $("#editTipoEquipoModal").modal("show");
         }
 
         $(this).val("");

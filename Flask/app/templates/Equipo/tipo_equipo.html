@@ -150,35 +150,6 @@
             </div>
         </div>
         
-
-
-        <!-- Tabla de Tipos de Equipo -->
-        <h2>Tipos de Equipo</h2>
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Marcas</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for tipoe in tipo_equipo %}
-                <tr>
-                    <td>{{ tipoe.nombreTipo_equipo }}</td>
-                    <td>{{ tipoe.marcas if tipoe.marcas else "Sin marcas asociadas" }}</td>
-                    <td>
-                        <button class="btn btn-primary edit-button" data-bs-toggle="modal" data-bs-target="#editTipoEquipoModal" 
-                            data-id="{{ tipoe.idTipo_equipo }}" 
-                            data-nombre="{{ tipoe.nombreTipo_equipo }}" 
-                            data-marcas="{{ tipoe.marcas|tojson }}" 
-                            data-observacion="{{ tipoe.observacion }}">Editar</button>
-                        <a href="/delete_tipo_equipo/{{ tipoe.idTipo_equipo }}" class="btn btn-danger">Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
 </div>
 
