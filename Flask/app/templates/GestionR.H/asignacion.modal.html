@@ -54,7 +54,7 @@
                                 {% for equipo in equipos_sin_asignar %}
                                 <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
                                     data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}">
-                                    <td><input type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
+                                    <td><input class="no-delete-value" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
                                     <td>{{ equipo.nombreTipo_equipo }}</td>
                                     <td>{{ equipo.nombreMarcaEquipo }}</td>
                                     <td>{{ equipo.nombreModeloequipo }}</td>

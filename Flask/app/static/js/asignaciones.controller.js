@@ -158,7 +158,7 @@ function asignarSeleccionados() {
                 onclick="quitarEquipo(this, '${chk.value}', '${tipo}', '${marca}', '${modelo}', '${codigoInventario}', '${numeroSerie}', '${codigoProveedor}', '${unidad}')">
                 <i class="bi bi-trash-fill"></i>
             </button>
-            <input type="hidden" name="equiposAsignados[]" value="${chk.value}">
+            <input type="hidden" class="no-delete-value" name="equiposAsignados[]" value="${chk.value}">
         `;
 
         document.getElementById('equiposAsignadosList').appendChild(li);
@@ -184,7 +184,7 @@ function quitarEquipo(button, idEquipo, tipo, marca, modelo, codigoInventario, n
     newRow.setAttribute('data-unidad', unidad || "N/A");
 
     newRow.innerHTML = `
-        <td><input type="checkbox" name="equipoSeleccionado" value="${idEquipo}"></td>
+        <td><input class="no-delete-value" type="checkbox" name="equipoSeleccionado" value="${idEquipo}"></td>
         <td>${tipo}</td>
         <td>${marca}</td>
         <td>${modelo}</td>
