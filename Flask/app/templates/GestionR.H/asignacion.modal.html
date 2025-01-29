@@ -8,7 +8,7 @@
             </div>
             <!-- Contenido -->
             <div class="modal-body">
-                <form class="asignaciones" id="form_addAsignacionModal" action="/asignacion/create_asignacion" method="POST">
+                <form class="asignaciones" id="form-asignacion-modal" action="/asignacion/create_asignacion" method="POST">
                     <!-- Fecha de asignación -->
                     <div class="mb-3 fecha-asignacion">
                         <label for="fecha-asignacion">Fecha asignación<span style="color: red; margin-left: 5px">*</span></label>
@@ -35,7 +35,7 @@
                         <div class="d-flex">
                             <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar por nombre o ID">
                             <button type="button" class="btn btn-primary ms-2 asignacion-button" onclick="asignarSeleccionados()">Asignar</button>
-                            <button type="button" class="btn btn-info ms-2 asignacion-button" onclick="verDetalles()" data-bs-target="#modalViewDetails" data-bs-toggle="modal" data-bs-dismiss="modal">Detalles</button>
+                            <button type="button" class="btn asignacion-button-info ms-2 asignacion-button" onclick="verDetalles()" data-bs-target="#modalViewDetails" data-bs-toggle="modal" data-bs-dismiss="modal"><i class="bi bi-info-circle"></i></button>
                         </div>
                     </div>
                     
@@ -64,14 +64,35 @@
                         </table>
                     </div>
 
-                    <!-- Tabla o lista para mostrar los equipos asignados -->
+                    <!-- Equipos asignados con scroll vertical -->
                     <div class="mb-3">
                         <label>Equipos asignados</label>
-                        <ul class="list-group" id="equiposAsignadosList">
-                            <!-- Aquí se irán agregando los equipos seleccionados -->
-                        </ul>
+                        <div style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
+                            <ul class="list-group" id="equiposAsignadosList">
+                                <!-- Aquí se irán agregando los equipos seleccionados -->
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección para seleccionar traslado -->
+                    <div class="mb-3">
+                        <label>¿Realiza el traslado?</label>
+                        <div class="d-flex">
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="radio" name="traslado" id="trasladoSi" value="si">
+                                <label class="form-check-label" for="trasladoSi">Sí</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="traslado" id="trasladoNo" value="no" checked>
+                                <label class="form-check-label" for="trasladoNo">No</label>
+                            </div>
+                        </div>
                     </div>
                 </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="form-asignacion-modal" class="btn btn-primary">Guardar</button>
             </div>
         </div>
     </div>
