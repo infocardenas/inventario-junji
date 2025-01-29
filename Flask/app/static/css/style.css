@@ -775,3 +775,14 @@ svg.bi {
     opacity: 0.5;
     pointer-events: none;
 }
+.asignacion-button-info {
+    background-color: #0056b3;
+    border-color: #0056b3;
+    color: white;
+}
+
+.asignacion-button-info:hover {
+    background-color: #003d7a;
+    border-color: #003d7a;
+    color: white;
+}

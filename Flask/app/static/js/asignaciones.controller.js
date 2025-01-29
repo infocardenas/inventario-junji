@@ -156,8 +156,9 @@ function asignarSeleccionados() {
             <span>${tipo} ${marca} ${modelo}</span>
             <button type="button" class="btn btn-danger btn-sm" 
                 onclick="quitarEquipo(this, '${chk.value}', '${tipo}', '${marca}', '${modelo}', '${codigoInventario}', '${numeroSerie}', '${codigoProveedor}', '${unidad}')">
-                Quitar
+                <i class="bi bi-trash-fill"></i>
             </button>
+            <input type="hidden" name="equiposAsignados[]" value="${chk.value}">
         `;
 
         document.getElementById('equiposAsignadosList').appendChild(li);

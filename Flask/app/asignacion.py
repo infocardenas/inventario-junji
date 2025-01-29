@@ -78,6 +78,7 @@ def Asignacion(page=1):
         te.nombreTipo_equipo,
         mae.nombreMarcaEquipo,
         me.nombreModeloequipo,
+        e.idEquipo,
         e.Cod_inventarioEquipo,
         e.Num_serieEquipo,
         e.codigoproveedor_equipo,
