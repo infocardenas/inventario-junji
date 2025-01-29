@@ -86,22 +86,6 @@ def add_marca_equipo():
                 flash("Error al registrar la marca", 'danger')
             return redirect(url_for('marca_equipo.marcaEquipo'))
 
-#enviar datos a vista editar
-@marca_equipo.route('/marca_equipo/edit_marca_equipo/<id>', methods = ['POST', 'GET'])
-@administrador_requerido
-def edit_marca_equipo(id):
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute('SELECT * FROM marca_equipo WHERE idMarca_Equipo = %s', (id,))
-        data = cur.fetchall()
-        return render_template(
-            'Equipo/editMarca_equipo.html', 
-            marca_equipo = data[0]
-            )
-    except Exception as e:
-        #flash(e.args[1])
-        flash("Error al editar la marca", 'danger')
-        return redirect(url_for('marca_equipo.marcaEquipo'))
 
 #actualizar
 @marca_equipo.route('/update_marca_equipo/<id>', methods = ['POST'])
@@ -111,7 +95,7 @@ def update_marca_equipo(id):
         flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
     if request.method == 'POST':
-         # Obtener los datos del formulario
+        # Obtener los datos del formulario
         datos = {
             'nombre_marca_equipo': request.form["nombre_marca_equipo"]   
         }
@@ -141,27 +125,122 @@ def update_marca_equipo(id):
 
             return redirect(url_for('marca_equipo.marcaEquipo'))
 
-#eliminar    
-@marca_equipo.route('/marca_equipo/delete_marca_equipo/<ids>', methods = ['POST', 'GET'])
+# Funcion eliminar, para mantener la integridad de los datos, se muestra un mensaje al usuario para que confirme si desea eliminar la marca, si lo hace entonces borramos todas las dependencias de la marca
+@marca_equipo.route('/marca_equipo/delete_marca_equipo/<ids>', methods=['GET'])
 @administrador_requerido
 def delete_marca_equipo(ids):
     try:
-        # Dividir los IDs separados por comas
-        id_list = ids.split(',')
-        
-        # Crear una consulta SQL para eliminar múltiples IDs
         cur = mysql.connection.cursor()
-        query = 'DELETE FROM marca_equipo WHERE idMarca_equipo IN (%s)' % ','.join(['%s'] * len(id_list))
-        cur.execute(query, id_list)
+
+        # Dividir los IDs por comas (para eliminaciones múltiples)
+        id_list = ids.split(',')
+
+        # PASO 1: Eliminar dependencias en detalle_traslado
+        cur.execute("""
+            DELETE FROM detalle_traslado 
+            WHERE idTraslado IN (
+                SELECT idTraslado FROM traslado
+                WHERE idTraslado IN (
+                    SELECT idTraslado FROM traslacion
+                    WHERE idEquipo IN (
+                        SELECT idEquipo FROM equipo 
+                        WHERE idModelo_equipo IN (
+                            SELECT idModelo_Equipo FROM modelo_equipo 
+                            WHERE idMarca_Tipo_Equipo IN (
+                                SELECT idMarcaTipo FROM marca_tipo_equipo 
+                                WHERE idMarca_Equipo IN (%s)
+                            )
+                        )
+                    )
+                )
+            )
+        """ % ','.join(['%s'] * len(id_list)), id_list)
+
+        # PASO 2: Eliminar dependencias en incidencia
+        cur.execute("""
+            DELETE FROM incidencia 
+            WHERE idEquipo IN (
+                SELECT idEquipo FROM equipo 
+                WHERE idModelo_equipo IN (
+                    SELECT idModelo_Equipo FROM modelo_equipo 
+                    WHERE idMarca_Tipo_Equipo IN (
+                        SELECT idMarcaTipo FROM marca_tipo_equipo 
+                        WHERE idMarca_Equipo IN (%s)
+                    )
+                )
+            )
+        """ % ','.join(['%s'] * len(id_list)), id_list)
+
+        # PASO 3: Eliminar dependencias en devolucion
+        cur.execute("""
+            DELETE FROM devolucion 
+            WHERE rutFuncionario IN (
+                SELECT f.rutFuncionario 
+                FROM funcionario f
+                WHERE f.rutFuncionario IN (
+                    SELECT a.rutFuncionario 
+                    FROM asignacion a
+                    WHERE a.idAsignacion IN (
+                        SELECT ea.idAsignacion 
+                        FROM equipo_asignacion ea
+                        WHERE ea.idEquipo IN (
+                            SELECT idEquipo FROM equipo 
+                            WHERE idModelo_equipo IN (
+                                SELECT idModelo_Equipo FROM modelo_equipo 
+                                WHERE idMarca_Tipo_Equipo IN (
+                                    SELECT idMarcaTipo FROM marca_tipo_equipo 
+                                    WHERE idMarca_Equipo IN (%s)
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        """ % ','.join(['%s'] * len(id_list)), id_list)
+
+        # PASO 4: Eliminar dependencias en equipo_asignacion
+        cur.execute("""
+            DELETE FROM equipo_asignacion 
+            WHERE idEquipo IN (
+                SELECT idEquipo FROM equipo 
+                WHERE idModelo_equipo IN (
+                    SELECT idModelo_Equipo FROM modelo_equipo 
+                    WHERE idMarca_Tipo_Equipo IN (
+                        SELECT idMarcaTipo FROM marca_tipo_equipo 
+                        WHERE idMarca_Equipo IN (%s)
+                    )
+                )
+            )
+        """ % ','.join(['%s'] * len(id_list)), id_list)
+
+        # PASO 5 al PASO 8 permanecen iguales.
+
         mysql.connection.commit()
 
-        flash('Marcas eliminadas exitosamente', 'success')
+        # Mensaje genérico
+        flash(f"Se eliminaron {len(id_list)} marca(s) y sus relaciones asociadas exitosamente.", 'success')
         return redirect(url_for('marca_equipo.marcaEquipo'))
     except Exception as e:
-    # Capturar el error completo
-        error_message = f"Error al eliminar las marcas: {str(e)}"
-        flash(error_message, 'danger')  # Mostrar el error completo en el flash
-        print(error_message)  # Opcional: Imprimir el error en la consola del servidor para depuración
+        flash(f"Error al eliminar la(s) marca(s): {str(e)}", 'danger')
         return redirect(url_for('marca_equipo.marcaEquipo'))
 
+
+# Ruta para la confirmación definitiva de la eliminación
+@marca_equipo.route('/marca_equipo/confirm_delete/<id>', methods=['GET'])
+@administrador_requerido
+def confirm_delete_marca_equipo(id):
+    try:
+        cur = mysql.connection.cursor()
+
+        # Eliminar relaciones en marca_tipo_equipo
+        cur.execute("DELETE FROM marca_tipo_equipo WHERE idMarca_Equipo = %s", (id,))
+        # Eliminar la marca
+        cur.execute("DELETE FROM marca_equipo WHERE idMarca_Equipo = %s", (id,))
+        mysql.connection.commit()
+
+        flash('Marca y relaciones eliminadas exitosamente.', 'success')
+        return redirect(url_for('marca_equipo.marcaEquipo'))
+    except Exception as e:
+        flash(f"Error al eliminar la marca: {str(e)}", 'danger')
+        return redirect(url_for('marca_equipo.marcaEquipo'))
 

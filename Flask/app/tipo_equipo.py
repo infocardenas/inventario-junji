@@ -158,82 +158,240 @@ def add_tipo_equipo(idTipo_equipo):
             return redirect(url_for("tipo_equipo.tipoEquipo"))
 
 
-
 @tipo_equipo.route("/update_tipo_equipo/<id>", methods=["POST"])
 @administrador_requerido
 def update_tipo_equipo(id):
-    print("update tipo equipo")
     if request.method == "POST":
+        # Obtener datos del formulario
         data = {
             'nombreTipo_Equipo': request.form['nombreTipo_equipo']
         }
-        ids_marca = request.form.getlist("marcas[]")
-        print("ids_marca")
-        print(ids_marca)
+        ids_marca_seleccionadas = [int(id_marca) for id_marca in request.form.getlist("marcas[]") if id_marca.strip().isdigit()]
 
-         # Validar los datos usando Cerberus
+        # Validar datos usando Cerberus
         v = Validator(tipo_equipo_schema)
         if not v.validate(data):
-            flash("Caracteres no permitidos")
+            flash("Caracteres no permitidos en el nombre", "danger")
             return redirect(url_for("tipo_equipo.tipoEquipo"))
 
         cur = mysql.connection.cursor()
-        cur.execute(
-            """
-        SELECT * 
-        FROM tipo_equipo 
-        WHERE idTipo_equipo = %s
-                    """,
-            (id,),
-        )
-        tipo_equipo = cur.fetchone()
-        cur.execute(
-            """ 
-        UPDATE tipo_equipo
-        SET nombreTipo_equipo = %s
-        WHERE idTipo_equipo = %s
-        """,
-            (data["nombreTipo_Equipo"], id),
-        )
-        #editar la relacion entre tipo y marcas
+
+        # Obtener las marcas actuales asociadas al tipo
         cur.execute("""
-        DELETE FROM marca_tipo_equipo
-        WHERE idTipo_equipo = %s
+            SELECT idMarca_Equipo 
+            FROM marca_tipo_equipo 
+            WHERE idTipo_equipo = %s
         """, (id,))
-        
-        for id_marca in ids_marca:
+        ids_marca_actuales = [row['idMarca_Equipo'] for row in cur.fetchall()] or []
+
+        # Comparar marcas para identificar cambios
+        ids_marca_eliminadas = set(ids_marca_actuales) - set(ids_marca_seleccionadas)
+        ids_marca_nuevas = set(ids_marca_seleccionadas) - set(ids_marca_actuales)
+
+        try:
+            # PASO 1: Manejar Marcas Eliminadas
+            if ids_marca_eliminadas:
+                for id_marca in ids_marca_eliminadas:
+                    # Eliminar equipos relacionados con los modelos de la marca eliminada
+                    cur.execute("""
+                        DELETE FROM equipo 
+                        WHERE idModelo_equipo IN (
+                            SELECT idModelo_Equipo 
+                            FROM modelo_equipo 
+                            WHERE idMarca_Tipo_Equipo = (
+                                SELECT idMarcaTipo 
+                                FROM marca_tipo_equipo 
+                                WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
+                            )
+                        )
+                    """, (id_marca, id))
+
+                    # Eliminar modelos relacionados con la marca eliminada
+                    cur.execute("""
+                        DELETE FROM modelo_equipo 
+                        WHERE idMarca_Tipo_Equipo = (
+                            SELECT idMarcaTipo 
+                            FROM marca_tipo_equipo 
+                            WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
+                        )
+                    """, (id_marca, id))
+
+                    # Eliminar relación en marca_tipo_equipo
+                    cur.execute("""
+                        DELETE FROM marca_tipo_equipo 
+                        WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
+                    """, (id_marca, id))
+
+            # PASO 2: Manejar Marcas Nuevas
+            if ids_marca_nuevas:
+                for id_marca in ids_marca_nuevas:
+                    cur.execute("""
+                        INSERT INTO marca_tipo_equipo (idTipo_equipo, idMarca_Equipo)
+                        VALUES (%s, %s)
+                    """, (id, id_marca))
+
+            # PASO 3: Actualizar Nombre del Tipo de Equipo
             cur.execute("""
-            INSERT INTO marca_tipo_equipo
-            (idTipo_equipo, idMarca_Equipo)
-            VALUES (%s, %s)
-            """, (id,id_marca))
-        mysql.connection.commit()
-        return redirect(url_for("tipo_equipo.tipoEquipo"))
+                UPDATE tipo_equipo 
+                SET nombreTipo_equipo = %s 
+                WHERE idTipo_equipo = %s
+            """, (data["nombreTipo_Equipo"], id))
+
+            mysql.connection.commit()
+            flash("Tipo de equipo actualizado exitosamente.", "success")
+            return redirect(url_for("tipo_equipo.tipoEquipo"))
+        
+        except Exception as e:
+            mysql.connection.rollback()
+            flash(f"Error al actualizar el tipo de equipo: {str(e)}", "danger")
+            return redirect(url_for("tipo_equipo.tipoEquipo"))
 
 
 
-# elimina el registro segun el id
+
 @tipo_equipo.route("/delete_tipo_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
 def delete_tipo_equipo(id):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("Se necesita ingresar para acceder a esa ruta", "warning")
         return redirect("/ingresar")
     try:
         cur = mysql.connection.cursor()
-        cur.execute(
-            """
-            DELETE
-            FROM marca_tipo_equipo
-            WHERE marca_tipo_equipo.idTipo_equipo = %s
-                    """,
-            (id,),
-        )
+
+        # PASO 1: Eliminar dependencias en detalle_traslado
+        cur.execute("""
+            DELETE FROM detalle_traslado 
+            WHERE idTraslado IN (
+                SELECT idTraslado FROM traslado
+                WHERE idTraslado IN (
+                    SELECT idTraslado FROM traslacion
+                    WHERE idEquipo IN (
+                        SELECT idEquipo FROM equipo 
+                        WHERE idModelo_equipo IN (
+                            SELECT idModelo_Equipo FROM modelo_equipo 
+                            WHERE idMarca_Tipo_Equipo IN (
+                                SELECT idMarcaTipo FROM marca_tipo_equipo 
+                                WHERE idTipo_equipo = %s
+                            )
+                        )
+                    )
+                )
+            )
+        """, (id,))
+
+
+        # PASO 2: Eliminar dependencias en incidencia
+        cur.execute("""
+            DELETE FROM incidencia 
+            WHERE idEquipo IN (
+                SELECT idEquipo FROM equipo 
+                WHERE idModelo_equipo IN (
+                    SELECT idModelo_Equipo FROM modelo_equipo 
+                    WHERE idMarca_Tipo_Equipo IN (
+                        SELECT idMarcaTipo FROM marca_tipo_equipo 
+                        WHERE idTipo_equipo = %s
+                    )
+                )
+            )
+        """, (id,))
+
+        # PASO 3: Eliminar dependencias en devolucion
+        cur.execute("""
+            DELETE FROM devolucion 
+            WHERE rutFuncionario IN (
+                SELECT f.rutFuncionario 
+                FROM funcionario f
+                WHERE f.rutFuncionario IN (
+                    SELECT a.rutFuncionario 
+                    FROM asignacion a
+                    WHERE a.idAsignacion IN (
+                        SELECT ea.idAsignacion 
+                        FROM equipo_asignacion ea
+                        WHERE ea.idEquipo IN (
+                            SELECT e.idEquipo 
+                            FROM equipo e
+                            WHERE e.idModelo_equipo IN (
+                                SELECT me.idModelo_Equipo 
+                                FROM modelo_equipo me
+                                WHERE me.idMarca_Tipo_Equipo IN (
+                                    SELECT mte.idMarcaTipo 
+                                    FROM marca_tipo_equipo mte
+                                    WHERE mte.idTipo_equipo = %s
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        """, (id,))
+
+
+        # PASO 4: Eliminar dependencias en equipo_asignacion
+        cur.execute("""
+            DELETE FROM equipo_asignacion 
+            WHERE idEquipo IN (
+                SELECT idEquipo FROM equipo 
+                WHERE idModelo_equipo IN (
+                    SELECT idModelo_Equipo FROM modelo_equipo 
+                    WHERE idMarca_Tipo_Equipo IN (
+                        SELECT idMarcaTipo FROM marca_tipo_equipo 
+                        WHERE idTipo_equipo = %s
+                    )
+                )
+            )
+        """, (id,))
+
+
+        # PASO 5: Eliminar equipos
+        cur.execute("""
+            DELETE FROM equipo 
+            WHERE idModelo_equipo IN (
+                SELECT idModelo_Equipo FROM modelo_equipo 
+                WHERE idMarca_Tipo_Equipo IN (
+                    SELECT idMarcaTipo FROM marca_tipo_equipo 
+                    WHERE idTipo_equipo = %s
+                )
+            )
+        """, (id,))
+
+        # PASO 6: Eliminar modelos
+        cur.execute("""
+            DELETE FROM modelo_equipo 
+            WHERE idMarca_Tipo_Equipo IN (
+                SELECT idMarcaTipo FROM marca_tipo_equipo 
+                WHERE idTipo_equipo = %s
+            )
+        """, (id,))
+
+        # PASO 7: Eliminar relaciones en marca_tipo_equipo
+        cur.execute("""
+            DELETE FROM marca_tipo_equipo 
+            WHERE idTipo_equipo = %s
+        """, (id,))
+
+        # PASO 8: Eliminar el tipo de equipo
         cur.execute("DELETE FROM tipo_equipo WHERE idTipo_equipo = %s", (id,))
+
         mysql.connection.commit()
-        flash("Tipo de equipo eliminado correctamente")
+
         return redirect(url_for("tipo_equipo.tipoEquipo"))
     except Exception as e:
-        #flash(e.args[1])
-        flash("Error al crear")
+        flash(f"Error al eliminar el tipo de equipo: {str(e)}", "danger")
         return redirect(url_for("tipo_equipo.tipoEquipo"))
+
+# Ruta para la confirmación definitiva de la eliminación
+@tipo_equipo.route('/tipo_equipo/confirm_delete/<id>', methods=['GET'])
+@administrador_requerido
+def confirm_delete_tipo_equipo(id):
+    try:
+        cur = mysql.connection.cursor()
+
+        # Eliminar el tipo de equipo (si ya se eliminaron las dependencias)
+        cur.execute("DELETE FROM tipo_equipo WHERE idTipo_equipo = %s", (id,))
+        mysql.connection.commit()
+
+        flash('Tipo de equipo eliminado exitosamente.', 'success')
+        return redirect(url_for('tipo_equipo.tipoEquipo'))
+    except Exception as e:
+        flash(f"Error al eliminar el tipo de equipo: {str(e)}", 'danger')
+        return redirect(url_for('tipo_equipo.tipoEquipo'))
