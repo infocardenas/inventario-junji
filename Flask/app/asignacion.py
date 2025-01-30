@@ -281,15 +281,15 @@ def create_asignacion():
         fecha_asignacion = request.form.get('fecha-asignacion') 
         rut_funcionario = request.form.get('rut_funcionario')
         observacion = request.form.get('observacion', '')
-        equipos = request.form.getlist('equiposAsignados[]')
+        id_equipos = request.form.getlist('equiposAsignados[]')
         realizar_traslado = request.form.get('traslado')
 
-        return creacionAsignacion(fecha_asignacion, observacion, rut_funcionario, equipos, realizar_traslado)
+        return creacionAsignacion(fecha_asignacion, observacion, rut_funcionario, id_equipos, realizar_traslado)
 
 
 #Este metodo es el que crea la asignacion
 @administrador_requerido
-def creacionAsignacion(fecha_asignacion, observacion, rut, equipos_id, realizar_traslado):
+def creacionAsignacion(fecha_asignacion, observacion, rut, id_equipos, realizar_traslado):
     cur = mysql.connection.cursor()
     #el 1 al final de values es por el ActivoAsignacion que muestra que la asignacion no ha sido devuelta
     cur.execute("""
@@ -310,12 +310,12 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos_id, realizar_
 
     TuplaEquipos = ()
     # Iterar sobre los equipos y realizar las operaciones necesarias
-    for equipo_id in equipos_id:
+    for id_equipo in id_equipos:
         # Insertar en la tabla Equipo_asignacion
         cur.execute("""
             INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
             VALUES (%s, %s)
-            """, (str(asignacion_id),equipo_id))
+            """, (str(asignacion_id),id_equipo))
         mysql.connection.commit()
         #encontrar la id del estado EN USO
         cur.execute("""
@@ -330,7 +330,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos_id, realizar_
                     UPDATE equipo
                     SET idEstado_equipo = %s
                     WHERE idEquipo = %s
-                    """, (estado_equipo_data['idEstado_equipo'], equipo_id))
+                    """, (estado_equipo_data['idEstado_equipo'], id_equipo))
         mysql.connection.commit()
             
         #Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el excel
@@ -348,7 +348,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, equipos_id, realizar_
                     INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
                     INNER JOIN estado_equipo ee ON ee.idEstado_equipo = e.idEstado_equipo
                     WHERE e.idEquipo = %s
-                    """, (equipo_id,))
+                    """, (id_equipo,))
         equipoTupla = cur.fetchone()
         TuplaEquipos = TuplaEquipos + (equipoTupla,)
 
@@ -468,7 +468,6 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     )
     i = 0
     for equipo in Equipos:
-        print(equipo)
         id = str(equipo["idEquipo"])
         tipo_equipo = equipo["nombreTipo_equipo"]
         marca = equipo["nombreMarcaEquipo"]
