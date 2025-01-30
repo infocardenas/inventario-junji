@@ -213,7 +213,37 @@ def delete_marca_equipo(ids):
             )
         """ % ','.join(['%s'] * len(id_list)), id_list)
 
-        # PASO 5 al PASO 8 permanecen iguales.
+        # PASO 5: Eliminar equipos relacionados a la marca
+        cur.execute("""
+            DELETE FROM equipo 
+            WHERE idModelo_equipo IN (
+                SELECT idModelo_Equipo FROM modelo_equipo 
+                WHERE idMarca_Tipo_Equipo IN (
+                    SELECT idMarcaTipo FROM marca_tipo_equipo 
+                    WHERE idMarca_Equipo IN (%s)
+                )
+            )
+        """ % ','.join(['%s'] * len(id_list)), id_list)
+
+        # PASO 6: Eliminar modelos de equipos relacionados a la marca
+        cur.execute("""
+            DELETE FROM modelo_equipo 
+            WHERE idMarca_Tipo_Equipo IN (
+                SELECT idMarcaTipo FROM marca_tipo_equipo 
+                WHERE idMarca_Equipo IN (%s)
+            )
+        """ % ','.join(['%s'] * len(id_list)), id_list)
+
+        # PASO 7: Eliminar relaciones en marca_tipo_equipo
+        cur.execute("""
+            DELETE FROM marca_tipo_equipo 
+            WHERE idMarca_Equipo IN (%s)
+        """ % ','.join(['%s'] * len(id_list)), id_list)
+
+        # PASO 8: Finalmente, eliminar la marca en marca_equipo
+        cur.execute("""
+            DELETE FROM marca_equipo WHERE idMarca_Equipo IN (%s)
+        """ % ','.join(['%s'] * len(id_list)), id_list)
 
         mysql.connection.commit()
 

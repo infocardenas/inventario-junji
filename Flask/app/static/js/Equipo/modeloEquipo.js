@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function () {
     cargarMarcas(); // Llama a la función que carga las marcas
 });
 
-  // Función para cargar las marcas
+// Función para cargar las marcas
 async function cargarMarcas() {
     const response = await fetch("/get_marcas");
     const marcas = await response.json();
@@ -20,7 +20,7 @@ async function cargarMarcas() {
     limpiarSelect("tipoSelect", "Seleccione un tipo");
 }
 
-  // Función para cargar los tipos basados en la marca seleccionada
+// Función para cargar los tipos basados en la marca seleccionada
 async function cargarTipos() {
     const marcaId = document.getElementById("marcaSelect").value;
     const tipoSelect = document.getElementById("tipoSelect");
@@ -44,8 +44,21 @@ async function cargarTipos() {
 }
 
 
-  // Función para limpiar un select
+// Función para limpiar un select
 function limpiarSelect(id, placeholder) {
     const select = document.getElementById(id);
     select.innerHTML = `<option value="">${placeholder}</option>`;
 }
+
+$(document).ready(function () {
+    // Si hay un mensaje de confirmación en `flash`, activamos el modal
+    const confirmUrl = $(".flash-message[data-confirm]").data("confirm");
+    if (confirmUrl) {
+      configureGenericModal(
+        "Eliminar Modelo de Equipo",
+        "No se puede eliminar el modelo porque hay equipos asociados. ¿Deseas eliminar todas las relaciones y continuar?",
+        confirmUrl
+      );
+    }
+  });
+  

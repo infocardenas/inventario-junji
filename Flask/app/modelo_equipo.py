@@ -5,7 +5,6 @@ from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 from flask import jsonify
 
-
 modelo_equipo = Blueprint("modelo_equipo", __name__, template_folder="app/templates")
 
 # Definir el esquema de validación
@@ -271,19 +270,122 @@ def update_modelo_equipo(id):
 @modelo_equipo.route("/delete_modelo_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
 def delete_modelo_equipo(id):
+    print(f"🔍 Recibida solicitud para eliminar modelo ID: {id}")
+
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado.", "danger")
         return redirect("/ingresar")
+
     try:
         cur = mysql.connection.cursor()
-        cur.execute("DELETE FROM modelo_equipo WHERE idModelo_Equipo = %s", (id,))
-        mysql.connection.commit()
-        flash("Modelo eliminado correctamente")
-        return redirect(url_for("modelo_equipo.modeloEquipo"))
+
+        # Verificar si hay equipos asociados al modelo
+        cur.execute("SELECT COUNT(*) as total FROM equipo WHERE idModelo_equipo = %s", (id,))
+        result = cur.fetchone()
+
+        # ✅ Acceder correctamente al valor sin importar si `fetchone()` devuelve una tupla o diccionario
+        if result is None:
+            count = 0
+        elif isinstance(result, dict):
+            count = result["total"]  # 🔥 Si devuelve un diccionario
+        else:
+            count = result[0]  # 🔥 Si devuelve una tupla
+
+        print(f"🔍 Equipos asociados a modelo {id}: {count}")
+
+        if count > 0:
+            confirm_url = url_for("modelo_equipo.delete_modelo_equipo_confirm", id=id)
+            flash("confirm_delete_modelo", confirm_url)  # Enviar mensaje especial a JS
+            return redirect(url_for("modelo_equipo.modeloEquipo"))
+
+
+        # 🔹 Redirigir a la confirmación si no hay equipos asociados
+        return redirect(url_for("modelo_equipo.delete_modelo_equipo_confirm", id=id))
+
     except Exception as e:
-        #flash(e.args[1])
-        flash("Error al crear")
+        import traceback
+        error_message = traceback.format_exc()
+        print(f"❌ Error al verificar modelo {id}: {error_message}")
+        flash(f"Error al verificar el modelo: {error_message}", "danger")
         return redirect(url_for("modelo_equipo.modeloEquipo"))
+
+
+@modelo_equipo.route("/delete_modelo_equipo_confirm/<id>", methods=["POST", "GET"])
+@administrador_requerido
+def delete_modelo_equipo_confirm(id):
+    print(f"🔍 Confirmada eliminación del modelo ID: {id}")
+
+    if "user" not in session:
+        flash("No estás autorizado.", "danger")
+        return redirect("/ingresar")
+
+    try:
+        cur = mysql.connection.cursor()
+
+        # 🔹 Eliminar dependencias antes de borrar el modelo
+
+        cur.execute("""
+            DELETE FROM equipo_asignacion 
+            WHERE idEquipo IN (
+                SELECT idEquipo FROM equipo WHERE idModelo_equipo = %s
+            )
+        """, (id,))
+
+        cur.execute("""
+            DELETE FROM traslacion 
+            WHERE idEquipo IN (
+                SELECT idEquipo FROM equipo WHERE idModelo_equipo = %s
+            )
+        """, (id,))
+
+        cur.execute("""
+            DELETE FROM incidencia 
+            WHERE idEquipo IN (
+                SELECT idEquipo FROM equipo WHERE idModelo_equipo = %s
+            )
+        """, (id,))
+
+        cur.execute("""
+            DELETE FROM devolucion 
+            WHERE rutFuncionario IN (
+                SELECT f.rutFuncionario 
+                FROM funcionario f
+                WHERE f.rutFuncionario IN (
+                    SELECT a.rutFuncionario 
+                    FROM asignacion a
+                    WHERE a.idAsignacion IN (
+                        SELECT ea.idAsignacion 
+                        FROM equipo_asignacion ea
+                        WHERE ea.idEquipo IN (
+                            SELECT idEquipo FROM equipo WHERE idModelo_equipo = %s
+                        )
+                    )
+                )
+            )
+        """, (id,))
+
+        # 🔹 Eliminar equipos relacionados con el modelo
+        cur.execute("""
+            DELETE FROM equipo WHERE idModelo_equipo = %s
+        """, (id,))
+
+        # 🔹 Finalmente, eliminar el modelo de equipo
+        cur.execute("""
+            DELETE FROM modelo_equipo WHERE idModelo_Equipo = %s
+        """, (id,))
+
+        mysql.connection.commit()
+
+        flash("Modelo eliminado correctamente junto con sus relaciones asociadas.", "success")
+        return redirect(url_for("modelo_equipo.modeloEquipo"))
+
+    except Exception as e:
+        import traceback
+        error_message = traceback.format_exc()
+        print(f"❌ Error al eliminar modelo {id}: {error_message}")
+        flash(f"Error al eliminar el modelo: {error_message}", "danger")
+        return redirect(url_for("modelo_equipo.modeloEquipo"))
+
 
 
 
