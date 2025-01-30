@@ -4,17 +4,32 @@ function navigateTo(url) {
 
 function mostrarError(inputField, mensaje) {
   const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
-
   errorMessage.text(mensaje).show(); // Mostrar el mensaje de error
-  inputField.css("border", "2px solid red"); // Resaltar el campo con borde rojo
+
+  // Verifica si el campo está dentro de un contenedor con la clase .highlight-container
+  const highlightContainer = inputField.closest(".highlight-container");
+
+  if (highlightContainer.length) {
+    highlightContainer.css("border", "2px solid red");
+  } else {
+    inputField.css("border", "2px solid red"); // Para otros campos normales
+  }
 }
 
 function limpiarError(inputField) {
   const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
-
   errorMessage.hide(); // Ocultar el mensaje de error
-  inputField.css("border", ""); // Quitar el borde rojo
+
+  // Verifica si el campo está dentro de un contenedor con la clase .highlight-container
+  const highlightContainer = inputField.closest(".highlight-container");
+
+  if (highlightContainer.length) {
+    highlightContainer.css("border", "");
+  } else {
+    inputField.css("border", ""); // Para otros campos normales
+  }
 }
+
 
 // Limpia los valores de todos los inputs, selects y textareas dentro del modal
 function limpiarInputsEnModal(modal) {
@@ -42,6 +57,7 @@ function limpiarErroresEnModal(modal) {
   });
 
   $(modal).find("input, select, textarea").css("border", "");
+  $(modal).find(".equipos-asignados-table").css("border", "1px solid #ddd"); // Estilo exclusivo para la tabla de asginaciones
 }
 
 $(document).ready(function () {
