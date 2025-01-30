@@ -12,7 +12,7 @@
                     <!-- Fecha de asignación -->
                     <div class="mb-3 fecha-asignacion">
                         <label for="fecha-asignacion">Fecha asignación<span style="color: red; margin-left: 5px">*</span></label>
-                        <input type="date" name="fecha-asignacion" class="form-control campo-obligatorio">
+                        <input type="date" name="fecha-asignacion" class="form-control campo-obligatorio fecha-input">
                         <div class="text-error-message"></div>
                     </div>
 
@@ -40,6 +40,7 @@
                     </div>
                     
                     <!-- Tabla con scroll vertical -->
+                    <label>Equipos sin asignar</label>
                     <div class="mb-3" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
                         <table class="table table-sm table-hover mb-0" style="table-layout: fixed;">
                             <thead class="table-light">
@@ -66,12 +67,13 @@
 
                     <!-- Equipos asignados con scroll vertical -->
                     <div class="mb-3">
-                        <label>Equipos asignados</label>
-                        <div style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
+                        <label>Equipos asignados<span style="color: red; margin-left: 5px">*</span></label>
+                        <div class="highlight-container equipos-asignados-table" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
                             <ul class="list-group" id="equiposAsignadosList">
                                 <!-- Aquí se irán agregando los equipos seleccionados -->
                             </ul>
                         </div>
+                        <div class="text-error-message"></div>
                     </div>
                     
                     <!-- Sección para seleccionar traslado -->

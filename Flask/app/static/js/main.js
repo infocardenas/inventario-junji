@@ -4,17 +4,32 @@ function navigateTo(url) {
 
 function mostrarError(inputField, mensaje) {
   const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
-
   errorMessage.text(mensaje).show(); // Mostrar el mensaje de error
-  inputField.css("border", "2px solid red"); // Resaltar el campo con borde rojo
+
+  // Verifica si el campo está dentro de un contenedor con la clase .highlight-container
+  const highlightContainer = inputField.closest(".highlight-container");
+
+  if (highlightContainer.length) {
+    highlightContainer.css("border", "2px solid red");
+  } else {
+    inputField.css("border", "2px solid red"); // Para otros campos normales
+  }
 }
 
 function limpiarError(inputField) {
   const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
-
   errorMessage.hide(); // Ocultar el mensaje de error
-  inputField.css("border", ""); // Quitar el borde rojo
+
+  // Verifica si el campo está dentro de un contenedor con la clase .highlight-container
+  const highlightContainer = inputField.closest(".highlight-container");
+
+  if (highlightContainer.length) {
+    highlightContainer.css("border", "");
+  } else {
+    inputField.css("border", ""); // Para otros campos normales
+  }
 }
+
 
 // Limpia los valores de todos los inputs, selects y textareas dentro del modal
 function limpiarInputsEnModal(modal) {
@@ -42,12 +57,16 @@ function limpiarErroresEnModal(modal) {
   });
 
   $(modal).find("input, select, textarea").css("border", "");
+  $(modal).find(".equipos-asignados-table").css("border", "1px solid #ddd"); // Estilo exclusivo para la tabla de asginaciones
 }
 
 $(document).ready(function () {
+  $("#addAsignacionModal").on("shown.bs.modal", function () {
+    fechaPorDefecto(); // Establecer la fecha solo cuando el modal esté completamente cargado
+  });
+
   $(".modal").on("hide.bs.modal", function (event) {
     const modal = this;
-
     const target = $(event.relatedTarget);
     const isSwitchingModal = target && target.data("bs-toggle") === "modal";
 
@@ -76,24 +95,24 @@ $(document).ready(function () {
 });
 
 function fechaPorDefecto() {
-  //Crea un objeto date para obtener la fecha actual
-  date = new Date();
-  year = date.getFullYear();
-  month = date.getMonth() + 1;
-  day = date.getDate();
-  //El formato tiene que ser con dos digitos con un 0 a la izquierda
-  //de ser nesesario
-  if (month < 10) {
-    month = "0" + month
-  }
-  if (day < 10) {
-    day = "0" + day
-  }
-  //Se crea una string con la fecha en el formato que nesesita html
-  formatedDate = year + "-" + month + "-" + day
-  document.getElementById("inputFecha")
-    .setAttribute("value", formatedDate);
+  const date = new Date();
+  const year = date.getFullYear();
+  let month = date.getMonth() + 1; // Los meses van de 0 a 11, sumamos 1 para obtener el mes correcto
+  let day = date.getDate();
 
+  // Asegura que el mes y el día tengan dos dígitos
+  month = month < 10 ? "0" + month : month;
+  day = day < 10 ? "0" + day : day;
+
+  // Formato que requiere el input de tipo date (YYYY-MM-DD)
+  const formatedDate = `${year}-${month}-${day}`;
+
+  // Asegurar que se seleccione el input de fecha correctamente
+  const fechaInput = document.querySelector(".fecha-input");
+
+  if (fechaInput) {
+    fechaInput.value = formatedDate; // Asignar la fecha actual
+  }
 }
 
 function showDiv(id = "formulario", Esconder = []) {

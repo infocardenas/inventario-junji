@@ -253,3 +253,26 @@ function rowClickHandler(event) {
         checkbox.dispatchEvent(new Event('change')); // Disparar evento 'change' manualmente
     }
 }
+
+// Muestra/oculta mensajes de error correctamente en la tabla de equipos asignados.
+$(document).ready(function () {
+    $("#form-asignacion-modal").on("submit", function (event) {
+        const equiposAsignados = $("#equiposAsignadosList li").length; // Cuenta los equipos asignados
+        const equiposContainer = $("#equiposAsignadosList").parent(); // Obtener el div padre
+
+        if (equiposAsignados === 0) {
+            mostrarError(equiposContainer, "Debe asignar al menos un equipo");
+            event.preventDefault();
+        } else {
+            limpiarError(equiposContainer);
+            equiposContainer.css("border", "1px solid #ddd");
+        }
+    });
+
+    // Escuchar cuando se agrega un equipo y eliminar el error automáticamente
+    $("#equiposAsignadosList").on("DOMNodeInserted", function () {
+        const equiposContainer = $(this).parent(); // Obtener el div padre
+        limpiarError(equiposContainer); // Limpiar mensaje de error
+        equiposContainer.css("border", "1px solid #ddd"); // Restaurar borde original
+    });
+});
