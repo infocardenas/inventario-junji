@@ -71,14 +71,15 @@ CREATE TABLE `unidad` (
 --
 
 CREATE TABLE `funcionario` (
-  `rutFuncionario` varchar(20) NOT NULL,
-  `nombreFuncionario` varchar(45) NOT NULL,
+  `rutFuncionario` VARCHAR(10) NOT NULL,
+  `nombreFuncionario` VARCHAR(45) NOT NULL,
   `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TECNICO', 'DIRECTIVO') NOT NULL,
-  `idUnidad` int(11) DEFAULT NULL,
-  `correoFuncionario` varchar(45) DEFAULT NULL,
+  `idUnidad` INT DEFAULT NULL,
+  `correoFuncionario` VARCHAR(45) NOT NULL,
   PRIMARY KEY (`rutFuncionario`),
   UNIQUE KEY `unique_correoFuncionario` (`correoFuncionario`),
-  CONSTRAINT `funcionario_ibfk_1` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`)
+  CONSTRAINT `funcionario_ibfk_1` FOREIGN KEY (`idUnidad`) 
+    REFERENCES `unidad` (`idUnidad`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -88,16 +89,17 @@ CREATE TABLE `funcionario` (
 --
 
 CREATE TABLE `asignacion` (
-  `idAsignacion` int(11) NOT NULL AUTO_INCREMENT,
-  `fecha_inicioAsignacion` date DEFAULT NULL,
-  `ObservacionAsignacion` varchar(250) DEFAULT NULL,
-  `rutaactaAsignacion` varchar(45) DEFAULT NULL,
-  `ActivoAsignacion` tinyint(4) DEFAULT NULL,
-  `rutFuncionario` varchar(20) DEFAULT NULL,
-  `idDevolucion` int(11) DEFAULT NULL,
-  `fechaDevolucion` date DEFAULT NULL,
+  `idAsignacion` INT NOT NULL AUTO_INCREMENT,
+  `fecha_inicioAsignacion` DATE NOT NULL,
+  `ObservacionAsignacion` VARCHAR(250) DEFAULT NULL,
+  `rutaactaAsignacion` VARCHAR(45) NULL,
+  `ActivoAsignacion` TINYINT DEFAULT 1,
+  `rutFuncionario` VARCHAR(10) NOT NULL,
+  `idDevolucion` INT DEFAULT NULL,
+  `fechaDevolucion` DATE DEFAULT NULL,
   PRIMARY KEY (`idAsignacion`),
-  CONSTRAINT `fk_asignacion_funcionario` FOREIGN KEY (`rutFuncionario`) REFERENCES `funcionario` (`rutFuncionario`)
+  CONSTRAINT `fk_asignacion_funcionario` FOREIGN KEY (`rutFuncionario`) 
+    REFERENCES `funcionario` (`rutFuncionario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
