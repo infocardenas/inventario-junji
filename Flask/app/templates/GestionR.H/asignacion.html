@@ -13,7 +13,7 @@
             </div>
 
             <!-- Botón para redirigir a agregar asignación -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAsignacionModal">Agregar asignación</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAsignacionModal" onclick="fechaPorDefecto()">Agregar asignación</button> <!-- onclick de fechaPorDefecto() para que no haya un delay entre que cargue completamente el modal y muestre la fecha. Al tener la función en onclick muestra la fecha instantáneamente -->
             <button type="button" onclick="navigateTo('/add_asignacion')" class="btn btn-primary">Agregar asignación antigüo</button>
         </div>
 

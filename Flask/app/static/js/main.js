@@ -61,9 +61,12 @@ function limpiarErroresEnModal(modal) {
 }
 
 $(document).ready(function () {
+  $("#addAsignacionModal").on("shown.bs.modal", function () {
+    fechaPorDefecto(); // Establecer la fecha solo cuando el modal esté completamente cargado
+  });
+
   $(".modal").on("hide.bs.modal", function (event) {
     const modal = this;
-
     const target = $(event.relatedTarget);
     const isSwitchingModal = target && target.data("bs-toggle") === "modal";
 
@@ -92,24 +95,24 @@ $(document).ready(function () {
 });
 
 function fechaPorDefecto() {
-  //Crea un objeto date para obtener la fecha actual
-  date = new Date();
-  year = date.getFullYear();
-  month = date.getMonth() + 1;
-  day = date.getDate();
-  //El formato tiene que ser con dos digitos con un 0 a la izquierda
-  //de ser nesesario
-  if (month < 10) {
-    month = "0" + month
-  }
-  if (day < 10) {
-    day = "0" + day
-  }
-  //Se crea una string con la fecha en el formato que nesesita html
-  formatedDate = year + "-" + month + "-" + day
-  document.getElementById("inputFecha")
-    .setAttribute("value", formatedDate);
+  const date = new Date();
+  const year = date.getFullYear();
+  let month = date.getMonth() + 1; // Los meses van de 0 a 11, sumamos 1 para obtener el mes correcto
+  let day = date.getDate();
 
+  // Asegura que el mes y el día tengan dos dígitos
+  month = month < 10 ? "0" + month : month;
+  day = day < 10 ? "0" + day : day;
+
+  // Formato que requiere el input de tipo date (YYYY-MM-DD)
+  const formatedDate = `${year}-${month}-${day}`;
+
+  // Asegurar que se seleccione el input de fecha correctamente
+  const fechaInput = document.querySelector(".fecha-input");
+
+  if (fechaInput) {
+    fechaInput.value = formatedDate; // Asignar la fecha actual
+  }
 }
 
 function showDiv(id = "formulario", Esconder = []) {
