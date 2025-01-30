@@ -386,7 +386,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, id_equipos, realizar_
         #la informacion de la asignacion
 
         crear_traslado_generico(fecha_asignacion, Funcionario['idUnidad']
-                                ,Unidad['idUnidad'], equipos_id)
+                                ,Unidad['idUnidad'], id_equipos)
     return redirect(url_for('asignacion.Asignacion'))
 
 def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
