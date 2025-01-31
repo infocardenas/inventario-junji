@@ -166,7 +166,7 @@ def update_tipo_equipo(id):
         data = {
             'nombreTipo_Equipo': request.form['nombreTipo_equipo']
         }
-        ids_marca_seleccionadas = [int(id_marca) for id_marca in request.form.getlist("marcas[]") if id_marca.strip().isdigit()]
+        ids_marca_seleccionadas = request.form.getlist("marcas[]")
 
         # Validar datos usando Cerberus
         v = Validator(tipo_equipo_schema)

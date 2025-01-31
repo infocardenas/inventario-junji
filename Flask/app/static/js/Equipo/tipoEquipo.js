@@ -47,9 +47,12 @@ $(document).ready(function () {
             $("#editTipoEquipoModal input[name='marcas[]']").prop("checked", false);
 
             if (marcas) {
-                const marcasSeleccionadas = JSON.parse(marcas); // Convertir de string a JSON si es necesario
-                marcasSeleccionadas.forEach(marca => {
-                    $(`#edit_marca_${marca.idMarca_equipo}`).prop("checked", true);
+                const marcasSeleccionadas = marcas.split(",").map(marca => marca.trim());
+
+                $("#editTipoEquipoModal input[name='marcas[]']").each(function () {
+                    if (marcasSeleccionadas.includes($(this).next("label").text().trim())) {
+                        $(this).prop("checked", true);
+                    }
                 });
             }
 

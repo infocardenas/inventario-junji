@@ -130,7 +130,7 @@
                     <tbody id="myTableBody">
                         {% if tipo_equipo %}
                         {% for tipoe in tipo_equipo %}
-                        <tr data-id="{{ tipoe.idTipo_equipo }}" data-nombre="{{ tipoe.nombreTipo_equipo }}" data-marcas="{{ tipoe.marcas|tojson }}">
+                        <tr data-id="{{ tipoe.idTipo_equipo }}" data-nombre="{{ tipoe.nombreTipo_equipo }}" data-marcas="{{ tipoe.marcas }}">
                             <td class="checkbox-column">
                                 <input type="checkbox" class="checkbox-table row-checkbox">
                             </td>
