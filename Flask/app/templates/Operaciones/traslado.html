@@ -1,140 +1,118 @@
 {% extends "layout.html" %}
 {% block body %}
-{% from 'funciones_macro.html' import paginacion %}
-<div class="row">
 
+{% from 'funciones_macro.html' import paginacion %}
+
+<div class="row">
     <div class="col-md-12">
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
-
         <div class="custom-alert" role="alert">
             {{ message }}
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-
         {% endfor %}
         {% endif %}
         {% endwith %}
 
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTrasladoModal">
-                    Agregar Traslado
-                </button>
+        <button class="nav-button" data-bs-toggle="modal" data-bs-target="#trasladoModal">Agregar Traslado</button>
 
-                <!-- Modal para agregar proveedor -->
-                <div class="modal fade" id="addTrasladoModal" tabindex="-1" aria-labelledby="addTrasladoModalLabel"
-                    aria-hidden="true">
-                    <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="addTrasladoModalLabel">Agregar Traslado</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <form id="form_addTrasladoModal" action="/traslado/add_traslado" method="POST">
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label>Origen</label>
-                                        <select name="Origen" id="" class="form-control">
-                                            <option value="">Seleccione el Origen</option>
-                                            {% for unidadOrigen in unidades %}
-                                            <option value="{{unidadOrigen.idUnidad }}">{{unidadOrigen.nombreUnidad}}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                    <button type="submit" class="btn btn-primary">Guardar</button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-                <button class="nav-button" onclick="showDiv()">Agregar</button>
-                <div class="card card-body" id="formulario" style="display: none;">
-                    <form action="/traslado/add_traslado" method="POST" class="mi-formulario">
-                        <label>Origen</label>
-                        <select name="Origen" id="">
-                            <option value="">Seleccione el Origen</option>
-                            {% for unidadOrigen in unidades %}
-                            <option value="{{unidadOrigen.idUnidad }}">{{unidadOrigen.nombreUnidad}}</option>
-                            {% endfor %}
-                        </select>
-
-                        <button class="agregar-button" type="submit"> Agregar</button>
-                    </form>
-                </div>
-
-        <h2>Traslado</h2>
-        <div style="width: 0px; margin:auto">
-            <input name="busqueda" type="text" class="search-box" placeholder="Buscar traslados" style="font-size: 30px"
-                id="buscador" onkeyup="busqueda('myTableBody')">
-        </div>
-        <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
+        <h2>Traslados</h2>
         <div style="overflow-x:auto;">
             <table id="posts">
-                <thead id="myTableHead">
+                <thead>
                     <tr>
-
-                        <th onclick="sortTable(0)">Fecha Traslado</th>
+                        <th>Fecha Traslado</th>
                         <th>Acta</th>
-                        <th onclick="sortTable(2)">Origen</th>
-                        <th onclick="sortTable(3)">Destino</th>
-                        <th onclick="sortTable(4)">N°</th>
+                        <th>Origen</th>
+                        <th>Destino</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="myTableBody">
-                    <!-- Se inicia iteracion for para mostrar todos los proveedores que almacena cada uno en pro que recorre provincia -->
+                <tbody id="trasladoTableBody">
                     {% for tras in traslado %}
                     <tr>
-                        <!-- en el siguiente <td> se seleccionara el atributo que queremos mostrar en pantalla indicando el indice del nombre del proveedor en este caso -->
-                        <td class="toCheck">{{tras.fechatraslado}}</td>
+                        <td>{{ tras.fechatraslado }}</td>
+                        <td><a href="/traslado/mostrar_pdf/{{ tras.idTraslado }}" class="info-button">Acta</a></td>
+                        <td>{{ tras.nombreOrigen }}</td>
+                        <td>{{ tras.nombreDestino }}</td>
                         <td>
-                            {# añadir el path para los pdfs#}
-                            <a href="/traslado/mostrar_pdf/{{tras.idTraslado}}" class="info-button">Acta</a>
-                            {% if tras.estaFirmadoTraslado == 1%}
-                            <a href="/traslado/mostrar_pdf_firmado/{{tras.idTraslado}}" class="info-button">Acta Firmada</a>
-                            {% endif %}
-                        </td>
-                        <td class="toCheck">{{tras.nombreOrigen}}</td>
-                        <td class="toCheck">{{tras.nombreDestino}}</td>
-                        <td class="toCheck">{{tras.idTraslado}}</td>
-                        <td>
-                            <div class="dropdown">
-                                <button class="options-button desplegable-button">Opciones</button>
-                                <div class="dropdown-options" style="border: 0px; border-color:#5500ff; border-style:solid">
-                                    <!-- se indica la ruta de la funcion editar y agregando el id a traves de del indice proveedor.0 -->
-                                    {# El boton de editar no se ocupa porque el acta tendria que generarse denuevo de todos
-                                    modos#}
-                                    {#<a href="/traslado/edit_traslado/{{tras.idTraslado}}"
-                                        class="success-button desplegable-button">Editar</a>#}
-                                    <!-- en la class "btn-delete" se utilizara para la confirmacion de eliminacion del proveedor segun su id proveedor.0  -->
-                                    <a href="/traslado/delete_traslado/{{tras.idTraslado}}"
-                                        class="delete-button desplegable-button">Eliminar</a>
-                                    <a href="/mostrar_asociados_traslado/{{tras.idTraslado}}"
-                                        class="info-button desplegable-button">Equipos</a>
-                                    {% if tras.estaFirmadoTraslado != 1%}
-                                    <a href="/traslado/listar_pdf/{{tras.idTraslado}}"
-                                        class="success-button desplegable-button">
-                                        Firmar</a>
-                                    {% endif %}
-                                </div>
-                            </div>
+                            <a href="/traslado/delete_traslado/{{ tras.idTraslado }}" class="delete-button">Eliminar</a>
+                            <a href="/mostrar_asociados_traslado/{{ tras.idTraslado }}" class="info-button">Equipos</a>
                         </td>
                     </tr>
                     {% endfor %}
-                    <!-- Se termina la iteracion for -->
                 </tbody>
             </table>
         </div>
     </div>
 </div>
-        
 
+<!-- Modal -->
+<div class="modal fade" id="trasladoModal" tabindex="-1" role="dialog" aria-labelledby="trasladoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="trasladoModalLabel">Nuevo Traslado</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="trasladoForm">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="fechatraslado">Fecha de Traslado</label>
+                        <input type="date" name="fechatraslado" id="fechatraslado" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="Origen">Unidad de Origen</label>
+                        <select name="Origen" id="Origen" class="form-control" required>
+                            <option value="">Seleccione una unidad</option>
+                            {% for unidad in unidades %}
+                            <option value="{{ unidad.idUnidad }}">{{ unidad.nombreUnidad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Equipos disponibles</label>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>Seleccionar</th>
+                                        <th>Modelo</th>
+                                        <th>Marca</th>
+                                        <th>Código Inventario</th>
+                                        <th>Número Serie</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="equiposLista">
+                                    <!-- Equipos cargados dinámicamente -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="Destino">Unidad de Destino</label>
+                        <select name="Destino" id="Destino" class="form-control" required>
+                            <option value="">Seleccione una unidad</option>
+                            {% for unidad in unidades %}
+                            <option value="{{ unidad.idUnidad }}">{{ unidad.nombreUnidad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Confirmar Traslado</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
-        {{ paginacion("traslado", page, lastpage) }}
-        {% endblock %}
+<script src="{{ url_for('static', filename='js/Operaciones/Traslado.js') }}"></script>
+{% endblock %}

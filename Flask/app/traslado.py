@@ -10,6 +10,7 @@ from flask import (
     session,
     request,
     abort,
+    jsonify
 )
 from db import mysql
 from fpdf import FPDF
@@ -70,6 +71,23 @@ def Traslado(page=1):
         page=page,
         lastpage=page < (total / perpage) + 1,
     )
+
+@traslado.route("/traslado/equipos_unidad/<int:unidad_id>")
+def obtener_equipos_unidad(unidad_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT e.idEquipo, me.nombreModeloequipo, e.Num_serieEquipo 
+        FROM equipo e
+        INNER JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_equipo
+        WHERE e.idUnidad = %s AND e.idEstado_equipo IN (
+            SELECT idEstado_equipo FROM estado_equipo 
+            WHERE nombreEstado_equipo IN ('SIN ASIGNAR', 'EN USO')
+        )
+    """, (unidad_id,))
+
+    equipos = cur.fetchall()
+    return jsonify(equipos)
+
 
 
 @traslado.route("/traslado/add_traslado", methods=["GET", "POST"])
@@ -238,39 +256,33 @@ def delete_traslado(id):
         flash("Error al crear")
         return redirect(url_for("traslado.Traslado"))
 
+def get_unidad_nombre(unidad_id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT nombreUnidad FROM unidad WHERE idUnidad = %s", (unidad_id,))
+    result = cur.fetchone()
+    return result["nombreUnidad"] if result else "Desconocido"
 
-@traslado.route("/traslado/create_traslado/<origen>", methods=["POST"])
+
+
+@traslado.route("/traslado/create_traslado/<int:origen>", methods=["POST"])
 @administrador_requerido
 def create_traslado(origen):
-    if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
-        return redirect("/ingresar")
-    if request.method == "POST":
-        fechatraslado = request.form["fechatraslado"]
-        # rutadocumento = request.form['']
-        try:
-            Destino = request.form["Destino"]
-            print("destino -" + Destino + "-")
-            if(Destino == ""):
-                raise Exception("Destino no especificado")
-        except Exception as e:
-            flash("Destino no especificado")
-            return redirect(url_for("traslado.Traslado"))
-        # trasladar[] es la notacion para obtener un array con todos los outputs de las checklist
-        try:
-            #cambiar array
-            equipos = request.form.getlist("trasladar[]")
+    fechatraslado = request.form["fechatraslado"]
+    destino = request.form["Destino"]
+    equipos = request.form.getlist("trasladar[]")
 
-            if len(equipos) == 0:
-                raise Exception("equipos")
-        except Exception as e:
-            flash("equipos no seleccionados")
-            return redirect(url_for("traslado.Traslado"))
-        crear_traslado_generico(fechatraslado, Destino, origen, equipos)
+    if not destino or not equipos:
+        return jsonify({"success": False, "message": "Destino o equipos no seleccionados"}), 400
 
-        return redirect(url_for("traslado.Traslado"))
-    return redirect(url_for("traslado.Traslado"))
+    traslado_id = crear_traslado_generico(fechatraslado, destino, origen, equipos)
 
+    return jsonify({
+        "success": True,
+        "idTraslado": traslado_id,
+        "fechatraslado": fechatraslado,
+        "nombreOrigen": get_unidad_nombre(origen),
+        "nombreDestino": get_unidad_nombre(destino)
+    })
 
 
 
@@ -542,20 +554,17 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
 @loguear_requerido
 def mostrar_pdf(id, firmado="0"):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("Se necesita ingresar para acceder a esta ruta")
         return redirect("/ingresar")
-    print(firmado)
-    if firmado == "0":
-        nombrePdf = "traslado_" + str(id) + ".pdf"
-    else:
-        nombrePdf = "traslado_" + str(id) + "_firmado.pdf"
-        print("se encontro el firmado" + nombrePdf)
-    dir = "pdf"
-    print("test")
-    print(dir)
-    file = os.path.join(dir, nombrePdf)
-    return send_file(file, as_attachment=True)
 
+    nombrePdf = f"traslado_{id}.pdf" if firmado == "0" else f"traslado_{id}_firmado.pdf"
+    dir_pdf = os.path.join("pdf", nombrePdf)
+
+    if not os.path.exists(dir_pdf):
+        flash(f"El archivo PDF {nombrePdf} no se encuentra disponible.")
+        return redirect("/traslado")  # Redirige a la página principal en vez de caer en error
+
+    return send_file(dir_pdf, as_attachment=True)
 
 @traslado.route("/traslado/buscar/<idTraslado>")
 @loguear_requerido

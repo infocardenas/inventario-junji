@@ -41,7 +41,10 @@
             <div class="table-toolbar">
                 <select class="actions-select">
                     <option value="" selected disabled>Acciones</option>
-                    <option value="edit">Editar</option>
+                    <option value="edit" 
+                    data-bs-toggle="modal" 
+                    data-bs-target="#editMarcaModal"
+                    data-nombre="{{marca_equipo.nombre_marca_equipo}}">Editar</option>
                     <option value="delete">Eliminar</option>
                 </select>
             </div>
@@ -96,11 +99,25 @@
                                 placeholder="Ingresa el nombre de la marca" required>
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-                </form>
+                    <form id="editMarcaForm" method="POST" action="">
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="edit_nombreMarca" class="form-label">Nombre Marca</label>
+                                <input 
+                                    type="text" 
+                                    class="form-control" 
+                                    id="edit_nombreMarca" 
+                                    name="nombre_marca_equipo" 
+                                    placeholder="Ingresa el nombre de la marca" 
+                                    required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>                    
+                </div>
             </div>
         </div>
     </div>
@@ -114,5 +131,23 @@
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/Equipo/marcaEquipo.js') }}"></script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+        const editForm = document.getElementById("editMarcaForm");
+
+        document.querySelectorAll(".edit-button").forEach(button => {
+            button.addEventListener("click", function () {
+                const tipoId = this.dataset.id;
+                const tipoNombre = this.dataset.nombre;
+
+                // Llenar formulario
+                document.getElementById("edit_nombreMarca").value = tipoNombre;
+
+                // Actualizar la acción del formulario
+                editForm.action = `/update_marca_equipo/${tipoId}`;
+            });
+        });
+    });
+</script>
 
 {% endblock %}
