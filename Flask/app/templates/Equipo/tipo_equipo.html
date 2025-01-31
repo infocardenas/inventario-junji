@@ -4,18 +4,6 @@
 
 <div class="row">
     <div class="col-md-12">
-        <!-- Mostrar mensajes flash -->
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
-            {% for message in messages %}
-            {{ message }}
-            {% endfor %}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endif %}
-        {% endwith %}
-
         <!-- Botón para agregar Tipo de Equipo -->
         <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#addTipoEquipoModal">
             Agregar Tipo de Equipo
