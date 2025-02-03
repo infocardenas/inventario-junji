@@ -100,7 +100,6 @@ $(document).ready(function () {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Refresh checkbox listeners and button states
     refreshCheckboxListeners();
 });
 
@@ -140,8 +139,8 @@ function asignarSeleccionados() {
     marcados.forEach(chk => {
         const row = chk.closest('tr');
         const tipo = row.children[1].innerText;
-        const marca = row.children[2].innerText;
-        const modelo = row.children[3].innerText;
+        const marca = row.children[4].innerText;
+        const modelo = row.children[5].innerText;
 
         // Obtener los atributos `data-*` para restaurar después
         const codigoInventario = row.dataset.codigoInventario || "N/A";
@@ -186,8 +185,11 @@ function quitarEquipo(button, idEquipo, tipo, marca, modelo, codigoInventario, n
     newRow.innerHTML = `
         <td><input class="no-delete-value" type="checkbox" name="equipoSeleccionado" value="${idEquipo}"></td>
         <td>${tipo}</td>
+        <td>${codigoInventario}</td>
+        <td>${numeroSerie}</td>
         <td>${marca}</td>
         <td>${modelo}</td>
+        <td>${unidad}</td>
     `;
 
     equiposTable.appendChild(newRow);
@@ -208,8 +210,8 @@ function verDetalles() {
     // Obtener la fila del equipo seleccionado
     const row = marcados[0].closest('tr');
     const tipo = row.children[1].innerText;
-    const marca = row.children[2].innerText;
-    const modelo = row.children[3].innerText;
+    const marca = row.children[4].innerText;
+    const modelo = row.children[5].innerText;
 
     // Rellenar los datos en el modal
     document.getElementById('detalleTipo').textContent = tipo;

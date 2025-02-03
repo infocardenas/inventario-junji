@@ -35,7 +35,7 @@ def Asignacion(page=1):
     SELECT  
         a.idAsignacion,
         a.fecha_inicioAsignacion,
-        a.observacionAsignacion,
+        a.ObservacionAsignacion,
         a.fechaDevolucion,
         a.ActivoAsignacion,
         f.rutFuncionario,
@@ -56,6 +56,7 @@ def Asignacion(page=1):
         """, (perpage, offset)
     )
     data = cur.fetchall()
+    print(data)
     for row in data:
         row['fecha_inicio'] = row['fecha_inicioAsignacion'].strftime('%d-%m-%Y') if row['fecha_inicioAsignacion'] else 'N/A'
         row['fecha_devolucion'] = row['fechaDevolucion'].strftime('%d-%m-%Y') if row['fechaDevolucion'] else 'Sin devolver'
@@ -280,7 +281,7 @@ def create_asignacion():
     if request.method == "POST":
         fecha_asignacion = request.form.get('fecha-asignacion') 
         rut_funcionario = request.form.get('rut_funcionario')
-        observacion = request.form.get('observacion', '')
+        observacion = request.form.get('observacion')
         id_equipos = request.form.getlist('equiposAsignados[]')
         realizar_traslado = request.form.get('traslado')
 
@@ -301,7 +302,7 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, id_equipos, realizar_
             ActivoAsignacion
         )
         VALUES (%s, %s, %s, %s, 1)
-        """, (fecha_asignacion, observacion, 'ruta', rut,))
+        """, (fecha_asignacion, observacion, 'ruta', rut))
     mysql.connection.commit()
 
     # Recuperar el ID de la asignación recién insertada

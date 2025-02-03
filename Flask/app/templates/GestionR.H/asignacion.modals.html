@@ -1,6 +1,6 @@
 <!-- Modal para agregar una asignación de equipo -->
 <div class="modal fade" id="addAsignacionModal" tabindex="-1" aria-labelledby="">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <!-- Encabezado -->
             <div class="modal-header">
@@ -10,25 +10,30 @@
             <!-- Contenido -->
             <div class="modal-body">
                 <form class="asignaciones" id="form-asignacion-modal" action="/asignacion/create_asignacion" method="POST">
-                    <!-- Fecha de asignación -->
-                    <div class="mb-3 fecha-asignacion">
-                        <label for="fecha-asignacion">Fecha asignación<span style="color: red; margin-left: 5px">*</span></label>
-                        <input type="date" name="fecha-asignacion" class="form-control campo-obligatorio fecha-input">
-                        <div class="text-error-message"></div>
-                    </div>
-
-                    <!-- RUT del funcionario -->
-                    <div class="mb-3">
-                        <label for="rut_funcionario">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
-                        <div style="display: flex; align-items: center;">
-                            <input type="text" class="form-control campo-obligatorio rut-input" id="rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guión" maxlength="8" style="width: 70%;">
-                            <span style="width: 10%; display: flex; justify-content: center;">-</span>
-                            <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
+                    <div class="row">
+                        <!-- Fecha de asignación -->
+                        <div class="col-md-5">
+                            <div class="mb-3 fecha-asignacion">
+                                <label for="fecha-asignacion">Fecha asignación<span style="color: red; margin-left: 5px">*</span></label>
+                                <input type="date" name="fecha-asignacion" class="form-control campo-obligatorio fecha-input">
+                                <div class="text-error-message"></div>
+                            </div>
                         </div>
-                        <div class="text-error-message"></div>
-                    </div>
-                    <input type="hidden" class="rut_completo" id="rut_completo" name="rut_funcionario">
 
+                        <!-- RUT del funcionario -->
+                        <div class="col-md-7">
+                            <div class="mb-3">
+                                <label for="rut_funcionario">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
+                                <div style="display: flex; align-items: center;">
+                                    <input type="text" class="form-control campo-obligatorio rut-input" id="rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guión" maxlength="8" style="width: 70%;">
+                                    <span style="width: 10%; display: flex; justify-content: center;">-</span>
+                                    <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
+                                </div>
+                                <div class="text-error-message"></div>
+                            </div>
+                            <input type="hidden" class="rut_completo" id="rut_completo" name="rut_funcionario">
+                        </div>
+                    </div>
                     <!-- Todos los equipos sin asignar -->
                     <!-- Barra de búsqueda -->
                     <div class="mb-3">
@@ -48,8 +53,11 @@
                                 <tr>
                                     <th scope="col" style="width: 30px">#</th>
                                     <th scope="col">Tipo</th>
+                                    <th scope="col">Cód. inventario</th>
+                                    <th scope="col">Núm. serie</th>
                                     <th scope="col">Marca</th>
                                     <th scope="col">Modelo</th>
+                                    <th scope="col">Unidad</th>
                                 </tr>
                             </thead>
                             <tbody id="equiposTable">
@@ -58,8 +66,11 @@
                                     data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}">
                                     <td><input class="no-delete-value" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
                                     <td>{{ equipo.nombreTipo_equipo }}</td>
+                                    <td>{{ equipo.Cod_inventarioEquipo }}</td>
+                                    <td>{{ equipo.Num_serieEquipo }}</td>
                                     <td>{{ equipo.nombreMarcaEquipo }}</td>
                                     <td>{{ equipo.nombreModeloequipo }}</td>
+                                    <td>{{ equipo.nombreUnidad }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -77,17 +88,29 @@
                         <div class="text-error-message"></div>
                     </div>
                     
-                    <!-- Sección para seleccionar traslado -->
-                    <div class="mb-3">
-                        <label>¿Realiza el traslado?</label>
-                        <div class="d-flex">
-                            <div class="form-check me-3">
-                                <input class="form-check-input" type="radio" name="traslado" id="trasladoSi" value="si">
-                                <label class="form-check-label" for="trasladoSi">Sí</label>
+                    <div class="row">
+                        <!-- Sección para observaciones -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="observaciones">Observaciones</label>
+                                <textarea name="observacion" id="observaciones" rows="4" class="form-control"></textarea>
                             </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="traslado" id="trasladoNo" value="no" checked>
-                                <label class="form-check-label" for="trasladoNo">No</label>
+                        </div>
+                    
+                        <!-- Sección para seleccionar traslado -->
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label>¿Realiza el traslado?</label>
+                                <div class="d-flex">
+                                    <div class="form-check me-3">
+                                        <input class="form-check-input" type="radio" name="traslado" id="trasladoSi" value="si">
+                                        <label class="form-check-label" for="trasladoSi">Sí</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="traslado" id="trasladoNo" value="no" checked>
+                                        <label class="form-check-label" for="trasladoNo">No</label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
