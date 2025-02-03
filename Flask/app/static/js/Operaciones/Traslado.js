@@ -53,9 +53,3 @@ document.getElementById("trasladoForm").addEventListener("submit", function(even
         }
     });
 });
-
-function confirmarEliminacion(url) {
-    if (confirm("¿Estás seguro de que deseas eliminar este traslado? Esta acción no se puede deshacer.")) {
-        window.location.href = url;
-    }
-}
