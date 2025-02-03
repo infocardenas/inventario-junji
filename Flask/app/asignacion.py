@@ -43,7 +43,8 @@ def Asignacion(page=1):
         f.cargoFuncionario,
         me.nombreModeloequipo,
         te.nombreTipo_equipo,
-        mae.nombreMarcaEquipo
+        mae.nombreMarcaEquipo,
+        e.ObservacionEquipo
     FROM asignacion a
     INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
     LEFT JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
@@ -56,7 +57,7 @@ def Asignacion(page=1):
         """, (perpage, offset)
     )
     data = cur.fetchall()
-    print(data)
+
     for row in data:
         row['fecha_inicio'] = row['fecha_inicioAsignacion'].strftime('%d-%m-%Y') if row['fecha_inicioAsignacion'] else 'N/A'
         row['fecha_devolucion'] = row['fechaDevolucion'].strftime('%d-%m-%Y') if row['fechaDevolucion'] else 'Sin devolver'
@@ -80,6 +81,7 @@ def Asignacion(page=1):
         e.Cod_inventarioEquipo,
         e.Num_serieEquipo,
         e.codigoproveedor_equipo,
+        e.ObservacionEquipo,
         me.nombreModeloequipo,
         te.nombreTipo_equipo,
         mae.nombreMarcaEquipo,

@@ -74,6 +74,10 @@ $(document).ready(function () {
                     <td><strong>Modelo</strong></td>
                     <td>${data.equipo.modelo_equipo}</td>
                 </tr>
+                <tr>
+                    <td><strong>Observaciones</strong></td>
+                    <td>${data.equipo.observacion_equipo}</td>
+                </tr>
             </table>
         `;
 
@@ -221,6 +225,7 @@ function verDetalles() {
     document.getElementById('detalleNumeroSerie').textContent = row.dataset.numeroSerie || "N/A";
     document.getElementById('detalleCodigoProveedor').textContent = row.dataset.codigoProveedor || "N/A";
     document.getElementById('detalleUnidad').textContent = row.dataset.unidad || "N/A";
+    document.getElementById('detalleObservacion').textContent = row.dataset.observacion === "None" ? "" : row.dataset.observacion;
 }
 
 // Búsqueda dinámica

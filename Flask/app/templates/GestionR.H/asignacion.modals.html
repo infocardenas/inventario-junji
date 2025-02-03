@@ -39,7 +39,7 @@
                     <div class="mb-3">
                         <label for="searchEquipo">Buscar equipo</label>
                         <div class="d-flex">
-                            <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar por nombre o ID">
+                            <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar">
                             <button type="button" class="btn btn-primary ms-2 asignacion-button" onclick="asignarSeleccionados()">Asignar</button>
                             <button type="button" class="btn asignacion-button-info ms-2 asignacion-button" onclick="verDetalles()" data-bs-target="#modalViewDetails" data-bs-toggle="modal" data-bs-dismiss="modal"><i class="bi bi-info-circle"></i></button>
                         </div>
@@ -63,7 +63,7 @@
                             <tbody id="equiposTable">
                                 {% for equipo in equipos_sin_asignar %}
                                 <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
-                                    data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}">
+                                    data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}">
                                     <td><input class="no-delete-value" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
                                     <td>{{ equipo.nombreTipo_equipo }}</td>
                                     <td>{{ equipo.Cod_inventarioEquipo }}</td>
@@ -161,6 +161,10 @@
                     <tr>
                         <td><strong>Unidad</strong></td>
                         <td id="detalleUnidad"></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Observaciones</strong></td>
+                        <td id="detalleObservacion"></td>
                     </tr>
                 </table>
             </div>

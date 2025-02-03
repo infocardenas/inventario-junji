@@ -84,11 +84,12 @@
                                     "id": asig.idAsignacion,
                                     "fecha_inicio": asig.fecha_inicioAsignacion.strftime("%d-%m-%Y") if asig.fecha_inicioAsignacion else "N/A",
                                     "fecha_devolucion": asig.fechaDevolucion.strftime("%d-%m-%Y") if asig.fechaDevolucion else "Sin devolver",
-                                    "observacion" : asig.ObservacionAsignacion },
+                                    "observacion" : asig.ObservacionAsignacion if asig.ObservacionAsignacion else ""},
                                     "equipo": { 
                                         "tipo_equipo": asig.nombreTipo_equipo if asig.nombreTipo_equipo else "No asignado",
                                         "modelo_equipo": asig.nombreModeloequipo if asig.nombreModeloequipo else "No asignado",
-                                        "marca_equipo": asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado"
+                                        "marca_equipo": asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado",
+                                        "observacion_equipo": asig.ObservacionEquipo if asig.ObservacionEquipo else ""
                                     }} | tojson | safe
                             }}'>
                                 Detalles
