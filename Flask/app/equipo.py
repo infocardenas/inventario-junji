@@ -434,7 +434,7 @@ def mostrar_asociados_traslado(idTraslado):
     moe.idModelo_equipo, moe.nombreModeloequipo
     FROM equipo e
     INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
+    INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idMarca_Tipo_Equipo
     INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
     INNER JOIN unidad u on u.idUnidad = e.idUnidad
     INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra

@@ -76,7 +76,7 @@ def Traslado(page=1):
 def obtener_equipos_unidad(unidad_id):
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT e.idEquipo, me.nombreModeloequipo, e.Num_serieEquipo 
+        SELECT e.idEquipo, me.nombreModeloequipo, e.Num_serieEquipo, e.Cod_inventarioEquipo
         FROM equipo e
         INNER JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_equipo
         WHERE e.idUnidad = %s AND e.idEstado_equipo IN (
@@ -87,7 +87,6 @@ def obtener_equipos_unidad(unidad_id):
 
     equipos = cur.fetchall()
     return jsonify(equipos)
-
 
 
 @traslado.route("/traslado/add_traslado", methods=["GET", "POST"])

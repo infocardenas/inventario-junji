@@ -6,7 +6,7 @@
 <div class="row">
     <div class="col-md-12">
         {% with messages = get_flashed_messages() %}
-        {% if messages %}
+        {% if messages is not none and messages|length > 0 %}
         {% for message in messages %}
         <div class="custom-alert" role="alert">
             {{ message }}
@@ -18,7 +18,16 @@
         {% endif %}
         {% endwith %}
 
-        <button class="nav-button" data-bs-toggle="modal" data-bs-target="#trasladoModal">Agregar Traslado</button>
+        {% if traslado|length == 0 %}
+            <tr>
+                <td colspan="5" class="text-center">No hay traslados registrados</td>
+            </tr>
+        {% endif %}
+
+
+        <button class="nav-button" data-bs-toggle="modal" data-bs-target="#trasladoModal" title="Agregar un nuevo traslado" aria-label="Agregar Traslado">
+            Agregar Traslado
+        </button>
 
         <h2>Traslados</h2>
         <div style="overflow-x:auto;">
@@ -40,7 +49,7 @@
                         <td>{{ tras.nombreOrigen }}</td>
                         <td>{{ tras.nombreDestino }}</td>
                         <td>
-                            <a href="/traslado/delete_traslado/{{ tras.idTraslado }}" class="delete-button">Eliminar</a>
+                            <a href="#" onclick="confirmarEliminacion('/traslado/delete_traslado/{{ tras.idTraslado }}')" class="delete-button">Eliminar</a>
                             <a href="/mostrar_asociados_traslado/{{ tras.idTraslado }}" class="info-button">Equipos</a>
                         </td>
                     </tr>
@@ -57,7 +66,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="trasladoModalLabel">Nuevo Traslado</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -65,7 +74,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="fechatraslado">Fecha de Traslado</label>
-                        <input type="date" name="fechatraslado" id="fechatraslado" class="form-control" required>
+                        <input type="date" name="fechatraslado" id="fechatraslado" class="form-control" required min="{{ fecha_hoy }}">
                     </div>
                     <div class="form-group">
                         <label for="Origen">Unidad de Origen</label>
@@ -79,11 +88,12 @@
                     <div class="form-group">
                         <label>Equipos disponibles</label>
                         <div class="table-responsive">
-                            <table class="table table-bordered">
+                            <table id="posts" class="table table-striped table-hover">
                                 <thead class="thead-light">
                                     <tr>
                                         <th>Seleccionar</th>
                                         <th>Modelo</th>
+                                        <th>Tipo Equipo</th>
                                         <th>Marca</th>
                                         <th>Código Inventario</th>
                                         <th>Número Serie</th>
@@ -106,7 +116,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Confirmar Traslado</button>
                 </div>
             </form>

@@ -5,8 +5,21 @@ document.getElementById("Origen").addEventListener("change", function() {
         let equiposLista = document.getElementById("equiposLista");
         equiposLista.innerHTML = "";
         data.forEach(equipo => {
-            equiposLista.innerHTML += `<div><input type='checkbox' name='trasladar[]' value='${equipo.idEquipo}'> ${equipo.nombreModeloequipo} - ${equipo.Num_serieEquipo}</div>`;
+            equiposLista.innerHTML += `<tr>
+                    <td><input type='checkbox' name='trasladar[]' value='${equipo.idEquipo}'></td>
+                    <td>${equipo.nombreModeloequipo || 'N/A'}</td>
+                    <td>${equipo.idTipo_equipo || 'N/A'}</td>
+                    <td>${equipo.marca || 'N/A'}</td>
+                    <td>${equipo.Cod_inventarioEquipo || 'N/A'}</td>
+                    <td>${equipo.Num_serieEquipo || 'N/A'}</td>
+                </tr>`;
         });
+        if (data.length === 0) {
+            equiposLista.innerHTML = `
+                <tr>
+                    <td colspan="4" class="text-center">No hay equipos disponibles</td>
+                </tr>`;
+        }
     });
 });
 
@@ -19,7 +32,7 @@ document.getElementById("trasladoForm").addEventListener("submit", function(even
         body: formData
     })
     .then(response => response.json())
-    .then(data => {
+    .then(data => {     
         if (data.success) {
             let tableBody = document.getElementById("trasladoTableBody");
             let newRow = document.createElement("tr");
@@ -40,3 +53,9 @@ document.getElementById("trasladoForm").addEventListener("submit", function(even
         }
     });
 });
+
+function confirmarEliminacion(url) {
+    if (confirm("¿Estás seguro de que deseas eliminar este traslado? Esta acción no se puede deshacer.")) {
+        window.location.href = url;
+    }
+}
