@@ -121,7 +121,6 @@ CREATE TABLE `marca_equipo` (
 CREATE TABLE `tipo_equipo` (
   `idTipo_equipo` int(11) NOT NULL AUTO_INCREMENT,
   `nombreTipo_equipo` varchar(45) UNIQUE,
-  `observacionTipoEquipo` varchar(60) DEFAULT NULL,
   PRIMARY KEY (`idTipo_equipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

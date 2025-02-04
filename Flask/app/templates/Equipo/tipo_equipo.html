@@ -32,12 +32,6 @@
                                     {% endfor %}
                                 </div>
                             </div>
-
-                            <!-- Observaciones -->
-                            <div class="mb-3">
-                                <label for="observacion" class="form-label">Observaciones:</label>
-                                <textarea class="form-control" id="observacion" name="observacion" rows="4"></textarea>
-                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -75,12 +69,6 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                            </div>
-
-                            <!-- Observaciones -->
-                            <div class="mb-3">
-                                <label for="edit_observacion" class="form-label">Observaciones:</label>
-                                <textarea class="form-control" id="edit_observacion" name="observacion" rows="4"></textarea>
                             </div>
                         </div>
                         <div class="modal-footer">
@@ -159,11 +147,9 @@
                 const tipoId = this.dataset.id;
                 const tipoNombre = this.dataset.nombre;
                 const tipoMarcas = JSON.parse(this.dataset.marcas || "[]");
-                const tipoObservacion = this.dataset.observacion || "";
 
                 // Llenar formulario
                 document.getElementById("edit_nombreTipo_equipo").value = tipoNombre;
-                document.getElementById("edit_observacion").value = tipoObservacion;
 
                 document.querySelectorAll("#editTipoEquipoModal .form-check-input").forEach(checkbox => {
                     checkbox.checked = tipoMarcas.includes(parseInt(checkbox.value));
