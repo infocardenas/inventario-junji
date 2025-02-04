@@ -37,6 +37,9 @@ function limpiarError(inputField) {
 
 // Limpia los valores de todos los inputs, selects y textareas dentro del modal
 function limpiarInputsEnModal(modal) {
+  if ($(modal).hasClass("no-limpiar-inputs")) {
+    return;
+  }
   $(modal).find("input, select, textarea").each(function () {
     const element = $(this);
 
