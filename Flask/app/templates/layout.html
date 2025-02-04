@@ -30,70 +30,81 @@
     {% endwith %}
     <div class="container-home">
         <div class="flex-shrink-0 p-3 bg-light sidebar" style="width: 260px;">
-            <a href="/" class="d-flex align-items-center pb-3 mb-3 link-dark text-decoration-none border-bottom">
-                <span class="fs-5 fw-semibold">Gestor de inventario</span>
+            <a href="/" class="d-flex align-items-center pb-3 mb-4 link-dark text-decoration-none border-bottom">
+                <span class="fs-5 fw-semibold">Gestor de Inventario</span>
             </a>
             <ul class="list-unstyled ps-0">
-                <li class="mb-4"> <!-- Aumentar el margen inferior -->
-                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
-                        <i class="bi bi-tools me-2"></i> Equipos
+                <li class="mb-4"> <!-- Espacio entre categorías -->
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start" 
+                            data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+                        <i class="bi bi-tools me-2"></i> <strong>Equipos</strong>
                     </button>
-                    <div class="collapse" id="home-collapse">
+                    <div class="collapse mt-2" id="home-collapse"> <!-- Separación con margen superior -->
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                            <li class="mb-2"><a href="/equipo" class="link-dark rounded">Equipos</a></li>
-                            <li class="mb-2"><a href="/marca_equipo" class="link-dark rounded">Marcas de Equipos</a></li>
-                            <li class="mb-2"><a href="/modelo_equipo" class="link-dark rounded">Modelos de Equipos</a></li>
-                            <li class="mb-2"><a href="/tipo_equipo" class="link-dark rounded">Tipos de Equipos</a></li>
-                            <li class="mb-2"><a href="/estado_equipo" class="link-dark rounded">Estado de Equipos</a></li>
+                            <li class="mb-2 ps-3"><a href="/equipo" class="link-dark rounded">Equipos</a></li>
+                            <li class="mb-2 ps-3"><a href="/marca_equipo" class="link-dark rounded">Marcas de Equipos</a></li>
+                            <li class="mb-2 ps-3"><a href="/modelo_equipo" class="link-dark rounded">Modelos de Equipos</a></li>
+                            <li class="mb-2 ps-3"><a href="/tipo_equipo" class="link-dark rounded">Tipos de Equipos</a></li>
+                            <li class="mb-2 ps-3"><a href="/estado_equipo" class="link-dark rounded">Estado de Equipos</a></li>
                         </ul>
                     </div>
                 </li>
-                <li class="mb-4"> <!-- Aumentar el margen inferior -->
-                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                        <i class="bi bi-person-lines-fill me-2"></i> Gestión de RR.HH
+    
+                <li class="mb-4">
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start" 
+                            data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+                        <i class="bi bi-person-lines-fill me-2"></i> <strong>Gestión de RR.HH</strong>
                     </button>
-                    <div class="collapse" id="dashboard-collapse">
+                    <div class="collapse mt-2" id="dashboard-collapse">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                            <li class="mb-2"><a href="/funcionario" class="link-dark rounded">Funcionarios</a></li>
-                            <li class="mb-2"><a href="/asignacion" class="link-dark rounded">Asignaciones</a></li>
+                            <li class="mb-2 ps-3"><a href="/funcionario" class="link-dark rounded">Funcionarios</a></li>
+                            <li class="mb-2 ps-3"><a href="/asignacion" class="link-dark rounded">Asignaciones</a></li>
                         </ul>
                     </div>
                 </li>
-                <li class="mb-4"> <!-- Aumentar el margen inferior -->
-                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                        <i class="bi bi-truck me-2"></i> Gestión de Proveedores
+    
+                <li class="mb-4">
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start" 
+                            data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+                        <i class="bi bi-truck me-2"></i> <strong>Gestión de Proveedores</strong>
                     </button>
-                    <div class="collapse" id="orders-collapse">
+                    <div class="collapse mt-2" id="orders-collapse">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                            <li class="mb-2"><a href="/proveedor" class="link-dark rounded">Proveedores</a></ li>
-                            <li class="mb-2"><a href="/orden_compra" class="link-dark rounded">Orden de compra</a></li>
-                            <li class="mb-2"><a href="/tipo_adquisicion" class="link-dark rounded">Tipo de adquisición</a></li>
+                            <li class="mb-2 ps-3"><a href="/proveedor" class="link-dark rounded">Proveedores</a></li>
+                            <li class="mb-2 ps-3"><a href="/orden_compra" class="link-dark rounded">Orden de Compra</a></li>
+                            <li class="mb-2 ps-3"><a href="/tipo_adquisicion" class="link-dark rounded">Tipo de Adquisición</a></li>
                         </ul>
                     </div>
                 </li>
-                <li class="mb-4"> <!-- Aumentar el margen inferior -->
-                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#operations-collapse" aria-expanded="false">
-                        <i class="bi bi-gear-fill me-2"></i> Operaciones
+    
+                <li class="mb-4">
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start" 
+                            data-bs-toggle="collapse" data-bs-target="#operations-collapse" aria-expanded="false">
+                        <i class="bi bi-gear-fill me-2"></i> <strong>Operaciones</strong>
                     </button>
-                    <div class="collapse" id="operations-collapse">
+                    <div class="collapse mt-2" id="operations-collapse">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                            <li class="mb-2"><a href="/traslado" class="link-dark rounded">Traslados</a></li>
-                            <li class="mb-2"><a href="/incidencia" class="link-dark rounded">Incidencias</a></li>
+                            <li class="mb-2 ps-3"><a href="/traslado" class="link-dark rounded">Traslados</a></li>
+                            <li class="mb-2 ps-3"><a href="/incidencia" class="link-dark rounded">Incidencias</a></li>
                         </ul>
                     </div>
                 </li>
-                <li class="mb-4"> <!-- Aumentar el margen inferior -->
-                    <button class="btn btn-toggle align-items-center rounded collapsed" data-bs-toggle="collapse" data-bs-target="#organization-collapse" aria-expanded="false">
-                        <i class="bi bi-sitemap me-2"></i> Organización
+    
+                <li class="mb-4">
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start" 
+                            data-bs-toggle="collapse" data-bs-target="#organization-collapse" aria-expanded="false">
+                        <i class="bi bi-buildings-fill me-2"></i> <strong>Organización</strong>
                     </button>
-                    <div class="collapse" id="organization-collapse">
+                    <div class="collapse mt-2" id="organization-collapse">
                         <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                            <li class="mb-2"><a href="/Unidad" class="link-dark rounded">Unidades</a></li>
+                            <li class="mb-2 ps-3"><a href="/Unidad" class="link-dark rounded">Unidades</a></li>
                         </ul>
                     </div>
                 </li>
             </ul>
         </div>
+
+    
 
         <div class="main">
             <div class="dashboard-navbar">
