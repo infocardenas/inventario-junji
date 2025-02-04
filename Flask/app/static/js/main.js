@@ -1,3 +1,7 @@
+$(document).ready(function () {
+  $('[data-bs-toggle="tooltip"]').tooltip();
+});
+
 function navigateTo(url) {
   window.location.href = url;
 }

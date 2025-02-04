@@ -157,15 +157,22 @@ function asignarSeleccionados() {
         li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
         li.innerHTML = `
             <span>${tipo} ${marca} ${modelo}</span>
-            <button type="button" class="btn btn-danger btn-sm" 
+            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-title="Quitar" 
                 onclick="quitarEquipo(this, '${chk.value}', '${tipo}', '${marca}', '${modelo}', '${codigoInventario}', '${numeroSerie}', '${codigoProveedor}', '${unidad}')">
-                <i class="bi bi-trash-fill"></i>
+                <i class="bi bi-x-lg"></i>
             </button>
             <input type="hidden" class="no-delete-value" name="equiposAsignados[]" value="${chk.value}">
         `;
 
         document.getElementById('equiposAsignadosList').appendChild(li);
         row.remove(); // Remover fila de la tabla
+        
+        // Re-inicializar tooltips después de agregar los elementos dinámicamente
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
     });
 
     refreshCheckboxListeners(); // Actualizar listeners después de modificar la tabla
