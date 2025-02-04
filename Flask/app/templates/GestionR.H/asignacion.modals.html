@@ -40,24 +40,24 @@
                         <label for="searchEquipo">Buscar equipo</label>
                         <div class="d-flex">
                             <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar">
-                            <button type="button" class="btn btn-primary ms-2 asignacion-button" onclick="asignarSeleccionados()">Asignar</button>
-                            <button type="button" class="btn asignacion-button-info ms-2 asignacion-button" onclick="verDetalles()" data-bs-target="#modalViewDetails" data-bs-toggle="modal" data-bs-dismiss="modal"><i class="bi bi-info-circle"></i></button>
+                            <button type="button" class="btn btn-primary ms-2" onclick="asignarSeleccionados()">Asignar</button>
+                            <button type="button" class="btn button-info ms-2" onclick="verDetalles()" data-bs-target="#modalViewDetails" data-bs-toggle="modal" data-bs-dismiss="modal"><i class="bi bi-info-circle"></i></button>
                         </div>
                     </div>
                     
                     <!-- Tabla con scroll vertical -->
                     <label>Equipos sin asignar</label>
-                    <div class="mb-3" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
-                        <table class="table table-sm table-hover mb-0" style="table-layout: fixed;">
-                            <thead class="table-light">
+                    <div style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px;">
+                        <table class="table table-sm table-hover table-bordered" style="table-layout: fixed;">
+                            <thead>
                                 <tr>
-                                    <th scope="col" style="width: 30px">#</th>
-                                    <th scope="col">Tipo</th>
-                                    <th scope="col">Cód. inventario</th>
-                                    <th scope="col">Núm. serie</th>
-                                    <th scope="col">Marca</th>
-                                    <th scope="col">Modelo</th>
-                                    <th scope="col">Unidad</th>
+                                    <td style="width: 30px">#</td>
+                                    <td>Tipo</td>
+                                    <td>Cód. inventario</td>
+                                    <td>Núm. serie</td>
+                                    <td>Marca</td>
+                                    <td>Modelo</td>
+                                    <td>Unidad</td>
                                 </tr>
                             </thead>
                             <tbody id="equiposTable">

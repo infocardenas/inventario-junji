@@ -748,21 +748,19 @@ svg.bi {
     align-items: center;
 }
 
-.asignacion-button {
-    transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-.asignacion-button:disabled {
+.button-info:disabled {
     opacity: 0.5;
     pointer-events: none;
 }
-.asignacion-button-info {
+.button-info {
     background-color: #0056b3;
     border-color: #0056b3;
     color: white;
+    transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
-.asignacion-button-info:hover {
+.button-info:hover {
     background-color: #003d7a;
     border-color: #003d7a;
-    color: white;
+    color: #d9d9d9;
 }

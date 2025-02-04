@@ -18,23 +18,25 @@
         </div>
 
         <!-- Tabla de asignaciones -->
-        <div style="overflow-x:auto;">
-            <table id="posts">
+        <div class="table-responsive">
+            <table class="table table-sm table-striped table-bordered" style="margin: 30px 0">
                 <!-- Encabezado de la tabla -->
                 <thead>
                     <tr>
-                        <td class="text-center" onclick="sortTable(0)">Funcionario</td>
-                        <td class="text-center" onclick="sortTable(1)">Tipo de equipo</td>
-                        <td class="text-center" onclick="sortTable(2)">Fecha de asignación</td>
-                        <td class="text-center" onclick="sortTable(3)">Fecha de devolución</td>
-                        <td class="text-center">Actas</td>
-                        <td class="text-center">Acciones</td>
+                        <td onclick="sortTable(0, this)">ID</td>
+                        <td onclick="sortTable(1, this)">Funcionario</td>
+                        <td onclick="sortTable(2, this)">Tipo de equipo</td>
+                        <td onclick="sortTable(3, this)">Fecha de asignación</td>
+                        <td onclick="sortTable(4, this)">Fecha de devolución</td>
+                        <td>Actas</td>
+                        <td>Acciones</td>
                     </tr>
                 </thead>
                 <!-- Contenido de la tabla -->
                 <tbody id="myTableBody">
                     {% for asig in asignacion %}
                     <tr>
+                        <td class="toCheck">{{ asig.idAsignacion }}</td>
                         <td class="toCheck">{{ asig.nombreFuncionario }}</td>
                         <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
                         <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
@@ -73,7 +75,7 @@
 
                         <!-- Acciones -->
                         <td>
-                            <a href="#" class="view-details" data-title="Asignación #{{ asig.idAsignacion }}" 
+                            <a href="#" class="btn btn-sm button-info view-details" data-title="Asignación #{{ asig.idAsignacion }}" 
                             data-info='{{ {
                                 "funcionario": {
                                     "rut": asig.rutFuncionario,
@@ -91,15 +93,18 @@
                                         "marca_equipo": asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado",
                                         "observacion_equipo": asig.ObservacionEquipo if asig.ObservacionEquipo else ""
                                     }} | tojson | safe
-                            }}'>
-                                Detalles
+                            }}'
+                            data-bs-toggle="tooltip"
+                            data-bs-title="Detalles">
+                                <i class="bi bi-info-circle"></i>
                             </a>
-                            <button class="btn btn-danger delete-button"
-                                data-bs-toggle="modal"
+                            <button class="btn btn-danger btn-sm delete-button"
+                                data-bs-toggle="tooltip"
                                 data-url="/delete_asignacion/{{asig.idAsignacion}}"
                                 data-title="Eliminar asignación"
-                                data-message="¿Estás seguro de que deseas eliminar esta asignación?">
-                                Eliminar
+                                data-message="¿Estás seguro de que deseas eliminar esta asignación?"
+                                data-bs-title="Eliminar">
+                                <i class="bi bi-trash-fill"></i>
                             </button>
                         </td>
                     </tr>
