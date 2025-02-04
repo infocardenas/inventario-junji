@@ -174,3 +174,47 @@
         </div>
     </div>
 </div>
+
+{% for asig in asignacion %}
+<!-- Modal para ver detalles de la asignación -->
+<div class="modal fade" id="modal-view-{{ asig.idAsignacion }}" tabindex="-1" aria-labelledby="modal-view-title-{{ asig.idAsignacion }}" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles de la Asignación #{{ asig.idAsignacion }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <h5>Datos del Funcionario</h5>
+                <table class="table table-bordered" style="table-layout: fixed">
+                    <tr><td><strong>RUT</strong></td><td>{{ asig.rutFuncionario }}</td></tr>
+                    <tr><td><strong>Nombre</strong></td><td>{{ asig.nombreFuncionario }}</td></tr>
+                    <tr><td><strong>Cargo</strong></td><td>{{ asig.cargoFuncionario }}</td></tr>
+                </table>
+
+                <br>
+
+                <h5>Datos de la Asignación</h5>
+                <table class="table table-bordered" style="table-layout: fixed">
+                    <tr><td><strong>Fecha de asignación</strong></td><td>{{ asig.fecha_inicioAsignacion.strftime("%d-%m-%Y") if asig.fecha_inicioAsignacion else "N/A" }}</td></tr>
+                    <tr><td><strong>Fecha de devolución</strong></td><td>{{ asig.fechaDevolucion.strftime("%d-%m-%Y") if asig.fechaDevolucion else "Sin devolver" }}</td></tr>
+                    <tr><td><strong>Observaciones</strong></td><td>{{ asig.ObservacionAsignacion if asig.ObservacionAsignacion else "" }}</td></tr>
+                </table>
+
+                <br>
+
+                <h5>Datos del Equipo</h5>
+                <table class="table table-bordered" style="table-layout: fixed">
+                    <tr><td><strong>Tipo</strong></td><td>{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else "No asignado" }}</td></tr>
+                    <tr><td><strong>Marca</strong></td><td>{{ asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado" }}</td></tr>
+                    <tr><td><strong>Modelo</strong></td><td>{{ asig.nombreModeloequipo if asig.nombreModeloequipo else "No asignado" }}</td></tr>
+                    <tr><td><strong>Observaciones</strong></td><td>{{ asig.ObservacionEquipo if asig.ObservacionEquipo else "" }}</td></tr>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}

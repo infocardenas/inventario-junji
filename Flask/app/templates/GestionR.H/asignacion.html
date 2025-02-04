@@ -74,31 +74,15 @@
                         <!-- Fin botones de actas -->
 
                         <!-- Acciones -->
-                        <td>
-                            <a href="#" class="btn btn-sm button-info view-details" data-title="Asignación #{{ asig.idAsignacion }}" 
-                            data-info='{{ {
-                                "funcionario": {
-                                    "rut": asig.rutFuncionario,
-                                    "nombre": asig.nombreFuncionario,
-                                    "cargo": asig.cargoFuncionario
-                                },
-                                "asignacion": {
-                                    "id": asig.idAsignacion,
-                                    "fecha_inicio": asig.fecha_inicioAsignacion.strftime("%d-%m-%Y") if asig.fecha_inicioAsignacion else "N/A",
-                                    "fecha_devolucion": asig.fechaDevolucion.strftime("%d-%m-%Y") if asig.fechaDevolucion else "Sin devolver",
-                                    "observacion" : asig.ObservacionAsignacion if asig.ObservacionAsignacion else ""},
-                                    "equipo": { 
-                                        "tipo_equipo": asig.nombreTipo_equipo if asig.nombreTipo_equipo else "No asignado",
-                                        "modelo_equipo": asig.nombreModeloequipo if asig.nombreModeloequipo else "No asignado",
-                                        "marca_equipo": asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado",
-                                        "observacion_equipo": asig.ObservacionEquipo if asig.ObservacionEquipo else ""
-                                    }} | tojson | safe
-                            }}'
-                            data-bs-toggle="tooltip"
-                            data-bs-title="Detalles">
-                                <i class="bi bi-info-circle"></i>
-                            </a>
-                            <button class="btn btn-danger btn-sm delete-button"
+                        <td class="d-flex justify-content-center gap-2">
+                            <div data-bs-toggle="tooltip" data-bs-title="Detalles">
+                                <button class="btn button-info"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#modal-view-{{ asig.idAsignacion }}">
+                                    <i class="bi bi-info-circle"></i>
+                                </button>
+                            </div>
+                            <button class="btn btn-danger delete-button"
                                 data-bs-toggle="tooltip"
                                 data-url="/delete_asignacion/{{asig.idAsignacion}}"
                                 data-title="Eliminar asignación"
@@ -113,7 +97,6 @@
             </table>
         </div>
 
-        {% include 'visualizar.modal.html' %}
         {% include 'GestionR.H/asignacion.modals.html' %}
         <script src="../static/js/asignaciones.controller.js"></script>
 
