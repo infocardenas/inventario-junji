@@ -239,7 +239,7 @@
                 {% else %}
                 <td class="toCheck">{{equi.nombreFuncionario}}</td>
                 {% endif %}
-                <td class="toCheck">{{equi.codigoproveedor_equipo}}</td>
+                <td class="toCheck">{{equi.codigoproveedor_equipo if equi.codigoproveedor_equipo else '-'}}</td>
                 <td class="toCheck">{{equi.nombreUnidad}}</td>
                 <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
                 <td class="toCheck">{{equi.nombreModeloequipo}}</td>
