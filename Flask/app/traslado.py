@@ -51,6 +51,27 @@ def Traslado(page=1):
         """,
         (perpage, offset),
     )
+    traslados = cur.fetchall()
+
+    #obtener equipos para cada traslado
+    for traslado in traslados:
+        cur.execute(
+            """
+            SELECT e.idEquipo, me.nombreModeloequipo, te.nombreTipo_equipo, 
+                mae.nombreMarcaEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo
+            FROM traslacion tr
+            INNER JOIN equipo e ON tr.idEquipo = e.idEquipo
+            INNER JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_equipo
+            INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+            INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+            INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+            WHERE tr.idTraslado = %s
+            """,
+            (traslado["idTraslado"],),
+        )
+        traslado["equipos"] = cur.fetchall()
+
+    
     data = cur.fetchall()
     cur.execute("SELECT COUNT(*) FROM traslado")
     total = cur.fetchone()
@@ -66,17 +87,17 @@ def Traslado(page=1):
     unidades = cur.fetchall()
     return render_template(
         'Operaciones/traslado.html',
-        traslado=data,
+        traslado=traslados,
         unidades=unidades,
         page=page,
-        lastpage=page < (total / perpage) + 1,
+        lastpage=page < (len(traslados) / perpage) + 1,
     )
 
 @traslado.route("/traslado/equipos_unidad/<int:unidad_id>")
 def obtener_equipos_unidad(unidad_id):
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT e.idEquipo, me.nombreModeloequipo, e.Num_serieEquipo 
+        SELECT e.idEquipo, me.nombreModeloequipo, e.Num_serieEquipo, e.Cod_inventarioEquipo
         FROM equipo e
         INNER JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_equipo
         WHERE e.idUnidad = %s AND e.idEstado_equipo IN (
@@ -87,7 +108,6 @@ def obtener_equipos_unidad(unidad_id):
 
     equipos = cur.fetchall()
     return jsonify(equipos)
-
 
 
 @traslado.route("/traslado/add_traslado", methods=["GET", "POST"])
@@ -206,55 +226,54 @@ def edit_traslado(id):
         return redirect(url_for("traslado.Traslado"))
 
 
-@traslado.route("/traslado/delete_traslado/<id>", methods=["POST", "GET"])
+@traslado.route("/traslado/delete_multiple", methods=["POST"])
 @administrador_requerido
-def delete_traslado(id):
+def delete_multiple_traslados():
+    data = request.get_json()
+    traslados = data.get("traslados", [])
+
+    if not traslados:
+        return jsonify({"success": False, "message": "No se proporcionaron traslados para eliminar."}), 400
+
     try:
         cur = mysql.connection.cursor()
-        cur.execute(
-            """
-                    SELECT *
-                    FROM traslado
-                    WHERE idTraslado = %s
-                    """,
-            (id,),
-        )
-        trasladoABorrar = cur.fetchall()
-        cur.execute(
-            """
-                    SELECT *
-                    FROM traslacion
-                    WHERE idTraslado = %s
-                    """,
-            (id,),
-        )
-        traslaciones = cur.fetchall()
-        for traslacion in traslaciones:
-            cur.execute(
-                """
+
+        for id in traslados:
+            # Obtener información del traslado
+            cur.execute("SELECT * FROM traslado WHERE idTraslado = %s", (id,))
+            trasladoABorrar = cur.fetchone()
+
+            if trasladoABorrar:
+                # Obtener equipos en la traslación
+                cur.execute("SELECT * FROM traslacion WHERE idTraslado = %s", (id,))
+                traslaciones = cur.fetchall()
+
+                # Restaurar la unidad original de cada equipo
+                for traslacion in traslaciones:
+                    cur.execute(
+                        """
                         UPDATE equipo
                         SET idUnidad = %s
                         WHERE idEquipo = %s 
                         """,
-                (trasladoABorrar[0]["idUnidadOrigen"], traslacion["idEquipo"]),
-            )
+                        (trasladoABorrar["idUnidadOrigen"], traslacion["idEquipo"]),
+                    )
 
-        cur.execute(
-            """DELETE 
-                        FROM traslacion
-                        WHERE idTraslado = %s
-        """,
-            (id,),
-        )
+                # Eliminar registros en traslacion
+                cur.execute("DELETE FROM traslacion WHERE idTraslado = %s", (id,))
+
+                # Eliminar el traslado
+                cur.execute("DELETE FROM traslado WHERE idTraslado = %s", (id,))
+
         mysql.connection.commit()
-        cur.execute("DELETE FROM traslado WHERE idTraslado = %s", (id,))
-        mysql.connection.commit()
-        flash("Traslado eliminado correctamente")
-        return redirect(url_for("traslado.Traslado"))
+        cur.close()
+
+        return jsonify({"success": True, "message": "Traslados eliminados correctamente."})
+
     except Exception as e:
-        #flash(e.args[1])
-        flash("Error al crear")
-        return redirect(url_for("traslado.Traslado"))
+        print("Error:", e)
+        return jsonify({"success": False, "message": "Error en la eliminación de traslados."}), 500
+
 
 def get_unidad_nombre(unidad_id):
     cur = mysql.connection.cursor()
