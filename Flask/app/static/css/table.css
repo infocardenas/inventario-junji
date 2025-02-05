@@ -5,12 +5,13 @@ thead {
 }
 
 /* Estilo global para todos los encabezados de tabla */
+table {
+    margin: 10px auto;
+    width: 100%;
+}
 th {
     cursor: pointer;
     text-align: center;
-    user-select: none;
-    padding: 10px;
-    height: 45px;
 }
 tr{
     text-align: center;
@@ -98,7 +99,6 @@ th:hover {
 .bi-caret-down-fill {
     color: white;
     opacity: 1;
-    font-size: 18px;
 }
 
 /* Asegurar que las flechas no se desplacen al hacer clic */

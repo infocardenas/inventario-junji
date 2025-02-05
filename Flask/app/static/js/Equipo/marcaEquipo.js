@@ -33,10 +33,10 @@ $(document).ready(function () {
             const id = selectedRow.data("id");
             const nombre = selectedRow.find("td:nth-child(2)").text();
 
-            $("#editMarcaModal").modal("show");
-            $("#editMarcaModalLabel").text(`Editar Marca: ${nombre}`);
-            $("#edit_nombreMarca").val(nombre);
-            $("#editMarcaForm").attr("action", `/update_marca_equipo/${id}`);
+            $("#modal-edit-marca").modal("show");
+            $("#modal-edit-marca-title").text(`Editar marca: ${nombre}`);
+            $("#modal-edit-marca-input").val(nombre);
+            $("#form-edit-marca-equipo").attr("action", `/update_marca_equipo/${id}`);
         }
 
         $(this).val(""); // Resetear el select después de usarlo

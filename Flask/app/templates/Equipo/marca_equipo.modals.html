@@ -1,0 +1,55 @@
+<!-- Modal para agregar marca -->
+<div class="modal fade" id="modal-add-marca-equipo" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Marca</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Contenido -->
+            <div class="modal-body">
+                <form id="form-add-marca-equipo" action="/add_marca_equipo" method="POST">
+                    <div class="mb-3">
+                        <label for="nombre_marca_equipo" class="form-label">Nombre Marca</label>
+                        <input type="text" class="form-control campo-obligatorio" name="nombre_marca_equipo" placeholder="Ingrese el nombre de la marca">
+                        <div class="text-error-message"></div>
+                    </div>
+                </form>
+            </div>
+            <!-- Footer de botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="form-add-marca-equipo" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para editar marca -->
+<div class="modal fade" id="modal-edit-marca" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="modal-edit-marca-title">Editar marca</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Contenido -->
+            <div class="modal-body">
+                <form id="form-edit-marca-equipo" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre marca</label>
+                        <input type="text" class="form-control campo-obligatorio" id="modal-edit-marca-input" name="nombre_marca_equipo" placeholder="Ingrese el nombre de la marca">
+                        <div class="text-error-message"></div>
+                    </div>
+                </form>
+            </div>
+            <!-- Footer de botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="form-edit-marca-equipo" class="btn btn-primary">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
