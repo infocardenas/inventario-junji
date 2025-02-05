@@ -8,8 +8,8 @@ document.getElementById("Origen").addEventListener("change", function() {
             equiposLista.innerHTML += `<tr>
                     <td><input type='checkbox' name='trasladar[]' value='${equipo.idEquipo}'></td>
                     <td>${equipo.nombreModeloequipo || 'N/A'}</td>
-                    <td>${equipo.idTipo_equipo || 'N/A'}</td>
-                    <td>${equipo.marca || 'N/A'}</td>
+                    <td>${equipo.nombreTipo_equipo || 'N/A'}</td>
+                    <td>${equipo.nombreMarcaEquipo || 'N/A'}</td>
                     <td>${equipo.Cod_inventarioEquipo || 'N/A'}</td>
                     <td>${equipo.Num_serieEquipo || 'N/A'}</td>
                 </tr>`;
