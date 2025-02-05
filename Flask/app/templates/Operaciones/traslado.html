@@ -27,7 +27,7 @@
 
             <!-- Botón agregar traslado -->
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#trasladoModal">
+                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#trasladoModal" onclick="ObtenerInfoEquipos('{{ traslado.idTraslado }}')">
                     <i class="bi bi-plus-lg"></i> Agregar Traslado
                 </button>
                 <button class="btn btn-danger shadow-sm" id="eliminarSeleccionados">
