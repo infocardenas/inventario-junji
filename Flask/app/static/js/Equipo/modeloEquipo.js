@@ -51,14 +51,55 @@ function limpiarSelect(id, placeholder) {
 }
 
 $(document).ready(function () {
-    // Si hay un mensaje de confirmación en `flash`, activamos el modal
-    const confirmUrl = $(".flash-message[data-confirm]").data("confirm");
-    if (confirmUrl) {
-      configureGenericModal(
-        "Eliminar Modelo de Equipo",
-        "No se puede eliminar el modelo porque hay equipos asociados. ¿Deseas eliminar todas las relaciones y continuar?",
-        confirmUrl
-      );
-    }
-  });
-  
+    $(".actions-select").on("change", function () {
+        const action = $(this).val(); // Acción seleccionada
+        const selectedRows = $(".row-checkbox:checked").closest("tr"); // Filas seleccionadas
+
+        if (!selectedRows.length) {
+            alert("Por favor, selecciona una fila antes de realizar una acción.");
+            $(this).val(""); // Resetear el select
+            return;
+        }
+
+        // Obtener los IDs de los modelos seleccionados
+        const ids = selectedRows.map(function () {
+            return $(this).data("id");
+        }).get();
+
+        if (action === "delete") {
+            // Mostrar modal de confirmación
+            configureGenericModal(
+                "Eliminar Modelo(s) de Equipo",
+                "¿Estás seguro de que deseas eliminar los modelos seleccionados?",
+                `/delete_modelo_equipo/${ids.join(",")}` // URL de eliminación
+            );
+        } else if (action === "edit") {
+            if (selectedRows.length > 1) {
+                alert("Solo puedes editar un modelo a la vez.");
+                $(this).val("");
+                return;
+            }
+
+            // Capturar los datos de la fila seleccionada
+            const selectedRow = selectedRows.first();
+            const id = selectedRow.data("id");
+            const nombreModelo = selectedRow.find("td:nth-child(2)").text();
+            const tipoEquipo = selectedRow.find("td:nth-child(3)").text();
+            const marcaEquipo = selectedRow.find("td:nth-child(4)").text();
+
+            // Llenar el formulario dentro del modal
+            $("#editModeloEquipoLabel").text(`Editar Modelo de Equipo: ${nombreModelo}`);
+            $("#edit_nombreModelo_equipo").val(nombreModelo);
+            $("#edit_tipoEquipo").val(tipoEquipo);
+            $("#edit_marcaEquipo").val(marcaEquipo);
+
+            // Configurar la acción del formulario
+            $("#editModeloEquipoForm").attr("action", `/edit_modelo_equipo/${id}`);
+
+            // Mostrar el modal
+            $("#editModeloEquipoModal").modal("show");
+        }
+
+        $(this).val(""); // Resetear el select después de usarlo
+    });
+});

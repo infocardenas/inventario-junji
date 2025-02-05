@@ -33,6 +33,7 @@ $(document).ready(function () {
             const marcas = selectedRow.data("marcas");
             const observacion = selectedRow.data("observacion");
 
+
             console.log("Editando ID:", id);
             console.log("Nombre:", nombre);
             console.log("Marcas:", marcas);

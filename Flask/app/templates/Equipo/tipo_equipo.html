@@ -150,30 +150,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ url_for('static', filename='js/Equipo/tipoEquipo.js') }}"></script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const editForm = document.getElementById("editTipoEquipoForm");
-
-        document.querySelectorAll(".edit-button").forEach(button => {
-            button.addEventListener("click", function () {
-                const tipoId = this.dataset.id;
-                const tipoNombre = this.dataset.nombre;
-                const tipoMarcas = JSON.parse(this.dataset.marcas || "[]");
-                const tipoObservacion = this.dataset.observacion || "";
-
-                // Llenar formulario
-                document.getElementById("edit_nombreTipo_equipo").value = tipoNombre;
-                document.getElementById("edit_observacion").value = tipoObservacion;
-
-                document.querySelectorAll("#editTipoEquipoModal .form-check-input").forEach(checkbox => {
-                    checkbox.checked = tipoMarcas.includes(parseInt(checkbox.value));
-                });
-
-                // Actualizar la acción del formulario
-                editForm.action = `/update_tipo_equipo/${tipoId}`;
-            });
-        });
-    });
-</script>
 
 {% endblock %}

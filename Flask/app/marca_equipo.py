@@ -255,22 +255,4 @@ def delete_marca_equipo(ids):
         return redirect(url_for('marca_equipo.marcaEquipo'))
 
 
-# Ruta para la confirmación definitiva de la eliminación
-@marca_equipo.route('/marca_equipo/confirm_delete/<id>', methods=['GET'])
-@administrador_requerido
-def confirm_delete_marca_equipo(id):
-    try:
-        cur = mysql.connection.cursor()
-
-        # Eliminar relaciones en marca_tipo_equipo
-        cur.execute("DELETE FROM marca_tipo_equipo WHERE idMarca_Equipo = %s", (id,))
-        # Eliminar la marca
-        cur.execute("DELETE FROM marca_equipo WHERE idMarca_Equipo = %s", (id,))
-        mysql.connection.commit()
-
-        flash('Marca y relaciones eliminadas exitosamente.', 'success')
-        return redirect(url_for('marca_equipo.marcaEquipo'))
-    except Exception as e:
-        flash(f"Error al eliminar la marca: {str(e)}", 'danger')
-        return redirect(url_for('marca_equipo.marcaEquipo'))
 

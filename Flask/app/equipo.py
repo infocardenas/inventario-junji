@@ -174,10 +174,10 @@ def add_equipo():
 
         # Definir el esquema de validación
         schema = {
-            'codigo_inventario': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'codigo_inventario': {'type': 'string','regex': '^[a-zA-Z0-9]+$'},
             'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
             'observacion_equipo': {'type': 'string', 'nullable': True},
-            'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'codigoproveedor': {'type': 'string', 'nullable': True, 'regex': '^[a-zA-Z0-9]+$'},
             'mac': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
             'imei': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
             'numero': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},

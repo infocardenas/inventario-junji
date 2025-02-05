@@ -92,13 +92,6 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                 </div>
                 <form id="editMarcaForm" method="POST">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="edit_nombreMarca" class="form-label">Nombre Marca</label>
-                            <input type="text" class="form-control" id="edit_nombreMarca" name="nombre_marca_equipo"
-                                placeholder="Ingresa el nombre de la marca" required>
-                        </div>
-                    </div>
                     <form id="editMarcaForm" method="POST" action="">
                         <div class="modal-body">
                             <div class="mb-3">
@@ -131,23 +124,5 @@
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/Equipo/marcaEquipo.js') }}"></script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-        const editForm = document.getElementById("editMarcaForm");
-
-        document.querySelectorAll(".edit-button").forEach(button => {
-            button.addEventListener("click", function () {
-                const tipoId = this.dataset.id;
-                const tipoNombre = this.dataset.nombre;
-
-                // Llenar formulario
-                document.getElementById("edit_nombreMarca").value = tipoNombre;
-
-                // Actualizar la acción del formulario
-                editForm.action = `/update_marca_equipo/${tipoId}`;
-            });
-        });
-    });
-</script>
 
 {% endblock %}
