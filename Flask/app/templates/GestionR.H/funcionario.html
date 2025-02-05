@@ -17,15 +17,15 @@
 
         <!-- Tabla de funcionarios -->
         <div style="overflow-x:auto;">
-            <table id="posts">
+            <table class="table table-striped table-bordered">
                 <thead>
                     <tr>
-                        <td class="text-center" onclick="sortTable(0)" >RUT</td>
-                        <td class="text-center" onclick="sortTable(1)" >Nombre</td>
-                        <td class="text-center" onclick="sortTable(2)" >Cargo</td>
-                        <td class="text-center" onclick="sortTable(3)" >Unidad</td>
-                        <td class="text-center" onclick="sortTable(4)" >Correo</td>
-                        <td class="text-center">Acciones</td>
+                        <th onclick="sortTable(0)">RUT</th>
+                        <th onclick="sortTable(1)">Nombre</th>
+                        <th onclick="sortTable(2)">Cargo</th>
+                        <th onclick="sortTable(3)">Unidad</th>
+                        <th onclick="sortTable(4)">Correo</th>
+                        <th>Acciones</td>
                     </tr>
                 </thead>
                 <tbody id="myTableBody">
