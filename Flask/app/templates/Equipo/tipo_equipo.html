@@ -3,24 +3,7 @@
 {% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
-    <div class="col-md-12">
-        <!-- Mostrar mensajes flash -->
-        {% with messages = get_flashed_messages() %}
-        {% if messages %}
-        <div class="alert alert-info alert-dismissible fade show" role="alert">
-            {% for message in messages %}
-            {{ message }}
-            {% endfor %}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endif %}
-        {% endwith %}
-
-        <!-- Botón para agregar Tipo de Equipo -->
-        <button type="button" class="btn btn-primary my-3" data-bs-toggle="modal" data-bs-target="#addTipoEquipoModal">
-            Agregar Tipo de Equipo
-        </button>
-
+    <div class="col">
         <!-- Modal para crear Tipo de Equipo -->
         <div class="modal fade" id="addTipoEquipoModal" tabindex="-1" aria-labelledby="addTipoEquipoLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -49,12 +32,6 @@
                                     {% endfor %}
                                 </div>
                             </div>
-
-                            <!-- Observaciones -->
-                            <div class="mb-3">
-                                <label for="observacion" class="form-label">Observaciones:</label>
-                                <textarea class="form-control" id="observacion" name="observacion" rows="4"></textarea>
-                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -66,7 +43,7 @@
         </div>
 
         <!-- Modal para editar Tipo de Equipo -->
-        <div class="modal fade" id="editTipoEquipoModal" tabindex="-1" aria-labelledby="editTipoEquipoLabel" aria-hidden="true">
+        <div class="modal fade no-limpiar-inputs" id="editTipoEquipoModal" tabindex="-1" aria-labelledby="editTipoEquipoLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -93,12 +70,6 @@
                                     {% endfor %}
                                 </div>
                             </div>
-
-                            <!-- Observaciones -->
-                            <div class="mb-3">
-                                <label for="edit_observacion" class="form-label">Observaciones:</label>
-                                <textarea class="form-control" id="edit_observacion" name="observacion" rows="4"></textarea>
-                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -109,9 +80,18 @@
             </div>
         </div>
 
-        <div class="container">
-            <h2 class="mb-4">Tipos de Equipos</h2>
+        <div>
+            <h2>Tipos de Equipos</h2>
             <div class="table-toolbar">
+                <!-- Barra de búsqueda -->
+                <div style="display: flex; justify-content: center;">
+                    <input name="palabra" type="text" class="search-box" placeholder="Buscar tipo de equipo..."
+                        id="buscador" onkeyup="busqueda('myTableBody')" />
+                </div>
+                <!-- Botón para agregar Tipo de Equipo -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTipoEquipoModal">
+                    Agregar tipo de equipo
+                </button>
                 <select class="actions-select">
                     <option value="" selected disabled>Acciones</option>
                     <option value="edit">Editar</option>
@@ -119,7 +99,7 @@
                 </select>
             </div>
             <div class="table-responsive">
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered" style="margin: 30px 0">
                     <thead class="col-md-12">
                         <tr>
                             <th class="checkbox-column" onclick="toggleSelectAll()">Todo</th>
@@ -130,7 +110,8 @@
                     <tbody id="myTableBody">
                         {% if tipo_equipo %}
                         {% for tipoe in tipo_equipo %}
-                        <tr data-id="{{ tipoe.idTipo_equipo }}" data-nombre="{{ tipoe.nombreTipo_equipo }}" data-marcas="{{ tipoe.marcas|tojson }}">
+                        <tr data-id="{{ tipoe.idTipo_equipo }}" data-nombre="{{ tipoe.nombreTipo_equipo }}"
+                            data-marcas="{{ tipoe.marcas }}">
                             <td class="checkbox-column">
                                 <input type="checkbox" class="checkbox-table row-checkbox">
                             </td>
@@ -149,7 +130,7 @@
                 </table>
             </div>
         </div>
-        
+
     </div>
 </div>
 
@@ -157,30 +138,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{ url_for('static', filename='js/Equipo/tipoEquipo.js') }}"></script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const editForm = document.getElementById("editTipoEquipoForm");
-
-        document.querySelectorAll(".edit-button").forEach(button => {
-            button.addEventListener("click", function () {
-                const tipoId = this.dataset.id;
-                const tipoNombre = this.dataset.nombre;
-                const tipoMarcas = JSON.parse(this.dataset.marcas || "[]");
-                const tipoObservacion = this.dataset.observacion || "";
-
-                // Llenar formulario
-                document.getElementById("edit_nombreTipo_equipo").value = tipoNombre;
-                document.getElementById("edit_observacion").value = tipoObservacion;
-
-                document.querySelectorAll("#editTipoEquipoModal .form-check-input").forEach(checkbox => {
-                    checkbox.checked = tipoMarcas.includes(parseInt(checkbox.value));
-                });
-
-                // Actualizar la acción del formulario
-                editForm.action = `/update_tipo_equipo/${tipoId}`;
-            });
-        });
-    });
-</script>
 
 {% endblock %}

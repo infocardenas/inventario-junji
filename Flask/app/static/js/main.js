@@ -1,73 +1,116 @@
+$(document).ready(function () {
+  $('[data-bs-toggle="tooltip"]').tooltip();
+});
+
 function navigateTo(url) {
   window.location.href = url;
 }
 
 function mostrarError(inputField, mensaje) {
   const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
-
   errorMessage.text(mensaje).show(); // Mostrar el mensaje de error
-  inputField.css("border", "2px solid red"); // Resaltar el campo con borde rojo
+
+  // Verifica si el campo está dentro de un contenedor con la clase .highlight-container
+  const highlightContainer = inputField.closest(".highlight-container");
+
+  if (highlightContainer.length) {
+    highlightContainer.css("border", "2px solid red");
+  } else {
+    inputField.css("border", "2px solid red"); // Para otros campos normales
+  }
 }
 
 function limpiarError(inputField) {
   const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
-
   errorMessage.hide(); // Ocultar el mensaje de error
-  inputField.css("border", ""); // Quitar el borde rojo
+
+  // Verifica si el campo está dentro de un contenedor con la clase .highlight-container
+  const highlightContainer = inputField.closest(".highlight-container");
+
+  if (highlightContainer.length) {
+    highlightContainer.css("border", "");
+  } else {
+    inputField.css("border", ""); // Para otros campos normales
+  }
 }
+
 
 // Limpia los valores de todos los inputs, selects y textareas dentro del modal
 function limpiarInputsEnModal(modal) {
+  if ($(modal).hasClass("no-limpiar-inputs")) {
+    return;
+  }
   $(modal).find("input, select, textarea").each(function () {
     const element = $(this);
 
-    // Reinicia el valor de los campos
-    if (element.is("input") || element.is("textarea")) {
-      element.val(""); // Limpia el contenido de inputs y textareas
-    } else if (element.is("select")) {
-      element.prop("selectedIndex", 0); // Resetea el select a la primera opción
+    if (!element.hasClass("no-delete-value")) {
+      if (element.is("input") || element.is("textarea")) {
+        element.val("");
+      } else if (element.is("select")) {
+        element.prop("selectedIndex", 0);
+      }
+    }
+
+    if (element.is("input[type='checkbox']")) {
+      element.prop("checked", false);
     }
   });
 }
 
 function limpiarErroresEnModal(modal) {
-  // Recorre todos los elementos del modal que puedan tener errores
+  // Oculta todos los mensajes de error del modal
   $(modal).find(".text-error-message").each(function () {
-    $(this).hide(); // Oculta los mensajes de error
+    $(this).hide();
   });
-
   $(modal).find("input, select, textarea").css("border", "");
+  $(modal).find(".equipos-asignados-table").css("border", "1px solid #ddd"); // Estilo exclusivo para la tabla de asignaciones
 }
 
 $(document).ready(function () {
-  $(".modal").on("hide.bs.modal", function () {
-    const modal = this;
-    setTimeout(function () {
-      limpiarErroresEnModal(modal);
-      limpiarInputsEnModal(modal);
-    }, 1000);
+  $("#addAsignacionModal").on("show.bs.modal", function () {
+    fechaPorDefecto(); // Establecer la fecha solo cuando el modal esté completamente cargado
+  });
+
+  // Limpiar inputs y errores al abrir cualquier modal
+  $(".modal").on("show.bs.modal", function () {
+    limpiarInputsEnModal(this);
+    limpiarErroresEnModal(this);
+  });
+
+  // Configurar al abrir el modal de detalles
+  $("#modalViewDetails").on("show.bs.modal", function () {
+    // Evitar limpiar el modal principal cuando se abre el modal de detalles
+    $("#addAsignacionModal").off("show.bs.modal");
+  });
+
+  // Rehabilitar la limpieza para el modal principal cuando se cierra el modal de detalles
+  $("#modalViewDetails").on("hide.bs.modal", function () {
+    $("#addAsignacionModal").on("show.bs.modal", function () {
+      limpiarInputsEnModal(this);
+      limpiarErroresEnModal(this);
+    });
   });
 });
 
 function fechaPorDefecto() {
-  //Crea un objeto date para obtener la fecha actual
-  date = new Date();
-  year = date.getFullYear();
-  month = date.getMonth() + 1;
-  day = date.getDate();
-  //El formato tiene que ser con dos digitos con un 0 a la izquierda
-  //de ser nesesario
-  if (month < 10) {
-    month = "0" + month
-  }
-  if (day < 10) {
-    day = "0" + day
-  }
-  //Se crea una string con la fecha en el formato que nesesita html
-  formatedDate = year + "-" + month + "-" + day
-  document.getElementById("inputFecha")
-    .setAttribute("value", formatedDate);
+  const date = new Date();
+  const year = date.getFullYear();
+  let month = date.getMonth() + 1; // Los meses van de 0 a 11, sumamos 1 para obtener el mes correcto
+  let day = date.getDate();
 
+  // Asegura que el mes y el día tengan dos dígitos
+  month = month < 10 ? "0" + month : month;
+  day = day < 10 ? "0" + day : day;
+
+  // Formato que requiere el input de tipo date (YYYY-MM-DD)
+  const formatedDate = `${year}-${month}-${day}`;
+
+  // Asegurar que se seleccione el input de fecha correctamente
+  const fechaInput = document.querySelector(".fecha-input");
+
+  if (fechaInput) {
+    fechaInput.value = formatedDate; // Asignar la fecha actual
+  }
 }
 
 function showDiv(id = "formulario", Esconder = []) {

@@ -72,15 +72,14 @@ def crear_tipo_equipo():
         # Procesar datos del formulario
         nombreTipo_Equipo = request.form["nombreTipo_equipo"]
         marcas_seleccionadas = request.form.getlist("marcas[]")
-        observacion = request.form.get("observacion", "")
 
         cur = mysql.connection.cursor()
         try:
             # Insertar el tipo de equipo
             cur.execute("""
-                INSERT INTO tipo_equipo (nombreTipo_equipo, observacionTipoEquipo) 
-                VALUES (%s, %s)
-            """, (nombreTipo_Equipo, observacion))
+                INSERT INTO tipo_equipo (nombreTipo_equipo) 
+                VALUES (%s)
+            """, (nombreTipo_Equipo))
             tipo_equipo_id = cur.lastrowid
 
             # Enlazar marcas seleccionadas
@@ -122,19 +121,6 @@ def add_tipo_equipo(idTipo_equipo):
         try:
             # Obtener los datos del formulario
             marcas = request.form.getlist("marcas[]")
-            observacion = request.form["observacion"]
-
-            # Actualizar tipo_equipo
-            cur = mysql.connection.cursor()
-            cur.execute(
-                """
-                UPDATE tipo_equipo 
-                SET observacionTipoEquipo = %s
-                WHERE tipo_equipo.idTipo_equipo = %s
-                """,
-                (observacion, idTipo_equipo),
-            )
-            mysql.connection.commit()
 
             # Insertar marcas en marca_tipo_equipo
             for marca in marcas:
@@ -166,7 +152,7 @@ def update_tipo_equipo(id):
         data = {
             'nombreTipo_Equipo': request.form['nombreTipo_equipo']
         }
-        ids_marca_seleccionadas = [int(id_marca) for id_marca in request.form.getlist("marcas[]") if id_marca.strip().isdigit()]
+        ids_marca_seleccionadas = request.form.getlist("marcas[]")
 
         # Validar datos usando Cerberus
         v = Validator(tipo_equipo_schema)

@@ -15,6 +15,7 @@
       <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
       <link rel="stylesheet" href="{{url_for('static', filename='css/sidebar.css')}}">
       <link rel="stylesheet" href="{{url_for('static', filename='css/table.css')}}">
+      <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
   </head>
       <!-- Carga y muestra los errores de flash de manera global -->
     {% with messages = get_flashed_messages(with_categories=true) %}
@@ -163,7 +164,7 @@
         </div>
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.min.js"></script>
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>

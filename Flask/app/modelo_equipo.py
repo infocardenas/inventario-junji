@@ -5,7 +5,6 @@ from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 from flask import jsonify
 
-
 modelo_equipo = Blueprint("modelo_equipo", __name__, template_folder="app/templates")
 
 # Definir el esquema de validación
@@ -266,24 +265,92 @@ def update_modelo_equipo(id):
             flash("Error al crear")
             return redirect(url_for("modelo_equipo.modeloEquipo"))
 
-
-# eliminar
-@modelo_equipo.route("/delete_modelo_equipo/<id>", methods=["POST", "GET"])
+@modelo_equipo.route('/delete_modelo_equipo/<ids>', methods=['GET'])
 @administrador_requerido
-def delete_modelo_equipo(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
+def delete_modelo_equipo(ids):
+
     try:
         cur = mysql.connection.cursor()
-        cur.execute("DELETE FROM modelo_equipo WHERE idModelo_Equipo = %s", (id,))
+
+        # Convertir la cadena de IDs en lista
+        id_list = ids.split(',')
+        
+        # PASO 1: Eliminar dependencias en equipo_asignacion
+        cur.execute(f"""
+            DELETE FROM equipo_asignacion 
+            WHERE idEquipo IN (
+                SELECT e.idEquipo 
+                FROM equipo e
+                WHERE e.idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
+            )
+        """, id_list)
+
+        # PASO 2: Eliminar dependencias en traslacion
+        cur.execute(f"""
+            DELETE FROM traslacion 
+            WHERE idEquipo IN (
+                SELECT e.idEquipo 
+                FROM equipo e
+                WHERE e.idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
+            )
+        """, id_list)
+
+        # PASO 3: Eliminar dependencias en incidencia
+        cur.execute(f"""
+            DELETE FROM incidencia
+            WHERE idEquipo IN (
+                SELECT e.idEquipo
+                FROM equipo e
+                WHERE e.idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
+            )
+        """, id_list)
+
+        # PASO 4: Eliminar dependencias en devolucion
+        cur.execute(f"""
+            DELETE FROM devolucion 
+            WHERE rutFuncionario IN (
+                SELECT f.rutFuncionario 
+                FROM funcionario f
+                WHERE f.rutFuncionario IN (
+                    SELECT a.rutFuncionario
+                    FROM asignacion a
+                    WHERE a.idAsignacion IN (
+                        SELECT ea.idAsignacion 
+                        FROM equipo_asignacion ea
+                        WHERE ea.idEquipo IN (
+                            SELECT e.idEquipo
+                            FROM equipo e
+                            WHERE e.idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
+                        )
+                    )
+                )
+            )
+        """, id_list)
+
+        # PASO 5: Eliminar equipos relacionados al modelo
+        cur.execute(f"""
+            DELETE FROM equipo
+            WHERE idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
+        """, id_list)
+
+        # PASO 6: Finalmente, eliminar el modelo
+        cur.execute(f"""
+            DELETE FROM modelo_equipo
+            WHERE idModelo_Equipo IN ({','.join(['%s'] * len(id_list))})
+        """, id_list)
+
+        # Confirmar cambios
         mysql.connection.commit()
-        flash("Modelo eliminado correctamente")
+
+        # Mostrar mensaje de éxito
+        flash(f"Se eliminaron {len(id_list)} modelo(s) y sus relaciones asociadas exitosamente.", "success")
         return redirect(url_for("modelo_equipo.modeloEquipo"))
+
     except Exception as e:
-        #flash(e.args[1])
-        flash("Error al crear")
+        flash(f"Ocurrió un error al intentar eliminar el/los modelo(s): {e}", "danger")
         return redirect(url_for("modelo_equipo.modeloEquipo"))
+
+
 
 
 

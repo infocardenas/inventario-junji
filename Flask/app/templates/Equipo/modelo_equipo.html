@@ -52,6 +52,48 @@
             </div>
         </div>
 
+        <!-- Modal para Editar Modelo de Equipo -->
+        <div class="modal fade" id="editModeloEquipoModal" tabindex="-1" aria-labelledby="editModeloEquipoLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModeloEquipoLabel">Editar Modelo de Equipo</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                    </div>
+                    <form id="editModeloEquipoForm" method="POST" action="">
+                        <div class="modal-body">
+                            <!-- Nombre del Modelo de Equipo -->
+                            <div class="mb-3">
+                                <label for="edit_nombreModelo_equipo" class="form-label">Nombre del Modelo:</label>
+                                <input type="text" class="form-control" id="edit_nombreModelo_equipo"
+                                    name="nombreModeloequipo" required>
+                            </div>
+
+                            <!-- Tipo de Equipo -->
+                            <div class="mb-3">
+                                <label for="edit_tipoEquipo" class="form-label">Tipo de Equipo:</label>
+                                <input type="text" class="form-control" id="edit_tipoEquipo" name="tipo_equipo"
+                                    required>
+                            </div>
+
+                            <!-- Marca de Equipo -->
+                            <div class="mb-3">
+                                <label for="edit_marcaEquipo" class="form-label">Marca de Equipo:</label>
+                                <input type="text" class="form-control" id="edit_marcaEquipo" name="marca_equipo"
+                                    required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+
         <!-- Tabla para mostrar modelos de equipos -->
         <h2>Modelo de Equipos</h2>
         <div class="table-responsive">
@@ -89,7 +131,7 @@
         </div>
 
         <div class="container">
-            <h2 class="mb-4">Marcas de Equipos</h2>
+            <h2 class="mb-4">Modelos de Equipos</h2>
             <div class="table-toolbar">
                 <select class="actions-select" onchange="handleActionChange(this)">
                     <option value="" selected disabled>Acciones</option>
@@ -141,11 +183,6 @@
 
 <script src="{{ url_for('static', filename='js/Equipo/modeloEquipo.js') }}"></script>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        cargarMarcas();
-    });
-</script>
 
 
 {% endblock %}
