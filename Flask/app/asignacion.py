@@ -16,6 +16,34 @@ from email.mime.base import MIMEBase
 from email.mime.image import MIMEImage
 import fitz
 from env_vars import paths, inLinux
+from cerberus import Validator
+
+schema_asignacion = {
+    'fecha_asignacion': {
+        'type': 'string',
+        'regex': r'^\d{4}-\d{2}-\d{2}$',  # Formato YYYY-MM-DD
+    },
+    'rut_funcionario': {
+        'type': 'string',
+        'minlength': 9,
+        'maxlength': 10,
+        'regex': r'^\d{7,8}-[0-9kK]$',
+    },
+    'observacion': {
+        'type': 'string',
+        'minlength': 0,
+        'maxlength': 250,
+    },
+    'equipos_asignados': {
+        'type': 'list',
+        'minlength': 1,  # Al menos un equipo debe ser seleccionado
+        'schema': {'type': 'integer'},  # Los valores deben ser enteros
+    },
+    'traslado': {
+        'type': 'string',
+        'allowed': ['si', 'no'],  # Los valores permitidos son 'si' o 'no'
+    }
+}
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 
@@ -35,7 +63,7 @@ def Asignacion(page=1):
     SELECT  
         a.idAsignacion,
         a.fecha_inicioAsignacion,
-        a.observacionAsignacion,
+        a.ObservacionAsignacion,
         a.fechaDevolucion,
         a.ActivoAsignacion,
         f.rutFuncionario,
@@ -43,7 +71,8 @@ def Asignacion(page=1):
         f.cargoFuncionario,
         me.nombreModeloequipo,
         te.nombreTipo_equipo,
-        mae.nombreMarcaEquipo
+        mae.nombreMarcaEquipo,
+        e.ObservacionEquipo
     FROM asignacion a
     INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
     LEFT JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
@@ -56,6 +85,7 @@ def Asignacion(page=1):
         """, (perpage, offset)
     )
     data = cur.fetchall()
+
     for row in data:
         row['fecha_inicio'] = row['fecha_inicioAsignacion'].strftime('%d-%m-%Y') if row['fecha_inicioAsignacion'] else 'N/A'
         row['fecha_devolucion'] = row['fechaDevolucion'].strftime('%d-%m-%Y') if row['fechaDevolucion'] else 'Sin devolver'
@@ -79,6 +109,7 @@ def Asignacion(page=1):
         e.Cod_inventarioEquipo,
         e.Num_serieEquipo,
         e.codigoproveedor_equipo,
+        e.ObservacionEquipo,
         me.nombreModeloequipo,
         te.nombreTipo_equipo,
         mae.nombreMarcaEquipo,
@@ -103,6 +134,7 @@ def Asignacion(page=1):
         lastpage= page < (total / perpage) + 1
         )
 
+# ↓ Deprecated 😛 ↓
 @asignacion.route("/add_asignacion", methods=["GET"])
 @asignacion.route("/add_asignacion/<idEquipo>")
 @administrador_requerido
@@ -144,7 +176,7 @@ def add_asignacion(idEquipo = "None"):
         funcionarios=funcionarios_data,
         equipoSeleccionado = idEquipo
         )
-
+# ↑ Deprecated 😛 ↑
 
 
 # enviar datos a vista editar
@@ -273,92 +305,110 @@ def delete_asignacion(id):
         #flash(e.args[1])
         return redirect(url_for("asignacion.Asignacion"))
 
-# Esta función extrae la informacion del formulario
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
 def create_asignacion():
-    if request.method == "POST":
-        fecha_asignacion = request.form.get('fecha-asignacion') 
-        rut_funcionario = request.form.get('rut_funcionario')
-        observacion = request.form.get('observacion', '')
-        id_equipos = request.form.getlist('equiposAsignados[]')
-        realizar_traslado = request.form.get('traslado')
+    if "user" not in session:
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
+        return redirect("/ingresar")
 
-        return creacionAsignacion(fecha_asignacion, observacion, rut_funcionario, id_equipos, realizar_traslado)
+    if request.method != "POST":
+        return redirect(url_for("asignacion.Asignacion"))
 
+    # Obtiene los datos del formulario
+    fecha_asignacion = request.form.get('fecha-asignacion') 
+    rut_funcionario = request.form.get('rut_funcionario')
+    observacion = request.form.get('observacion')
+    id_equipos = [int(equipo) for equipo in request.form.getlist('equiposAsignados[]')]
+    traslado = request.form.get('traslado')
 
-#Este metodo es el que crea la asignacion
-@administrador_requerido
-def creacionAsignacion(fecha_asignacion, observacion, rut, id_equipos, realizar_traslado):
+    # Se crea un objeto para poder validar los datos recibidos
+    data = {
+        'fecha_asignacion': fecha_asignacion,
+        'rut_funcionario': rut_funcionario,
+        'observacion': observacion,
+        'equipos_asignados': id_equipos,
+        'traslado': traslado
+    }
+
+    # Valida los campos y muestra solo el primer mensaje de error
+    v = Validator(schema_asignacion)
+    if not v.validate(data):
+        for campo, mensaje in v.errors.items():
+            flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
+            break
+        return redirect(url_for("asignacion.Asignacion"))
+
     cur = mysql.connection.cursor()
-    #el 1 al final de values es por el ActivoAsignacion que muestra que la asignacion no ha sido devuelta
-    cur.execute("""
-        INSERT INTO asignacion (
-            fecha_inicioAsignacion,
-            ObservacionAsignacion,
-            rutaactaAsignacion, 
-            rutFuncionario,
-            ActivoAsignacion
-        )
-        VALUES (%s, %s, %s, %s, 1)
-        """, (fecha_asignacion, observacion, 'ruta', rut,))
-    mysql.connection.commit()
-
-    # Recuperar el ID de la asignación recién insertada
-    asignacion_id = cur.lastrowid
-
-
-    TuplaEquipos = ()
-    # Iterar sobre los equipos y realizar las operaciones necesarias
-    for id_equipo in id_equipos:
-        # Insertar en la tabla Equipo_asignacion
+    try:
         cur.execute("""
-            INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
-            VALUES (%s, %s)
-            """, (str(asignacion_id),id_equipo))
+            INSERT INTO asignacion (
+                fecha_inicioAsignacion,
+                ObservacionAsignacion,
+                rutaactaAsignacion, 
+                rutFuncionario,
+                ActivoAsignacion
+            )
+            VALUES (%s, %s, %s, %s, 1)
+            """, (fecha_asignacion, observacion, 'ruta', rut_funcionario))
+        id_asignacion = cur.lastrowid # Recupera el ID de la asignación recién insertada
+
+        TuplaEquipos = ()
+
+        # Recorre los equipos asignados
+        for id_equipo in id_equipos:
+            # Inserta los datos en la tabla equipo_asignacion
+            cur.execute("""
+                INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
+                VALUES (%s, %s)
+                """, (id_asignacion, id_equipo))
+
+            # Encuentra el ID del estado "EN USO"
+            cur.execute("""
+                        SELECT *
+                        FROM estado_equipo
+                        WHERE nombreEstado_equipo = %s
+                        """, ("EN USO",))
+            id_estado_equipo = cur.fetchone()['idEstado_equipo']
+                
+            # Cambia el estado del equipo a "EN USO"
+            cur.execute("""
+                        UPDATE equipo
+                        SET idEstado_equipo = %s
+                        WHERE idEquipo = %s
+                        """, (id_estado_equipo, id_equipo))
+
+            #Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el excel
+            cur.execute("""
+                        SELECT e.*, 
+                            me.nombreModeloequipo, 
+                            te.nombreTipo_equipo, 
+                            mae.nombreMarcaEquipo, 
+                            ee.nombreEstado_equipo
+                        FROM equipo e
+                        INNER JOIN modelo_equipo me ON me.idModelo_Equipo = e.idModelo_Equipo
+                        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+                        INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+                        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+                        INNER JOIN estado_equipo ee ON ee.idEstado_equipo = e.idEstado_equipo
+                        WHERE e.idEquipo = %s
+                        """, (id_equipo,))
+            equipoTupla = cur.fetchone()
+            TuplaEquipos = TuplaEquipos + (equipoTupla,)
         mysql.connection.commit()
-        #encontrar la id del estado EN USO
-        cur.execute("""
-                    SELECT *
-                    FROM estado_equipo
-                    WHERE nombreEstado_equipo = %s
-                    """, ("EN USO",))
-        estado_equipo_data = cur.fetchone() 
-            
-        #cambiar el estado de los equipos a en uso
-        cur.execute("""
-                    UPDATE equipo
-                    SET idEstado_equipo = %s
-                    WHERE idEquipo = %s
-                    """, (estado_equipo_data['idEstado_equipo'], id_equipo))
-        mysql.connection.commit()
-            
-        #Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el excel
+    except Exception as e:
+        mysql.connection.rollback()  # En caso de error, se revierten los cambios
+        flash("Error al crear la asignación: " + str(e), 'danger')
+        return redirect(url_for("asignacion.Asignacion"))
 
-        cur.execute("""
-                    SELECT e.*, 
-                        me.nombreModeloequipo, 
-                        te.nombreTipo_equipo, 
-                        mae.nombreMarcaEquipo, 
-                        ee.nombreEstado_equipo
-                    FROM equipo e
-                    INNER JOIN modelo_equipo me ON me.idModelo_Equipo = e.idModelo_Equipo
-                    INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-                    INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
-                    INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
-                    INNER JOIN estado_equipo ee ON ee.idEstado_equipo = e.idEstado_equipo
-                    WHERE e.idEquipo = %s
-                    """, (id_equipo,))
-        equipoTupla = cur.fetchone()
-        TuplaEquipos = TuplaEquipos + (equipoTupla,)
+    flash("Asignación agregada exitosamente", 'success')
 
-    flash("Asignación creada correctamente")
     #agregar argumentos para el excel
     cur.execute("""
                 SELECT *
                 FROM funcionario f
                 WHERE f.rutFuncionario = %s
-                """, (rut,))
+                """, (rut_funcionario,))
     Funcionario = cur.fetchone()
     cur.execute("""
                 SELECT *
@@ -370,12 +420,12 @@ def creacionAsignacion(fecha_asignacion, observacion, rut, id_equipos, realizar_
                 SELECT *
                 FROM asignacion a
                 WHERE a.idAsignacion = %s
-                """, (asignacion_id,))
+                """, (id_asignacion,))
     Asignacion = cur.fetchone()
 
 
     pdf_asignacion = crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
-    if(realizar_traslado and Funcionario['idUnidad'] == 1):
+    if(traslado and Funcionario['idUnidad'] == 1):
         #TODO: que hacer si multiples equipos vienen de distintas direcciones
 
         #mover desde su posicion actual a la posicion del funcionario

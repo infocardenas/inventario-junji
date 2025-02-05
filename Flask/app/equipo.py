@@ -164,7 +164,7 @@ def add_equipo():
         }
         print(datos)
         # Convertir cadenas vacías a None para los campos opcionales
-        for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo']:
+        for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo', 'codigoproveedor']:
             if datos[key] == "":
                 datos[key] = None
 
@@ -177,7 +177,7 @@ def add_equipo():
             'codigo_inventario': {'type': 'string','regex': '^[a-zA-Z0-9]+$'},
             'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
             'observacion_equipo': {'type': 'string', 'nullable': True},
-            'codigoproveedor': {'type': 'string', 'nullable': True, 'regex': '^[a-zA-Z0-9]+$'},
+            'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$', 'nullable': True},
             'mac': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
             'imei': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
             'numero': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
@@ -193,7 +193,7 @@ def add_equipo():
             mensaje_error = "Error en los siguientes campos:\n"
             for campo, error in errores.items():
                 mensaje_error += f"- {campo}: {', '.join(error)}\n"
-            flash(mensaje_error)
+            flash(mensaje_error, 'warning')
             return redirect(url_for("equipo.Equipo"))
 
         # Verificar existencia del modelo
@@ -237,7 +237,7 @@ def add_equipo():
                 ),
             )
             mysql.connection.commit()
-            flash("Equipo agregado correctamente")
+            flash("Equipo agregado correctamente", 'success')
             return redirect(url_for("equipo.Equipo"))
 
         except IntegrityError as e:

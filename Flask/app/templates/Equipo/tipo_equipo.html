@@ -32,12 +32,6 @@
                                     {% endfor %}
                                 </div>
                             </div>
-
-                            <!-- Observaciones -->
-                            <div class="mb-3">
-                                <label for="observacion" class="form-label">Observaciones:</label>
-                                <textarea class="form-control" id="observacion" name="observacion" rows="4"></textarea>
-                            </div>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -49,7 +43,7 @@
         </div>
 
         <!-- Modal para editar Tipo de Equipo -->
-        <div class="modal fade" id="editTipoEquipoModal" tabindex="-1" aria-labelledby="editTipoEquipoLabel" aria-hidden="true">
+        <div class="modal fade no-limpiar-inputs" id="editTipoEquipoModal" tabindex="-1" aria-labelledby="editTipoEquipoLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -75,12 +69,6 @@
                                     </div>
                                     {% endfor %}
                                 </div>
-                            </div>
-
-                            <!-- Observaciones -->
-                            <div class="mb-3">
-                                <label for="edit_observacion" class="form-label">Observaciones:</label>
-                                <textarea class="form-control" id="edit_observacion" name="observacion" rows="4"></textarea>
                             </div>
                         </div>
                         <div class="modal-footer">

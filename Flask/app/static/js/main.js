@@ -1,3 +1,7 @@
+$(document).ready(function () {
+  $('[data-bs-toggle="tooltip"]').tooltip();
+});
+
 function navigateTo(url) {
   window.location.href = url;
 }
@@ -33,6 +37,9 @@ function limpiarError(inputField) {
 
 // Limpia los valores de todos los inputs, selects y textareas dentro del modal
 function limpiarInputsEnModal(modal) {
+  if ($(modal).hasClass("no-limpiar-inputs")) {
+    return;
+  }
   $(modal).find("input, select, textarea").each(function () {
     const element = $(this);
 
@@ -51,43 +58,34 @@ function limpiarInputsEnModal(modal) {
 }
 
 function limpiarErroresEnModal(modal) {
-  // Recorre todos los elementos del modal que puedan tener errores
+  // Oculta todos los mensajes de error del modal
   $(modal).find(".text-error-message").each(function () {
-    $(this).hide(); // Oculta los mensajes de error
+    $(this).hide();
   });
-
   $(modal).find("input, select, textarea").css("border", "");
-  $(modal).find(".equipos-asignados-table").css("border", "1px solid #ddd"); // Estilo exclusivo para la tabla de asginaciones
+  $(modal).find(".equipos-asignados-table").css("border", "1px solid #ddd"); // Estilo exclusivo para la tabla de asignaciones
 }
 
 $(document).ready(function () {
-  $("#addAsignacionModal").on("shown.bs.modal", function () {
+  $("#addAsignacionModal").on("show.bs.modal", function () {
     fechaPorDefecto(); // Establecer la fecha solo cuando el modal esté completamente cargado
   });
 
-  $(".modal").on("hide.bs.modal", function (event) {
-    const modal = this;
-    const target = $(event.relatedTarget);
-    const isSwitchingModal = target && target.data("bs-toggle") === "modal";
-
-    // Si no es un cambio entre modales, limpiar inputs y errores
-    if (!isSwitchingModal) {
-      setTimeout(function () {
-        limpiarInputsEnModal(modal);
-        limpiarErroresEnModal(modal);
-      }, 500);
-    }
+  // Limpiar inputs y errores al abrir cualquier modal
+  $(".modal").on("show.bs.modal", function () {
+    limpiarInputsEnModal(this);
+    limpiarErroresEnModal(this);
   });
 
   // Configurar al abrir el modal de detalles
   $("#modalViewDetails").on("show.bs.modal", function () {
-    // Evitar limpieza cuando vuelvas al modal principal
-    $("#addAsignacionModal").off("hide.bs.modal");
+    // Evitar limpiar el modal principal cuando se abre el modal de detalles
+    $("#addAsignacionModal").off("show.bs.modal");
   });
 
-  // Volver a habilitar la limpieza cuando se cierre el modal de detalles
+  // Rehabilitar la limpieza para el modal principal cuando se cierra el modal de detalles
   $("#modalViewDetails").on("hide.bs.modal", function () {
-    $("#addAsignacionModal").on("hide.bs.modal", function () {
+    $("#addAsignacionModal").on("show.bs.modal", function () {
       limpiarInputsEnModal(this);
       limpiarErroresEnModal(this);
     });

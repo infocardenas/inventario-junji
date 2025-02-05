@@ -365,26 +365,6 @@ label {
     border-color: #fcc741; /* Nuevo color del borde al pasar el ratón */
 }
 
-.delete-button {
-    display: inline-block;
-    padding: 5px 15px;
-    font-size: 15px;
-    /* font-weight: bold; */
-    text-align: center;
-    text-decoration: none;
-    cursor: pointer;
-    border: solid #fc3318; /* Color del borde del éxito en Bootstrap */
-    color: #fff; /* Color del texto */
-    background-color: #fc3318; /* Color de fondo del éxito en Bootstrap */
-    border-radius: 5px; /* Bordes redondeados */
-    transition: background-color 0.3s, color 0.3s, border-color 0.3s; /* Transiciones suaves */
-}
-
-/* Estilo del botón de éxito al pasar el ratón por encima */
-.delete-button:hover {
-    background-color: #ff5039; /* Nuevo color de fondo al pasar el ratón */
-    border-color: #ff5039; /* Nuevo color del borde al pasar el ratón */
-}
 .agregar-button {
     display: inline-block;
     padding: 5px 15px;
@@ -768,21 +748,19 @@ svg.bi {
     align-items: center;
 }
 
-.asignacion-button {
-    transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
-}
-.asignacion-button:disabled {
+.button-info:disabled {
     opacity: 0.5;
     pointer-events: none;
 }
-.asignacion-button-info {
+.button-info {
     background-color: #0056b3;
     border-color: #0056b3;
     color: white;
+    transition: opacity 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
-.asignacion-button-info:hover {
+.button-info:hover {
     background-color: #003d7a;
     border-color: #003d7a;
-    color: white;
+    color: #d9d9d9;
 }

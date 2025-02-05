@@ -1,106 +1,4 @@
-$(document).ready(function () {
-    function configModalVisualizar(title, data) {
-        $("#modal-view-title").text(title); // Establecer el título del modal
-        let modalContent = "";
-
-        // Agregar los estilos directamente en el modal
-        modalContent += `
-            <style>
-                .modal-content {
-                    display: flex;
-                    flex-direction: column;
-                }
-
-                .table {
-                    width: 100%;
-                    table-layout: fixed;
-                }
-            </style>
-        `;
-
-        // 1) Tabla de Funcionario
-        modalContent += `
-            <h5>Datos del Funcionario</h5>
-            <table class="table table-bordered">
-                <tr>
-                    <td><strong>RUT</strong></td>
-                    <td>${data.funcionario.rut}</td>
-                </tr>
-                <tr>
-                    <td><strong>Nombre</strong></td>
-                    <td>${data.funcionario.nombre}</td>
-                </tr>
-                <tr>
-                    <td><strong>Cargo</strong></td>
-                    <td>${data.funcionario.cargo}</td>
-                </tr>
-            </table>
-        `;
-
-        // 2) Tabla de Asignación
-        modalContent += `
-            <br>
-            <h5>Datos de la asignación</h5>
-            <table class="table table-bordered">
-                <tr>
-                    <td><strong>Fecha de asignación</strong></td>
-                    <td>${data.asignacion.fecha_inicio}</td>
-                </tr>
-                <tr>
-                    <td><strong>Fecha de devolución</strong></td>
-                    <td>${data.asignacion.fecha_devolucion}</td>
-                </tr>
-                <tr>
-                    <td><strong>Observaciones</strong></td>
-                    <td>${data.asignacion.observacion}</td>
-                </tr>
-            </table>
-        `;
-
-        // 3) Tabla de Equipo
-        modalContent += `
-            <br>
-            <h5>Datos del equipo</h5>
-            <table class="table table-bordered">
-                <tr>
-                    <td><strong>Tipo</strong></td>
-                    <td>${data.equipo.tipo_equipo}</td>
-                </tr>
-                <tr>
-                    <td><strong>Marca</strong></td>
-                    <td>${data.equipo.marca_equipo}</td>
-                </tr>
-                <tr>
-                    <td><strong>Modelo</strong></td>
-                    <td>${data.equipo.modelo_equipo}</td>
-                </tr>
-            </table>
-        `;
-
-        // Inyectamos todo en el modal
-        $("#modal-view-message").html(modalContent);
-    }
-
-    // Manejador de clic en los enlaces "Detalles"
-    $(".view-details").on("click", function () {
-        const title = $(this).data("title");
-        const info = $(this).attr("data-info");
-
-        let data;
-        try {
-            data = JSON.parse(info);
-        } catch (error) {
-            console.error("Error parsing JSON data-info:", error);
-            return;
-        }
-
-        configModalVisualizar(title, data);
-        $("#modal-view").modal("show");
-    });
-});
-
 document.addEventListener("DOMContentLoaded", () => {
-    // Refresh checkbox listeners and button states
     refreshCheckboxListeners();
 });
 
@@ -140,8 +38,8 @@ function asignarSeleccionados() {
     marcados.forEach(chk => {
         const row = chk.closest('tr');
         const tipo = row.children[1].innerText;
-        const marca = row.children[2].innerText;
-        const modelo = row.children[3].innerText;
+        const marca = row.children[4].innerText;
+        const modelo = row.children[5].innerText;
 
         // Obtener los atributos `data-*` para restaurar después
         const codigoInventario = row.dataset.codigoInventario || "N/A";
@@ -154,15 +52,22 @@ function asignarSeleccionados() {
         li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
         li.innerHTML = `
             <span>${tipo} ${marca} ${modelo}</span>
-            <button type="button" class="btn btn-danger btn-sm" 
+            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="tooltip" data-bs-title="Quitar" 
                 onclick="quitarEquipo(this, '${chk.value}', '${tipo}', '${marca}', '${modelo}', '${codigoInventario}', '${numeroSerie}', '${codigoProveedor}', '${unidad}')">
-                <i class="bi bi-trash-fill"></i>
+                <i class="bi bi-x-lg"></i>
             </button>
             <input type="hidden" class="no-delete-value" name="equiposAsignados[]" value="${chk.value}">
         `;
 
         document.getElementById('equiposAsignadosList').appendChild(li);
         row.remove(); // Remover fila de la tabla
+        
+        // Re-inicializar tooltips después de agregar los elementos dinámicamente
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+            new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
     });
 
     refreshCheckboxListeners(); // Actualizar listeners después de modificar la tabla
@@ -186,8 +91,11 @@ function quitarEquipo(button, idEquipo, tipo, marca, modelo, codigoInventario, n
     newRow.innerHTML = `
         <td><input class="no-delete-value" type="checkbox" name="equipoSeleccionado" value="${idEquipo}"></td>
         <td>${tipo}</td>
+        <td>${codigoInventario}</td>
+        <td>${numeroSerie}</td>
         <td>${marca}</td>
         <td>${modelo}</td>
+        <td>${unidad}</td>
     `;
 
     equiposTable.appendChild(newRow);
@@ -208,8 +116,8 @@ function verDetalles() {
     // Obtener la fila del equipo seleccionado
     const row = marcados[0].closest('tr');
     const tipo = row.children[1].innerText;
-    const marca = row.children[2].innerText;
-    const modelo = row.children[3].innerText;
+    const marca = row.children[4].innerText;
+    const modelo = row.children[5].innerText;
 
     // Rellenar los datos en el modal
     document.getElementById('detalleTipo').textContent = tipo;
@@ -219,6 +127,7 @@ function verDetalles() {
     document.getElementById('detalleNumeroSerie').textContent = row.dataset.numeroSerie || "N/A";
     document.getElementById('detalleCodigoProveedor').textContent = row.dataset.codigoProveedor || "N/A";
     document.getElementById('detalleUnidad').textContent = row.dataset.unidad || "N/A";
+    document.getElementById('detalleObservacion').textContent = row.dataset.observacion === "None" ? "" : row.dataset.observacion;
 }
 
 // Búsqueda dinámica

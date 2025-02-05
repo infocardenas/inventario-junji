@@ -256,7 +256,7 @@
                         {% else %}
                         <td class="toCheck">{{equi.nombreFuncionario}}</td>
                         {% endif %}
-                        <td class="toCheck">{{equi.codigoproveedor_equipo}}</td>
+                        <td class="toCheck">{{equi.codigoproveedor_equipo if equi.codigoproveedor_equipo else '-'}}</td>
                         <td class="toCheck">{{equi.nombreUnidad}}</td>
                         <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
                         <td class="toCheck">{{equi.nombreModeloequipo}}</td>
@@ -267,7 +267,7 @@
                                 <div class="dropdown-options">
                                     <a href="/edit_equipo/{{equi.idEquipo}}" class="success-button"
                                         style="width: 90%;">Editar</a>
-                                    <a href="/delete_equipo/{{equi.idEquipo}}" class="delete-button"
+                                    <a href="/delete_equipo/{{equi.idEquipo}}" class="btn btn-danger delete-button"
                                         style="width: 90%;">Eliminar</a>
                                     <a href="/equipo_detalles/{{equi.idEquipo}}" class="info-button"
                                         style="width: 90%;">Detalles</a>
