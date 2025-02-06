@@ -561,18 +561,33 @@ $(document).ready(function () {
   function validarSoloLetras(inputField) {
     const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     const input = inputField.val();
-    const errorMessage = inputField.closest(".mb-3").find(".text-error-message");
+    const esValido = regex.test(input) || input.length === 0;
 
-    if (!regex.test(input)) {
-      inputField.val(input.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ""));
-      errorMessage.text("Solo se permiten letras, tildes y espacios").show();
+    if (!esValido) {
+      mostrarError(inputField, "Solo se permiten letras y espacios");
     } else {
-      errorMessage.hide();
+      limpiarError(inputField);
     }
+    return esValido;
   }
 
-  $(".validar-letras").on("input", function () {
+  $(document).on("input", ".validar-letras", function () {
     validarSoloLetras($(this));
+  });
+
+  // Aplicar validación a cualquier formulario al enviarse
+  $(document).on("submit", "form", function (event) {
+    let esValido = true;
+
+    $(this).find(".validar-letras").each(function () {
+      if (!validarSoloLetras($(this))) {
+        esValido = false;
+      }
+    });
+
+    if (!esValido) {
+      event.preventDefault();
+    }
   });
 });
 
