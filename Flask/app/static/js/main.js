@@ -560,26 +560,34 @@ $(document).ready(function () {
 $(document).ready(function () {
   function validarSoloLetras(inputField) {
     const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-    const input = inputField.val();
-    const esValido = regex.test(input) || input.length === 0;
+    const input = inputField.val().trim();
 
-    if (!esValido) {
+    if (input.length === 0) {
+      limpiarError(inputField);
+      return true;
+    }
+
+    if (!regex.test(input)) {
       mostrarError(inputField, "Solo se permiten letras y espacios");
+      return false;
     } else {
       limpiarError(inputField);
     }
-    return esValido;
+
+    return true;
   }
 
+  // Validar en tiempo real cuando el usuario escribe
   $(document).on("input", ".validar-letras", function () {
     validarSoloLetras($(this));
   });
 
-  // Aplicar validación a cualquier formulario al enviarse
+  // Validación en el envío del formulario
   $(document).on("submit", "form", function (event) {
     let esValido = true;
+    const form = $(this);
 
-    $(this).find(".validar-letras").each(function () {
+    form.find(".validar-letras").each(function () {
       if (!validarSoloLetras($(this))) {
         esValido = false;
       }
@@ -608,44 +616,31 @@ $(document).ready(function () {
 });
 
 $(document).ready(function () {
-  $("form").on("submit", function (event) {
-    let formularioValido = true;
-    const form = $(this); // Seleccionar solo el formulario que se está enviando
+  function validarCampoObligatorio(inputField) {
+    const input = inputField.val().trim();
 
-    // Recorre solo los campos con clase '.campo-obligatorio' dentro del formulario actual
+    if (input === "") {
+      mostrarError(inputField, "Este campo es obligatorio");
+      return false;
+    }
+
+    return true;
+  }
+
+  // Validación en el envío del formulario
+  $(document).on("submit", "form", function (event) {
+    let esFormularioValido = true;
+    const form = $(this);
+
+    // Solo mostrar mensaje de error al enviar el formulario
     form.find(".campo-obligatorio").each(function () {
-      const inputField = $(this);
-
-      // Verifica si el campo está vacío
-      if (inputField.val().trim() === "") {
-        mostrarError(inputField, "Este campo es obligatorio");
-        formularioValido = false;
-      } else {
-        limpiarError(inputField);
+      if (!validarCampoObligatorio($(this))) {
+        esFormularioValido = false;
       }
     });
 
-    // Valida que no se envíe el formulario con campos vacíos
-    if (!formularioValido) {
+    if (!esFormularioValido) {
       event.preventDefault();
-    }
-  });
-
-  // Verifica cuando cambia el valor del campo y lo oculta cuando hay texto
-  $(".campo-obligatorio").on("input change", function () {
-    const inputField = $(this);
-
-    if (inputField.val().trim() !== "") {
-      limpiarError(inputField);
-    }
-  });
-
-  $(".agregar-button").on("click", function () {
-    const targetForm = $(this).data("target-form"); // Si defines un atributo para el formulario objetivo
-    if (targetForm) {
-      $(`#${targetForm}`).submit();
-    } else {
-      $("form").submit();
     }
   });
 });
