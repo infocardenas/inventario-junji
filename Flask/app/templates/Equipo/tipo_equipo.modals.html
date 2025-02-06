@@ -13,7 +13,7 @@
                     <!-- Nombre del Tipo de Equipo -->
                     <div class="mb-3">
                         <label for="nombreTipo_equipo" class="form-label">Nombre del tipo de equipo<span style="color: red; margin-left: 5px">*</span></label>
-                        <input type="text" class="form-control campo-obligatorio" id="nombreTipo_equipo" name="nombreTipo_equipo">
+                        <input type="text" class="form-control campo-obligatorio validar-letras" id="nombreTipo_equipo" name="nombreTipo_equipo" placeholder="Ingrese el nombre del tipo de equipo">
                         <div class="text-error-message"></div>
                     </div>
 
@@ -23,7 +23,7 @@
                         <div class="form-check">
                             {% for marca in marcas %}
                             <div>
-                                <input class="form-check-input" type="checkbox" id="marca_{{ marca.idMarca_equipo }}" name="marcas[]" value="{{ marca.idMarca_equipo }}">
+                                <input class="form-check-input no-delete-value" type="checkbox" id="marca_{{ marca.idMarca_equipo }}" name="marcas[]" value="{{ marca.idMarca_equipo }}">
                                 <label class="form-check-label" for="marca_{{ marca.idMarca_equipo }}">{{ marca.nombreMarcaEquipo }}</label>
                             </div>
                             {% endfor %}
@@ -33,7 +33,7 @@
             </div>
             <!-- Footer de botones -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <button type="submit" class="btn btn-primary" form="addTipoEquipoForm">Guardar</button>
             </div>
         </div>
@@ -46,7 +46,7 @@
         <div class="modal-content">
             <!-- Encabezado -->
             <div class="modal-header">
-                <h5 class="modal-title" id="editTipoEquipoLabel">Editar Tipo de Equipo</h5>
+                <h5 class="modal-title" id="editTipoEquipoLabel">Editar tipo de equipo</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <!-- Contenido -->
@@ -54,13 +54,14 @@
                 <form id="editTipoEquipoForm" method="POST" action="">
                     <!-- Tipo de equipo -->
                     <div class="mb-3">
-                        <label for="edit_nombreTipo_equipo" class="form-label">Nombre del tipo de equipo</label>
-                        <input type="text" class="form-control" id="edit_nombreTipo_equipo" name="nombreTipo_equipo" required>
+                        <label for="edit_nombreTipo_equipo" class="form-label">Nombre del tipo de equipo<span style="color: red; margin-left: 5px">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio" id="edit_nombreTipo_equipo" name="nombreTipo_equipo" placeholder="Ingrese el nombre del tipo de equipo">
+                        <div class="text-error-message"></div>
                     </div>
 
                     <!-- Selección de Marcas -->
                     <div class="mb-3">
-                        <label class="form-label">Selecciona las Marcas:</label>
+                        <label class="form-label">Selecciona las marcas</label>
                         <div class="form-check">
                             {% for marca in marcas %}
                             <div>
@@ -74,7 +75,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="submit" class="btn btn-primary">Guardar</button>
+                <button type="submit" class="btn btn-primary" form="editTipoEquipoForm">Guardar</button>
             </div>
         </div>
     </div>

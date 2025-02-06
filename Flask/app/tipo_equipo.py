@@ -3,17 +3,18 @@ from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
+from MySQLdb import IntegrityError
 
 tipo_equipo = Blueprint("tipo_equipo", __name__, template_folder="app/templates")
 
 
 # Definir el esquema de validación para tipo_equipo
-tipo_equipo_schema = {
-    'nombreTipo_Equipo': {
+schema_tipo_equipo = {
+    'nombre_tipo_equipo': {
         'type': 'string',
         'minlength': 1,
-        'maxlength': 100,
-        'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+        'maxlength': 45,
+        'regex': r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$'
     }
 }
 
@@ -65,13 +66,22 @@ def tipoEquipo(page=1):
     )
 
 # agrega un tipo de equipo
-@tipo_equipo.route("/crear_tipo_equipo", methods=["GET", "POST"])
+@tipo_equipo.route("/crear_tipo_equipo", methods=["POST"])
 @administrador_requerido
 def crear_tipo_equipo():
     if request.method == "POST":
         # Procesar datos del formulario
-        nombreTipo_Equipo = request.form["nombreTipo_equipo"]
-        marcas_seleccionadas = request.form.getlist("marcas[]")
+        nombre_tipo_equipo = request.form["nombreTipo_equipo"]
+        ids_marcas_seleccionadas = [int(id_marca) for id_marca in request.form.getlist("marcas[]")]
+
+        data = {
+            'nombre_tipo_equipo': nombre_tipo_equipo
+        }
+
+        v = Validator(schema_tipo_equipo)
+        if not v.validate(data):
+            flash("Error: Caracteres no permitidos en el nombre", 'warning')
+            return redirect(url_for("tipo_equipo.tipoEquipo"))
 
         cur = mysql.connection.cursor()
         try:
@@ -79,37 +89,29 @@ def crear_tipo_equipo():
             cur.execute("""
                 INSERT INTO tipo_equipo (nombreTipo_equipo) 
                 VALUES (%s)
-            """, (nombreTipo_Equipo))
-            tipo_equipo_id = cur.lastrowid
+            """, (nombre_tipo_equipo,))
+            id_tipo_equipo = cur.lastrowid
 
             # Enlazar marcas seleccionadas
-            for marca_id in marcas_seleccionadas:
+            for id_marca in ids_marcas_seleccionadas:
                 cur.execute("""
                     INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo) 
                     VALUES (%s, %s)
-                """, (marca_id, tipo_equipo_id))
+                """, (id_marca, id_tipo_equipo))
 
             mysql.connection.commit()
-            flash("Tipo de equipo creado correctamente.")
-        except Exception as e:
-            print(f"Error al crear tipo de equipo: {str(e)}")
-            flash("Error al crear el tipo de equipo.")
-            return redirect(url_for("tipo_equipo.tipoEquipo"))
+            flash("Tipo de equipo creado exitosamente.", 'success')
+
+        except IntegrityError as e: # Captura errores de la BD
+            error_message = str(e)
+            if "tipo_equipo" in error_message:
+                flash("Error: El tipo de equipo ya se encuentra registrado", 'warning')
+
+        except Exception as e: # Captura cualquier otro tipo de error
+            error_message = str(e)
+            flash("Error al crear el tipo de equipo:" + error_message, 'danger')
 
         return redirect(url_for("tipo_equipo.tipoEquipo"))
-    else:
-        # Obtener todas las marcas para mostrarlas en el modal
-        cur = mysql.connection.cursor()
-        cur.execute("""
-            SELECT idMarca_equipo, nombreMarcaEquipo 
-            FROM marca_equipo
-        """)
-        marcas = cur.fetchall()
-        return render_template(
-            "Equipo/enlazar_marcas.html", 
-            tipo_equipo=tipo_equipo, 
-            marcas=marcas
-        )
 
 @tipo_equipo.route("/update_tipo_equipo/<id>", methods=["POST"])
 @administrador_requerido
@@ -122,7 +124,7 @@ def update_tipo_equipo(id):
         ids_marca_seleccionadas = request.form.getlist("marcas[]")
 
         # Validar datos usando Cerberus
-        v = Validator(tipo_equipo_schema)
+        v = Validator(schema_tipo_equipo)
         if not v.validate(data):
             flash("Caracteres no permitidos en el nombre", "danger")
             return redirect(url_for("tipo_equipo.tipoEquipo"))
@@ -193,7 +195,11 @@ def update_tipo_equipo(id):
             mysql.connection.commit()
             flash("Tipo de equipo actualizado exitosamente.", "success")
             return redirect(url_for("tipo_equipo.tipoEquipo"))
-        
+        except IntegrityError as e:
+            error_message = str(e)
+            if "tipo_equipo" in error_message:
+                flash("Error: El tipo de equipo ya se encuentra registrado", 'warning')
+
         except Exception as e:
             mysql.connection.rollback()
             flash(f"Error al actualizar el tipo de equipo: {str(e)}", "danger")

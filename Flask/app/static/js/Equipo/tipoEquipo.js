@@ -31,18 +31,10 @@ $(document).ready(function () {
             const id = selectedRow.data("id");
             const nombre = selectedRow.data("nombre");
             const marcas = selectedRow.data("marcas");
-            const observacion = selectedRow.data("observacion");
-
-
-            console.log("Editando ID:", id);
-            console.log("Nombre:", nombre);
-            console.log("Marcas:", marcas);
-            console.log("Observación:", observacion);
 
             // Rellenar el formulario dentro del modal
-            $("#editTipoEquipoLabel").text(`Editar Tipo de Equipo: ${nombre}`);
+            $("#editTipoEquipoLabel").text(`Editar tipo de equipo: ${nombre}`);
             $("#edit_nombreTipo_equipo").val(nombre);
-            $("#edit_observacion").val(observacion || "");  // Evita valores `null`
 
             // Desmarcar todos los checkboxes antes de marcar los seleccionados
             $("#editTipoEquipoModal input[name='marcas[]']").prop("checked", false);
