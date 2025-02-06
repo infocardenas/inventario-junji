@@ -118,97 +118,98 @@ def crear_tipo_equipo():
 @tipo_equipo.route("/update_tipo_equipo/<id>", methods=["POST"])
 @administrador_requerido
 def update_tipo_equipo(id):
-    if request.method == "POST":
-        # Obtener datos del formulario
-        data = {
-            'nombreTipo_Equipo': request.form['nombreTipo_equipo']
-        }
-        ids_marca_seleccionadas = request.form.getlist("marcas[]")
+    if request.method != "POST":
+        return redirect(url_for("tipo_equipo.tipoEquipo"))
 
-        # Validar datos usando Cerberus
-        v = Validator(schema_tipo_equipo)
-        if not v.validate(data):
-            flash("Caracteres no permitidos en el nombre", "danger")
-            return redirect(url_for("tipo_equipo.tipoEquipo"))
+    # Procesar datos del formulario
+    nombre_tipo_equipo = request.form['nombreTipo_equipo']
+    ids_marcas_seleccionadas = [int(id_marca) for id_marca in request.form.getlist("marcas[]")]
 
-        cur = mysql.connection.cursor()
+    data = {
+        'nombre_tipo_equipo': nombre_tipo_equipo
+    }
 
-        # Obtener las marcas actuales asociadas al tipo
-        cur.execute("""
-            SELECT idMarca_Equipo 
-            FROM marca_tipo_equipo 
-            WHERE idTipo_equipo = %s
-        """, (id,))
-        ids_marca_actuales = [row['idMarca_Equipo'] for row in cur.fetchall()] or []
+    v = Validator(schema_tipo_equipo)
+    if not v.validate(data):
+        flash("Caracteres no permitidos en el nombre", "warning")
+        return redirect(url_for("tipo_equipo.tipoEquipo"))
 
-        # Comparar marcas para identificar cambios
-        ids_marca_eliminadas = set(ids_marca_actuales) - set(ids_marca_seleccionadas)
-        ids_marca_nuevas = set(ids_marca_seleccionadas) - set(ids_marca_actuales)
+    cur = mysql.connection.cursor()
 
-        try:
-            # PASO 1: Manejar Marcas Eliminadas
-            if ids_marca_eliminadas:
-                for id_marca in ids_marca_eliminadas:
-                    # Eliminar equipos relacionados con los modelos de la marca eliminada
-                    cur.execute("""
-                        DELETE FROM equipo 
-                        WHERE idModelo_equipo IN (
-                            SELECT idModelo_Equipo 
-                            FROM modelo_equipo 
-                            WHERE idMarca_Tipo_Equipo = (
-                                SELECT idMarcaTipo 
-                                FROM marca_tipo_equipo 
-                                WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
-                            )
-                        )
-                    """, (id_marca, id))
+    # Obtener las marcas actuales asociadas al tipo
+    cur.execute("""
+        SELECT idMarca_Equipo 
+        FROM marca_tipo_equipo 
+        WHERE idTipo_equipo = %s
+    """, (id,))
+    ids_marca_actuales = [row['idMarca_Equipo'] for row in cur.fetchall()] or []
 
-                    # Eliminar modelos relacionados con la marca eliminada
-                    cur.execute("""
-                        DELETE FROM modelo_equipo 
+    # Comparar marcas para identificar cambios
+    ids_marca_eliminadas = set(ids_marca_actuales) - set(ids_marcas_seleccionadas)
+    ids_marca_nuevas = set(ids_marcas_seleccionadas) - set(ids_marca_actuales)
+
+    try:
+        # PASO 1: Manejar Marcas Eliminadas
+        if ids_marca_eliminadas:
+            for id_marca in ids_marca_eliminadas:
+                # Eliminar equipos relacionados con los modelos de la marca eliminada
+                cur.execute("""
+                    DELETE FROM equipo 
+                    WHERE idModelo_equipo IN (
+                        SELECT idModelo_Equipo 
+                        FROM modelo_equipo 
                         WHERE idMarca_Tipo_Equipo = (
                             SELECT idMarcaTipo 
                             FROM marca_tipo_equipo 
                             WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
                         )
-                    """, (id_marca, id))
+                    )
+                """, (id_marca, id))
 
-                    # Eliminar relación en marca_tipo_equipo
-                    cur.execute("""
-                        DELETE FROM marca_tipo_equipo 
+                # Eliminar modelos relacionados con la marca eliminada
+                cur.execute("""
+                    DELETE FROM modelo_equipo 
+                    WHERE idMarca_Tipo_Equipo = (
+                        SELECT idMarcaTipo 
+                        FROM marca_tipo_equipo 
                         WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
-                    """, (id_marca, id))
+                    )
+                """, (id_marca, id))
 
-            # PASO 2: Manejar Marcas Nuevas
-            if ids_marca_nuevas:
-                for id_marca in ids_marca_nuevas:
-                    cur.execute("""
-                        INSERT INTO marca_tipo_equipo (idTipo_equipo, idMarca_Equipo)
-                        VALUES (%s, %s)
-                    """, (id, id_marca))
+                # Eliminar relación en marca_tipo_equipo
+                cur.execute("""
+                    DELETE FROM marca_tipo_equipo 
+                    WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
+                """, (id_marca, id))
 
-            # PASO 3: Actualizar Nombre del Tipo de Equipo
-            cur.execute("""
-                UPDATE tipo_equipo 
-                SET nombreTipo_equipo = %s 
-                WHERE idTipo_equipo = %s
-            """, (data["nombreTipo_Equipo"], id))
+        # PASO 2: Manejar Marcas Nuevas
+        if ids_marca_nuevas:
+            for id_marca in ids_marca_nuevas:
+                cur.execute("""
+                    INSERT INTO marca_tipo_equipo (idTipo_equipo, idMarca_Equipo)
+                    VALUES (%s, %s)
+                """, (id, id_marca))
 
-            mysql.connection.commit()
-            flash("Tipo de equipo actualizado exitosamente.", "success")
-            return redirect(url_for("tipo_equipo.tipoEquipo"))
-        except IntegrityError as e:
-            error_message = str(e)
-            if "tipo_equipo" in error_message:
-                flash("Error: El tipo de equipo ya se encuentra registrado", 'warning')
+        # PASO 3: Actualizar Nombre del Tipo de Equipo
+        cur.execute("""
+            UPDATE tipo_equipo 
+            SET nombreTipo_equipo = %s 
+            WHERE idTipo_equipo = %s
+        """, (nombre_tipo_equipo, id))
 
-        except Exception as e:
-            mysql.connection.rollback()
-            flash(f"Error al actualizar el tipo de equipo: {str(e)}", "danger")
-            return redirect(url_for("tipo_equipo.tipoEquipo"))
+        mysql.connection.commit()
+        flash("Tipo de equipo actualizado exitosamente.", "success")
 
+    except IntegrityError as e:
+        error_message = str(e)
+        if "tipo_equipo" in error_message:
+            flash("Error: El tipo de equipo ya se encuentra registrado", 'warning')
 
+    except Exception as e:
+        mysql.connection.rollback()
+        flash(f"Error al actualizar el tipo de equipo: {str(e)}", "danger")
 
+    return redirect(url_for("tipo_equipo.tipoEquipo"))
 
 @tipo_equipo.route("/delete_tipo_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
