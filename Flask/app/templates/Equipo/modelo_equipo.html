@@ -95,6 +95,26 @@
                 </div>
             </div>
 
+            <!-- Modal de confirmación para eliminación -->
+            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            ¿Estás seguro de que deseas eliminar las marcas seleccionadas? Esta acción no se puede deshacer.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
             <!-- Tabla de modelo equipos -->
             <div class="container">
                 <div class="table-responsive">
@@ -119,11 +139,11 @@
                                 <td data-tipo-id="{{ modeloe.idTipo_equipo }}">{{ modeloe.nombreTipo_equipo }}</td>
                                 <td data-marca-id="{{ modeloe.idMarca_Equipo }}">{{ modeloe.nombreMarcaEquipo }}</td>                                
                                 <td>
-                                    <button class="btn btn-secondary btn-sm btn-editar-modelo"
+                                    <button class="btn button-info btn-sm btn-editar-modelo"
                                     data-bs-toggle="modal" data-bs-target="#editModeloEquipoModal"
                                     data-id="{{ modeloe.idModelo_Equipo }}"
                                     data-nombre="{{ modeloe.nombreModeloequipo }}">
-                                    <i class="bi bi-eye"></i> Editar
+                                    <i class="bi bi-pencil-square"></i> Editar
                                     </button>   
                                 </td>
                             </tr>
