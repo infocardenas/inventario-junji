@@ -69,49 +69,51 @@ def tipoEquipo(page=1):
 @tipo_equipo.route("/crear_tipo_equipo", methods=["POST"])
 @administrador_requerido
 def crear_tipo_equipo():
-    if request.method == "POST":
-        # Procesar datos del formulario
-        nombre_tipo_equipo = request.form["nombreTipo_equipo"]
-        ids_marcas_seleccionadas = [int(id_marca) for id_marca in request.form.getlist("marcas[]")]
-
-        data = {
-            'nombre_tipo_equipo': nombre_tipo_equipo
-        }
-
-        v = Validator(schema_tipo_equipo)
-        if not v.validate(data):
-            flash("Error: Caracteres no permitidos en el nombre", 'warning')
-            return redirect(url_for("tipo_equipo.tipoEquipo"))
-
-        cur = mysql.connection.cursor()
-        try:
-            # Insertar el tipo de equipo
-            cur.execute("""
-                INSERT INTO tipo_equipo (nombreTipo_equipo) 
-                VALUES (%s)
-            """, (nombre_tipo_equipo,))
-            id_tipo_equipo = cur.lastrowid
-
-            # Enlazar marcas seleccionadas
-            for id_marca in ids_marcas_seleccionadas:
-                cur.execute("""
-                    INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo) 
-                    VALUES (%s, %s)
-                """, (id_marca, id_tipo_equipo))
-
-            mysql.connection.commit()
-            flash("Tipo de equipo creado exitosamente.", 'success')
-
-        except IntegrityError as e: # Captura errores de la BD
-            error_message = str(e)
-            if "tipo_equipo" in error_message:
-                flash("Error: El tipo de equipo ya se encuentra registrado", 'warning')
-
-        except Exception as e: # Captura cualquier otro tipo de error
-            error_message = str(e)
-            flash("Error al crear el tipo de equipo:" + error_message, 'danger')
-
+    if request.method != "POST":
         return redirect(url_for("tipo_equipo.tipoEquipo"))
+
+    # Procesar datos del formulario
+    nombre_tipo_equipo = request.form["nombreTipo_equipo"]
+    ids_marcas_seleccionadas = [int(id_marca) for id_marca in request.form.getlist("marcas[]")]
+
+    data = {
+        'nombre_tipo_equipo': nombre_tipo_equipo
+    }
+
+    v = Validator(schema_tipo_equipo)
+    if not v.validate(data):
+        flash("Error: Caracteres no permitidos en el nombre", 'warning')
+        return redirect(url_for("tipo_equipo.tipoEquipo"))
+
+    cur = mysql.connection.cursor()
+    try:
+        # Insertar el tipo de equipo
+        cur.execute("""
+            INSERT INTO tipo_equipo (nombreTipo_equipo) 
+            VALUES (%s)
+        """, (nombre_tipo_equipo,))
+        id_tipo_equipo = cur.lastrowid
+
+        # Enlazar marcas seleccionadas
+        for id_marca in ids_marcas_seleccionadas:
+            cur.execute("""
+                INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo) 
+                VALUES (%s, %s)
+            """, (id_marca, id_tipo_equipo))
+
+        mysql.connection.commit()
+        flash("Tipo de equipo creado exitosamente.", 'success')
+
+    except IntegrityError as e: # Captura errores de la BD
+        error_message = str(e)
+        if "tipo_equipo" in error_message:
+            flash("Error: El tipo de equipo ya se encuentra registrado", 'warning')
+
+    except Exception as e: # Captura cualquier otro tipo de error
+        error_message = str(e)
+        flash("Error al crear el tipo de equipo:" + error_message, 'danger')
+
+    return redirect(url_for("tipo_equipo.tipoEquipo"))
 
 @tipo_equipo.route("/update_tipo_equipo/<id>", methods=["POST"])
 @administrador_requerido
