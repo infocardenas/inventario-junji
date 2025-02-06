@@ -14,15 +14,31 @@
                         id="buscador" onkeyup="busqueda('myTableBody')" />
                 </div>
 
-                <!-- Botón para agregar tipo de equipo -->
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTipoEquipoModal">Agregar tipo de equipo</button>
-                
-                <!-- Botón de acciones -->
-                <select class="actions-select">
-                    <option value="" selected disabled>Acciones</option>
-                    <option value="edit">Editar</option>
-                    <option value="delete">Eliminar</option>
-                </select>
+                <div class="d-flex justify-content-between" id="container-buttons-tipo-equipo">
+                    <!-- Botón para agregar tipo de equipo -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTipoEquipoModal">Agregar</button>
+
+                    <div class="d-flex gap-2">
+                        <!-- Botón para editar tipo de equipo -->
+                        <button type="button" class="btn btn-warning edit-button" 
+                            data-bs-toggle="tooltip"
+                            data-bs-title="Editar"
+                            disabled>
+                            <i class="bi bi-pencil-square"></i>
+                        </button>
+
+                        <!-- Botón para eliminar tipo de equipo -->
+                        <button type="button" class="btn btn-danger delete-button"
+                            data-title="Eliminar tipo(s) de equipo"
+                            data-message="¿Estás seguro de que deseas eliminar los tipos seleccionados? Esto afectará las relaciones asociadas."
+                            data-url=""
+                            data-bs-toggle="tooltip"
+                            data-bs-title="Eliminar"
+                            disabled>
+                            <i class="bi bi-trash-fill"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <!-- Tabla de tipos de equipos -->
