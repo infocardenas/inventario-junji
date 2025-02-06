@@ -42,8 +42,8 @@
                             {% for tipoe in tipo_equipo %}
                             <tr data-id="{{ tipoe.idTipo_equipo }}" data-nombre="{{ tipoe.nombreTipo_equipo }}" data-marcas="{{ tipoe.marcas }}">
                                 <td class="checkbox-column"><input type="checkbox" class="checkbox-table row-checkbox"></td>
-                                <td>{{ tipoe.nombreTipo_equipo }}</td>
-                                <td>{{ tipoe.marcas if tipoe.marcas else "Sin marcas asociadas" }}</td>
+                                <td class="toCheck">{{ tipoe.nombreTipo_equipo }}</td>
+                                <td class="toCheck">{{ tipoe.marcas if tipoe.marcas else "Sin marcas asociadas" }}</td>
                             </tr>
                             {% endfor %}
                         {% else %}
