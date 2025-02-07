@@ -1,90 +1,15 @@
 {% extends "layout.html" %}
 {% block body %}
 {% from 'funciones_macro.html' import paginacion %}
-<h2 class="mb-4">Marcas de equipos</h2>
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-12">
-            <!-- Botón para abrir el modal -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addMarcaModal">
-                    <i class="bi bi-plus-lg"></i> Agregar Marcas
-                </button>
-                <button class="btn btn-danger shadow-sm" id="eliminarSeleccionados" action="/delete_marca_equipo">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </div>
-
-            <!-- Modal para agregar marcas -->
-            <div class="modal fade" id="addMarcaModal" tabindex="-1" aria-labelledby="addMarcaModalLabel"
-                aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addMarcaModalLabel">Agregar Marca</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="form_addMarcaModal" action="/add_marca_equipo" method="POST">
-                                <div class="mb-3">
-                                    <label for="nombre_marca_equipo" class="form-label">Nombre Marca</label>
-                                    <input type="text" class="form-control campo-obligatorio" id="nombre_marca_equipo"
-                                        name="nombre_marca_equipo" placeholder="Ingrese una Marca">
-                                    <div class="text-error-message"></div>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" form="form_addMarcaModal" class="btn btn-primary">Guardar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="container">
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
-                        <thead class="col-md-12">
-                            <tr>
-                                <th class="checkbox-column" onclick="toggleSelectAll()">Todo</th>
-                                <th onclick="sortTable(1,this)" class="sortable-column">
-                                    Nombre Marca
-                                </th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="myTableBody">
-                            {% if marca_equipo %}
-                            {% for marcae in marca_equipo %}
-                            <tr data-id="{{ marcae.idMarca_Equipo }}">
-                                <td class="checkbox-column">
-                                    <input type="checkbox" class="checkbox-table row-checkbox">
-                                </td>
-                                <td>{{ marcae.nombreMarcaEquipo }}</td>
-                                <td>
-                                    <button class="btn button-info btn-sm editMarcaBtn"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#editMarcaModal"
-                                            data-id="{{marcae.idMarca_Equipo}}"
-                                            data-nombre="{{marcae.nombreMarcaEquipo}}">
-                                            <i class="bi bi-pencil-square"></i> Editar     
-                                    </button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            {% else %}
-                        </tbody>
-                        <tfoot>
-                            <tr>
-                                <td colspan="4" class="text-center">No hay datos disponibles.</td>
-                            </tr>
-                            {% endif %}
-                        </tfoot>
-
-                    </table>
-                </div>
+<div class="row">
+    <div class="col">
+        <h2>Marcas de equipos</h2>
+        <!-- Fila para botones y barra de búsqueda -->
+        <div>
+            <!-- Barra de búsqueda -->
+            <div class="d-flex justify-content-center">
+                <input name="palabra" type="text" class="search-box" placeholder="Buscar marca de equipo..." id="buscador" onkeyup="busqueda('myTableBody')" />
             </div>
 
             <div class="d-flex justify-content-between" id="container-buttons-equipo">
@@ -126,64 +51,22 @@
                     {% if marca_equipo %}
                         {% for marcae in marca_equipo %}
                         <tr data-id="{{ marcae.idMarca_Equipo }}">
-                            <td class="checkbox-column">
-                                <input type="checkbox" class="checkbox-table row-checkbox">
-                            </td>
-                            <td>{{ marcae.nombreMarcaEquipo }}</td>
+                            <td class="checkbox-column"><input type="checkbox" class="checkbox-table row-checkbox"></td>
+                            <td class="toCheck">{{ marcae.nombreMarcaEquipo }}</td>
                         </tr>
                         {% endfor %}
-                        {% else %}
-                    </tbody>
-                    <tfoot>
+                    {% else %}
                         <tr>
                             <td colspan="4" class="text-center">No hay datos disponibles.</td>
                         </tr>
-                        {% endif %}
-                    </tfoot>
-
-                </table>
-            </div>
+                    {% endif %}
+                </tbody>
+            </table>
         </div>
 
-    </div>
+        {% include 'Equipo/marca_equipo.modals.html' %}
+        <script src="../../static/js/Equipo/marcaEquipo.js"></script>
 
-    <!-- Modal para editar marcas -->
-    <div class="modal fade" id="editMarcaModal" tabindex="-1" aria-labelledby="editMarcaModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editMarcaModalLabel">Editar Marca</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                </div>
-                <form id="editMarcaForm" method="POST">
-                    <form id="editMarcaForm" method="POST" action="">
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label for="edit_nombreMarca" class="form-label">Nombre Marca</label>
-                                <input 
-                                    type="text" 
-                                    class="form-control" 
-                                    id="edit_nombreMarca" 
-                                    name="nombre_marca_equipo" 
-                                    placeholder="Ingresa el nombre de la marca" 
-                                    required>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        </div>
-                    </form>                    
-                </div>
-            </div>
-        </div>
+        {% endblock %}
     </div>
 </div>
-
-<!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
-<script src="{{ url_for('static', filename='js/Equipo/marcaEquipo.js') }}"></script>
-
-{% endblock %}
