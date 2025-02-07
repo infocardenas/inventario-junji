@@ -75,21 +75,4 @@ $(document).ready(function () {
         $("#confirm-delete-button").attr("href", deleteUrl);
         $("#modal-delete-marca").modal("show");
     });
-
-    // Evento cuando el usuario confirma la eliminación
-    $("#confirmDeleteBtn").on("click", function () {
-        const ids = $(this).data("ids");
-
-        if (!ids) {
-            $("#mensajeError").text("⚠️ No se encontraron marcas para eliminar.").show();
-            return;
-        }
-
-        // Mostrar mensaje de carga mientras se ejecuta la eliminación
-        $("#mensajeExito").text("⏳ Eliminando marcas...").show();
-
-        // Redirigir a la función de eliminación en Flask
-        window.location.href = `/marca_equipo/delete_marca_equipo/${ids}`;
-    });
-
 });
