@@ -602,14 +602,14 @@ $(document).ready(function () {
 $(document).ready(function () {
   // Función de validación
   function validateNumbersInput() {
-    const input = $(this).val();
+    const inputField = $(this);
+    const inputValue = inputField.val();
     const regex = /^[0-9]*$/; // Permitir números
-    const errorMessage = $("#error-message");
 
-    if (!regex.test(input)) {
-      errorMessage.text("Solo se permiten números.").show()
+    if (!regex.test(inputValue)) {
+      mostrarError(inputField, "Sólo se permiten números");
     } else {
-      errorMessage.hide();
+      limpiarError(inputField);
     }
   }
   $(".solo-numeros").on("input", validateNumbersInput);
