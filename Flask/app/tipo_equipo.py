@@ -69,34 +69,7 @@ def tipoEquipo(page=1):
 @tipo_equipo.route("/crear_tipo_equipo", methods=["POST"])
 @administrador_requerido
 def crear_tipo_equipo():
-    if request.method == "POST":
-        # Procesar datos del formulario
-        nombreTipo_Equipo = request.form["nombreTipo_equipo"]
-        marcas_seleccionadas = request.form.getlist("marcas[]")
-
-        cur = mysql.connection.cursor()
-        try:
-            # Insertar el tipo de equipo
-            cur.execute("""
-                INSERT INTO tipo_equipo (nombreTipo_equipo) 
-                VALUES (%s)
-            """, (nombreTipo_Equipo,))
-            tipo_equipo_id = cur.lastrowid
-
-            # Enlazar marcas seleccionadas
-            for marca_id in marcas_seleccionadas:
-                cur.execute("""
-                    INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo) 
-                    VALUES (%s, %s)
-                """, (marca_id, tipo_equipo_id))
-
-            mysql.connection.commit()
-            flash("Tipo de equipo creado correctamente.")
-        except Exception as e:
-            print(f"Error al crear tipo de equipo: {str(e)}")
-            flash("Error al crear el tipo de equipo.")
-            return redirect(url_for("tipo_equipo.tipoEquipo"))
-
+    if request.method != "POST":
         return redirect(url_for("tipo_equipo.tipoEquipo"))
 
     # Procesar datos del formulario
