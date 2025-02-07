@@ -63,33 +63,4 @@ $(document).ready(function () {
         if ($(this).prop("disabled")) return; // Evita abrir el modal si está deshabilitado
         $("#editTipoEquipoModal").modal("show");
     });
-
 });
-
-// Función para cargar marcas desde el backend
-function cargarMarcas() {
-    $.get("/get_marcas", function (marcas) {
-        let select = $("#marcaSelect, #edit_marcaSelect");
-        select.empty().append('<option value="">Seleccione una marca</option>');
-        $.each(marcas, function (i, marca) {
-            select.append(`<option value="${marca.idMarca_Equipo}">${marca.nombreMarcaEquipo}</option>`);
-        });
-    });
-}
-
-// Función para cargar tipos de equipo según la marca seleccionada
-function cargarTipos(marcaId, selectId, tipoSeleccionado = null) {
-    if (!marcaId) {
-        $(`#${selectId}`).empty().append('<option value="">Seleccione un tipo</option>');
-        return;
-    }
-
-    $.get(`/get_tipos/${marcaId}`, function (tipos) {
-        let select = $(`#${selectId}`);
-        select.empty().append('<option value="">Seleccione un tipo</option>');
-        $.each(tipos, function (i, tipo) {
-            let selected = tipoSeleccionado && tipo.idTipo_equipo == tipoSeleccionado ? "selected" : "";
-            select.append(`<option value="${tipo.idTipo_equipo}" ${selected}>${tipo.nombreTipo_equipo}</option>`);
-        });
-    });
-}
