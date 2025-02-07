@@ -309,83 +309,83 @@ def edit_equipo(id):
 @administrador_requerido
 def update_equipo(id):
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado", "danger")
         return redirect("/ingresar")
-    if request.method == "POST":
-        datos = {
-            'codigo_inventario': request.form["codigo_inventario"],
-            'numero_serie': request.form["numero_serie"],
-            'observacion_equipo': request.form["observacion_equipo"],
-            'codigoproveedor': request.form["codigoproveedor"],
-            'mac': request.form["mac"],
-            'imei': request.form["imei"],
-            'numero': request.form["numero"],
-            'nombre_estado_equipo': request.form["nombre_estado_equipo"],
-            'codigo_Unidad': request.form["codigo_Unidad"],
-            'nombre_orden_compra': request.form["nombre_orden_compra"],
-            'nombre_modelo_equipo': request.form["nombre_modelo_equipo"],
-        }
 
-        # Validación del modelo
+    if request.method == "POST":
         try:
             cur = mysql.connection.cursor()
 
-            # Verificar modelo
+            # Obtener los datos del formulario
+            datos = {
+                'codigo_inventario': request.form["codigo_inventario"].strip(),
+                'numero_serie': request.form["numero_serie"].strip(),
+                'observacion_equipo': request.form.get("observacion_equipo", "").strip(),
+                'codigoproveedor': request.form.get("codigoproveedor", "").strip(),
+                'mac': request.form.get("mac", "").strip(),
+                'imei': request.form.get("imei", "").strip(),
+                'numero': request.form.get("numero", "").strip(),
+                'nombre_estado_equipo': request.form["nombre_estado_equipo"].strip(),
+                'codigo_Unidad': request.form["codigo_Unidad"].strip(),
+                'nombre_orden_compra': request.form["nombre_orden_compra"].strip(),
+                'nombre_modelo_equipo': request.form["nombre_modelo_equipo"].strip(),
+            }
+
+            # Verificar si el código de inventario ya existe (excepto para el mismo equipo)
             cur.execute("""
-                SELECT idModelo_Equipo FROM modelo_equipo WHERE nombreModeloequipo = %s
-            """, (datos['nombre_modelo_equipo'],))
-            modelo = cur.fetchone()
-            if not modelo:
-                flash("El modelo seleccionado no existe")
+                SELECT idEquipo FROM equipo WHERE Cod_inventarioEquipo = %s AND idEquipo != %s
+            """, (datos['codigo_inventario'], id))
+            if cur.fetchone():
+                flash("El código de inventario ya está en uso", "danger")
                 return redirect(url_for("equipo.Equipo"))
 
-            # Verificar estado
+            # Verificar si el número de serie ya existe (excepto para el mismo equipo)
             cur.execute("""
-                SELECT idEstado_equipo FROM estado_equipo WHERE nombreEstado_equipo = %s
-            """, (datos['nombre_estado_equipo'],))
+                SELECT idEquipo FROM equipo WHERE Num_serieEquipo = %s AND idEquipo != %s
+            """, (datos['numero_serie'], id))
+            if cur.fetchone():
+                flash("El número de serie ya está en uso", "danger")
+                return redirect(url_for("equipo.Equipo"))
+
+            # Obtener ID del modelo
+            cur.execute("SELECT idModelo_Equipo FROM modelo_equipo WHERE nombreModeloequipo = %s", (datos['nombre_modelo_equipo'],))
+            modelo = cur.fetchone()
+            if not modelo:
+                flash("El modelo seleccionado no existe", "danger")
+                return redirect(url_for("equipo.Equipo"))
+
+            # Obtener ID del estado
+            cur.execute("SELECT idEstado_equipo FROM estado_equipo WHERE nombreEstado_equipo = %s", (datos['nombre_estado_equipo'],))
             estado = cur.fetchone()
             if not estado:
-                flash("El estado seleccionado no existe")
+                flash("El estado seleccionado no existe", "danger")
                 return redirect(url_for("equipo.Equipo"))
 
             # Actualizar equipo
-            cur.execute(
-                """
+            cur.execute("""
                 UPDATE equipo
-                SET Cod_inventarioEquipo = %s,
-                    Num_serieEquipo = %s,
-                    ObservacionEquipo = %s,
-                    codigoproveedor_equipo = %s,
-                    macEquipo = %s,
-                    imeiEquipo = %s,
-                    numerotelefonicoEquipo = %s,
-                    idUnidad = %s,
-                    idOrden_compra = %s,
-                    idModelo_equipo = %s,
-                    idEstado_equipo = %s
+                SET Cod_inventarioEquipo = %s, Num_serieEquipo = %s, ObservacionEquipo = %s, 
+                    codigoproveedor_equipo = %s, macEquipo = %s, imeiEquipo = %s, 
+                    numerotelefonicoEquipo = %s, idUnidad = %s, idOrden_compra = %s, 
+                    idModelo_equipo = %s, idEstado_equipo = %s
                 WHERE idEquipo = %s
-                """,
-                (
-                    datos['codigo_inventario'],
-                    datos['numero_serie'],
-                    datos['observacion_equipo'],
-                    datos['codigoproveedor'],
-                    datos['mac'],
-                    datos['imei'],
-                    datos['numero'],
-                    datos['codigo_Unidad'],
-                    datos['nombre_orden_compra'],
-                    modelo['idModelo_Equipo'],  # Nuevo
-                    estado['idEstado_equipo'],  # Nuevo
-                    id,
-                ),
-            )
+            """, (
+                datos['codigo_inventario'], datos['numero_serie'], datos['observacion_equipo'], 
+                datos['codigoproveedor'], datos['mac'], datos['imei'], datos['numero'], 
+                datos['codigo_Unidad'], datos['nombre_orden_compra'], modelo['idModelo_Equipo'], 
+                estado['idEstado_equipo'], id
+            ))
+
             mysql.connection.commit()
-            flash("Equipo actualizado correctamente")
-            return redirect(url_for("equipo.Equipo"))
+            flash("Equipo actualizado correctamente", "success")
         except Exception as error:
-            flash(f"Error al actualizar el equipo: {str(error)}")
-            return redirect(url_for("equipo.Equipo"))
+            mysql.connection.rollback()
+            flash(f"Error al actualizar el equipo: {str(error)}", "danger")
+        finally:
+            cur.close()
+
+        return redirect(url_for("equipo.Equipo"))
+
 
         
 
@@ -393,26 +393,46 @@ def update_equipo(id):
 @administrador_requerido
 def delete_equipo(id):
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("No estás autorizado")
         return redirect("/ingresar")
+
     try:
         cur = mysql.connection.cursor()
 
         # Validar dependencias
-        cur.execute("SELECT COUNT(*) AS count FROM asignaciones WHERE idEquipo = %s", (id,))
-        dependencias = cur.fetchone()['count']
-        if dependencias > 0:
-            flash("No se puede eliminar el equipo porque tiene dependencias")
+        dependencias_queries = {
+            "asignaciones": "SELECT COUNT(*) AS count FROM asignacion WHERE idAsignacion IN (SELECT idAsignacion FROM equipo_asignacion WHERE idEquipo = %s)",
+            "equipo_asignacion": "SELECT COUNT(*) AS count FROM equipo_asignacion WHERE idEquipo = %s",
+            "traslaciones": "SELECT COUNT(*) AS count FROM traslacion WHERE idEquipo = %s",
+            "incidencias": "SELECT COUNT(*) AS count FROM incidencia WHERE idEquipo = %s"
+        }
+
+        dependencias = {}
+        for key, query in dependencias_queries.items():
+            cur.execute(query, (id,))
+            dependencias[key] = cur.fetchone()["count"]
+
+        # Si hay dependencias, mostrar confirmación antes de eliminar
+        if any(count > 0 for count in dependencias.values()):
+            flash(
+                "El equipo tiene dependencias en otras tablas. ¿Deseas continuar con la eliminación?")
             return redirect(url_for("equipo.Equipo"))
 
-        # Eliminar equipo
+        # Eliminar dependencias en cascada
+        cur.execute("DELETE FROM equipo_asignacion WHERE idEquipo = %s", (id,))
+        cur.execute("DELETE FROM traslacion WHERE idEquipo = %s", (id,))
+        cur.execute("DELETE FROM incidencia WHERE idEquipo = %s", (id,))
+
+        # Finalmente eliminar el equipo
         cur.execute("DELETE FROM equipo WHERE idEquipo = %s", (id,))
         mysql.connection.commit()
         flash("Equipo eliminado correctamente")
-        return redirect(url_for("equipo.Equipo"))
+        
     except Exception as e:
-        flash("Error al eliminar, el equipo puede tener dependencias")
+        flash(f"Error al eliminar el equipo: {str(e)}")
+    finally:
         return redirect(url_for("equipo.Equipo"))
+
 
 
 @equipo.route("/mostrar_asociados_traslado/<idTraslado>")
@@ -822,7 +842,7 @@ def añadir_hoja_de_otros(tipos, ws):
     LEFT JOIN provincia pro ON pro.idProvincia = com.idProvincia
     INNER JOIN proveedor pr ON pr.idProveedor = oc.idProveedor
 
-    WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
+    WHERE ee.nombreEstado_equipo NOT LIKE "En Uso"
     UNION 
     SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
             e.Num_serieEquipo, e.ObservacionEquipo, 

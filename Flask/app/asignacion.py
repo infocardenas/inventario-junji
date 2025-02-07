@@ -932,7 +932,7 @@ def devolver_uno(id_equipo):
     print(asignacion_vieja)
     devolver(asignacion_vieja['idAsignacion'])
     creacionAsignacion(str(date.today()), asignacion_vieja['ObservacionAsignacion'], 
-                asignacion_vieja['rutFuncionario'], equipos_id, True)
+        asignacion_vieja['rutFuncionario'], equipos_id, True)
 
 
     #cambiar redirect
