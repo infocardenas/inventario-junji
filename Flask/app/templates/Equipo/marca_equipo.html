@@ -12,15 +12,28 @@
                 <input name="palabra" type="text" class="search-box" placeholder="Buscar marca de equipo..." id="buscador" onkeyup="busqueda('myTableBody')" />
             </div>
 
-            <!-- Botón para agregar marca -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add-marca-equipo">Agregar marca</button>
+            <div class="d-flex justify-content-between" id="container-buttons-equipo">
+                <!-- Botón para agregar marca -->
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-add-marca-equipo">Agregar marca</button>
+                
+                <div class="d-flex gap-2">
+                    <!-- Botón para editar marca -->
+                    <button type="button" class="btn btn-warning edit-button" data-bs-toggle="tooltip" data-bs-title="Editar" disabled>
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
 
-            <!-- Botón de acciones -->
-            <select class="actions-select">
-                <option value="" selected disabled>Acciones</option>
-                <option value="edit">Editar</option>
-                <option value="delete">Eliminar</option>
-            </select>
+                    <!-- Botón para eliminar marca -->
+                    <button type="button" class="btn btn-danger delete-button"
+                        data-title="Eliminar marca(s)"
+                        data-message="¿Estás seguro de que deseas eliminar las marcas seleccionadas? Esto eliminará también las relaciones asociadas"
+                        data-url=""
+                        data-bs-toggle="tooltip"
+                        data-bs-title="Eliminar"
+                        disabled>
+                        <i class="bi bi-trash-fill"></i>
+                    </button>
+                </div>
+            </div>
         </div>
 
         <!-- Tabla de marcas de equipo -->

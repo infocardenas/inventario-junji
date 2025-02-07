@@ -1,44 +1,78 @@
 $(document).ready(function () {
-    $(".actions-select").on("change", function () {
-        const action = $(this).val(); // Obtener la acción seleccionada
-        const selectedRows = $(".row-checkbox:checked").closest("tr"); // Filas seleccionadas
+    // Detectar cambios en los checkboxes para actualizar los botones
+    $(document).on("change", ".row-checkbox, #selectAll", function () {
+        actualizarBotonesAcciones();
+    });
 
-        if (!selectedRows.length) {
-            alert("Por favor, selecciona una o más filas antes de realizar una acción."); // Validación básica
-            $(this).val(""); // Resetear el select
+    function actualizarBotonesAcciones() {
+        const seleccionados = $(".row-checkbox:checked");
+        const deleteButton = $(".delete-button");
+        const editButton = $(".edit-button");
+
+        if (seleccionados.length > 0) {
+            // Construir la URL para eliminar (con múltiples IDs separados por comas)
+            const ids = seleccionados.map(function () {
+                return $(this).closest("tr").data("id");
+            }).get().join(",");
+
+            deleteButton.data("url", `/delete_marca_equipo/${ids}`);
+            deleteButton.prop("disabled", false);
+        } else {
+            deleteButton.data("url", ""); // Limpiar URL cuando no hay selección
+            deleteButton.prop("disabled", true);
+        }
+
+        if (seleccionados.length === 1) {
+            // Obtener el ID de la única fila seleccionada para edición
+            const selectedRow = seleccionados.closest("tr");
+            const id = selectedRow.data("id");
+            const nombre = selectedRow.find("td:nth-child(2)").text().trim();
+
+            editButton.data("url", `/update_marca_equipo/${id}`);
+            editButton.prop("disabled", false);
+
+            // Guardamos el valor original en un atributo `data-original`
+            $("#modal-edit-marca-input")
+                .val(nombre)
+                .attr("data-original", nombre);
+            $("#modal-edit-marca-title").text(`Editar marca: ${nombre}`);
+            $("#form-edit-marca-equipo").attr("action", `/update_marca_equipo/${id}`);
+
+        } else {
+            editButton.data("url", "");
+            editButton.prop("disabled", true);
+        }
+    }
+
+    // Manejar selección/deselección de todos los checkboxes
+    $(document).on("change", "#selectAll", function () {
+        $(".row-checkbox").prop("checked", this.checked);
+        actualizarBotonesAcciones();
+    });
+
+    // Manejar clic en el botón "Editar" para abrir el modal
+    $(".edit-button").on("click", function () {
+        if ($(this).prop("disabled")) return; // Evita abrir el modal si está deshabilitado
+
+        // Restablecer el valor original antes de abrir el modal
+        const inputMarca = $("#modal-edit-marca-input");
+        inputMarca.val(inputMarca.attr("data-original"));
+
+        $("#modal-edit-marca").modal("show");
+    });
+
+    // Manejar clic en el botón "Eliminar" para abrir el modal de confirmación
+    $(".delete-button").on("click", function () {
+        if ($(this).prop("disabled")) return; // Evita la acción si está deshabilitado
+
+        const deleteUrl = $(this).data("url");
+
+        if (!deleteUrl.includes("/delete_marca_equipo/")) {
             return;
         }
 
-        // Obtener los IDs de las marcas seleccionadas
-        const ids = selectedRows.map(function () {
-            return $(this).data("id");
-        }).get().join(',');
-
-        if (action === "delete") {
-            // Mostrar el modal de confirmación
-            configureGenericModal(
-                "Eliminar Marca(s)",
-                `¿Estás seguro de que deseas eliminar las marcas seleccionadas? Esto eliminará también las relaciones asociadas.`,
-                `/marca_equipo/delete_marca_equipo/${ids}` // URL de eliminación
-            );
-        } else if (action === "edit") {
-            if (selectedRows.length > 1) {
-                alert("Solo puedes editar una marca a la vez.");
-                $(this).val("");
-                return;
-            }
-
-            // Configurar el modal de edición para una sola fila
-            const selectedRow = selectedRows.first();
-            const id = selectedRow.data("id");
-            const nombre = selectedRow.find("td:nth-child(2)").text();
-
-            $("#modal-edit-marca").modal("show");
-            $("#modal-edit-marca-title").text(`Editar marca: ${nombre}`);
-            $("#modal-edit-marca-input").val(nombre);
-            $("#form-edit-marca-equipo").attr("action", `/update_marca_equipo/${id}`);
-        }
-
-        $(this).val(""); // Resetear el select después de usarlo
+        // Configurar el modal con la URL correcta
+        $("#confirm-delete-button").attr("href", deleteUrl);
+        $("#modal-delete-marca").modal("show");
     });
 });
