@@ -11,8 +11,8 @@ marca_equipo_schema = {
     'nombre_marca_equipo': {
         'type': 'string',
         'minlength': 1,
-        'maxlength': 100,
-        'regex': '^[a-zA-Z0-9]*$'  # Permitir solo letras, números y espacios
+        'maxlength': 45,
+        'regex': r'^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$'
     }
 }
 
