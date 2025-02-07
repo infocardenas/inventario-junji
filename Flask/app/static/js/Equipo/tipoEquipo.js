@@ -1,118 +1,38 @@
 $(document).ready(function () {
-    cargarMarcas();
+    // Detectar cambios en los checkboxes para actualizar los botones
+    $(document).on("change", ".row-checkbox", function () {
+        actualizarBotonEditar();
+    });
 
-    // Evento para actualizar tipos de equipo al seleccionar una marca
-    $("#marcaSelect").on("change", function () {
-        let marcaId = $(this).val();
-        if (marcaId) {
-            cargarTipos(marcaId, "tipoSelect");
+    function actualizarBotonEditar() {
+        const seleccionados = $(".row-checkbox:checked");
+        const deleteButton = $(".delete-button");
+        const editButton = $(".edit-button");
+
+        if (seleccionados.length > 0) {
+            // Construir la URL para eliminar (con múltiples IDs separados por comas)
+            const ids = seleccionados.map(function () {
+                return $(this).closest("tr").data("id");
+            }).get().join(",");
+
+            deleteButton.data("url", `/delete_tipo_equipo/${ids}`);
+            deleteButton.prop("disabled", false);
         } else {
-            $("#tipoSelect").html('<option value="">Seleccione un tipo</option>');
-        }
-    });
-
-    $("#edit_marcaSelect").on("change", function () {
-        let marcaId = $(this).val();
-        if (marcaId) {
-            cargarTipos(marcaId, "edit_tipoSelect");
-        } else {
-            $("#edit_tipoSelect").html('<option value="">Seleccione un tipo</option>');
-        }
-    });
-
-    // Abrir modal de edición con datos cargados
-    $(".btn-editar-modelo").on("click", function () {
-        let id = $(this).data("id");
-        let nombre = $(this).data("nombre");
-        let marcaId = $(this).data("marca-id");
-        let tipoId = $(this).data("tipo-id");
-
-        console.log("Editando ID:", id);
-        console.log("Nombre:", nombre);
-        console.log("Marca ID:", marcaId);
-        console.log("Tipo ID:", tipoId);
-
-        // Llenar los campos
-        $("#edit_nombreModelo_equipo").val(nombre);
-        $("#edit_marcaSelect").val(marcaId);
-
-        // Cargar tipos correspondientes a la marca
-        cargarTipos(marcaId, "edit_tipoSelect", tipoId);
-
-        // Configurar la acción del formulario
-        $("#editModeloEquipoForm").attr("action", `/update_modelo_equipo/${id}`);
-
-        // Abrir el modal
-        $("#editModeloEquipoModal").modal("show");
-    });
-
-    // Enviar formulario de agregar modelo
-    $("#addModeloForm").on("submit", function (e) {
-        e.preventDefault();
-        let formData = $(this).serialize();
-
-        $.post("/add_modelo_equipo", formData, function (response) {
-            location.reload();
-        }).fail(function () {
-            alert("Error al agregar el modelo de equipo.");
-        });
-    });
-
-    // Enviar formulario de edición
-    $("#editModeloEquipoForm").on("submit", function (e) {
-        e.preventDefault();
-        let formData = $(this).serialize();
-
-        $.post($(this).attr("action"), formData, function (response) {
-            location.reload();
-        }).fail(function () {
-            alert("Error al actualizar el modelo de equipo.");
-        });
-    });
-
-    // Seleccionar/Deseleccionar todos los checkboxes
-    $("#toggleSelectAll").on("click", function () {
-        let checkboxes = $(".row-checkbox");
-        let allChecked = checkboxes.length === checkboxes.filter(":checked").length;
-        checkboxes.prop("checked", !allChecked);
-    });
-
-    // Eliminar modelos seleccionados
-    $("#eliminarSeleccionados").on("click", function () {
-        let seleccionados = [];
-        $(".row-checkbox:checked").each(function () {
-            seleccionados.push($(this).closest("tr").data("id"));
-        });
-
-        if (seleccionados.length === 0) {
-            alert("No hay modelos seleccionados.");
-            return;
+            deleteButton.data("url", ""); // Limpiar URL cuando no hay selección
+            deleteButton.prop("disabled", true);
         }
 
-        const ids = selectedRows.map(function () {
-            return $(this).data("id");
-        }).get();
-
-        if (action === "delete") {
-            configureGenericModal(
-                "Eliminar Tipo(s) de Equipo",
-                `¿Estás seguro de que deseas eliminar los tipos seleccionados? Esto afectará las relaciones asociadas.`,
-                `/tipo_equipo/delete_tipo_equipo/${ids.join(',')}`
-            );
-        } else if (action === "edit") {
-            if (selectedRows.length > 1) {
-                alert("Solo puedes editar un tipo de equipo a la vez.");
-                $(this).val("");
-                return;
-            }
-
-            // Capturar los datos de la fila seleccionada
-            const selectedRow = selectedRows.first();
+        if (seleccionados.length === 1) {
+            // Obtener el ID de la única fila seleccionada para edición
+            const selectedRow = seleccionados.closest("tr");
             const id = selectedRow.data("id");
             const nombre = selectedRow.data("nombre");
             const marcas = selectedRow.data("marcas");
 
-            // Rellenar el formulario dentro del modal
+            editButton.data("url", `/update_tipo_equipo/${id}`);
+            editButton.prop("disabled", false);
+
+            // Llenar el modal de edición
             $("#editTipoEquipoLabel").text(`Editar tipo de equipo: ${nombre}`);
             $("#edit_nombreTipo_equipo").val(nombre);
 
@@ -129,12 +49,19 @@ $(document).ready(function () {
                 });
             }
 
-            // Configurar la acción del formulario
+            // Configurar la acción del formulario con la URL correcta
             $("#editTipoEquipoForm").attr("action", `/update_tipo_equipo/${id}`);
 
-            // Abrir el modal
-            $("#editTipoEquipoModal").modal("show");
+        } else {
+            editButton.data("url", "");
+            editButton.prop("disabled", true);
         }
+    }
+
+    // Manejar clic en el botón "Editar" para abrir el modal
+    $(".edit-button").on("click", function () {
+        if ($(this).prop("disabled")) return; // Evita abrir el modal si está deshabilitado
+        $("#editTipoEquipoModal").modal("show");
     });
 
 });

@@ -11,8 +11,8 @@
             <div class="modal-body">
                 <form id="form-add-marca-equipo" action="/add_marca_equipo" method="POST">
                     <div class="mb-3">
-                        <label for="nombre_marca_equipo" class="form-label">Nombre Marca</label>
-                        <input type="text" class="form-control campo-obligatorio" name="nombre_marca_equipo" placeholder="Ingrese el nombre de la marca">
+                        <label for="nombre_marca_equipo" class="form-label">Nombre de la marca<span style="color: red; margin-left: 5px">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio validar-letras" name="nombre_marca_equipo" placeholder="Ingrese el nombre de la marca">
                         <div class="text-error-message"></div>
                     </div>
                 </form>
@@ -39,8 +39,8 @@
             <div class="modal-body">
                 <form id="form-edit-marca-equipo" method="POST">
                     <div class="mb-3">
-                        <label class="form-label">Nombre marca</label>
-                        <input type="text" class="form-control campo-obligatorio" id="modal-edit-marca-input" name="nombre_marca_equipo" placeholder="Ingrese el nombre de la marca">
+                        <label class="form-label">Nombre de la marca<span style="color: red; margin-left: 5px">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio validar-letras no-delete-value" id="modal-edit-marca-input" name="nombre_marca_equipo" placeholder="Ingrese el nombre de la marca">
                         <div class="text-error-message"></div>
                     </div>
                 </form>
