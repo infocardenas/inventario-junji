@@ -399,3 +399,22 @@ def obtener_modelo(id):
         return jsonify(modelo)
     else:
         return jsonify({"error": "Modelo no encontrado"}), 404
+
+@modelo_equipo.route("/get_modelos/<marca_id>/<tipo_id>", methods=["GET"])
+@loguear_requerido
+def obtener_modelos(marca_id, tipo_id):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT me.idModelo_Equipo, me.nombreModeloequipo
+        FROM modelo_equipo me
+        INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
+        WHERE mte.idMarca_Equipo = %s AND mte.idTipo_equipo = %s
+    """, (marca_id, tipo_id))
+    
+    modelos = cur.fetchall()  # Obtiene los resultados
+    cur.close()
+
+    # Diagnóstico: Imprimir los datos devueltos por la consulta
+    print("Modelos obtenidos:", modelos)
+
+    return jsonify(modelos)
