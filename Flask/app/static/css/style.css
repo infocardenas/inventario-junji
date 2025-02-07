@@ -764,15 +764,15 @@ svg.bi {
     border-color: #003d7a;
     color: #d9d9d9;
 }
-#container-buttons-tipo-equipo .edit-button,
-#container-buttons-tipo-equipo .delete-button {
+#container-buttons-equipo .edit-button,
+#container-buttons-equipo .delete-button {
     transition: opacity 0.3s ease, background-color 0.3s ease, transform 0.2s ease;
     opacity: 0.5;
     pointer-events: none;
 }
 
-#container-buttons-tipo-equipo .edit-button:enabled,
-#container-buttons-tipo-equipo .delete-button:enabled {
+#container-buttons-equipo .edit-button:enabled,
+#container-buttons-equipo .delete-button:enabled {
     opacity: 1;
     pointer-events: auto;
     transform: scale(1.05);
