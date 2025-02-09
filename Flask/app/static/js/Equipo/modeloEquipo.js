@@ -1,4 +1,8 @@
+
 $(document).ready(function () {
+    console.log("El DOM esta listo");
+
+
     cargarMarcas();
 
     // Deshabilitar select de tipos hasta que se elija una marca

@@ -4,11 +4,12 @@
 
 <h2 class="mb-4">Modelos de Equipos</h2>
 
-<div id="alertContainer" class="alert d-none" role="alert"></div>
-
 
 
 <div class="container mt-4">
+
+    <div id="alertContainer" class="alert d-none" role="alert"></div>
+
     <div class="row">
         <div class="col-md-12">
             <!-- Botón para abrir el modal -->
@@ -69,9 +70,9 @@
     </div>
 </div>
 
+
+{% include 'Equipo/modelo_equipo.modals.html'%}
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/Equipo/modeloEquipo.js') }}"></script>
-{% include 'Equipo/modelo_equipo.modals.html'%}
-
 
 {% endblock %}
