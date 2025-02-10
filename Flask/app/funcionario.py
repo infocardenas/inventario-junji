@@ -58,19 +58,35 @@ def Funcionario(page = 1):
     perpage = getPerPage()
     offset = (page -1) * perpage 
     cur = mysql.connection.cursor()
-    cur.execute(""" 
-    SELECT f.rutFuncionario, f.nombreFuncionario, f.cargoFuncionario, 
-            f.idUnidad, u.idUnidad, u.nombreUnidad, f.correoFuncionario
+
+    # Consulta que obtiene funcionarios y cuenta las asignaciones activas
+    cur.execute("""
+    SELECT 
+        f.rutFuncionario,
+        f.nombreFuncionario,
+        f.cargoFuncionario, 
+        f.idUnidad,
+        u.idUnidad,
+        u.nombreUnidad,
+        f.correoFuncionario,
+        COALESCE((SELECT COUNT(*)
+                    FROM asignacion a
+                    JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+                    WHERE a.rutFuncionario = f.rutFuncionario
+                    AND a.ActivoAsignacion = 1), 0) AS equipos_asignados
     FROM funcionario f
-    INNER JOIN unidad u on f.idUnidad = u.idUnidad
-    LIMIT %s OFFSET %s 
+    JOIN unidad u ON f.idUnidad = u.idUnidad
+    LIMIT %s OFFSET %s
     """, (perpage, offset))
     data = cur.fetchall()
+
     cur.execute('SELECT * FROM unidad')
     ubi_data = cur.fetchall()
+
     cur.execute('SELECT COUNT(*) FROM funcionario')
     total = cur.fetchone()
     total = int(str(total).split(':')[1].split('}')[0])
+
     return render_template(
         'GestionR.H/funcionario.html', 
         funcionario = data, 
@@ -199,7 +215,7 @@ def delete_funcionario(id):
         flash('Funcionario eliminado correctamente', 'success')
         return redirect(url_for('funcionario.Funcionario'))
     except Exception as e:
-        flash(e.args[1])
+        flash(e.args[1], 'warning')
         return redirect(url_for('funcionario.Funcionario'))
 
 @funcionario.route("/funcionario/buscar_funcionario/<id>")

@@ -172,3 +172,28 @@
         </div>
     </div>
 </div>
+
+<!-- Modal que aparece cuando se quiere eliminar un funcionario con equipos asignados -->
+<div class="modal fade" id="warningModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="warningModalLabel">No se puede eliminar el funcionario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Contenido -->
+            <div class="modal-body">
+                El funcionario no se puede eliminar porque tiene equipos asignados.
+                Para eliminarlo, primero debe desvincular todos los equipos.
+            </div>
+
+            <!-- Footer de botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
