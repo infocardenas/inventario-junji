@@ -97,13 +97,18 @@ def Traslado(page=1):
 def obtener_equipos_unidad(unidad_id):
     cur = mysql.connection.cursor()
     cur.execute("""
-        SELECT e.idEquipo, me.nombreModeloequipo, e.Num_serieEquipo, e.Cod_inventarioEquipo
-        FROM equipo e
-        INNER JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_equipo
-        WHERE e.idUnidad = %s AND e.idEstado_equipo IN (
-            SELECT idEstado_equipo FROM estado_equipo 
-            WHERE nombreEstado_equipo IN ('SIN ASIGNAR', 'EN USO')
-        )
+    SELECT e.idEquipo, me.nombreModeloequipo, e.Num_serieEquipo, e.Cod_inventarioEquipo,
+           te.nombreTipo_equipo, mae.nombreMarcaEquipo
+    FROM equipo e
+    INNER JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_equipo
+    INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+    INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+    INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+    WHERE e.idUnidad = %s 
+    AND e.idEstado_equipo IN (
+        SELECT idEstado_equipo FROM estado_equipo 
+        WHERE nombreEstado_equipo IN ('SIN ASIGNAR', 'EN USO')
+    )
     """, (unidad_id,))
 
     equipos = cur.fetchall()

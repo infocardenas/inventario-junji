@@ -1,105 +1,103 @@
-// Cargar marcas al abrir el modal
-document.addEventListener("DOMContentLoaded", function () {
-    cargarMarcas(); // Llama a la función que carga las marcas
-});
+$(document).ready(function () {
+    cargarMarcas();
 
-// Función para cargar las marcas
-async function cargarMarcas() {
-    const response = await fetch("/get_marcas");
-    const marcas = await response.json();
-    const marcaSelect = document.getElementById("marcaSelect");
+    // Deshabilitar select de tipos hasta que se elija una marca
+    $("#tipoSelect, #edit_tipoSelect").prop("disabled", true);
 
-    marcaSelect.innerHTML = `<option value="">Seleccione una marca</option>`;
-    marcas.forEach(marca => {
-        const option = document.createElement("option");
-        option.value = marca.idMarca_Equipo;
-        option.textContent = marca.nombreMarcaEquipo;
-        marcaSelect.appendChild(option);
+    // Evento para actualizar tipos de equipo al seleccionar una marca en agregar
+    $("#marcaSelect").on("change", function () {
+        let marcaId = $(this).val();
+        if (marcaId) {
+            cargarTipos(marcaId, "tipoSelect");
+            $("#tipoSelect").prop("disabled", false);
+        } else {
+            $("#tipoSelect").empty().append('<option value="">Seleccione un tipo</option>').prop("disabled", true);
+        }
     });
 
-    limpiarSelect("tipoSelect", "Seleccione un tipo");
-}
+    // Evento para actualizar tipos de equipo al seleccionar una marca en edición
+    $("#edit_marcaSelect").on("change", function () {
+        let marcaId = $(this).val();
+        if (marcaId) {
+            cargarTipos(marcaId, "edit_tipoSelect");
+            $("#edit_tipoSelect").prop("disabled", false);
+        } else {
+            $("#edit_tipoSelect").empty().append('<option value="">Seleccione un tipo</option>').prop("disabled", true);
+        }
+    });
 
-// Función para cargar los tipos basados en la marca seleccionada
-async function cargarTipos() {
-    const marcaId = document.getElementById("marcaSelect").value;
-    const tipoSelect = document.getElementById("tipoSelect");
+    // Cargar datos en el modal de edición antes de abrirlo
+    $(".btn-editar-modelo").on("click", function () {
+        let modeloId = $(this).data("id");
 
-    if (!marcaId) {
-        limpiarSelect("tipoSelect", "Seleccione un tipo");
-        tipoSelect.disabled = true;
-        return;
+        // Hacer una solicitud AJAX para obtener los detalles del modelo
+        $.get(`/get_modelo/${modeloId}`, function (modelo) {
+            console.log("Datos del modelo:", modelo);
+
+            $("#edit_nombreModelo_equipo").val(modelo.nombreModeloequipo);
+
+            // Cargar marcas y seleccionar la correcta
+            $.get("/get_marcas", function (marcas) {
+                let select = $("#edit_marcaSelect");
+                select.empty().append('<option value="">Seleccione una marca</option>');
+
+                $.each(marcas, function (i, marca) {
+                    let selected = modelo.idMarca_Equipo == marca.idMarca_Equipo ? "selected" : "";
+                    select.append(`<option value="${marca.idMarca_Equipo}" ${selected}>${marca.nombreMarcaEquipo}</option>`);
+                });
+
+                // Una vez seleccionada la marca, cargar los tipos y seleccionar el correcto
+                cargarTipos(modelo.idMarca_Equipo, "edit_tipoSelect", modelo.idTipo_equipo);
+                $("#edit_tipoSelect").prop("disabled", false);
+            });
+
+            // Configurar la acción del formulario
+            $("#editModeloEquipoForm").attr("action", `/update_modelo_equipo/${modeloId}`);
+
+            // Abrir el modal
+            $("#editModeloEquipoModal").modal("show");
+        }).fail(function () {
+            alert("Error al obtener datos del modelo.");
+        });
+    });
+
+    // Enviar formulario de edición
+    $("#editModeloEquipoForm").on("submit", function (e) {
+        e.preventDefault();
+        let formData = $(this).serialize();
+
+        $.post($(this).attr("action"), formData, function () {
+            location.reload();
+        }).fail(function () {
+            alert("Error al actualizar el modelo de equipo.");
+        });
+    });
+
+    // Función para cargar marcas desde el backend
+    function cargarMarcas() {
+        $.get("/get_marcas", function (marcas) {
+            let select = $("#marcaSelect, #edit_marcaSelect");
+            select.empty().append('<option value="">Seleccione una marca</option>');
+            $.each(marcas, function (i, marca) {
+                select.append(`<option value="${marca.idMarca_Equipo}">${marca.nombreMarcaEquipo}</option>`);
+            });
+        });
     }
 
-    const response = await fetch(`/get_tipos/${marcaId}`);
-    const tipos = await response.json();
-
-    tipoSelect.innerHTML = `<option value="">Seleccione un tipo</option>`;
-    tipos.forEach(tipo => {
-        const option = document.createElement("option");
-        option.value = tipo.idTipo_equipo;
-        option.textContent = tipo.nombreTipo_equipo;
-        tipoSelect.appendChild(option);
-    });
-}
-
-
-// Función para limpiar un select
-function limpiarSelect(id, placeholder) {
-    const select = document.getElementById(id);
-    select.innerHTML = `<option value="">${placeholder}</option>`;
-}
-
-$(document).ready(function () {
-    $(".actions-select").on("change", function () {
-        const action = $(this).val(); // Acción seleccionada
-        const selectedRows = $(".row-checkbox:checked").closest("tr"); // Filas seleccionadas
-
-        if (!selectedRows.length) {
-            alert("Por favor, selecciona una fila antes de realizar una acción.");
-            $(this).val(""); // Resetear el select
+    // Función para cargar tipos de equipo según la marca seleccionada y mantener selección previa
+    function cargarTipos(marcaId, selectId, tipoSeleccionado = null) {
+        if (!marcaId) {
+            $(`#${selectId}`).empty().append('<option value="">Seleccione un tipo</option>').prop("disabled", true);
             return;
         }
 
-        // Obtener los IDs de los modelos seleccionados
-        const ids = selectedRows.map(function () {
-            return $(this).data("id");
-        }).get();
-
-        if (action === "delete") {
-            // Mostrar modal de confirmación
-            configureGenericModal(
-                "Eliminar Modelo(s) de Equipo",
-                "¿Estás seguro de que deseas eliminar los modelos seleccionados?",
-                `/delete_modelo_equipo/${ids.join(",")}` // URL de eliminación
-            );
-        } else if (action === "edit") {
-            if (selectedRows.length > 1) {
-                alert("Solo puedes editar un modelo a la vez.");
-                $(this).val("");
-                return;
-            }
-
-            // Capturar los datos de la fila seleccionada
-            const selectedRow = selectedRows.first();
-            const id = selectedRow.data("id");
-            const nombreModelo = selectedRow.find("td:nth-child(2)").text();
-            const tipoEquipo = selectedRow.find("td:nth-child(3)").text();
-            const marcaEquipo = selectedRow.find("td:nth-child(4)").text();
-
-            // Llenar el formulario dentro del modal
-            $("#editModeloEquipoLabel").text(`Editar Modelo de Equipo: ${nombreModelo}`);
-            $("#edit_nombreModelo_equipo").val(nombreModelo);
-            $("#edit_tipoEquipo").val(tipoEquipo);
-            $("#edit_marcaEquipo").val(marcaEquipo);
-
-            // Configurar la acción del formulario
-            $("#editModeloEquipoForm").attr("action", `/edit_modelo_equipo/${id}`);
-
-            // Mostrar el modal
-            $("#editModeloEquipoModal").modal("show");
-        }
-
-        $(this).val(""); // Resetear el select después de usarlo
-    });
+        $.get(`/get_tipos/${marcaId}`, function (tipos) {
+            let select = $(`#${selectId}`);
+            select.empty().append('<option value="">Seleccione un tipo</option>');
+            $.each(tipos, function (i, tipo) {
+                let selected = tipoSeleccionado && tipo.idTipo_equipo == tipoSeleccionado ? "selected" : "";
+                select.append(`<option value="${tipo.idTipo_equipo}" ${selected}>${tipo.nombreTipo_equipo}</option>`);
+            });
+        });
+    }
 });

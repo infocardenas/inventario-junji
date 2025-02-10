@@ -13,7 +13,8 @@ th {
     cursor: pointer;
     text-align: center;
 }
-tr{
+
+tr {
     text-align: center;
 }
 
@@ -109,4 +110,12 @@ th:hover {
 /* Ocultar íconos inactivos */
 .hidden {
     display: none;
+}
+
+.btn-dark-custom {
+    background-color: #4a4a4a;
+    /* Un gris oscuro pero no tan negro */
+    border-color: #4a4a4a;
+    color: #fff;
+    /* Asegúrate de que el texto se vea */
 }
