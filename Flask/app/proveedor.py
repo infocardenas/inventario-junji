@@ -1,11 +1,12 @@
 #se importa flask
-from flask import Blueprint, render_template, request, url_for, redirect,flash, session
+from flask import Blueprint, render_template, request, url_for, redirect,flash, session, jsonify
 #se importa dependencias para conexion con mysql
 from db import mysql
 #importamos el modulo que creamos
 from funciones import validarChar, getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
+from MySQLdb import IntegrityError
 proveedor = Blueprint('proveedor', __name__, template_folder='app/templates')
 
 # Definir el esquema de validación para el proveedor
@@ -50,44 +51,60 @@ def Proveedor(page=1):
 
 
 #se especifica la ruta para agregar proveedores, como tambien el metodo por el cual extrae los datos desde el formulario
-@proveedor.route('/add_proveedor', methods = ['POST'])  
-#se define una funcion  
+@proveedor.route('/add_proveedor', methods=['POST'])  
 @administrador_requerido
 def add_proveedor():       
     if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
+        return jsonify({
+            "status": "error",
+            "message": "No estás autorizado para esta acción.",
+            "tipo_alerta": "warning"
+        }), 403
+
     if request.method == 'POST':
-       # Obtener el dato del formulario
         data = {
-            'nombre_proveedor': request.form['nombre_proveedor']
+            'nombre_proveedor': request.form['nombre_proveedor'].strip()
         }
 
         # Validar los datos usando Cerberus
         v = Validator(schema_proveedor)
         if not v.validate(data):
-            flash("Caracteres no permitidos")
-            return redirect(url_for('proveedor.Proveedor'))
+            return jsonify({
+                "status": "error",
+                "message": "Nombre inválido: Caracteres no permitidos.",
+                "tipo_alerta": "warning"
+            }), 400
 
-        #generaremos un try catch para que no se caiga la app
         try:
-                #el cursor() permite generar consultas sql          
-                cur = mysql.connection.cursor()
-                #se especifica la consulta sql
-                cur.execute('INSERT INTO proveedor (nombreProveedor) VALUES(%s)', (data["nombre_proveedor"],))
-                #esta linea se utiliza para realizar la consulta sql
-                mysql.connection.commit()
-                flash('Proveedor agregado exitosamente')
-                #se retorna a la vista de proveedor
-                return redirect(url_for('proveedor.Proveedor'))  
-        #dara una excepcion si es que falla la consulta u otro tipo de error             
-        except Exception as e:
-            #flash retornara el error 
-            #flash(e.args[1])
-            flash("Error al crear")
-            #generado el error redirije a la pagina principal
-            return redirect(url_for('proveedor.Proveedor'))
+            cur = mysql.connection.cursor()
 
+            # **Comprobar si el proveedor ya existe antes de insertarlo**
+            cur.execute("SELECT idProveedor FROM proveedor WHERE nombreProveedor = %s", (data["nombre_proveedor"],))
+            resultado = cur.fetchone()
+
+            if resultado:
+                return jsonify({
+                    "status": "error",
+                    "message": "Error: El proveedor ya existe. Elige otro nombre.",
+                    "tipo_alerta": "warning"
+                }), 400
+
+            # **Si no existe, lo insertamos**
+            cur.execute("INSERT INTO proveedor (nombreProveedor) VALUES (%s)", (data["nombre_proveedor"],))
+            mysql.connection.commit()
+
+            return jsonify({
+                "status": "success",
+                "message": "Proveedor agregado exitosamente.",
+                "tipo_alerta": "success"
+            }), 200
+
+        except Exception as e:
+            return jsonify({
+                "status": "error",
+                "message": f"Error al crear el proveedor: {str(e)}",
+                "tipo_alerta": "danger"
+            }), 500
 
 #ruta para enviar datos a la vista de editarProveedor con el id correspondiente
 @proveedor.route('/edit_proveedor/<id>', methods=['GET', 'POST'])
@@ -168,21 +185,46 @@ def actualizar_proveedor(id):
 
 
     
-#ruta para poder eliminar un proveedor por id
-@proveedor.route('/delete_proveedor/<id>', methods = ['POST', 'GET'])
+@proveedor.route('/delete_proveedor', methods=['POST'])
 @administrador_requerido
-def delete_proveedor(id):
+def delete_proveedor():
     if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM proveedor WHERE idProveedor = %s', (id,))
-        mysql.connection.commit()
-        flash('Proveedor eliminado correctamente')
-        return redirect(url_for('proveedor.Proveedor'))
-    except Exception as e:
-        #flash(e.args[1])
-        flash("Error al crear")
-        return redirect(url_for('proveedor.Proveedor'))
+        return jsonify({
+            "status": "error",
+            "message": "No estás autorizado para esta acción.",
+            "tipo_alerta": "warning"
+        }), 403
 
+    try:
+        data = request.get_json()
+        id_list = data.get("ids", [])
+
+        if not id_list:
+            return jsonify({
+                "status": "error",
+                "message": "Debe seleccionar al menos un proveedor para eliminar.",
+                "tipo_alerta": "warning"
+            }), 400
+
+        cur = mysql.connection.cursor()
+
+        # **PASO 1: Eliminar órdenes de compra relacionadas**
+        cur.execute("DELETE FROM orden_compra WHERE idProveedor IN (%s)" % ','.join(['%s'] * len(id_list)), tuple(id_list))
+
+        # **PASO 2: Eliminar los proveedores**
+        cur.execute("DELETE FROM proveedor WHERE idProveedor IN (%s)" % ','.join(['%s'] * len(id_list)), tuple(id_list))
+
+        mysql.connection.commit()
+
+        return jsonify({
+            "status": "success",
+            "message": f"Se eliminaron {len(id_list)} proveedor(es) correctamente.",
+            "tipo_alerta": "success"
+        }), 200
+
+    except Exception as e:
+        return jsonify({
+            "status": "error",
+            "message": f"Error al eliminar el proveedor: {str(e)}",
+            "tipo_alerta": "danger"
+        }), 500

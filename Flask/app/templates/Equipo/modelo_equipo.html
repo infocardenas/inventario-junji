@@ -4,7 +4,12 @@
 
 <h2 class="mb-4">Modelos de Equipos</h2>
 
+
+
 <div class="container mt-4">
+
+    <div id="alertContainer" class="alert d-none" role="alert"></div>
+
     <div class="row">
         <div class="col-md-12">
             <!-- Botón para abrir el modal -->
@@ -17,103 +22,6 @@
                 </button>
             </div>
 
-            <!-- Modal para agregar modelo -->
-            <div class="modal fade" id="addModeloModal" tabindex="-1" aria-labelledby="addModeloModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addModeloModalLabel">Agregar Modelo de Equipo</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <form id="addModeloForm" action="/add_modelo_equipo" method="POST">
-                            <div class="modal-body">
-                                <!-- Modelo de Equipo -->
-                                <div class="mb-3">
-                                    <label for="nombre_modelo_equipo" class="form-label">Modelo Equipo:</label>
-                                    <input class="form-control" type="text" id="nombre_modelo_equipo" name="nombre_modelo_equipo" placeholder="Modelo" maxlength="45">
-                                </div>
-                                <!-- Selección de Marca -->
-                                <div class="mb-3">
-                                    <label for="marcaSelect" class="form-label">Marca:</label>
-                                    <select class="form-select" id="marcaSelect" name="nombre_marca_equipo" onchange="cargarTipos()">
-                                        <option value="">Seleccione una marca</option>
-                                    </select>
-                                </div>
-                                <!-- Selección de Tipo -->
-                                <div class="mb-3">
-                                    <label for="tipoSelect" class="form-label">Tipo:</label>
-                                    <select class="form-select" id="tipoSelect" name="nombre_tipo_equipo">
-                                        <option value="">Seleccione un tipo</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal para Editar Modelo de Equipo -->
-            <div class="modal fade" id="editModeloEquipoModal" tabindex="-1" aria-labelledby="editModeloEquipoLabel" aria-hidden="true">
-                <div class="modal-dialog modal-lg">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editModeloEquipoLabel">Editar Modelo de Equipo</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <form id="editModeloEquipoForm" method="POST" action="">
-                            <div class="modal-body">
-                                <!-- Modelo de Equipo -->
-                                <div class="mb-3">
-                                    <label for="edit_nombreModelo_equipo" class="form-label">Modelo Equipo:</label>
-                                    <input class="form-control" type="text" id="edit_nombreModelo_equipo" name="nombre_modelo_equipo" placeholder="Modelo" maxlength="45">                                
-                                </div>
-                                <!-- Selección de Marca -->
-                                <div class="mb-3">
-                                    <label for="edit_marcaSelect" class="form-label">Marca:</label>
-                                    <select class="form-select" id="edit_marcaSelect" name="nombre_marca_equipo" onchange="cargarTipos(this.value, 'edit_tipoSelect')">
-                                        <option value="">Seleccione una marca</option>
-                                    </select>                                
-                                </div>
-                                <!-- Selección de Tipo -->
-                                <div class="mb-3">
-                                    <label for="edit_tipoSelect" class="form-label">Tipo:</label>
-                                    <select class="form-select" id="edit_tipoSelect" name="nombre_tipo_equipo">
-                                        <option value="">Seleccione un tipo</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Modal de confirmación para eliminación -->
-            <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <div class="modal-body">
-                            ¿Estás seguro de que deseas eliminar las marcas seleccionadas? Esta acción no se puede deshacer.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
 
             <!-- Tabla de modelo equipos -->
             <div class="container">
@@ -121,7 +29,7 @@
                     <table class="table table-striped table-bordered">
                         <thead>
                             <tr>
-                                <th class="checkbox-column" onclick="toggleSelectAll()">Todo</th>
+                                <th class="checkbox-column" onclick="seleccionarTodo()">Todo</th>
                                 <th>Modelo Equipo</th>
                                 <th>Tipo Equipo</th>
                                 <th>Marca Equipo</th>
@@ -162,6 +70,8 @@
     </div>
 </div>
 
+
+{% include 'Equipo/modelo_equipo.modals.html'%}
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="{{ url_for('static', filename='js/Equipo/modeloEquipo.js') }}"></script>
 
