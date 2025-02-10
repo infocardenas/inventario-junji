@@ -180,3 +180,28 @@ function formatearFecha(fechaISO) {
 
     return `${nombreDia}       ${numeroDia}/${numeroMes}/${anio}`;
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    let fechaInput = document.getElementById("fechatraslado");
+
+    // Obtener la fecha de hoy en formato YYYY-MM-DD
+    let today = new Date();
+    let todayStr = today.toISOString().split('T')[0];
+
+    // Establecer la fecha mínima en el campo de fecha
+    fechaInput.setAttribute("min", todayStr);
+
+    // Validar cuando el usuario seleccione una fecha
+    fechaInput.addEventListener("change", function () {
+        let selectedDate = new Date(this.value);
+        let dayOfWeek = selectedDate.getDay(); // 0 = Domingo, 6 = Sábado
+
+        if (this.value < todayStr) {
+            mostrarAlerta("No puedes seleccionar una fecha anterior a hoy.", "warning");
+            this.value = todayStr; // Restaurar a la fecha de hoy
+        } else if (dayOfWeek === 0 || dayOfWeek === 6) {
+            mostrarAlerta("No puedes seleccionar sábados ni domingos.", "warning");
+            this.value = todayStr; // Restaurar a la fecha de hoy
+        }
+    });
+});
