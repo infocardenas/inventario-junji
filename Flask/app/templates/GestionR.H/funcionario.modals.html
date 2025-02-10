@@ -37,13 +37,13 @@
                             <label for="add_correo_dominio" class="form-label" style="flex: 2; text-align: left; margin-left: 5%;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 0 10px">
-                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario" id="add_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
+                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario validar-input-correo" id="add_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
                             <select class="form-select correo-dominio-funcionario" id="add_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
                         </div>
-                        <div class="text-error-message" style="color: red; font-size: 0.9rem; display: none;"></div>
+                        <div class="text-error-message""></div>
                         <input type="hidden" class="correo-oculto" id="add_correo_oculto" name="correo_funcionario">
                     </div>
 
@@ -70,7 +70,6 @@
                             {% endfor %}
                         </select>
                         <div class="text-error-message"></div>
-                        <span style="color: red; font-size: 0.9rem;">* Obligatorio</span>
                     </div>
                 </form>
             </div>
@@ -126,13 +125,13 @@
                             <label for="edit_correo_dominio" class="form-label" style="flex: 2; text-align: left; margin-left: 5%;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario" id="edit_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
+                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario validar-input-correo" id="edit_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
                             <select class="form-select correo-dominio-funcionario" id="edit_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
                         </div>
-                        <div class="text-error-message" style="color: red; font-size: 0.9rem; margin-top: 5px; display: none;"></div>
+                        <div class="text-error-message"></div>
                         <input type="hidden" class="correo-oculto" id="edit_correo_oculto" name="correo_funcionario">
                     </div>
 
@@ -159,7 +158,6 @@
                             {% endfor %}
                         </select>
                         <div class="text-error-message"></div>
-                        <span style="color: red; font-size: 0.9rem;">* Obligatorio</span>
                     </div>
                 </form>
             </div>

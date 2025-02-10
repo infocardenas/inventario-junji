@@ -599,6 +599,51 @@ $(document).ready(function () {
   });
 });
 
+
+  $(document).ready(function () {
+    function validarInputCorreo(inputField) {
+      const regex = /^[a-zA-Z0-9._-]+$/; // Solo caracteres válidos antes del @
+      const input = inputField.val().trim();
+
+      if (input.length === 0) {
+        limpiarError(inputField);
+        return true;
+      }
+
+      if (!regex.test(input)) {
+        mostrarError(inputField, "Solo se permiten letras, números y los caracteres: . _ -");
+        return false;
+      } else {
+        limpiarError(inputField);
+      }
+
+      return true;
+    }
+
+  // Validar en tiempo real cuando el usuario escribe
+  $(document).on("input", ".validar-input-correo", function () {
+    validarInputCorreo($(this)); // Pasar correctamente $(this) a la función
+  });
+
+  // Validación en el envío del formulario
+  $(document).on("submit", "form", function (event) {
+    let esValido = true;
+  const form = $(this);
+
+  form.find(".validar-input-correo").each(function () {
+      if (!validarInputCorreo($(this))) {
+    esValido = false;
+      }
+    });
+
+  if (!esValido) {
+    event.preventDefault();
+    }
+  });
+});
+
+
+
 $(document).ready(function () {
   // Función de validación
   function validateNumbersInput() {
@@ -622,10 +667,16 @@ $(document).ready(function () {
     if (input === "") {
       mostrarError(inputField, "Este campo es obligatorio");
       return false;
+    } else {
+      limpiarError(inputField);
+      return true;
     }
 
-    return true;
   }
+
+  $(document).on("change", "select.campo-obligatorio", function () {
+    validarCampoObligatorio($(this));
+  });
 
   // Validación en el envío del formulario
   $(document).on("submit", "form", function (event) {

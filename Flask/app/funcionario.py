@@ -34,7 +34,7 @@ schema_agregar_funcionario = {
         'type': 'string',
         'minlength': 5,
         'maxlength': 100,
-        'regex': r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'  # Permitir formato de correo electrónico
+        'regex': r'^[a-zA-Z0-9._%+-]+@(junji\.cl|junjired\.cl)$'  # Permitir formato de correo electrónico
     }
 }
 
