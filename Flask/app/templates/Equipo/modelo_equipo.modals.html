@@ -46,19 +46,21 @@
                 <h5 class="modal-title" id="editModeloEquipoLabel">Editar Modelo de Equipo</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <form id="editModeloEquipoForm" method="POST" action="">
+            <form id="editModeloEquipoForm" method="POST">
                 <div class="modal-body">
+                    <!-- Contenedor para mensajes de error -->
+                    <div id="editModeloError" class="alert alert-danger d-none" role="alert"></div>
                     <!-- Modelo de Equipo -->
                     <div class="mb-3">
                         <label for="edit_nombreModelo_equipo" class="form-label">Modelo Equipo:</label>
-                        <input class="form-control" type="text" id="edit_nombreModelo_equipo" name="nombre_modelo_equipo" placeholder="Modelo" maxlength="45">                                
+                        <input class="form-control" type="text" id="edit_nombreModelo_equipo" name="nombre_modelo_equipo" placeholder="Modelo" maxlength="45">
                     </div>
                     <!-- Selección de Marca -->
                     <div class="mb-3">
                         <label for="edit_marcaSelect" class="form-label">Marca:</label>
                         <select class="form-select" id="edit_marcaSelect" name="nombre_marca_equipo" onchange="cargarTipos(this.value, 'edit_tipoSelect')">
                             <option value="">Seleccione una marca</option>
-                        </select>                                
+                        </select>
                     </div>
                     <!-- Selección de Tipo -->
                     <div class="mb-3">
@@ -76,6 +78,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Modal de confirmación para eliminación -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">

@@ -131,57 +131,59 @@ def edit_proveedor(id):
 
 
 
-#ruta para poder actualizar los datos de proveedor dependiendo del id
 @proveedor.route('/update_proveedor/<id>', methods=['POST'])
 @administrador_requerido
 def actualizar_proveedor(id):
     if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
+        return jsonify({
+            "status": "error",
+            "message": "No estás autorizado para realizar esta acción.",
+            "tipo_alerta": "warning"
+        }), 403
 
     try:
-        # Imprimir ID recibido
-        print(f"ID del proveedor recibido: {id}")
-
-        # Obtener el dato del formulario
         nombre_proveedor = request.form.get('nombre_proveedor', '').strip()
 
-        # Imprimir datos recibidos del formulario
-        print(f"Nombre del proveedor recibido: {nombre_proveedor}")
-
-        # Validar el dato
+        # Validar el dato con Cerberus
         data = {'nombre_proveedor': nombre_proveedor}
         v = Validator(schema_proveedor)
         if not v.validate(data):
-            print(f"Errores de validación: {v.errors}")
-            flash("Caracteres no permitidos")
-            return redirect(url_for('proveedor.Proveedor'))
+            return jsonify({
+                "status": "error",
+                "message": "Entrada inválida: Caracteres no permitidos.",
+                "tipo_alerta": "warning"
+            }), 400
 
-        # Ejecutar la actualización en la base de datos
+        # Ejecutar actualización en la base de datos
         cur = mysql.connection.cursor()
         query = """
             UPDATE proveedor 
             SET nombreProveedor = %s
             WHERE idProveedor = %s
         """
-        print(f"Consulta SQL: {query}")
-        print(f"Parámetros: (nombreProveedor={nombre_proveedor}, idProveedor={id})")
-        
         cur.execute(query, (nombre_proveedor, id))
         mysql.connection.commit()
 
-        # Confirmar que la actualización se realizó
-        cur.execute('SELECT * FROM proveedor WHERE idProveedor = %s', (id,))
-        proveedor_actualizado = cur.fetchone()
-        print(f"Proveedor después de la actualización: {proveedor_actualizado}")
+        # Verificar si se actualizaron filas
+        if cur.rowcount == 0:
+            return jsonify({
+                "status": "error",
+                "message": "No se encontró el proveedor o no se realizaron cambios.",
+                "tipo_alerta": "warning"
+            }), 404
 
-        flash('Proveedor actualizado correctamente')
-        return redirect(url_for('proveedor.Proveedor'))
+        return jsonify({
+            "status": "success",
+            "message": "Proveedor actualizado correctamente",
+            "tipo_alerta": "success"
+        }), 200
 
     except Exception as e:
-        print(f"Error al actualizar proveedor: {e}")
-        flash("Error al actualizar el proveedor")
-        return redirect(url_for('proveedor.Proveedor'))
+        return jsonify({
+            "status": "error",
+            "message": "Error en el servidor. Intente nuevamente.",
+            "tipo_alerta": "danger"
+        }), 500
 
 
     
@@ -208,10 +210,24 @@ def delete_proveedor():
 
         cur = mysql.connection.cursor()
 
-        # **PASO 1: Eliminar órdenes de compra relacionadas**
+        # **PASO 1: Verificar si el proveedor tiene equipos asociados**
+        cur.execute("""
+            SELECT COUNT(*) AS total FROM equipo 
+            WHERE idOrden_compra IN (SELECT idOrden_compra FROM orden_compra WHERE idProveedor IN (%s))
+        """ % ','.join(['%s'] * len(id_list)), tuple(id_list))
+        equipos_asociados = cur.fetchone()
+
+        if equipos_asociados and equipos_asociados["total"] > 0:
+            return jsonify({
+                "status": "error",
+                "message": "No se pueden eliminar proveedores con equipos asociados. Elimine o reasigne los equipos primero.",
+                "tipo_alerta": "warning"
+            }), 400
+
+        # **PASO 2: Eliminar órdenes de compra relacionadas**
         cur.execute("DELETE FROM orden_compra WHERE idProveedor IN (%s)" % ','.join(['%s'] * len(id_list)), tuple(id_list))
 
-        # **PASO 2: Eliminar los proveedores**
+        # **PASO 3: Eliminar los proveedores**
         cur.execute("DELETE FROM proveedor WHERE idProveedor IN (%s)" % ','.join(['%s'] * len(id_list)), tuple(id_list))
 
         mysql.connection.commit()

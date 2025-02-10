@@ -53,6 +53,7 @@
                 </div>
             </div>
 
+                    <!-- Modal para editar proveedor -->
             <!-- Modal para editar proveedor -->
             <div class="modal fade" id="editProveedorModal" tabindex="-1" aria-labelledby="editProveedorModalLabel" aria-hidden="true">
                 <div class="modal-dialog">
@@ -61,9 +62,13 @@
                             <h5 class="modal-title" id="editProveedorModalLabel">Editar Proveedor</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
                         </div>
-                        <form id="editProveedorForm" method="POST" action="/update_proveedor/{{proveedor.idProveedor}}">
+                        <form id="editProveedorForm" method="POST">
                             <div class="modal-body">
+                                <!-- Contenedor para mensajes de error -->
+                                <div id="editProveedorError" class="alert alert-danger d-none"></div>
+
                                 <input type="hidden" id="edit_idProveedor" name="idProveedor">
+                                
                                 <div class="mb-3">
                                     <label for="edit_nombreProveedor" class="form-label">Nombre Proveedor</label>
                                     <input 
@@ -83,6 +88,8 @@
                     </div>
                 </div>
             </div>
+
+
         </div>
 
         <!-- Modal de confirmación para eliminación -->

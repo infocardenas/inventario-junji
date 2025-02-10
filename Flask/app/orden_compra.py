@@ -228,8 +228,6 @@ def delete_ordenc():
         data = request.get_json()
         id_list = data.get("ids", [])
 
-        print("🔍 IDs recibidos en el backend para eliminar:", id_list)  # ✅ Depuración
-
         if not id_list:
             return jsonify({
                 "status": "error",
@@ -239,24 +237,33 @@ def delete_ordenc():
 
         cur = mysql.connection.cursor()
 
-        # Convertir la lista de IDs en una tupla para la consulta SQL
-        format_strings = ','.join(['%s'] * len(id_list))
+        # **PASO 1: Verificar si hay equipos en equipo_asignacion**
+        cur.execute(f"""
+            SELECT COUNT(*) AS total FROM equipo_asignacion 
+            WHERE idEquipo IN (SELECT idEquipo FROM equipo WHERE idOrden_compra IN ({','.join(['%s'] * len(id_list))}))
+        """, tuple(id_list))
+        equipos_asignados = cur.fetchone()
 
-        # PASO 1: Eliminar equipos que dependen de estas órdenes de compra
+        if equipos_asignados and equipos_asignados["total"] > 0:
+            return jsonify({
+                "status": "error",
+                "message": "No se pueden eliminar órdenes de compra con equipos asignados. Debe reasignar o eliminar estos equipos primero.",
+                "tipo_alerta": "warning"
+            }), 400
+
+        # **PASO 2: Eliminar equipos asociados a la orden de compra**
         cur.execute(f"""
             DELETE FROM equipo 
-            WHERE idOrden_compra IN ({format_strings})
+            WHERE idOrden_compra IN ({','.join(['%s'] * len(id_list))})
         """, tuple(id_list))
 
-        # PASO 2: Eliminar las órdenes de compra
+        # **PASO 3: Eliminar la orden de compra**
         cur.execute(f"""
             DELETE FROM orden_compra
-            WHERE idOrden_compra IN ({format_strings})
+            WHERE idOrden_compra IN ({','.join(['%s'] * len(id_list))})
         """, tuple(id_list))
 
         mysql.connection.commit()
-
-        print("✅ Eliminación completada en la base de datos.")  # ✅ Depuración
 
         return jsonify({
             "status": "success",
@@ -265,7 +272,6 @@ def delete_ordenc():
         }), 200
 
     except Exception as e:
-        print("❌ Error al eliminar:", str(e))  # ✅ Depuración
         return jsonify({
             "status": "error",
             "message": f"❌ Error al eliminar la orden de compra: {str(e)}",

@@ -107,3 +107,44 @@ $(document).ready(function () {
     }
 
 });
+
+document.getElementById("editProveedorForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const proveedorId = document.getElementById("edit_idProveedor").value;
+    const actionUrl = `/update_proveedor/${proveedorId}`;
+
+    // Limpiar mensajes de error previos
+    const errorContainer = document.getElementById("editProveedorError");
+    errorContainer.classList.add("d-none");
+    errorContainer.innerHTML = "";
+
+    fetch(actionUrl, {
+        method: "POST",
+        body: formData,
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw errorData;
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Mensaje de éxito y recargar la página
+            alert("Proveedor actualizado correctamente");
+            window.location.reload(); // Recargar la página para reflejar los cambios
+        })
+        .catch(error => {
+            // Mostrar mensaje de error en el modal
+            if (error.message) {
+                errorContainer.innerHTML = error.message;
+                errorContainer.classList.remove("d-none");
+            } else {
+                alert("Ocurrió un error inesperado. Por favor, inténtelo de nuevo.");
+            }
+        });
+});

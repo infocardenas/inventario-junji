@@ -200,3 +200,64 @@ function cargarTipos(marcaId, selectId, tipoSeleccionado = null) {
         mostrarMensaje("Error al cargar tipos de equipo.", "danger");
     });
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const editButtons = document.querySelectorAll(".btn-edit-modelo"); // Asegúrate de que los botones tengan esta clase
+    const editForm = document.getElementById("editModeloEquipoForm");
+    const inputNombreModelo = document.getElementById("edit_nombreModelo_equipo");
+    const selectMarca = document.getElementById("edit_marcaSelect");
+    const selectTipo = document.getElementById("edit_tipoSelect");
+    const errorContainer = document.getElementById("editModeloError");
+
+    editButtons.forEach(button => {
+        button.addEventListener("click", function () {
+            const id = this.dataset.id; // Obtener el ID del modelo desde el botón
+            if (!id) {
+                console.error("❌ Error: El ID del modelo es 'undefined' o vacío.");
+                return;
+            }
+
+            // Asignar valores al formulario del modal
+            inputNombreModelo.value = this.dataset.nombre;
+            selectMarca.value = this.dataset.marca;
+            selectTipo.value = this.dataset.tipo;
+
+            // Actualizar el action con el ID correcto
+            editForm.action = `/update_modelo_equipo/${id}`;
+
+            // Ocultar mensaje de error al abrir el modal nuevamente
+            errorContainer.classList.add("d-none");
+            errorContainer.innerHTML = "";
+        });
+    });
+
+    // Interceptar el envío del formulario para manejar errores de validación
+    editForm.addEventListener("submit", function (event) {
+        event.preventDefault(); // Evita la redirección
+
+        const formData = new FormData(editForm);
+        const actionUrl = editForm.action;
+
+        fetch(actionUrl, {
+            method: "POST",
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === "error") {
+                // 🔹 Mostrar el mensaje de error en el modal
+                errorContainer.innerHTML = data.message;
+                errorContainer.classList.remove("d-none");
+            } else {
+                // 🔹 Cerrar el modal y recargar la página si la actualización fue exitosa
+                $('#editModeloEquipoModal').modal('hide');
+                location.reload();
+            }
+        })
+        .catch(error => {
+            console.error("❌ Error en la actualización:", error);
+            errorContainer.innerHTML = "Ocurrió un error inesperado.";
+            errorContainer.classList.remove("d-none");
+        });
+    });
+});

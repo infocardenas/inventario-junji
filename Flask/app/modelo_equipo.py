@@ -225,44 +225,80 @@ def edit_modelo_equipo(id):
     )
 
 
-
-# actualizar
 @modelo_equipo.route("/update_modelo_equipo/<id>", methods=["POST"])
 @administrador_requerido
 def update_modelo_equipo(id):
     if "user" not in session:
-        flash("No estás autorizado para ingresar a esta ruta", 'warning')
-        return redirect("/ingresar")
+        return jsonify({
+            "status": "error",
+            "message": "No estás autorizado para realizar esta acción."
+        }), 403
+
     if request.method == "POST":
-        # Obtener los datos del formulario
-        data = {
-                'nombre_modelo_equipo': request.form['nombre_modelo_equipo'],
-                'id_marca_equipo': request.form['nombre_marca_equipo'],
-                'id_tipo_equipo': request.form['nombre_tipo_equipo']
-        }
-# Validar los datos usando Cerberus
-        v = Validator(schema)
-        if not v.validate(data):
-            flash("Caracteres no permitidos")
-            return redirect(url_for("modelo_equipo.modeloEquipo"))
         try:
+            # **Obtener datos del formulario**
+            data = {
+                'nombre_modelo_equipo': request.form['nombre_modelo_equipo'].strip(),
+                'id_tipo_equipo': request.form['nombre_tipo_equipo'].strip(),
+                'id_marca_equipo': request.form['nombre_marca_equipo'].strip()
+            }
+
+            # **Convertir a NULL si están vacíos**
+            data['id_tipo_equipo'] = int(data['id_tipo_equipo']) if data['id_tipo_equipo'] else None
+            data['id_marca_equipo'] = int(data['id_marca_equipo']) if data['id_marca_equipo'] else None
+
+            # **Validar datos con Cerberus**
+            v = Validator(schema)
+            if not v.validate(data):
+                return jsonify({
+                    "status": "error",
+                    "message": "Entrada inválida: Solo caracteres permitidos.",
+                    "errors": v.errors,
+                    "tipo_alerta": "warning"
+                }), 400  # ⛔ Retornar error 400 para manejo en el frontend
+
             cur = mysql.connection.cursor()
-            cur.execute(
-                """
-            UPDATE modelo_equipo 
-            SET nombreModeloequipo = %s,
-                idTipo_Equipo = %s,
-                idMarca_Equipo = %s
-            WHERE idModelo_Equipo = %s
-            """,
-                (data['nombre_modelo_equipo'], data['id_tipo_equipo'], data['id_marca_equipo'], id),
-            )
+
+            # **Verificar o insertar en marca_tipo_equipo**
+            cur.execute("""
+                SELECT idMarcaTipo 
+                FROM marca_tipo_equipo 
+                WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
+            """, (data['id_marca_equipo'], data['id_tipo_equipo']))
+            marca_tipo = cur.fetchone()
+
+            if not marca_tipo:
+                cur.execute("""
+                    INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo) 
+                    VALUES (%s, %s)
+                """, (data['id_marca_equipo'], data['id_tipo_equipo']))
+                mysql.connection.commit()
+                cur.execute("SELECT LAST_INSERT_ID() AS idMarcaTipo")
+                marca_tipo = cur.fetchone()
+
+            id_marca_tipo = marca_tipo['idMarcaTipo']
+
+            # **Actualizar modelo_equipo**
+            cur.execute("""
+                UPDATE modelo_equipo 
+                SET nombreModeloequipo = %s,
+                    idMarca_Tipo_Equipo = %s
+                WHERE idModelo_Equipo = %s
+            """, (data['nombre_modelo_equipo'], id_marca_tipo, id))
+            
             mysql.connection.commit()
-            flash("Modelo actualizado correctamente")
-            return redirect(url_for("modelo_equipo.modeloEquipo"))
+            return jsonify({
+                "status": "success",
+                "message": "Modelo actualizado correctamente."
+            }), 200
+
         except Exception as e:
-            flash("Error al crear")
-            return redirect(url_for("modelo_equipo.modeloEquipo"))
+            return jsonify({
+                "status": "error",
+                "message": f"Error al actualizar el modelo: {str(e)}"
+            }), 500
+
+
 
 @modelo_equipo.route('/delete_modelo_equipo', methods=['POST'])
 @administrador_requerido
