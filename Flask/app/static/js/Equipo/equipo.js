@@ -48,7 +48,6 @@ async function cargarModelos() {
   modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
 
   if (marcaId && tipoId) {
-    console.log(`Cargando modelos para marcaId: ${marcaId}, tipoId: ${tipoId}`); // Depuración
     const response = await fetch(`/get_modelos/${marcaId}/${tipoId}`);
     const modelos = await response.json();
     console.log("Modelos recibidos:", modelos);

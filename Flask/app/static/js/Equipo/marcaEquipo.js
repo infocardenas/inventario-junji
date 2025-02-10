@@ -1,120 +1,78 @@
 $(document).ready(function () {
+    // Detectar cambios en los checkboxes para actualizar los botones
+    $(document).on("change", ".row-checkbox, #selectAll", function () {
+        actualizarBotonesAcciones();
+    });
 
-    // Evento para manejar la selección de acciones
-    $(".actions-select").on("change", function () {
-        const action = $(this).val();
-        const selectedRows = $(".row-checkbox:checked").closest("tr");
+    function actualizarBotonesAcciones() {
+        const seleccionados = $(".row-checkbox:checked");
+        const deleteButton = $(".delete-button");
+        const editButton = $(".edit-button");
 
-        if (!selectedRows.length) {
-            alert("Por favor, selecciona una o más filas antes de realizar una acción.");
-            $(this).val("");
-            return;
+        if (seleccionados.length > 0) {
+            // Construir la URL para eliminar (con múltiples IDs separados por comas)
+            const ids = seleccionados.map(function () {
+                return $(this).closest("tr").data("id");
+            }).get().join(",");
+
+            deleteButton.data("url", `/delete_marca_equipo/${ids}`);
+            deleteButton.prop("disabled", false);
+        } else {
+            deleteButton.data("url", ""); // Limpiar URL cuando no hay selección
+            deleteButton.prop("disabled", true);
         }
 
-        const ids = selectedRows.map(function () {
-            return $(this).data("id");
-        }).get().join(',');
-
-        if (action === "delete") {
-            configureGenericModal(
-                "Eliminar Marca(s)",
-                `¿Estás seguro de que deseas eliminar las marcas seleccionadas?`,
-                `/marca_equipo/delete_marca_equipo/${ids}`
-            );
-        } else if (action === "edit") {
-            if (selectedRows.length > 1) {
-                alert("Solo puedes editar una marca a la vez.");
-                $(this).val("");
-                return;
-            }
-
-            // Obtener la fila seleccionada
-            const selectedRow = selectedRows.first();
+        if (seleccionados.length === 1) {
+            // Obtener el ID de la única fila seleccionada para edición
+            const selectedRow = seleccionados.closest("tr");
             const id = selectedRow.data("id");
             const nombre = selectedRow.find("td:nth-child(2)").text().trim();
 
-            // Rellenar el modal de edición
-            $("#editMarcaModal").modal("show");
-            $("#editMarcaModalLabel").text(`Editar Marca: ${nombre}`);
-            $("#edit_nombreMarca").val(nombre);
-            $("#editMarcaForm").attr("action", `/update_marca_equipo/${id}`);
+            editButton.data("url", `/update_marca_equipo/${id}`);
+            editButton.prop("disabled", false);
 
-            // Guardar temporalmente el nombre en LocalStorage para usarlo en futuras aperturas
-            localStorage.setItem("ultimaMarcaGuardada", nombre);
-        }
-        $(this).val("");
-    });
+            // Guardamos el valor original en un atributo `data-original`
+            $("#modal-edit-marca-input")
+                .val(nombre)
+                .attr("data-original", nombre);
+            $("#modal-edit-marca-title").text(`Editar marca: ${nombre}`);
+            $("#form-edit-marca-equipo").attr("action", `/update_marca_equipo/${id}`);
 
-    // Evento para abrir el modal de edición desde el botón "Editar"
-    $(".editMarcaBtn").on("click", function () {
-        const id = $(this).data("id");
-        const nombre = $(this).data("nombre");
-
-        // Rellenar el modal con los datos correctos
-        $("#editMarcaModal").modal("show");
-        $("#editMarcaModalLabel").text(`Editar Marca: ${nombre}`);
-        $("#edit_nombreMarca").val(nombre);
-        $("#editMarcaForm").attr("action", `/update_marca_equipo/${id}`);
-
-        // Guardar temporalmente en localStorage para persistencia en la sesión
-        localStorage.setItem("ultimaMarcaGuardada", nombre);
-    });
-
-    // Función para cargar la última marca guardada en el modal de edición
-    function cargarUltimaMarca() {
-        const ultimaMarca = localStorage.getItem("ultimaMarcaGuardada");
-        if (ultimaMarca) {
-            $("#edit_nombreMarca").val(ultimaMarca);
+        } else {
+            editButton.data("url", "");
+            editButton.prop("disabled", true);
         }
     }
 
-    // Evento cuando el modal de edición se abre
-    $("#editMarcaModal").on("shown.bs.modal", function () {
-        cargarUltimaMarca();
+    // Manejar selección/deselección de todos los checkboxes
+    $(document).on("change", "#selectAll", function () {
+        $(".row-checkbox").prop("checked", this.checked);
+        actualizarBotonesAcciones();
     });
 
-});
+    // Manejar clic en el botón "Editar" para abrir el modal
+    $(".edit-button").on("click", function () {
+        if ($(this).prop("disabled")) return; // Evita abrir el modal si está deshabilitado
 
-$(document).ready(function () {
+        // Restablecer el valor original antes de abrir el modal
+        const inputMarca = $("#modal-edit-marca-input");
+        inputMarca.val(inputMarca.attr("data-original"));
 
-    // Evento para abrir el modal de confirmación antes de eliminar
-    $("#eliminarSeleccionados").on("click", function () {
-        const selectedRows = $(".row-checkbox:checked").closest("tr");
-        const mensajeError = $("#mensajeError");
+        $("#modal-edit-marca").modal("show");
+    });
 
-        if (!selectedRows.length) {
-            mensajeError.text("⚠️ Selecciona al menos una marca para eliminar.").show();
+    // Manejar clic en el botón "Eliminar" para abrir el modal de confirmación
+    $(".delete-button").on("click", function () {
+        if ($(this).prop("disabled")) return; // Evita la acción si está deshabilitado
+
+        const deleteUrl = $(this).data("url");
+
+        if (!deleteUrl.includes("/delete_marca_equipo/")) {
             return;
         }
 
-        mensajeError.hide(); // Ocultar mensaje de error si ya se seleccionaron filas
-
-        // Obtener los IDs seleccionados en formato correcto (separados por comas)
-        const ids = selectedRows.map(function () {
-            return $(this).data("id");
-        }).get().join(',');
-
-        // Guardar los IDs en el botón de confirmación
-        $("#confirmDeleteBtn").data("ids", ids);
-
-        // Mostrar el modal de confirmación
-        $("#confirmDeleteModal").modal("show");
+        // Configurar el modal con la URL correcta
+        $("#confirm-delete-button").attr("href", deleteUrl);
+        $("#modal-delete-marca").modal("show");
     });
-
-    // Evento cuando el usuario confirma la eliminación
-    $("#confirmDeleteBtn").on("click", function () {
-        const ids = $(this).data("ids");
-
-        if (!ids) {
-            $("#mensajeError").text("⚠️ No se encontraron marcas para eliminar.").show();
-            return;
-        }
-
-        // Mostrar mensaje de carga mientras se ejecuta la eliminación
-        $("#mensajeExito").text("⏳ Eliminando marcas...").show();
-
-        // Redirigir a la función de eliminación en Flask
-        window.location.href = `/marca_equipo/delete_marca_equipo/${ids}`;
-    });
-
 });

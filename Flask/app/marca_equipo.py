@@ -126,7 +126,7 @@ def update_marca_equipo(id):
             return redirect(url_for('marca_equipo.marcaEquipo'))
 
 # Funcion eliminar, para mantener la integridad de los datos, se muestra un mensaje al usuario para que confirme si desea eliminar la marca, si lo hace entonces borramos todas las dependencias de la marca
-@marca_equipo.route('/marca_equipo/delete_marca_equipo/<ids>', methods=['GET'])
+@marca_equipo.route('/delete_marca_equipo/<ids>', methods=['GET'])
 @administrador_requerido
 def delete_marca_equipo(ids):
     try:
