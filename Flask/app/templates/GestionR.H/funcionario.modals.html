@@ -37,13 +37,13 @@
                             <label for="add_correo_dominio" class="form-label" style="flex: 2; text-align: left; margin-left: 5%;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 0 10px">
-                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario" id="add_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
+                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario validar-input-correo" id="add_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
                             <select class="form-select correo-dominio-funcionario" id="add_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
                         </div>
-                        <div class="text-error-message" style="color: red; font-size: 0.9rem; display: none;"></div>
+                        <div class="text-error-message""></div>
                         <input type="hidden" class="correo-oculto" id="add_correo_oculto" name="correo_funcionario">
                     </div>
 
@@ -70,7 +70,6 @@
                             {% endfor %}
                         </select>
                         <div class="text-error-message"></div>
-                        <span style="color: red; font-size: 0.9rem;">* Obligatorio</span>
                     </div>
                 </form>
             </div>
@@ -101,7 +100,7 @@
                     <div class="mb-3">
                         <label for="edit_rut_funcionario" class="form-label">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
                         <div style="display: flex; align-items: center;">
-                            <input type="text" class="form-control campo-obligatorio rut-input" id="edit_rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guion" maxlength="8" style="width: 70%;">
+                            <input type="text" class="form-control campo-obligatorio rut-input" id="edit_rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guion" maxlength="8" style="width: 70%;" disabled>
                             <span style="width: 10%; display: flex; justify-content: center;">-</span>
                             <input type="text" class="form-control rut-verificador" id="edit_rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
                         </div>
@@ -126,13 +125,13 @@
                             <label for="edit_correo_dominio" class="form-label" style="flex: 2; text-align: left; margin-left: 5%;">Dominio<span style="color: red; margin-left: 5px">*</span></label>
                         </div>
                         <div style="display: flex; align-items: center; gap: 10px;">
-                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario" id="edit_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
+                            <input type="text" class="form-control campo-obligatorio correo-input-funcionario validar-input-correo" id="edit_correo_funcionario" name="correo_funcionario_local" placeholder="correo" maxlength="45" style="flex: 2;">
                             <select class="form-select correo-dominio-funcionario" id="edit_correo_dominio" name="correo_dominio" style="flex: 1;">
                                 <option value="@junji.cl">@junji.cl</option>
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
                         </div>
-                        <div class="text-error-message" style="color: red; font-size: 0.9rem; margin-top: 5px; display: none;"></div>
+                        <div class="text-error-message"></div>
                         <input type="hidden" class="correo-oculto" id="edit_correo_oculto" name="correo_funcionario">
                     </div>
 
@@ -159,7 +158,6 @@
                             {% endfor %}
                         </select>
                         <div class="text-error-message"></div>
-                        <span style="color: red; font-size: 0.9rem;">* Obligatorio</span>
                     </div>
                 </form>
             </div>
@@ -168,6 +166,101 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
                 <button type="submit" form="form_editFuncionarioModal" class="btn btn-primary btn-rectangular">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal que aparece cuando se quiere eliminar un funcionario con equipos asignados -->
+<div class="modal fade" id="warningModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="warningModalLabel">No se puede eliminar el funcionario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Contenido -->
+            <div class="modal-body">
+                El funcionario no se puede eliminar porque tiene equipos asignados.
+                Para eliminarlo, primero debe desvincular todos los equipos.
+            </div>
+
+            <!-- Footer de botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Entendido</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ver los equipos asignados -->
+{% for fun in funcionario %}
+<div class="modal fade" id="modal-ver-equipo-asignado-{{ fun.rutFuncionario }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title">Equipos asignados a {{ fun.nombreFuncionario }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Contenido -->
+            <div class="modal-body">
+                <table class="table table-sm table-striped table-bordered" style="table-layout: fixed;">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Cód. Inventario</th>
+                            <th>N° Serie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipo in fun.equipos_detalle %}
+                        <tr>
+                            <td>{{ equipo.nombreTipo_equipo }}</td>
+                            <td>{{ equipo.nombreMarcaEquipo }}</td>
+                            <td>{{ equipo.nombreModeloequipo }}</td>
+                            <td>{{ equipo.Cod_inventarioEquipo }}</td>
+                            <td>{{ equipo.Num_serieEquipo }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer de botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<div class="modal fade" id="modal-sin-equipos-asignados" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title">Sin equipos asignados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Contenido -->
+            <div class="modal-body">
+                <p>Este funcionario no tiene equipos asignados</p>
+            </div>
+
+            <!-- Footer de botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
             </div>
         </div>
     </div>

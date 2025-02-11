@@ -63,10 +63,13 @@ th:hover {
     font-weight: bold;
 }
 
-/* Efecto hover (opcional) */
 .checkbox-table:hover {
-    border-color: #59ae87;
-    background-color: #e0f4e8;
+    border-color: #46a071;
+}
+
+/* Hover cuando está marcado */
+.checkbox-table:checked:hover {
+    background-color: #4da877;
 }
 
 /* Indicador de orden */
