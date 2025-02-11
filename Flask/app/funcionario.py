@@ -80,6 +80,28 @@ def Funcionario(page = 1):
     """, (perpage, offset))
     data = cur.fetchall()
 
+    # Consulta para ver que equipos asignados tiene cada funcionario
+    for funcionario in data:
+        cur.execute("""
+            SELECT 
+                te.nombreTipo_equipo,
+                mae.nombreMarcaEquipo,
+                me.nombreModeloequipo,
+                e.Cod_inventarioEquipo,
+                e.Num_serieEquipo
+            FROM asignacion a
+            JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+            JOIN equipo e ON ea.idEquipo = e.idEquipo
+            JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+            JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+            JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+            JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+            WHERE a.rutFuncionario = %s AND a.ActivoAsignacion = 1
+        """, (funcionario["rutFuncionario"],))
+        
+        equipos_asignados = cur.fetchall()
+        funcionario["equipos_detalle"] = equipos_asignados
+
     cur.execute('SELECT * FROM unidad')
     ubi_data = cur.fetchall()
 

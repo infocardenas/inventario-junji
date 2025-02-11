@@ -73,13 +73,23 @@
                                 {% endif %}
 
                                 <!-- Botón de equipos asignados -->
-                                <button type="button" class="btn btn-secondary"
-                                    data-url="/mostrar_asociados_funcionario/{{ fun.rutFuncionario }}"
-                                    data-bs-toggle="tooltip"
-                                    data-bs-title="Equipos asignados">
-                                    <i class="bi bi-pc-display"></i>
-                                </button>
-
+                                {% if fun.equipos_asignados > 0 %}
+                                    <div data-bs-toggle="tooltip" data-bs-title="Equipos asignados">
+                                        <button type="button" class="btn btn-secondary equipos-asignados"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-ver-equipo-asignado-{{ fun.rutFuncionario }}">
+                                            <i class="bi bi-pc-display"></i>
+                                        </button>
+                                    </div>
+                                {% else %}
+                                    <div data-bs-toggle="tooltip" data-bs-title="Equipos asignados">
+                                        <button type="button" class="btn btn-secondary equipos-asignados"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#modal-sin-equipos-asignados">
+                                            <i class="bi bi-pc-display"></i>
+                                        </button>
+                                    </div>
+                                {% endif %}
                             </div>
                         </td>
                     </tr>

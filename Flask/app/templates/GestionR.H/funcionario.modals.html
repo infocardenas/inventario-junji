@@ -195,3 +195,73 @@
         </div>
     </div>
 </div>
+
+<!-- Modal para ver los equipos asignados -->
+{% for fun in funcionario %}
+<div class="modal fade" id="modal-ver-equipo-asignado-{{ fun.rutFuncionario }}" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title">Equipos asignados a {{ fun.nombreFuncionario }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- Contenido -->
+            <div class="modal-body">
+                <table class="table table-sm table-striped table-bordered" style="table-layout: fixed;">
+                    <thead>
+                        <tr>
+                            <th>Tipo</th>
+                            <th>Marca</th>
+                            <th>Modelo</th>
+                            <th>Cód. Inventario</th>
+                            <th>N° Serie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for equipo in fun.equipos_detalle %}
+                        <tr>
+                            <td>{{ equipo.nombreTipo_equipo }}</td>
+                            <td>{{ equipo.nombreMarcaEquipo }}</td>
+                            <td>{{ equipo.nombreModeloequipo }}</td>
+                            <td>{{ equipo.Cod_inventarioEquipo }}</td>
+                            <td>{{ equipo.Num_serieEquipo }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer de botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<div class="modal fade" id="modal-sin-equipos-asignados" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title">Sin equipos asignados</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Contenido -->
+            <div class="modal-body">
+                <p>Este funcionario no tiene equipos asignados</p>
+            </div>
+
+            <!-- Footer de botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
