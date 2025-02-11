@@ -14,9 +14,9 @@ function mostrarError(inputField, mensaje) {
   const highlightContainer = inputField.closest(".highlight-container");
 
   if (highlightContainer.length) {
-    highlightContainer.css("border", "2px solid red");
+    highlightContainer.css({ outline: "2px solid red", "outline-offset": "-2px" });
   } else {
-    inputField.css("border", "2px solid red"); // Para otros campos normales
+    inputField.css({ outline: "2px solid red", "outline-offset": "-2px" });
   }
 }
 
@@ -28,9 +28,9 @@ function limpiarError(inputField) {
   const highlightContainer = inputField.closest(".highlight-container");
 
   if (highlightContainer.length) {
-    highlightContainer.css("border", "");
+    highlightContainer.css({ outline: "none", "outline-offset": "0px" });
   } else {
-    inputField.css("border", ""); // Para otros campos normales
+    inputField.css({ outline: "none", "outline-offset": "0px" });
   }
 }
 
@@ -62,7 +62,7 @@ function limpiarErroresEnModal(modal) {
   $(modal).find(".text-error-message").each(function () {
     $(this).hide();
   });
-  $(modal).find("input, select, textarea").css("border", "");
+  $(modal).find("input, select, textarea").css({ outline: "none", "outline-offset": "0px" });
   $(modal).find(".equipos-asignados-table").css("border", "1px solid #ddd"); // Estilo exclusivo para la tabla de asignaciones
 }
 
@@ -599,17 +599,62 @@ $(document).ready(function () {
   });
 });
 
+
+  $(document).ready(function () {
+    function validarInputCorreo(inputField) {
+      const regex = /^[a-zA-Z0-9._-]+$/; // Solo caracteres válidos antes del @
+      const input = inputField.val().trim();
+
+      if (input.length === 0) {
+        limpiarError(inputField);
+        return true;
+      }
+
+      if (!regex.test(input)) {
+        mostrarError(inputField, "Solo se permiten letras, números y los caracteres: . _ -");
+        return false;
+      } else {
+        limpiarError(inputField);
+      }
+
+      return true;
+    }
+
+  // Validar en tiempo real cuando el usuario escribe
+  $(document).on("input", ".validar-input-correo", function () {
+    validarInputCorreo($(this)); // Pasar correctamente $(this) a la función
+  });
+
+  // Validación en el envío del formulario
+  $(document).on("submit", "form", function (event) {
+    let esValido = true;
+  const form = $(this);
+
+  form.find(".validar-input-correo").each(function () {
+      if (!validarInputCorreo($(this))) {
+    esValido = false;
+      }
+    });
+
+  if (!esValido) {
+    event.preventDefault();
+    }
+  });
+});
+
+
+
 $(document).ready(function () {
   // Función de validación
   function validateNumbersInput() {
-    const input = $(this).val();
+    const inputField = $(this);
+    const inputValue = inputField.val();
     const regex = /^[0-9]*$/; // Permitir números
-    const errorMessage = $("#error-message");
 
-    if (!regex.test(input)) {
-      errorMessage.text("Solo se permiten números.").show()
+    if (!regex.test(inputValue)) {
+      mostrarError(inputField, "Sólo se permiten números");
     } else {
-      errorMessage.hide();
+      limpiarError(inputField);
     }
   }
   $(".solo-numeros").on("input", validateNumbersInput);
@@ -622,10 +667,16 @@ $(document).ready(function () {
     if (input === "") {
       mostrarError(inputField, "Este campo es obligatorio");
       return false;
+    } else {
+      limpiarError(inputField);
+      return true;
     }
 
-    return true;
   }
+
+  $(document).on("change", "select.campo-obligatorio", function () {
+    validarCampoObligatorio($(this));
+  });
 
   // Validación en el envío del formulario
   $(document).on("submit", "form", function (event) {
@@ -640,6 +691,88 @@ $(document).ready(function () {
     });
 
     if (!esFormularioValido) {
+      event.preventDefault();
+    }
+  });
+});
+
+// Valida las fechas, sólo es necesario ocupar la clase ".validar-fecha-X-Y", tal que:
+// => X representa los días anteriores a la fecha actual
+// => Y representa los días siguientes a la fecha actual
+$(document).ready(function () {
+  function configurarRangoFecha(inputField) {
+    const classList = inputField.attr("class").split(" ");
+    let diasAtras = 0;
+    let diasAdelante = 0;
+
+    // Buscar la clase que siga el formato "validar-fecha-X-Y"
+    classList.forEach(className => {
+      const match = className.match(/^validar-fecha-(\d+)-(\d+)$/);
+      if (match) {
+        diasAtras = parseInt(match[1]);
+        diasAdelante = parseInt(match[2]);
+      }
+    });
+
+    // Obtener fechas mínima y máxima permitidas
+    const hoy = new Date();
+    const fechaMin = new Date();
+    fechaMin.setDate(hoy.getDate() - diasAtras);
+
+    const fechaMax = new Date();
+    fechaMax.setDate(hoy.getDate() + diasAdelante);
+
+    // Formatear fechas en formato YYYY-MM-DD
+    const fechaMinFormato = fechaMin.toISOString().split("T")[0];
+    const fechaMaxFormato = fechaMax.toISOString().split("T")[0];
+
+    // Aplicar restricciones en el input de fecha
+    inputField.attr("min", fechaMinFormato);
+    inputField.attr("max", fechaMaxFormato);
+  }
+
+  function validarRangoFecha(inputField) {
+    const fechaSeleccionada = new Date(inputField.val());
+    const fechaMin = new Date(inputField.attr("min"));
+    const fechaMax = new Date(inputField.attr("max"));
+
+    if (fechaSeleccionada < fechaMin || fechaSeleccionada > fechaMax) {
+      mostrarError(inputField, `La fecha debe estar entre ${fechaMin.toLocaleDateString()} y ${fechaMax.toLocaleDateString()}.`);
+      return false;
+    } else {
+      limpiarError(inputField);
+      return true;
+    }
+  }
+
+  // Configurar automáticamente los inputs con clase "validar-fecha-X-Y"
+  $("input[type='date']").each(function () {
+    if ($(this).attr("class").match(/validar-fecha-\d+-\d+/)) {
+      configurarRangoFecha($(this));
+    }
+  });
+
+  // Validar en tiempo real cuando el usuario cambie la fecha
+  $(document).on("change", "input[type='date']", function () {
+    if ($(this).attr("class").match(/validar-fecha-\d+-\d+/)) {
+      validarRangoFecha($(this));
+    }
+  });
+
+  // Validación en el envío del formulario
+  $(document).on("submit", "form", function (event) {
+    let esValido = true;
+    const form = $(this);
+
+    form.find("input[type='date']").each(function () {
+      if ($(this).attr("class").match(/validar-fecha-\d+-\d+/)) {
+        if (!validarRangoFecha($(this))) {
+          esValido = false;
+        }
+      }
+    });
+
+    if (!esValido) {
       event.preventDefault();
     }
   });

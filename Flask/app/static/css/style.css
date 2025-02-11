@@ -777,3 +777,17 @@ svg.bi {
     pointer-events: auto;
     transform: scale(1.05);
 }
+
+/* Estilos para que el mensaje de error no provoque que el modal o contenido se agrande verticalmente */
+.mb-3 {
+  position: relative;
+}
+
+.mb-3 .text-error-message {
+  position: absolute;
+  top: 100%;
+}
+
+.table td, .table th {
+    vertical-align: middle;
+}
