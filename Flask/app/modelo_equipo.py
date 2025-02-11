@@ -4,6 +4,7 @@ from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 from flask import jsonify
+from MySQLdb import IntegrityError
 
 modelo_equipo = Blueprint("modelo_equipo", __name__, template_folder="app/templates")
 
@@ -87,13 +88,11 @@ def ingresar_elemento_a_tupla(tupla_mayor, tupla_a_agregar, nombre_tupla_agregar
     return tupla_mayor
 
 
-# agregar un regisro para modelo de equipo
 @modelo_equipo.route("/add_modelo_equipo", methods=["POST"])
-#@administrador_requerido
 def add_modelo_equipo():
     if request.method == "POST":
         data = {
-            'nombre_modelo_equipo': request.form['nombre_modelo_equipo'],
+            'nombre_modelo_equipo': request.form['nombre_modelo_equipo'].strip(),
             'id_tipo_equipo': int(request.form['nombre_tipo_equipo']),
             'id_marca_equipo': int(request.form['nombre_marca_equipo'])
         }
@@ -101,72 +100,72 @@ def add_modelo_equipo():
 
         v = Validator(schema)
         if not v.validate(data):
-            errores = v.errors
-            mensaje_error = "Errores de validación:"
-            for campo, detalle in errores.items():
-                mensaje_error += f" {campo}: {detalle};"
-            print("Errores de validación:", v.errors)
-            print("Validación fallida, redirigiendo...")
-            return redirect(url_for("modelo_equipo.modeloEquipo"))
+            return jsonify({
+                "status": "error",
+                "message": "Error de validación en los datos ingresados.",
+                "tipo_alerta": "warning"
+            }), 400
 
-        cur = None  # Inicializar el cursor
+        cur = None
         try:
             cur = mysql.connection.cursor()
 
-            # Verificar o insertar en marca_tipo_equipo
-            print("Validando relación marca-tipo...")
-            cur.execute(
-                """
+            # **Verificar o insertar en marca_tipo_equipo**
+            cur.execute("""
                 SELECT idMarcaTipo 
                 FROM marca_tipo_equipo 
                 WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
-                """,
-                (data['id_marca_equipo'], data['id_tipo_equipo'])
-            )
+            """, (data['id_marca_equipo'], data['id_tipo_equipo']))
             marca_tipo = cur.fetchone()
 
-            if not marca_tipo:  # Si no existe la relación, crearla
-                print("Relación no existe, creando en marca_tipo_equipo...")
-                cur.execute(
-                    """
+            if not marca_tipo:
+                cur.execute("""
                     INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo) 
                     VALUES (%s, %s)
-                    """,
-                    (data['id_marca_equipo'], data['id_tipo_equipo'])
-                )
-                mysql.connection.commit()  # Confirmar para obtener el ID
+                """, (data['id_marca_equipo'], data['id_tipo_equipo']))
+                mysql.connection.commit()
                 cur.execute("SELECT LAST_INSERT_ID() AS idMarcaTipo")
                 marca_tipo = cur.fetchone()
 
             id_marca_tipo = marca_tipo['idMarcaTipo']
-            print(f"ID de marca-tipo obtenido: {id_marca_tipo}")
 
-            # Insertar el modelo en modelo_equipo
-            print(f"Insertando modelo: {data['nombre_modelo_equipo']}, Marca-Tipo ID: {id_marca_tipo}")
-            cur.execute(
-                """
+            # **Intentar insertar el modelo en la base de datos**
+            cur.execute("""
                 INSERT INTO modelo_equipo (nombreModeloequipo, idMarca_Tipo_Equipo) 
                 VALUES (%s, %s)
-                """,
-                (data['nombre_modelo_equipo'], id_marca_tipo)
-            )
+            """, (data['nombre_modelo_equipo'], id_marca_tipo))
 
-            # Confirmar las transacciones
             mysql.connection.commit()
-            print("Transacciones confirmadas")
+
+            return jsonify({
+                "status": "success",
+                "message": "Modelo agregado exitosamente.",
+                "tipo_alerta": "success"
+            }), 200
+
+        except IntegrityError as e:
+            error_message = str(e)
+            mensaje = "Error de duplicación en la base de datos."
+            if "Duplicate entry" in error_message:
+                if "nombreModeloequipo" in error_message:
+                    mensaje = "Error: Este modelo ya existe. Por favor, elija otro nombre."
+            
+            return jsonify({
+                "status": "error",
+                "message": mensaje,
+                "tipo_alerta": "warning"
+            }), 400
 
         except Exception as e:
-            print(f"Error durante la ejecución: {str(e)}")
-            flash(f"Error al crear el modelo: {str(e)}")
-            return redirect(url_for("modelo_equipo.modeloEquipo"))
+            return jsonify({
+                "status": "error",
+                "message": f"Error al crear el modelo: {str(e)}",
+                "tipo_alerta": "danger"
+            }), 500
 
         finally:
             if cur:
-                cur.close()  # Asegurarse de cerrar el cursor
-                print("Cursor cerrado")
-
-        flash("Modelo agregado exitosamente", 'success')
-        return redirect(url_for("modelo_equipo.modeloEquipo"))
+                cur.close()
 
 
 # Envias datos a formulario editar
@@ -226,131 +225,169 @@ def edit_modelo_equipo(id):
     )
 
 
-
-# actualizar
 @modelo_equipo.route("/update_modelo_equipo/<id>", methods=["POST"])
 @administrador_requerido
 def update_modelo_equipo(id):
     if "user" not in session:
-        flash("No estás autorizado para ingresar a esta ruta", 'warning')
-        return redirect("/ingresar")
+        return jsonify({
+            "status": "error",
+            "message": "No estás autorizado para realizar esta acción."
+        }), 403
+
     if request.method == "POST":
-        # Obtener los datos del formulario
-        data = {
-                'nombre_modelo_equipo': request.form['nombre_modelo_equipo'],
-                'id_marca_equipo': request.form['nombre_marca_equipo'],
-                'id_tipo_equipo': request.form['nombre_tipo_equipo']
-        }
-# Validar los datos usando Cerberus
-        v = Validator(schema)
-        if not v.validate(data):
-            flash("Caracteres no permitidos")
-            return redirect(url_for("modelo_equipo.modeloEquipo"))
         try:
+            # **Obtener datos del formulario**
+            data = {
+                'nombre_modelo_equipo': request.form['nombre_modelo_equipo'].strip(),
+                'id_tipo_equipo': request.form['nombre_tipo_equipo'].strip(),
+                'id_marca_equipo': request.form['nombre_marca_equipo'].strip()
+            }
+
+            # **Convertir a NULL si están vacíos**
+            data['id_tipo_equipo'] = int(data['id_tipo_equipo']) if data['id_tipo_equipo'] else None
+            data['id_marca_equipo'] = int(data['id_marca_equipo']) if data['id_marca_equipo'] else None
+
+            # **Validar datos con Cerberus**
+            v = Validator(schema)
+            if not v.validate(data):
+                return jsonify({
+                    "status": "error",
+                    "message": "Entrada inválida: Solo caracteres permitidos.",
+                    "errors": v.errors,
+                    "tipo_alerta": "warning"
+                }), 400  # ⛔ Retornar error 400 para manejo en el frontend
+
             cur = mysql.connection.cursor()
-            cur.execute(
-                """
-            UPDATE modelo_equipo 
-            SET nombreModeloequipo = %s,
-                idTipo_Equipo = %s,
-                idMarca_Equipo = %s
-            WHERE idModelo_Equipo = %s
-            """,
-                (data['nombre_modelo_equipo'], data['id_tipo_equipo'], data['id_marca_equipo'], id),
-            )
+
+            # **Verificar o insertar en marca_tipo_equipo**
+            cur.execute("""
+                SELECT idMarcaTipo 
+                FROM marca_tipo_equipo 
+                WHERE idMarca_Equipo = %s AND idTipo_equipo = %s
+            """, (data['id_marca_equipo'], data['id_tipo_equipo']))
+            marca_tipo = cur.fetchone()
+
+            if not marca_tipo:
+                cur.execute("""
+                    INSERT INTO marca_tipo_equipo (idMarca_Equipo, idTipo_equipo) 
+                    VALUES (%s, %s)
+                """, (data['id_marca_equipo'], data['id_tipo_equipo']))
+                mysql.connection.commit()
+                cur.execute("SELECT LAST_INSERT_ID() AS idMarcaTipo")
+                marca_tipo = cur.fetchone()
+
+            id_marca_tipo = marca_tipo['idMarcaTipo']
+
+            # **Actualizar modelo_equipo**
+            cur.execute("""
+                UPDATE modelo_equipo 
+                SET nombreModeloequipo = %s,
+                    idMarca_Tipo_Equipo = %s
+                WHERE idModelo_Equipo = %s
+            """, (data['nombre_modelo_equipo'], id_marca_tipo, id))
+            
             mysql.connection.commit()
-            flash("Modelo actualizado correctamente")
-            return redirect(url_for("modelo_equipo.modeloEquipo"))
+            return jsonify({
+                "status": "success",
+                "message": "Modelo actualizado correctamente."
+            }), 200
+
         except Exception as e:
-            flash("Error al crear")
-            return redirect(url_for("modelo_equipo.modeloEquipo"))
+            return jsonify({
+                "status": "error",
+                "message": f"Error al actualizar el modelo: {str(e)}"
+            }), 500
 
-@modelo_equipo.route('/delete_modelo_equipo/<ids>', methods=['GET'])
+
+
+@modelo_equipo.route('/delete_modelo_equipo', methods=['POST'])
 @administrador_requerido
-def delete_modelo_equipo(ids):
-
+def delete_modelo_equipo():
     try:
+        data = request.get_json()
+        if not data or "ids" not in data:
+            return jsonify({
+                "status": "error",
+                "message": "No se recibieron modelos para eliminar.",
+                "tipo_alerta": "warning"
+            }), 400
+
+        id_list = data["ids"]
+
+        if not id_list:
+            return jsonify({
+                "status": "error",
+                "message": "Debe seleccionar al menos un modelo.",
+                "tipo_alerta": "warning"
+            }), 400
+
         cur = mysql.connection.cursor()
 
-        # Convertir la cadena de IDs en lista
-        id_list = ids.split(',')
-        
-        # PASO 1: Eliminar dependencias en equipo_asignacion
-        cur.execute(f"""
+        # Eliminar dependencias en equipo_asignacion
+        cur.execute("""
             DELETE FROM equipo_asignacion 
             WHERE idEquipo IN (
-                SELECT e.idEquipo 
-                FROM equipo e
-                WHERE e.idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
+                SELECT idEquipo FROM equipo WHERE idModelo_equipo IN %s
             )
-        """, id_list)
+        """, (tuple(id_list),))
 
-        # PASO 2: Eliminar dependencias en traslacion
-        cur.execute(f"""
+        # Eliminar dependencias en traslacion
+        cur.execute("""
             DELETE FROM traslacion 
             WHERE idEquipo IN (
-                SELECT e.idEquipo 
-                FROM equipo e
-                WHERE e.idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
+                SELECT idEquipo FROM equipo WHERE idModelo_equipo IN %s
             )
-        """, id_list)
+        """, (tuple(id_list),))
 
-        # PASO 3: Eliminar dependencias en incidencia
-        cur.execute(f"""
-            DELETE FROM incidencia
+        # Eliminar dependencias en incidencia
+        cur.execute("""
+            DELETE FROM incidencia 
             WHERE idEquipo IN (
-                SELECT e.idEquipo
-                FROM equipo e
-                WHERE e.idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
+                SELECT idEquipo FROM equipo WHERE idModelo_equipo IN %s
             )
-        """, id_list)
+        """, (tuple(id_list),))
 
-        # PASO 4: Eliminar dependencias en devolucion
-        cur.execute(f"""
+        # Eliminar dependencias en devolucion
+        cur.execute("""
             DELETE FROM devolucion 
             WHERE rutFuncionario IN (
-                SELECT f.rutFuncionario 
-                FROM funcionario f
-                WHERE f.rutFuncionario IN (
-                    SELECT a.rutFuncionario
-                    FROM asignacion a
-                    WHERE a.idAsignacion IN (
-                        SELECT ea.idAsignacion 
-                        FROM equipo_asignacion ea
-                        WHERE ea.idEquipo IN (
-                            SELECT e.idEquipo
-                            FROM equipo e
-                            WHERE e.idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
+                SELECT rutFuncionario FROM funcionario 
+                WHERE rutFuncionario IN (
+                    SELECT rutFuncionario FROM asignacion 
+                    WHERE idAsignacion IN (
+                        SELECT idAsignacion FROM equipo_asignacion 
+                        WHERE idEquipo IN (
+                            SELECT idEquipo FROM equipo WHERE idModelo_equipo IN %s
                         )
                     )
                 )
             )
-        """, id_list)
+        """, (tuple(id_list),))
 
-        # PASO 5: Eliminar equipos relacionados al modelo
-        cur.execute(f"""
-            DELETE FROM equipo
-            WHERE idModelo_equipo IN ({','.join(['%s'] * len(id_list))})
-        """, id_list)
+        # Eliminar equipos relacionados al modelo
+        cur.execute("""
+            DELETE FROM equipo WHERE idModelo_equipo IN %s
+        """, (tuple(id_list),))
 
-        # PASO 6: Finalmente, eliminar el modelo
-        cur.execute(f"""
-            DELETE FROM modelo_equipo
-            WHERE idModelo_Equipo IN ({','.join(['%s'] * len(id_list))})
-        """, id_list)
+        # Eliminar los modelos seleccionados
+        cur.execute("""
+            DELETE FROM modelo_equipo WHERE idModelo_Equipo IN %s
+        """, (tuple(id_list),))
 
-        # Confirmar cambios
         mysql.connection.commit()
 
-        # Mostrar mensaje de éxito
-        flash(f"Se eliminaron {len(id_list)} modelo(s) y sus relaciones asociadas exitosamente.", "success")
-        return redirect(url_for("modelo_equipo.modeloEquipo"))
+        return jsonify({
+            "status": "success",
+            "message": f"Se eliminaron {len(id_list)} modelo(s) correctamente.",
+            "tipo_alerta": "success"
+        }), 200
 
     except Exception as e:
-        flash(f"Ocurrió un error al intentar eliminar el/los modelo(s): {e}", "danger")
-        return redirect(url_for("modelo_equipo.modeloEquipo"))
-
-
+        return jsonify({
+            "status": "error",
+            "message": f"Error al eliminar modelos: {str(e)}",
+            "tipo_alerta": "danger"
+        }), 500
 
 
 

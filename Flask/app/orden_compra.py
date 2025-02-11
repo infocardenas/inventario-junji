@@ -1,5 +1,5 @@
 #se importa flask
-from flask import Blueprint, render_template, request, url_for, redirect,flash, session
+from flask import Blueprint, render_template, request, url_for, redirect,flash, session, jsonify
 #se importa db.py para utilizar la conexion a mysql
 from db import mysql
 #importamos el modulo que creamos
@@ -221,17 +221,59 @@ def update_ordenc(id):
             return redirect(url_for('orden_compra.ordenCompra'))
 
         
-#eliminar    
-@orden_compra.route('/delete_ordenc/<id>', methods = ['POST', 'GET'])
+@orden_compra.route('/delete_ordenc', methods=['POST'])
 @administrador_requerido
-def delete_ordenc(id):
+def delete_ordenc():
     try:
+        data = request.get_json()
+        id_list = data.get("ids", [])
+
+        if not id_list:
+            return jsonify({
+                "status": "error",
+                "message": "Debe seleccionar al menos una orden de compra para eliminar.",
+                "tipo_alerta": "warning"
+            }), 400
+
         cur = mysql.connection.cursor()
-        cur.execute('DELETE FROM orden_compra WHERE idOrden_compra = %s', (id,))
+
+        # **PASO 1: Verificar si hay equipos en equipo_asignacion**
+        cur.execute(f"""
+            SELECT COUNT(*) AS total FROM equipo_asignacion 
+            WHERE idEquipo IN (SELECT idEquipo FROM equipo WHERE idOrden_compra IN ({','.join(['%s'] * len(id_list))}))
+        """, tuple(id_list))
+        equipos_asignados = cur.fetchone()
+
+        if equipos_asignados and equipos_asignados["total"] > 0:
+            return jsonify({
+                "status": "error",
+                "message": "No se pueden eliminar órdenes de compra con equipos asignados. Debe reasignar o eliminar estos equipos primero.",
+                "tipo_alerta": "warning"
+            }), 400
+
+        # **PASO 2: Eliminar equipos asociados a la orden de compra**
+        cur.execute(f"""
+            DELETE FROM equipo 
+            WHERE idOrden_compra IN ({','.join(['%s'] * len(id_list))})
+        """, tuple(id_list))
+
+        # **PASO 3: Eliminar la orden de compra**
+        cur.execute(f"""
+            DELETE FROM orden_compra
+            WHERE idOrden_compra IN ({','.join(['%s'] * len(id_list))})
+        """, tuple(id_list))
+
         mysql.connection.commit()
-        flash('Orden de compra eliminado correctamente')
-        return redirect(url_for('orden_compra.ordenCompra'))
+
+        return jsonify({
+            "status": "success",
+            "message": f"✅ Se eliminaron {len(id_list)} orden(es) de compra correctamente.",
+            "tipo_alerta": "success"
+        }), 200
+
     except Exception as e:
-        flash("Error al crear")
-        #flash(e.args[1])
-        return redirect(url_for('orden_compra.ordenCompra'))
+        return jsonify({
+            "status": "error",
+            "message": f"❌ Error al eliminar la orden de compra: {str(e)}",
+            "tipo_alerta": "danger"
+        }), 500

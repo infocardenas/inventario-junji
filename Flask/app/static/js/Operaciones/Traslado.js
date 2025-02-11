@@ -34,25 +34,26 @@ document.getElementById("trasladoForm").addEventListener("submit", function(even
     .then(response => response.json())
     .then(data => {     
         if (data.success) {
-            let tableBody = document.getElementById("trasladoTableBody");
-            let newRow = document.createElement("tr");
-            newRow.innerHTML = `
-                <td>${data.fechatraslado}</td>
-                <td><a href="/traslado/mostrar_pdf/${data.idTraslado}" class="info-button">Acta</a></td>
-                <td>${data.nombreOrigen}</td>
-                <td>${data.nombreDestino}</td>
-                <td>
-                    <a href="/traslado/delete_traslado/${data.idTraslado}" class="delete-button">Eliminar</a>
-                    <a href="/mostrar_asociados_traslado/${data.idTraslado}" class="info-button">Equipos</a>
-                </td>`;
-            tableBody.appendChild(newRow);
-            
+            mostrarAlerta("✅ Traslado creado correctamente.", "success");
+
             // Cerrar modal y resetear formulario
             $('#trasladoModal').modal('hide');
             this.reset();
+
+            // ✅ Esperar 1.5s antes de recargar la página para evitar cortes visuales
+            setTimeout(() => {
+                window.location.reload();
+            }, 1000);
+        } else {
+            mostrarAlerta("❌ Hubo un error al crear el traslado.", "danger");
         }
+    })
+    .catch(error => {
+        console.error("❌ Error en la conexión:", error);
+        mostrarAlerta("❌ Error en la conexión. Intenta de nuevo.", "danger");
     });
 });
+
 
     // Búsqueda en la tabla
     function filtrarTabla() {
@@ -66,37 +67,38 @@ document.getElementById("trasladoForm").addEventListener("submit", function(even
     }
 
     // Función para cargar los detalles del traslado en el modal
-function cargarDetallesTraslado(id) {
-    let trasladosData = document.getElementById("traslados-data").textContent;
-    let traslados = JSON.parse(trasladosData);
-
-    let trasSeleccionado = traslados.find(t => t.idTraslado == id);
-
-    if (trasSeleccionado) {
-        // Formatear la fecha antes de mostrarla
-        document.getElementById("detalleFecha").textContent = formatearFecha(trasSeleccionado.fechatraslado);
-        document.getElementById("detalleOrigen").textContent = trasSeleccionado.nombreOrigen;
-        document.getElementById("detalleDestino").textContent = trasSeleccionado.nombreDestino;
-
-        let equiposTable = document.getElementById("detalleEquipos");
-        equiposTable.innerHTML = "";
-
-        if (!trasSeleccionado.equipos || trasSeleccionado.equipos.length === 0) {
-            equiposTable.innerHTML = `<tr><td colspan="5" class="text-center">No hay equipos trasladados</td></tr>`;
-        } else {
-            trasSeleccionado.equipos.forEach(equipo => {
-                let row = `<tr>
-                    <td>${equipo.nombreModeloequipo || 'N/A'}</td>
-                    <td>${equipo.nombreTipo_equipo || 'N/A'}</td>
-                    <td>${equipo.nombreMarcaEquipo || 'N/A'}</td>
-                    <td>${equipo.Cod_inventarioEquipo || 'N/A'}</td>
-                    <td>${equipo.Num_serieEquipo || 'N/A'}</td>
-                </tr>`;
-                equiposTable.innerHTML += row;
-            });
+    function cargarDetallesTraslado(id) {
+        let trasladosData = document.getElementById("traslados-data").textContent;
+        let traslados = JSON.parse(trasladosData);
+    
+        let trasSeleccionado = traslados.find(t => t.idTraslado == id);
+    
+        if (trasSeleccionado) {
+            // ✅ Usar la nueva función corregida
+            document.getElementById("detalleFecha").textContent = formatearFecha(trasSeleccionado.fechatraslado);
+            document.getElementById("detalleOrigen").textContent = trasSeleccionado.nombreOrigen;
+            document.getElementById("detalleDestino").textContent = trasSeleccionado.nombreDestino;
+    
+            let equiposTable = document.getElementById("detalleEquipos");
+            equiposTable.innerHTML = "";
+    
+            if (!trasSeleccionado.equipos || trasSeleccionado.equipos.length === 0) {
+                equiposTable.innerHTML = `<tr><td colspan="5" class="text-center">No hay equipos trasladados</td></tr>`;
+            } else {
+                trasSeleccionado.equipos.forEach(equipo => {
+                    let row = `<tr>
+                        <td>${equipo.nombreModeloequipo || 'N/A'}</td>
+                        <td>${equipo.nombreTipo_equipo || 'N/A'}</td>
+                        <td>${equipo.nombreMarcaEquipo || 'N/A'}</td>
+                        <td>${equipo.Cod_inventarioEquipo || 'N/A'}</td>
+                        <td>${equipo.Num_serieEquipo || 'N/A'}</td>
+                    </tr>`;
+                    equiposTable.innerHTML += row;
+                });
+            }
         }
     }
-}
+    
 
 // Seleccionar/Deseleccionar todos los checkboxes
 document.getElementById("selectAll").addEventListener("change", function() {
@@ -172,11 +174,67 @@ document.getElementById("eliminarSeleccionados").addEventListener("click", funct
 function formatearFecha(fechaISO) {
     let fecha = new Date(fechaISO);
 
+    // 🔍 Ajustar manualmente la zona horaria para evitar desfases
+    let localOffset = fecha.getTimezoneOffset() * 60000; // Convertir a milisegundos
+    fecha = new Date(fecha.getTime() + localOffset);
+
     let diasSemana = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado"];
     let nombreDia = diasSemana[fecha.getDay()];
-    let numeroDia = fecha.getDate().toString().padStart(2, '0'); // Asegurar 2 dígitos
-    let numeroMes = (fecha.getMonth() + 1).toString().padStart(2, '0'); // Asegurar 2 dígitos
+    let numeroDia = fecha.getDate().toString().padStart(2, '0');
+    let numeroMes = (fecha.getMonth() + 1).toString().padStart(2, '0');
     let anio = fecha.getFullYear();
 
-    return `${nombreDia}       ${numeroDia}/${numeroMes}/${anio}`;
+    return `${nombreDia} ${numeroDia}/${numeroMes}/${anio}`;
+}
+
+
+function validarFechaTraslado(fechaInputId) {
+    let fechaInput = document.getElementById(fechaInputId);
+
+    if (!fechaInput) return;
+
+    // ✅ Obtener la fecha de hoy en formato YYYY-MM-DD
+    let today = new Date();
+    let todayStr = today.toISOString().split('T')[0];
+
+    [fechaInput].forEach(input => {
+        if (input) {
+            input.setAttribute("min", todayStr);
+        }
+    });
+    
+}
+
+// ✅ Ejecutar la validación al cargar la página
+document.addEventListener("DOMContentLoaded", function () {
+    validarFechaTraslado("fechatraslado"); // Llamar la función para el campo del modal
+});
+
+// ✅ Función para mostrar alertas dinámicas (Bootstrap)
+function mostrarAlerta(mensaje, tipo = "success") {
+    let alertContainer = document.getElementById("alertContainer");
+
+    // Crear el contenedor de alertas si no existe
+    if (!alertContainer) {
+        document.body.insertAdjacentHTML("afterbegin", '<div id="alertContainer" class="alert-container"></div>');
+        alertContainer = document.getElementById("alertContainer");
+    }
+
+    // Limpiar alertas previas
+    alertContainer.innerHTML = "";
+
+    let alertaHTML = `
+        <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+            ${mensaje}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    `;
+
+    alertContainer.innerHTML = alertaHTML;
+    alertContainer.classList.remove("d-none");
+
+    setTimeout(() => {
+        alertContainer.classList.add("d-none");
+        alertContainer.innerHTML = "";
+    }, 5000);
 }
