@@ -14,9 +14,9 @@ function mostrarError(inputField, mensaje) {
   const highlightContainer = inputField.closest(".highlight-container");
 
   if (highlightContainer.length) {
-    highlightContainer.css("border", "2px solid red");
+    highlightContainer.css({ outline: "2px solid red", "outline-offset": "-2px" });
   } else {
-    inputField.css("border", "2px solid red"); // Para otros campos normales
+    inputField.css({ outline: "2px solid red", "outline-offset": "-2px" });
   }
 }
 
@@ -28,9 +28,9 @@ function limpiarError(inputField) {
   const highlightContainer = inputField.closest(".highlight-container");
 
   if (highlightContainer.length) {
-    highlightContainer.css("border", "");
+    highlightContainer.css({ outline: "none", "outline-offset": "0px" });
   } else {
-    inputField.css("border", ""); // Para otros campos normales
+    inputField.css({ outline: "none", "outline-offset": "0px" });
   }
 }
 
@@ -62,7 +62,7 @@ function limpiarErroresEnModal(modal) {
   $(modal).find(".text-error-message").each(function () {
     $(this).hide();
   });
-  $(modal).find("input, select, textarea").css("border", "");
+  $(modal).find("input, select, textarea").css({ outline: "none", "outline-offset": "0px" });
   $(modal).find(".equipos-asignados-table").css("border", "1px solid #ddd"); // Estilo exclusivo para la tabla de asignaciones
 }
 
