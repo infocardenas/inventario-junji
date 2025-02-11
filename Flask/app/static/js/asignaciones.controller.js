@@ -1,9 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
-        refreshCheckboxListeners();
+    refreshCheckboxListeners();
 });
 
-    // Función para actualizar listeners de checkboxes
-    function refreshCheckboxListeners() {
+// Función para actualizar listeners de checkboxes
+function refreshCheckboxListeners() {
     const equipoCheckboxes = document.querySelectorAll('.equipo-checkbox');
     const selectedEquiposDiv = document.getElementById('selectedEquipos');
 
@@ -26,6 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
                     hiddenInput.remove();
                 }
             }
+
+            // Limpiar error si hay al menos 1 equipo seleccionado
+            const equiposSeleccionados = document.querySelectorAll('input[name="equiposAsignados[]"]').length;
+            if (equiposSeleccionados > 0) {
+                limpiarError($("#equiposContainer"));
+            }
         });
     });
 
@@ -33,17 +39,17 @@ document.addEventListener("DOMContentLoaded", () => {
     enableRowClick();
 }
 
-    // Permite seleccionar checkbox haciendo clic en la fila
-    function enableRowClick() {
+// Permite seleccionar checkbox haciendo clic en la fila
+function enableRowClick() {
     const rows = document.querySelectorAll('#equiposTable tr');
 
     rows.forEach(row => {
         row.removeEventListener('click', rowClickHandler);
-    row.addEventListener('click', rowClickHandler);
+        row.addEventListener('click', rowClickHandler);
     });
 }
 
-    function rowClickHandler(event) {
+function rowClickHandler(event) {
     // Evitar que el evento se dispare si el clic es sobre el checkbox
     if (event.target.tagName === 'INPUT' && event.target.type === 'checkbox') return;
 
@@ -51,17 +57,44 @@ document.addEventListener("DOMContentLoaded", () => {
     const checkbox = this.querySelector('.equipo-checkbox');
     if (checkbox) {
         checkbox.checked = !checkbox.checked;
-    checkbox.dispatchEvent(new Event('change')); // Disparar evento 'change' manualmente
+        checkbox.dispatchEvent(new Event('change')); // Disparar evento 'change' manualmente
     }
 }
 
-    // Búsqueda dinámica
-    document.getElementById('searchEquipo').addEventListener('input', function () {
+// Búsqueda dinámica
+document.getElementById('searchEquipo').addEventListener('input', function () {
     const filter = this.value.toLowerCase();
     const rows = document.querySelectorAll('#equiposTable tr');
 
     rows.forEach(row => {
         const text = row.innerText.toLowerCase();
-    row.style.display = text.includes(filter) ? '' : 'none';
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
+
+$(document).ready(function () {
+    // Validación cuando se intente enviar el formulario
+    $(document).on("submit", "#form-asignacion-modal", function (e) {
+        // Cantidad de equipos que se han agregado dinámicamente
+
+        const equiposSeleccionados = document.querySelectorAll('input[name="equiposAsignados[]"]').length;
+
+        if (equiposSeleccionados === 0) {
+            e.preventDefault();
+            // Apuntamos al contenedor #equiposContainer
+            mostrarError($("#equiposContainer"), "Debes asignar al menos un equipo");
+        } else {
+            limpiarError($("#equiposContainer"));
+        }
+    });
+
+    $("#addAsignacionModal").on("hidden.bs.modal", function () {
+        limpiarError($("#equiposContainer"));
+
+        // Desmarcar todos los checkboxes
+        $(".equipo-checkbox").prop("checked", false);
+
+        // Eliminar los inputs ocultos que se agregaron para equipos seleccionados
+        $("#selectedEquipos").empty();
     });
 });

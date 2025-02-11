@@ -36,40 +36,42 @@
                     </div>
 
                     <!-- Todos los equipos sin asignar -->
-                    <label class="text-center">Equipos sin asignar</label>
-                    <div class="mb-1">
-                        <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar">
+                    <div class="mb-3">
+                        <label class="text-center">Equipos sin asignar</label>
+                        <div class="mb-1">
+                            <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar">
+                        </div>
+                        <div class="highlight-container" id="equiposContainer" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px">
+                            <table class="table table-sm table-hover table-bordered m-0" style="table-layout: fixed;">
+                                <thead>
+                                    <tr>
+                                        <td style="width: 30px; border-radius: 5px 0 0 0">#</td>
+                                        <td>Tipo</td>
+                                        <td>Cód. inventario</td>
+                                        <td>N° serie</td>
+                                        <td>Marca</td>
+                                        <td>Modelo</td>
+                                        <td style="border-radius: 0 5px 0 0">Unidad</td>
+                                    </tr>
+                                </thead>
+                                <tbody id="equiposTable">
+                                    {% for equipo in equipos_sin_asignar %}
+                                    <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
+                                        data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
+                                        <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
+                                        <td>{{ equipo.nombreTipo_equipo }}</td>
+                                        <td>{{ equipo.Cod_inventarioEquipo }}</td>
+                                        <td>{{ equipo.Num_serieEquipo }}</td>
+                                        <td>{{ equipo.nombreMarcaEquipo }}</td>
+                                        <td>{{ equipo.nombreModeloequipo }}</td>
+                                        <td>{{ equipo.nombreUnidad }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-error-message"></div>
                     </div>
-                    <div style="height: 150px; overflow-y: auto; border: 1px solid #ddd;">
-                        <table class="table table-sm table-hover table-bordered m-0" style="table-layout: fixed;">
-                            <thead>
-                                <tr>
-                                    <td style="width: 30px">#</td>
-                                    <td>Tipo</td>
-                                    <td>Cód. inventario</td>
-                                    <td>N° serie</td>
-                                    <td>Marca</td>
-                                    <td>Modelo</td>
-                                    <td>Unidad</td>
-                                </tr>
-                            </thead>
-                            <tbody id="equiposTable">
-                                {% for equipo in equipos_sin_asignar %}
-                                <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
-                                    data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
-                                    <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
-                                    <td>{{ equipo.nombreTipo_equipo }}</td>
-                                    <td>{{ equipo.Cod_inventarioEquipo }}</td>
-                                    <td>{{ equipo.Num_serieEquipo }}</td>
-                                    <td>{{ equipo.nombreMarcaEquipo }}</td>
-                                    <td>{{ equipo.nombreModeloequipo }}</td>
-                                    <td>{{ equipo.nombreUnidad }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    
                     <!-- Input oculto para almacenar equipos seleccionados -->
                     <div id="selectedEquipos"></div>
                     
