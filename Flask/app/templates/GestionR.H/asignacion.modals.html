@@ -37,7 +37,7 @@
 
                     <!-- Todos los equipos sin asignar -->
                     <div class="mb-3">
-                        <label class="text-center">Equipos sin asignar</label>
+                        <label class="text-center">Equipos disponibles</label>
                         <div class="mb-1">
                             <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar">
                         </div>
@@ -47,10 +47,10 @@
                                     <tr>
                                         <td style="width: 30px; border-radius: 5px 0 0 0">#</td>
                                         <td>Tipo</td>
-                                        <td>Cód. inventario</td>
-                                        <td>N° serie</td>
                                         <td>Marca</td>
                                         <td>Modelo</td>
+                                        <td>Cód. inventario</td>
+                                        <td>N° serie</td>
                                         <td style="border-radius: 0 5px 0 0">Unidad</td>
                                     </tr>
                                 </thead>
@@ -60,10 +60,10 @@
                                         data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
                                         <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
                                         <td>{{ equipo.nombreTipo_equipo }}</td>
-                                        <td>{{ equipo.Cod_inventarioEquipo }}</td>
-                                        <td>{{ equipo.Num_serieEquipo }}</td>
                                         <td>{{ equipo.nombreMarcaEquipo }}</td>
                                         <td>{{ equipo.nombreModeloequipo }}</td>
+                                        <td>{{ equipo.Cod_inventarioEquipo }}</td>
+                                        <td>{{ equipo.Num_serieEquipo }}</td>
                                         <td>{{ equipo.nombreUnidad }}</td>
                                     </tr>
                                     {% endfor %}
