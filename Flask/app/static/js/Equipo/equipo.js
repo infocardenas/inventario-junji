@@ -163,47 +163,211 @@ $(document).ready(function () {
   // Deshabilitar botones al cargar la página
   updateButtonStates();
 });
+$(document).ready(function () {
+  function validarSoloNumeros(inputField) {
+    const regex = /^[0-9]+$/; // Solo permite números positivos
+    const input = inputField.val().trim();
 
-document.addEventListener("DOMContentLoaded", function () {
-    const editButtons = document.querySelectorAll(".edit-equipo-btn");
+    if (input.length === 0) {
+      limpiarError(inputField);
+      return true;
+    }
 
-    editButtons.forEach(button => {
-        button.addEventListener("click", function () {
-            // Precargar datos en los inputs
-            document.getElementById("edit_codigo_inventario").value = this.getAttribute("data-codigo");
-            document.getElementById("edit_numero_serie").value = this.getAttribute("data-serie");
-            document.getElementById("edit_codigo_Unidad").value = this.getAttribute("data-unidad");
-            document.getElementById("edit_observacion_equipo").value = this.getAttribute("data-observacion");
+    if (!regex.test(input)) {
+      mostrarError(inputField, "Solo se permiten números");
+      return false;
+    } else {
+      limpiarError(inputField);
+    }
 
-            // Seleccionar Marca, Tipo y Modelo
-            document.getElementById("edit_marcaSelect").value = this.getAttribute("data-marca");
-            document.getElementById("edit_tipoSelect").value = this.getAttribute("data-tipo");
-            document.getElementById("edit_modeloSelect").value = this.getAttribute("data-modelo");
+    return true;
+  }
 
-            // Mostrar datos de teléfono si es un teléfono
-            let tipoEquipo = this.getAttribute("data-tipo").toLowerCase();
-            if (tipoEquipo.includes("teléfono") || tipoEquipo.includes("telefono")) {
-                document.getElementById("edit_mac").value = this.getAttribute("data-mac");
-                document.getElementById("edit_imei").value = this.getAttribute("data-imei");
-                document.getElementById("edit_numero").value = this.getAttribute("data-numero");
-                document.getElementById("camposTelefonoEdit").style.display = "block";
-            } else {
-                document.getElementById("camposTelefonoEdit").style.display = "none";
-            }
-        });
+  // Validar en tiempo real cuando el usuario escribe
+  $(document).on("input", ".validar-numero", function () {
+    validarSoloNumeros($(this));
+  });
+
+  // Validación en el envío del formulario
+  $(document).on("submit", "form", function (event) {
+    let esValido = true;
+    const form = $(this);
+
+    form.find(".validar-numero").each(function () {
+      if (!validarSoloNumeros($(this))) {
+        esValido = false;
+      }
     });
+
+    if (!esValido) {
+      event.preventDefault();
+    }
+  });
+
+  // Función para mostrar error correctamente
+  function mostrarError(inputField, mensaje) {
+    let errorMessage = inputField.siblings(".text-error-message"); // Busca el div de error en el mismo contenedor
+
+    if (errorMessage.length === 0) {
+      errorMessage = $('<div class="text-error-message text-danger"></div>'); // Si no existe, lo crea
+      inputField.after(errorMessage); // Lo coloca justo debajo del input
+    }
+
+    errorMessage.text(mensaje).show(); // Muestra el mensaje de error
+    inputField.addClass("border border-danger"); // Agrega borde rojo al input
+  }
+
+  // Función para limpiar el mensaje de error
+  function limpiarError(inputField) {
+    let errorMessage = inputField.siblings(".text-error-message"); // Busca el div de error
+    errorMessage.hide(); // Oculta el mensaje
+    inputField.removeClass("border border-danger"); // Elimina borde rojo del input
+  }
 });
 
-// Cargar tipos al cambiar la marca
-function cargarTiposEdit() {
-    let marcaId = document.getElementById("edit_marcaSelect").value;
-    // Aquí deberías llenar el select con los tipos según la marca seleccionada
-}
+$(document).ready(function () {
+  function validarNumerosYLetras(inputField) {
+    const regex = /^[a-zA-Z0-9]+$/; // Permite solo letras y números
+    const input = inputField.val().trim();
 
-// Cargar modelos al cambiar el tipo
-function cargarModelosEdit() {
-    let tipoId = document.getElementById("edit_tipoSelect").value;
-    // Aquí deberías llenar el select con los modelos según el tipo seleccionado
-}
+    if (input.length === 0) {
+      limpiarError(inputField);
+      return true;
+    }
 
+    if (!regex.test(input)) {
+      mostrarError(inputField, "Solo se permiten letras y números");
+      return false;
+    } else {
+      limpiarError(inputField);
+    }
 
+    return true;
+  }
+
+  // Validar en tiempo real cuando el usuario escribe
+  $(document).on("input", ".validar-numeros-letras", function () {
+    validarNumerosYLetras($(this));
+  });
+
+  // Validación al enviar el formulario
+  $(document).on("submit", "form", function (event) {
+    let esValido = true;
+    const form = $(this);
+
+    form.find(".validar-numeros-letras").each(function () {
+      if (!validarNumerosYLetras($(this))) {
+        esValido = false;
+      }
+    });
+
+    if (!esValido) {
+      event.preventDefault();
+    }
+  });
+
+  // Función para mostrar error correctamente
+  function mostrarError(inputField, mensaje) {
+    let errorMessage = inputField.siblings(".text-error-message");
+
+    if (errorMessage.length === 0) {
+      errorMessage = $('<div class="text-error-message text-danger"></div>');
+      inputField.after(errorMessage);
+    }
+
+    errorMessage.text(mensaje).show();
+    inputField.addClass("border border-danger");
+  }
+
+  // Función para limpiar el mensaje de error
+  function limpiarError(inputField) {
+    let errorMessage = inputField.siblings(".text-error-message");
+    errorMessage.hide();
+    inputField.removeClass("border border-danger");
+  }
+});
+$(document).ready(function () {
+  function validarMAC(inputField) {
+    // Expresión regular para validar direcciones MAC con ":" o "-" como separadores
+    const regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$|^[0-9A-Fa-f]{12}$/;
+    const input = inputField.val().trim();
+
+    if (input.length === 0) {
+      limpiarError(inputField);
+      return true;
+    }
+
+    if (!regex.test(input)) {
+      mostrarError(inputField, "Ingrese una dirección MAC válida (Ej: AA:BB:CC:DD:EE:FF)");
+      return false;
+    } else {
+      limpiarError(inputField);
+    }
+
+    return true;
+  }
+
+  // Validar en tiempo real cuando el usuario escribe
+  $(document).on("input", ".validar-mac", function () {
+    validarMAC($(this));
+  });
+
+  // Validación en el envío del formulario
+  $(document).on("submit", "form", function (event) {
+    let esValido = true;
+    const form = $(this);
+
+    form.find(".validar-mac").each(function () {
+      if (!validarMAC($(this))) {
+        esValido = false;
+      }
+    });
+
+    if (!esValido) {
+      event.preventDefault();
+    }
+  });
+
+  // Función para mostrar error correctamente
+  function mostrarError(inputField, mensaje) {
+    let errorMessage = inputField.siblings(".text-error-message");
+
+    if (errorMessage.length === 0) {
+      errorMessage = $('<div class="text-error-message text-danger"></div>');
+      inputField.after(errorMessage);
+    }
+
+    errorMessage.text(mensaje).show();
+    inputField.addClass("border border-danger");
+  }
+
+  // Función para limpiar el mensaje de error
+  function limpiarError(inputField) {
+    let errorMessage = inputField.siblings(".text-error-message");
+    errorMessage.hide();
+    inputField.removeClass("border border-danger");
+  }
+});
+
+$(document).ready(function () {
+  // Función para limitar caracteres en campos específicos
+  function limitarCaracteres(inputField, maxLength) {
+    let input = inputField.val();
+    if (input.length > maxLength) {
+      inputField.val(input.substring(0, maxLength)); // Corta el exceso
+    }
+  }
+
+  // Aplicar el límite en los campos específicos
+  $(document).on("input", "#imei", function () {
+    limitarCaracteres($(this), 16);
+  });
+
+  $(document).on("input", "#mac", function () {
+    limitarCaracteres($(this), 17); // MAC con separadores es de 17 caracteres máximo
+  });
+
+  $(document).on("input", "#telefono", function () {
+    limitarCaracteres($(this), 15);
+  });
+});

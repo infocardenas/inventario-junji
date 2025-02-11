@@ -102,7 +102,7 @@
                 <!-- Sección Izquierda -->
                 <div class="d-flex gap-2">
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipoModal">
-                        <i class="bi bi-plus-lg"></i>Agregar
+                        Agregar
                     </button>
                     <button class="btn btn-primary" onclick="showDiv('importar_excel', ['formularioExcel'])">
                         <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Importar Excel"
@@ -190,21 +190,22 @@
                             <td><a href="/equipo_detalles/{{equi.idEquipo}}" class="btn button-info"><i
                                         class="bi bi-eye-fill"></i></a></td>
                             <td>
-                                <button class="btn btn-warning edit-equipo-btn" data-bs-toggle="modal"
-                                    data-bs-target="#editEquipoModal" data-id="{{ equi.idEquipo }}"
-                                    data-codigo="{{ equi.Cod_inventarioEquipo }}"
-                                    data-serie="{{ equi.Num_serieEquipo }}" data-unidad="{{ equi.idUnidad }}"
-                                    data-observacion="{{ equi.ObservacionEquipo or 'Sin información' }}"
-                                    data-marca="{{ equi.nombreMarca or 'Sin información' }}"
-                                    data-tipo="{{ equi.nombreTipo_equipo or 'Sin información' }}"
-                                    data-modelo="{{ equi.nombreModeloequipo or 'Sin información' }}"
-                                    data-mac="{{ equi.macEquipo or 'Sin información' }}"
-                                    data-imei="{{ equi.imeiEquipo or 'Sin información' }}"
-                                    data-numero="{{ equi.numerotelefonicoEquipo or 'Sin información' }}">
-                                    <i class="bi bi-pencil-square"></i>
-                                </button>
+                                <button class="btn btn-warning edit-equipo-btn"
+                                data-bs-toggle="modal" data-bs-target="#editEquipoModal"
+                                data-id="{{ equi.idEquipo }}"
+                                data-codigo="{{ equi.Cod_inventarioEquipo }}"
+                                data-serie="{{ equi.Num_serieEquipo }}"
+                                data-observacion="{{ equi.ObservacionEquipo }}"
+                                data-estado="{{ equi.nombreEstado_equipo }}"
+                                data-unidad="{{ equi.nombreUnidad }}"
+                                data-orden="{{ equi.nombre_orden_compra }}"
+                                data-marca="{{ equi.idMarca_Equipo }}"
+                                data-tipo="{{ equi.idTipo_equipo }}"
+                                data-modelo="{{ equi.nombreModeloequipo }}">
+                                <i class="bi bi-pencil-square"></i>
+                            </button>
+                            
                             </td>
-
                         </tr>
                         {% endfor %}
                         {% else %}

@@ -1,4 +1,4 @@
-<!-- Modal -->
+<!-- Modal para agregar-->
 <div class="modal fade" id="addEquipoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
     aria-labelledby="addEquipoModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -9,7 +9,6 @@
             </div>
             <div class="modal-body">
                 <form action="/add_equipo" method="POST" id="addEquipoForm" class="row g-3">
-                    <div style="color: red;">* Obligatorio</div>
 
                     <div class="col-md-6">
                         <label class="form-label" for="marcaSelect">Marca <span style="color:red;">*</span></label>
@@ -40,10 +39,12 @@
                     <div class="col-md-6">
                         <label class="form-label" for="codigo_inventario">Código Inventario <span
                                 style="color:red;">*</span></label>
-                        <input type="text" class="form-control campo-obligatorio" name="codigo_inventario"
-                            id="codigo_inventario" placeholder="Ingrese el Código de Inventario">
-                        <div class="text-error-message"></div>
+                        <input type="text" class="form-control campo-obligatorio validar-numero"
+                            name="codigo_inventario" id="codigo_inventario"
+                            placeholder="Ingrese el Código de Inventario">
+                        <div class="text-error-message">error</div>
                     </div>
+
 
                     <div class="col-md-6">
                         <label class="form-label" for="codigo_Unidad">Unidad <span style="color: red;">*</span></label>
@@ -71,34 +72,38 @@
                     <div class="col-md-6">
                         <label class="form-label" for="numero_serie">Número de Serie <span
                                 style="color:red;">*</span></label>
-                        <input type="text" class="form-control campo-obligatorio" name="numero_serie" id="numero_serie"
-                            placeholder="Ingrese el Número de Serie">
+                        <input type="text" class="form-control campo-obligatorio validar-numeros-letras"
+                            name="numero_serie" id="numero_serie" placeholder="Ingrese el Número de Serie">
                         <div class="text-error-message"></div>
                     </div>
 
                     <div class="col-md-6">
                         <label class="form-label" for="codigoproveedor">Código de Proveedor: </label>
-                        <input type="text" class="form-control" name="codigoproveedor"
+                        <input type="text" class="form-control validar-numero" name="codigoproveedor"
                             placeholder="Ingrese Código del Proveedor">
+                        <div class="text-error-message"></div>
                     </div>
 
                     <div id="camposTelefono" style="display: none;">
                         <h5 class="mb-3">Datos del Teléfono</h5>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label" for="mac">Mac</label>
-                                <input type="text" class="form-control" name="mac" id="mac"
-                                    placeholder="Ingrese la dirección Mac">
+                                <label class="form-label" for="numero">Número de Teléfono</label>
+                                <input type="text" class="form-control validar-numero" name="numero" id="numero"
+                                    maxlength="12" placeholder="Ingrese el Número de Teléfono">
+                                <div class="text-error-message"></div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label" for="imei">IMEI</label>
-                                <input type="text" class="form-control" name="imei" id="imei"
-                                    placeholder="Ingrese el IMEI">
+                                <input type="text" class="form-control validar-numero" name="imei" id="imei"
+                                    maxlength="17" placeholder="Ingrese el IMEI">
+                                <div class="text-error-message"></div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label" for="numero">Número de Teléfono</label>
-                                <input type="text" class="form-control" name="numero" id="numero"
-                                    placeholder="Ingrese el Número de Teléfono">
+                                <label class="form-label" for="mac">Mac</label>
+                                <input type="text" class="form-control validar-mac" name="mac" id="mac" maxlength="16"
+                                    placeholder="Ingrese la dirección Mac">
+                                <div class="text-error-message"></div>
                             </div>
                         </div>
                     </div>
@@ -119,119 +124,6 @@
     </div>
 </div>
 
-<!-- Modal de Edición -->
-<div class="modal fade" id="editEquipoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-    aria-labelledby="editEquipoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-xl">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editEquipoModalLabel">Editar Equipo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-            </div>
-            <div class="modal-body">
-                <form action="/update_equipo/{{ equipo.idEquipo }}" method="POST" id="editEquipoForm" class="row g-3">
-
-                    <!-- Marca -->
-                    <div class="col-md-6">
-                        <label class="form-label" for="edit_marcaSelect">Marca</label>
-                        <select class="form-select" id="edit_marcaSelect" name="marca" onchange="cargarTiposEdit()">
-                            {% for marca in Marcas %}
-                            <option value="{{ marca.idMarca }}" {% if marca.idMarca==equipo.idMarca %}selected{% endif
-                                %}>
-                                {{ marca.nombreMarca }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Tipo de Equipo -->
-                    <div class="col-md-6">
-                        <label class="form-label" for="edit_tipoSelect">Tipo de Equipo</label>
-                        <select class="form-select" id="edit_tipoSelect" name="tipo" onchange="cargarModelosEdit()">
-                            {% for tipo in Tipos %}
-                            <option value="{{ tipo.idTipo }}" {% if tipo.idTipo==equipo.idTipo_equipo %}selected{% endif
-                                %}>
-                                {{ tipo.nombreTipo_equipo }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Modelo -->
-                    <div class="col-md-6">
-                        <label class="form-label" for="edit_modeloSelect">Modelo</label>
-                        <select class="form-select" id="edit_modeloSelect" name="modelo">
-                            {% for modelo in Modelos %}
-                            <option value="{{ modelo.idModelo }}" {% if modelo.idModelo==equipo.idModelo_equipo
-                                %}selected{% endif %}>
-                                {{ modelo.nombreModeloequipo }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Unidad -->
-                    <div class="col-md-6">
-                        <label class="form-label" for="edit_codigo_Unidad">Unidad</label>
-                        <select class="form-select" name="codigo_Unidad" id="edit_codigo_Unidad">
-                            {% for unidad in Unidades %}
-                            <option value="{{ unidad.idUnidad }}" {% if unidad.idUnidad==equipo.idUnidad %}selected{%
-                                endif %}>
-                                {{ unidad.nombreUnidad }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                    </div>
-
-                    <!-- Código Inventario -->
-                    <div class="col-md-6">
-                        <label class="form-label" for="edit_codigo_inventario">Código Inventario</label>
-                        <input type="text" class="form-control" name="codigo_inventario" id="edit_codigo_inventario">
-                    </div>
-
-                    <!-- Número de Serie -->
-                    <div class="col-md-6">
-                        <label class="form-label" for="edit_numero_serie">Número de Serie</label>
-                        <input type="text" class="form-control" name="numero_serie" id="edit_numero_serie">
-                    </div>
-
-                    <!-- Observaciones -->
-                    <div class="col-12">
-                        <label class="form-label" for="edit_observacion_equipo">Observación</label>
-                        <textarea class="form-control" name="observacion_equipo"
-                            id="edit_observacion_equipo"></textarea>
-                    </div>
-
-                    <!-- Datos de Teléfono (Si Aplica) -->
-                    <div id="camposTelefonoEdit" style="display: none;">
-                        <h5 class="mt-3">Datos del Teléfono</h5>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <label class="form-label">Mac</label>
-                                <input type="text" class="form-control" name="mac" id="edit_mac">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">IMEI</label>
-                                <input type="text" class="form-control" name="imei" id="edit_imei">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="form-label">Número de Teléfono</label>
-                                <input type="text" class="form-control" name="numero" id="edit_numero">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Botones -->
-                    <div class="col-12 text-end">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                    </div>
-
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
 
 
 
