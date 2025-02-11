@@ -787,3 +787,7 @@ svg.bi {
   position: absolute;
   top: 100%;
 }
+
+.table td, .table th {
+    vertical-align: middle;
+}
