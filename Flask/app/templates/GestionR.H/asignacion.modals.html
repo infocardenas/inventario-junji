@@ -20,18 +20,45 @@
                             </div>
                         </div>
 
-                        <!-- RUT del funcionario -->
                         <div class="col-md-7">
+                            <!-- Campo para ingresar Nombre o RUT del Funcionario -->
                             <div class="mb-3">
-                                <label for="rut_funcionario">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
-                                <div style="display: flex; align-items: center;">
-                                    <input type="text" class="form-control campo-obligatorio rut-input" id="rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guión" maxlength="8" style="width: 70%;">
-                                    <span style="width: 10%; display: flex; justify-content: center;">-</span>
-                                    <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
+                                <label id="label-funcionario">Nombre del funcionario<span style="color: red; margin-left: 5px">*</span></label>
+                                <div class="d-flex">
+                                    <!-- Contenedor del NOMBRE (por defecto visible) -->
+                                    <div id="contenedorNombre" style="display: block; width: 100%;">
+                                        <input type="text" class="form-control validar-nombre" id="nombre_funcionario" name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" autocomplete="off">
+                                        <!-- Lista de sugerencias de autocompletado -->
+                                        <div id="sugerencias_funcionarios" class="list-group position-absolute w-50" style="z-index: 1000; display: none;"></div>
+                                    </div>
+
+                                    <!-- Contenedor del RUT (por defecto oculto) -->
+                                    <div id="contenedorRut" style="display: none; width: 100%;">
+                                        <div class="d-flex">
+                                            <input type="text" class="form-control rut-input" id="rut_funcionario" name="rut_funcionario_parcial"
+                                                placeholder="Ingrese RUT sin puntos ni guión" maxlength="8" style="width: 70%;">
+                                            <span style="width: 10%; display: flex; justify-content: center; align-items: center">-</span>
+                                            <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
+                                        </div>
+                                    </div>
+
+                                    <!-- Botón para cambiar entre Nombre y RUT -->
+                                    <button type="button" class="btn btn-secondary ms-2" id="toggleFuncionario" data-bs-toggle="tooltip" data-bs-title="Buscar por RUT">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
                                 </div>
+                                <!-- Campo oculto para almacenar el RUT completo si lo deseas -->
+                                <input type="hidden" class="rut_completo" id="rut_completo" name="rut_funcionario">
                                 <div class="text-error-message"></div>
                             </div>
-                            <input type="hidden" class="rut_completo" id="rut_completo" name="rut_funcionario">
+
+                            <!-- Div para almacenar la lista de funcionarios en JSON -->
+                            <div id="listaFuncionarios" data-funcionarios='[
+                                {% for funcionario in funcionarios %}
+                                    {"nombre": "{{ funcionario.nombreFuncionario }}", "rut": "{{ funcionario.rutFuncionario }}"}{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            ]'>
+                            </div>
                         </div>
                     </div>
 
