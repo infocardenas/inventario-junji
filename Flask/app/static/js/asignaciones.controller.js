@@ -99,19 +99,6 @@ $(document).ready(function () {
     });
 });
 
-function setTooltipText(element, newText) {
-    let tooltip = bootstrap.Tooltip.getInstance(element);
-    if (tooltip) {
-        // Cambiae el título internamente
-        tooltip._config.title = newText;
-
-        // Forzar la actualización inmediata
-        tooltip.hide();
-        tooltip.setContent({ '.tooltip-inner': newText });
-    }
-    $(element).attr("data-bs-title", newText);
-}
-
 $(document).ready(function () {
     let listaFuncionarios = JSON.parse($("#listaFuncionarios").attr("data-funcionarios"));
 
@@ -143,6 +130,16 @@ $(document).ready(function () {
             label.html('Nombre del funcionario<span style="color: red; margin-left: 5px">*</span>');
         }
     });
+
+    function setTooltipText(element, newText) {
+        $(element).attr("data-bs-title", newText);
+        // Re-inicializar
+        let tip = bootstrap.Tooltip.getInstance(element);
+        if (tip) {
+            tip.dispose(); // Destruye el tooltip previo
+        }
+        new bootstrap.Tooltip(element); // Crea uno nuevo con el texto actualizado
+    }
 
     // 2. Autocompletado en el input de nombre
     nombreInput.on("input", function () {
