@@ -222,6 +222,9 @@
                     <tr><td><strong>Tipo</strong></td><td>{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else "No asignado" }}</td></tr>
                     <tr><td><strong>Marca</strong></td><td>{{ asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado" }}</td></tr>
                     <tr><td><strong>Modelo</strong></td><td>{{ asig.nombreModeloequipo if asig.nombreModeloequipo else "No asignado" }}</td></tr>
+                    <tr><td><strong>Cód. inventario</strong></td><td>{{ asig.Cod_inventarioEquipo if asig.Cod_inventarioEquipo else "" }}</td></tr>
+                    <tr><td><strong>N° serie</strong></td><td>{{ asig.Num_serieEquipo if asig.Num_serieEquipo else "" }}</td></tr>
+                    <tr><td><strong>Cód. proveedor</strong></td><td>{{ asig.codigoproveedor_equipo if codigoproveedor_equipo else "No informado" }}</td></tr>
                     <tr><td><strong>Observaciones</strong></td><td>{{ asig.ObservacionEquipo if asig.ObservacionEquipo else "" }}</td></tr>
                 </table>
             </div>

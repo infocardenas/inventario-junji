@@ -73,6 +73,9 @@ def Asignacion(page=1):
         me.nombreModeloequipo,
         te.nombreTipo_equipo,
         mae.nombreMarcaEquipo,
+        e.Cod_inventarioEquipo,
+        e.Num_serieEquipo,
+        e.codigoproveedor_equipo,
         e.ObservacionEquipo
     FROM asignacion a
     INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
