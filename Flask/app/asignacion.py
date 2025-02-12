@@ -17,6 +17,7 @@ from email.mime.image import MIMEImage
 import fitz
 from env_vars import paths, inLinux
 from cerberus import Validator
+from MySQLdb import IntegrityError
 
 schema_asignacion = {
     'fecha_asignacion': {
@@ -396,6 +397,13 @@ def create_asignacion():
             equipoTupla = cur.fetchone()
             TuplaEquipos = TuplaEquipos + (equipoTupla,)
         mysql.connection.commit()
+
+    except IntegrityError as e:
+        error_message = str(e)
+        if "FOREIGN KEY (`rutFuncionario`) REFERENCES `funcionario` (`rutFuncionario`)" in error_message:
+            flash("Error: No se ha encontrado un funcionario con ese RUT", 'warning')
+        return redirect(url_for("asignacion.Asignacion"))
+
     except Exception as e:
         mysql.connection.rollback()  # En caso de error, se revierten los cambios
         flash("Error al crear la asignación: " + str(e), 'danger')
