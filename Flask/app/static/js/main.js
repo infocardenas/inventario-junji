@@ -213,26 +213,15 @@ function sortTable(n) {
 }
 
 function busqueda(tableBodyId = "myTBody") {
-  console.log("busqueda")
   var input, a, filter, tbody;
-  //busca el bloque de texto
   input = document.getElementById("buscador")
-  //el texto del bloque es nuestro filtro
   filter = input.value.toLowerCase();
-  //obtenemos el cuerpo de la tabla
   tbody = document.getElementById(tableBodyId)
-  //tr es una lista de todos las filas
   tr = tbody.getElementsByTagName("tr")
   for (let i = 0; i < tr.length; i++) {
-    //obtiene todas las columnas de la fila actual
-    //console.log("row")
     td = tr[i].querySelectorAll(".toCheck")
-    //console.log("td " + td.length)
-    //console.log(td)
     for (let j = 0; j < td.length; j++) {
-      console.log("col")
       texto = td[j].textContent.toLowerCase()
-      //console.log(texto)
       if (texto.indexOf(filter) > -1) {
         tr[i].style.display = ""
         break;
