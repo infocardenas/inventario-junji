@@ -656,8 +656,16 @@ a.mainbar-link {
     border-radius:0px;
 }
 .search-box {
-    font-size: 30px;
-    text-align:center;
+    font-size: 1rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-width: 420px;
+    min-width: 180px;
+    width: 100%;
+}
+.search-box:focus {
+    outline: none;
 }
 
 .error-message {
