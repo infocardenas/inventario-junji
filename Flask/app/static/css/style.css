@@ -799,3 +799,24 @@ svg.bi {
 .table td, .table th {
     vertical-align: middle;
 }
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.toolbar-1 {
+    justify-content: flex-start;
+}
+.toolbar-2 {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+}
+.toolbar-3 {
+    justify-content: flex-end;
+}
+.toolbar-1, .toolbar-3 {
+    flex: 1;
+    display: flex;
+}
