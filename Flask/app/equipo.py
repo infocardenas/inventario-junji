@@ -34,13 +34,11 @@ def Equipo(page=1):
     """, (perpage, offset))
     equipos = cur.fetchall()
 
+
     # Obtener tipos de equipo
     cur.execute("SELECT * FROM tipo_equipo")
     tipo_equipo = cur.fetchall()
 
-    # Obtener estados de equipo
-    cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
-    _data = cur.fetchall()
 
     # Obtener unidades
     cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
@@ -50,9 +48,11 @@ def Equipo(page=1):
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
 
+    
     # Obtener marcas
     cur.execute("SELECT * FROM marca_equipo")
     marcas = cur.fetchall()
+    
 
     # Crear diccionario de modelos por tipo
     modelos_por_tipo = {}
@@ -142,7 +142,6 @@ def crear_lista_modelo_tipo_marca():
 
 
 
-    #añadir tipos a marca
 
 
     pass
@@ -162,7 +161,6 @@ def add_equipo():
             'nombre_orden_compra': request.form["nombre_orden_compra"],
             'idModelo_equipo': request.form["modelo_equipo"],
         }
-        print(datos)
         # Convertir cadenas vacías a None para los campos opcionales
         for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo', 'codigoproveedor']:
             if datos[key] == "":
@@ -258,53 +256,7 @@ def add_equipo():
             return redirect(url_for('equipo.Equipo'))
 
 
-# envia datos al formulario editar segun id
-@equipo.route("/edit_equipo/<id>", methods=["POST", "GET"])
-@administrador_requerido
-def edit_equipo(id):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute(
-            """ 
-           SELECT *
-        FROM equipo e
-        INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-        INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
-        INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-        INNER JOIN unidad u on u.idUnidad = e.idUnidad
-        INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-        WHERE idEquipo = %s
-        """,
-            (id,),
-        )
-        data = cur.fetchall()
-        cur.execute("SELECT * FROM tipo_equipo")
-        tipoe_data = cur.fetchall()
-        cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
-        estadoe_data = cur.fetchall()
-        cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
-        ubi_data = cur.fetchall()
-        cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
-        ordenc_data = cur.fetchall()
-        cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
-        modeloe_data = cur.fetchall()
-        return render_template(
-            "Equipo/editEquipo.html",
-            equipo=data[0],
-            tipo_equipo=tipoe_data,
-            estado_equipo=estadoe_data,
-            orden_compra=ordenc_data,
-            Unidad=ubi_data,
-            modelo_equipo=modeloe_data,
-        )
-    except Exception as e:
-        flash("Error al crear")
-        #flash(e.args[1])
-        return redirect(url_for("equipo.Equipo"))
-# actualiza registro a traves de id correspondiente
+
 @equipo.route("/update_equipo/<id>", methods=["POST"])
 @administrador_requerido
 def update_equipo(id):
@@ -333,33 +285,67 @@ def update_equipo(id):
                 'nombre_modelo_equipo': data.get("nombre_modelo_equipo", "").strip(),
             }
 
+            # Convertir cadenas vacías a None para los campos opcionales
+            for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'codigoproveedor']:
+                if datos[key] == "":
+                    datos[key] = None
+
+            # Definir el esquema de validación
+            schema = {
+                'codigo_inventario': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+                'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+                'observacion_equipo': {'type': 'string', 'nullable': True},
+                'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$', 'nullable': True},
+                'mac': {'type': 'string', 'regex': '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$', 'nullable': True},
+                'imei': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
+                'numero': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
+                'codigo_Unidad': {'type': 'string', 'nullable': True},
+                'nombre_orden_compra': {'type': 'string', 'nullable': True},
+                'nombre_modelo_equipo': {'type': 'string', 'nullable': True},
+                'nombre_estado_equipo': {'type': 'string', 'nullable': False},
+            }
+
+            # Validar los datos usando Cerberus
+            v = Validator(schema)
+            if not v.validate(datos):
+                errores = v.errors
+                mensaje_error = "Error en los siguientes campos:\n"
+                for campo, error in errores.items():
+                    mensaje_error += f"- {campo}: {', '.join(error)}\n"
+                flash(mensaje_error, 'warning')
+                return redirect(url_for("equipo.Equipo"))
+
             # Verificar si el código de inventario ya existe (excepto para el mismo equipo)
             cur.execute("""
                 SELECT idEquipo FROM equipo WHERE Cod_inventarioEquipo = %s AND idEquipo != %s
             """, (datos['codigo_inventario'], id))
             if cur.fetchone():
-                return jsonify({"error": "El código de inventario ya está en uso"}), 400
+                flash("El código de inventario ya está en uso", 'warning')
+                return redirect(url_for("equipo.Equipo"))
 
             # Verificar si el número de serie ya existe (excepto para el mismo equipo)
             cur.execute("""
                 SELECT idEquipo FROM equipo WHERE Num_serieEquipo = %s AND idEquipo != %s
             """, (datos['numero_serie'], id))
             if cur.fetchone():
-                return jsonify({"error": "El número de serie ya está en uso"}), 400
+                flash("El número de serie ya está en uso", 'warning')
+                return redirect(url_for("equipo.Equipo"))
 
             # Obtener ID del modelo
             cur.execute("SELECT idModelo_Equipo FROM modelo_equipo WHERE nombreModeloequipo = %s", 
                         (datos['nombre_modelo_equipo'],))
             modelo = cur.fetchone()
             if not modelo:
-                return jsonify({"error": "El modelo seleccionado no existe"}), 400
+                flash("El modelo seleccionado no existe", 'warning')
+                return redirect(url_for("equipo.Equipo"))
 
             # Obtener ID del estado
             cur.execute("SELECT idEstado_equipo FROM estado_equipo WHERE nombreEstado_equipo = %s", 
                         (datos['nombre_estado_equipo'],))
             estado = cur.fetchone()
             if not estado:
-                return jsonify({"error": "El estado seleccionado no existe"}), 400
+                flash("El estado seleccionado no existe", 'warning')
+                return redirect(url_for("equipo.Equipo"))
 
             # Actualizar equipo
             cur.execute("""
@@ -377,14 +363,30 @@ def update_equipo(id):
             ))
 
             mysql.connection.commit()
-            return jsonify({"mensaje": "Equipo actualizado correctamente"}), 200
+            flash("Equipo editado correctamente", 'success')
+            print("Mensajes flash en sesión:")
+            print("Redirigiendo a la vista principal de equipos...") 
+            return redirect(url_for("equipo.Equipo"))
+
+        except IntegrityError as e:
+            mysql.connection.rollback()
+            mensaje_error = str(e)
+            if "Duplicate entry" in mensaje_error:
+                if "Cod_inventarioEquipo" in mensaje_error:
+                    flash("El código de inventario ya existe", 'warning')
+                elif "Num_serieEquipo" in mensaje_error:
+                    flash("El número de serie ya existe", 'warning')
+                else:
+                    flash("Error de duplicación en la base de datos", 'warning')
+            else:
+                flash("Error de integridad en la base de datos", 'danger')
+            return redirect(url_for("equipo.Equipo"))
 
         except Exception as error:
             mysql.connection.rollback()
-            return jsonify({"error": str(error)}), 500
+            flash(f"Error al actualizar el equipo: {str(error)}", 'danger')
+            return redirect(url_for("equipo.Equipo"))
 
-        finally:
-            cur.close()
 
 
 
@@ -1448,7 +1450,35 @@ def importar_unidad(col_comuna, col_modalidad, col_codigo,
     flash("unidades importadas")
     print("unidades importadas")
 
-#buscar un equipo singular por id
+
+
+def obtener_equipos():
+        cur = mysql.connection.cursor()
+        cur.execute("SELECT * FROM equipo")
+        return cur.fetchall()
+    
+
+@equipo.route('/equipos', methods=['GET'])
+def listar_equipos():
+    page = request.args.get('page', 1, type=int)  # Obtener el número de página de la solicitud
+    per_page = 15  # Número máximo de equipos por página
+    equipos = obtener_equipos()  # Función que obtiene todos los equipos
+    total_equipos = len(equipos)  # Contar la cantidad total de equipos
+
+    # Calcular el inicio y el final de los equipos para la página actual
+    start = (page - 1) * per_page
+    end = start + per_page
+    equipos_pagina = equipos[start:end]  # Obtener solo los equipos para la página actual
+
+    return render_template(
+        'Equipo/equipo.html', 
+        items=equipos_pagina, 
+        total_equipos=total_equipos, 
+        page=page
+        )
+
+
+# #buscar un equipo singular por id
 @equipo.route("/equipo/buscar_equipo/<id>")
 @loguear_requerido
 def buscar_equipo(id):
@@ -1521,186 +1551,61 @@ def buscar_equipo(id):
         lastpage=True,
     )
 
-
-def obtener_equipos():
-        cur = mysql.connection.cursor()
-        cur.execute("SELECT * FROM equipo")
-        return cur.fetchall()
-    
-
-@equipo.route('/equipos', methods=['GET'])
-def listar_equipos():
-    page = request.args.get('page', 1, type=int)  # Obtener el número de página de la solicitud
-    per_page = 15  # Número máximo de equipos por página
-    equipos = obtener_equipos()  # Función que obtiene todos los equipos
-    total_equipos = len(equipos)  # Contar la cantidad total de equipos
-
-    # Calcular el inicio y el final de los equipos para la página actual
-    start = (page - 1) * per_page
-    end = start + per_page
-    equipos_pagina = equipos[start:end]  # Obtener solo los equipos para la página actual
-
-    return render_template(
-        'Equipo/equipo.html', 
-        items=equipos_pagina, 
-        total_equipos=total_equipos, 
-        page=page
-        )
-
-@equipo.route("/get_equipo/<id>", methods=["GET"])
-def get_equipo(id):
-
-    try:
-        cur = mysql.connection.cursor()
-        
-        # Obtener la información del equipo junto con Marca y Tipo desde las tablas correctas
-        cur.execute("""
-            SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, 
-                   e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo, 
-                   e.idUnidad, e.idOrden_compra, e.idModelo_equipo, e.idEstado_equipo,
-                   m.nombreModeloequipo, es.nombreEstado_equipo,
-                   mt.idMarcaTipo, mt.idMarca_Equipo, mt.idTipo_equipo, 
-                   ma.nombreMarcaEquipo, t.nombreTipo_equipo
-            FROM equipo e
-            JOIN modelo_equipo m ON e.idModelo_equipo = m.idModelo_Equipo
-            JOIN estado_equipo es ON e.idEstado_equipo = es.idEstado_equipo
-            JOIN marca_tipo_equipo mt ON m.idMarca_Tipo_Equipo = mt.idMarcaTipo
-            JOIN marca_equipo ma ON mt.idMarca_Equipo = ma.idMarca_Equipo
-            JOIN tipo_equipo t ON mt.idTipo_equipo = t.idTipo_equipo
-            WHERE e.idEquipo = %s
-        """, (id,))
-        
-        equipo = cur.fetchone()
-        if not equipo:
-            return jsonify({"error": "Equipo no encontrado"}), 404
-        
-        # Formatear los datos como JSON
-        equipo_data = {
-            "idEquipo": equipo["idEquipo"],
-            "codigo_inventario": equipo["Cod_inventarioEquipo"],
-            "numero_serie": equipo["Num_serieEquipo"],
-            "observacion_equipo": equipo["ObservacionEquipo"],
-            "codigoproveedor": equipo["codigoproveedor_equipo"],
-            "mac": equipo["macEquipo"],
-            "imei": equipo["imeiEquipo"],
-            "numero": equipo["numerotelefonicoEquipo"],
-            "codigo_Unidad": equipo["idUnidad"],
-            "nombre_orden_compra": equipo["idOrden_compra"],
-            "nombre_modelo_equipo": equipo["nombreModeloequipo"],
-            "nombre_estado_equipo": equipo["nombreEstado_equipo"],
-            "idMarca_Equipo": equipo["idMarca_Equipo"],
-            "idTipo_equipo": equipo["idTipo_equipo"],
-            "nombreMarca": equipo["nombreMarcaEquipo"],
-            "nombreTipo": equipo["nombreTipo_equipo"]
-        }
-
-        return jsonify(equipo_data)
-    
-    except Exception as error:
-        return jsonify({"error": str(error)}), 500
-
-    finally:
-        cur.close()
-
-@equipo.route("/equipo/editar/<int:id>")
+#buscar todos los equipos en base a una palabra de busqueda
+@equipo.route("/consulta_equipo", methods =["POST"])
+@equipo.route("/consulta_equipo/<page>", methods =["POST"])
 @loguear_requerido
-def datosEquipoEdit(id):
+def consulta_equipo(page = 1):
+    palabra = request.form["palabra"]
+    if palabra == "":
+        print("error_redirect")
+    page = int(page)
+    perpage = getPerPage()
+    offset = (int(page) - 1) * perpage
     cur = mysql.connection.cursor()
-    
-    # **Consulta 1: Obtener datos del equipo a editar**
-    cur.execute("""
-        SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, e.ObservacionEquipo, 
-               e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, e.numerotelefonicoEquipo, 
-               e.idUnidad, e.idOrden_compra, e.idModelo_equipo, e.idEstado_equipo,
-               m.nombreModeloequipo, es.nombreEstado_equipo,
-               mt.idMarcaTipo, mt.idMarca_Equipo, mt.idTipo_equipo, 
-               ma.nombreMarcaEquipo, t.nombreTipo_equipo
-        FROM equipo e
-        JOIN modelo_equipo m ON e.idModelo_equipo = m.idModelo_Equipo
-        JOIN estado_equipo es ON e.idEstado_equipo = es.idEstado_equipo
-        JOIN marca_tipo_equipo mt ON m.idMarca_Tipo_Equipo = mt.idMarcaTipo
-        JOIN marca_equipo ma ON mt.idMarca_Equipo = ma.idMarca_Equipo
-        JOIN tipo_equipo t ON mt.idTipo_equipo = t.idTipo_equipo
-        WHERE e.idEquipo = %s;
-    """, (id,))
-    
-    equipo_data = cur.fetchone()
-    print(equipo_data)
+    cur.execute("SELECT COUNT(*) FROM equipo")
+    total = cur.fetchone()
+    total = int(str(total).split(":")[1].split("}")[0])
+    cur = mysql.connection.cursor()
+    query = f"""
+    set palabra = CONVERT('%{palabra}%' USING utf8)
+    SELECT *
+    FROM superequipo se
+    WHERE se.Cod_inventarioEquipo LIKE palabra OR
+    se.Num_serieEquipo LIKE '%{palabra}%' OR
+    se.codigoproveedor_equipo LIKE '%{palabra}%' OR
+    se.nombreidTipoequipo LIKE '%{palabra}%' OR
+    se.nombreEstado_equipo LIKE '%{palabra}%' OR
+    se.idUnidad LIKE '%{palabra}%' OR
+    se.nombreUnidad LIKE '%{palabra}%' OR
+    se.nombreOrden_compra LIKE '%{palabra}%' OR
+    se.nombreModeloequipo LIKE '%{palabra}%' OR
+    se.nombreFuncionario LIKE '%{palabra}%'
+    LIMIT {perpage} OFFSET {offset}
+    """
+    print(query)
+    cur.execute(query)
+    equipos = cur.fetchall()
 
-    if not equipo_data:
-        return "Equipo no encontrado", 404
+    cur.execute("SELECT * FROM tipo_equipo")
+    tipoe_data = cur.fetchall()
+    cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
+    estadoe_data = cur.fetchall()
+    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+    ubi_data = cur.fetchall()
+    cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
+    ordenc_data = cur.fetchall()
+    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
+    modeloe_data = cur.fetchall()
 
-    # **Consulta 2: Obtener marcas, tipos y modelos en estructura jerárquica**
-    cur.execute("""
-        SELECT 
-            ma.idMarca_Equipo, ma.nombreMarcaEquipo,
-            t.idTipo_equipo, t.nombreTipo_equipo,
-            m.idModelo_Equipo, m.nombreModeloequipo
-        FROM marca_equipo ma
-        LEFT JOIN marca_tipo_equipo mt ON ma.idMarca_Equipo = mt.idMarca_Equipo
-        LEFT JOIN tipo_equipo t ON mt.idTipo_equipo = t.idTipo_equipo
-        LEFT JOIN modelo_equipo m ON m.idMarca_Tipo_Equipo = mt.idMarcaTipo
-        ORDER BY ma.idMarca_Equipo, t.idTipo_equipo, m.idModelo_Equipo;
-    """)
-
-    rows = cur.fetchall()
-
-    # Procesar datos en una estructura jerárquica
-    marcas_dict = {}
-    for row in rows:
-        id_marca, nombre_marca, id_tipo, nombre_tipo, id_modelo, nombre_modelo = row
-        
-        if id_marca not in marcas_dict:
-            marcas_dict[id_marca] = {
-                "id": id_marca,
-                "nombre": nombre_marca,
-                "tipos": {}
-            }
-        
-        if id_tipo and id_tipo not in marcas_dict[id_marca]["tipos"]:
-            marcas_dict[id_marca]["tipos"][id_tipo] = {
-                "id": id_tipo,
-                "nombre": nombre_tipo,
-                "modelos": []
-            }
-        
-        if id_modelo:
-            marcas_dict[id_marca]["tipos"][id_tipo]["modelos"].append({
-                "id": id_modelo,
-                "nombre": nombre_modelo
-            })
-
-    # Convertimos a una lista estructurada correctamente
-    marcas_estructura = [
-        {"id": m["id"], "nombre": m["nombre"], "tipos": list(m["tipos"].values())}
-        for m in marcas_dict.values()
-    ]
-
-    cur.close()
-
-    # **Formatear datos del equipo**
-    equipo_dict = {
-        "idEquipo": equipo_data[0],
-        "codigo_inventario": equipo_data[1],
-        "numero_serie": equipo_data[2],
-        "observacion": equipo_data[3],
-        "codigoproveedor": equipo_data[4],
-        "mac": equipo_data[5],
-        "imei": equipo_data[6],
-        "numero": equipo_data[7],
-        "unidad": equipo_data[8],
-        "orden_compra": equipo_data[9],
-        "estado": equipo_data[10],
-        "modelo_actual": {"id": equipo_data[11], "nombre": equipo_data[12]},
-        "estado_actual": {"id": equipo_data[13], "nombre": equipo_data[14]},
-        "marca_actual": {"id": equipo_data[15], "nombre": equipo_data[16]},
-        "tipo_actual": {"id": equipo_data[17], "nombre": equipo_data[18]}
-    }
-    print(equipo_dict)
     return render_template(
-    "Equipo/equipo.html",
-    equipo=equipo_dict,  # Datos del equipo actual
-    marcas=marcas_estructura,  # Marcas, tipos y modelos estructurados
-    page=1,
-    lastpage=True
-)
+        "equipo.html",
+        equipo=equipos,
+        tipo_equipo=tipoe_data,
+        estado_equipo=estadoe_data,
+        orden_compra=ordenc_data,
+        Unidad=ubi_data,
+        modelo_equipo=modeloe_data,
+        page=page,
+        lastpage=page < (total / perpage) + 1,
+    )

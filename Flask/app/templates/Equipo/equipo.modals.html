@@ -90,18 +90,18 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label" for="numero">Número de Teléfono</label>
                                 <input type="text" class="form-control validar-numero" name="numero" id="numero"
-                                    maxlength="12" placeholder="Ingrese el Número de Teléfono">
+                                    maxlength="9" placeholder="Ingrese el Número de Teléfono">
                                 <div class="text-error-message"></div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label" for="imei">IMEI</label>
                                 <input type="text" class="form-control validar-numero" name="imei" id="imei"
-                                    maxlength="17" placeholder="Ingrese el IMEI">
+                                    maxlength="16" placeholder="Ingrese el IMEI">
                                 <div class="text-error-message"></div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label" for="mac">Mac</label>
-                                <input type="text" class="form-control validar-mac" name="mac" id="mac" maxlength="16"
+                                <input type="text" class="form-control validar-mac" name="mac" id="mac" maxlength="17"
                                     placeholder="Ingrese la dirección Mac">
                                 <div class="text-error-message"></div>
                             </div>
@@ -124,6 +124,151 @@
     </div>
 </div>
 
+
+
+
+
+<!-- Modal de Edición -->
+<div class="modal fade" id="editEquipoModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+    aria-labelledby="editEquipoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editEquipoModalLabel">Editar Equipo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editEquipoForm" class="row g-3">
+
+                    <!-- ID del equipo (oculto) -->
+                    <input type="hidden" name="id_equipo" id="edit_id_equipo" />
+                    <!-- Select de Marca -->
+                    <div class="col-md-6">
+                        <label class="form-label" for="edit_marcaSelect">
+                            Marca <span style="color:red;">*</span>
+                        </label>
+                        <select class="form-select campo-obligatorio" id="edit_marcaSelect"
+                            onchange="cargarTiposEdit()">
+                            <option value="">Seleccione una marca</option>
+                        </select>
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <!-- Select de Tipo -->
+                    <div class="col-md-6">
+                        <label class="form-label" for="edit_tipoSelect">
+                            Tipo Equipo <span style="color:red;">*</span>
+                        </label>
+                        <select class="form-select campo-obligatorio" id="edit_tipoSelect"
+                            onchange="cargarModelosEdit()">
+                            <option value="">Seleccione un tipo</option>
+                        </select>
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <!-- Select de Modelo -->
+                    <div class="col-md-6">
+                        <input type="hidden" name="modelo_equipo" id="edit_modelo_para_equipo" />
+                        <label class="form-label" for="edit_modeloSelect">
+                            Modelo <span style="color:red;">*</span>
+                        </label>
+                        <select class="form-select campo-obligatorio" id="edit_modeloSelect" name="modelo">
+                            <option value="">Seleccione un modelo</option>
+                        </select>
+                        <div class="text-error-message"></div>
+                    </div>
+
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="edit_codigo_inventario">Código Inventario <span
+                                style="color:red;">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio validar-numero"
+                            name="codigo_inventario" id="edit_codigo_inventario"
+                            placeholder="Ingrese el Código de Inventario">
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="edit_codigo_Unidad">Unidad <span
+                                style="color: red;">*</span></label>
+                        <select class="form-select campo-obligatorio" name="codigo_Unidad" id="edit_codigo_Unidad">
+                            <option value="">Seleccione la Unidad</option>
+                            {% for unidad in Unidad %}
+                            <option value="{{ unidad.idUnidad }}">{{ unidad.nombreUnidad }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="edit_nombre_orden_compra">Orden de Compra <span
+                                style="color: red;">*</span></label>
+                        <select class="form-select campo-obligatorio" name="nombre_orden_compra" id="edit_orden_compra">
+                            <option value="">Seleccione el Orden de Compra</option>
+                            {% for ordenc in orden_compra %}
+                            <option value="{{ ordenc.idOrden_compra }}">{{ ordenc.nombreOrden_compra }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <!-- Estado del equipo (Hidden) -->
+                    <input type="hidden" name="estado_equipo" id="edit_estado_equipo">
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="edit_numero_serie">Número de Serie <span
+                                style="color:red;">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio validar-numeros-letras"
+                            name="numero_serie" id="edit_numero_serie" placeholder="Ingrese el Número de Serie">
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="edit_codigoproveedor">Código de Proveedor: </label>
+                        <input type="text" class="form-control validar-numero" name="codigoproveedor"
+                            id="edit_codigoproveedor" placeholder="Ingrese Código del Proveedor">
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <div id="edit_camposTelefono" style="display:none;">
+                        <h5 class=" mb-3">Datos del Teléfono</h5>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="edit_numero">Número de Teléfono</label>
+                                <input type="text" class="form-control validar-numero" name="numero" id="edit_numero"
+                                    maxlength="12" placeholder="Ingrese el Número de Teléfono">
+                                <div class="text-error-message"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="edit_imei">IMEI</label>
+                                <input type="text" class="form-control validar-numero" name="imei" id="edit_imei"
+                                    maxlength="17" placeholder="Ingrese el IMEI">
+                                <div class="text-error-message"></div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label" for="edit_mac">Mac</label>
+                                <input type="text" class="form-control validar-mac" name="mac" id="edit_mac"
+                                    maxlength="16" placeholder="Ingrese la dirección Mac">
+                                <div class="text-error-message"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label" for="edit_observacion_equipo">Observación</label>
+                        <textarea class="form-control" id="edit_observacion_equipo" name="observacion_equipo" rows="3"
+                            placeholder="Ingrese observaciones"></textarea>
+                    </div>
+
+                    <div class="col-12 text-end">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="submit" id="btnActualizarEquipo" class="btn btn-primary">Actualizar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 
 
 

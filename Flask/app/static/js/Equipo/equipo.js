@@ -1,3 +1,5 @@
+//Desde aqui comienzan las funciones para llenar los select dinamicos para marca, tipo y modelo
+//Ojo las rutas backend estan en el archivo modelo_equipo.py
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     await cargarMarcas(); // Llenar el selector de marcas
@@ -72,7 +74,9 @@ function actualizarModeloSeleccionado() {
     modeloInput.value = modeloSelect.value;
   }
 }
+// Aca terminan las funciones para los select dinamicos
 
+// Funcion para mostrar o ocultar los campos para el tipo equipo telefono
 function manejarCamposTelefono() {
   const tipoSelect = document.getElementById("tipoSelect");
   const camposTelefono = document.getElementById("camposTelefono");
@@ -370,4 +374,219 @@ $(document).ready(function () {
   $(document).on("input", "#telefono", function () {
     limitarCaracteres($(this), 15);
   });
+});
+// Función para evitar que aparezca "None"
+function limpiarDato(dato) {
+  return (dato === undefined || dato === null || dato === "None") ? "" : dato;
+}
+// Funcion para llenar el modal de edit con los datos del equipo que se esta editando
+$(document).ready(function () {
+  $(".edit-equipo-btn").on("click", async function () {
+    // 1. Recibir datos
+    const idEquipo = limpiarDato($(this).data("id"));
+    const idMarca = limpiarDato($(this).data("marca"));
+    const tipoId = limpiarDato($(this).data("tipo"));
+    const modeloId = limpiarDato($(this).data("modelo"));
+    const codigoInventario = limpiarDato($(this).data("codigo"));
+    const unidad = limpiarDato($(this).data("unidad"));
+    const orden = limpiarDato($(this).data("orden"));
+    const serie = limpiarDato($(this).data("serie"));
+    const proveedor = limpiarDato($(this).data("proveedor"));
+    const observacion = limpiarDato($(this).data("observacion"));
+    const mac = limpiarDato($(this).data("mac"));
+    const imei = limpiarDato($(this).data("imei"));
+    const numero = limpiarDato($(this).data("numero"));
+    const estado = limpiarDato($(this).data("estado"));
+    // Llenar el hidden input con el estado
+    $("#edit_estado_equipo").val(estado);
+
+    // Llenar el hidden input con el id del equipo
+    $("#edit_id_equipo").val(idEquipo);
+
+    // LLamar y cargar select de marca, tipo y modelo
+    await cargarMarcasEdit();
+    $("#edit_marcaSelect").val(idMarca);
+
+    await cargarTiposEdit();
+    $("#edit_tipoSelect").val(tipoId);
+    mostrarCamposTelefonoEdit();
+
+    await cargarModelosEdit();
+    $("#edit_modeloSelect").val(modeloId);
+
+    // 9. Rellenar otros campos
+    $("#edit_codigo_inventario").val(codigoInventario);
+    $("#edit_codigo_Unidad").val(unidad);
+    $("#edit_orden_compra").val(orden);
+    $("#edit_numero_serie").val(serie);
+    $("#edit_codigoproveedor").val(proveedor);
+    $("#edit_observacion_equipo").val(observacion);
+    $("#edit_mac").val(mac);
+    $("#edit_imei").val(imei);
+    $("#edit_numero").val(numero);
+  });
+});
+
+
+// ==================== [EDITAR] Cargar Marcas ====================
+async function cargarMarcasEdit() {
+  // 1. Llamar a la misma ruta donde obtienes las marcas
+  const response = await fetch("/get_marcas");
+  const marcas = await response.json();
+
+  // 2. Rellenar el select de marca
+  const marcaSelect = document.getElementById("edit_marcaSelect");
+  marcaSelect.innerHTML = '<option value="">Seleccione una marca</option>';
+  marcas.forEach((marca) => {
+    const option = document.createElement("option");
+    option.value = marca.idMarca_Equipo;
+    option.textContent = marca.nombreMarcaEquipo;
+    marcaSelect.appendChild(option);
+  });
+  console.log(marcas)
+}
+
+// ==================== [EDITAR] Cargar Tipos ====================
+async function cargarTiposEdit() {
+  const marcaId = document.getElementById("edit_marcaSelect").value;
+
+  const tipoSelect = document.getElementById("edit_tipoSelect");
+  tipoSelect.innerHTML = '<option value="">Seleccione un tipo</option>';
+
+  if (!marcaId) {
+    console.warn("No hay marca seleccionada; se detiene cargarTiposEdit()");
+    return;
+  }
+  const urlTipos = `/get_tipos/${marcaId}`;
+  const response = await fetch(urlTipos);
+
+  if (!response.ok) {
+    console.error("Error al obtener tipos. Status:", response.status);
+    return;
+  }
+  const tipos = await response.json();
+
+  tipos.forEach((tipo) => {
+    const option = document.createElement("option");
+    // Asegúrate de que las propiedades del JSON coincidan
+    option.value = tipo.idTipo_equipo;
+    option.textContent = tipo.nombreTipo_equipo;
+    tipoSelect.appendChild(option);
+  });
+
+  // Limpia modeloSelect para forzar nueva selección
+  const modeloSelect = document.getElementById("edit_modeloSelect");
+  modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+}
+async function cargarModelosEdit() {
+  const marcaId = document.getElementById("edit_marcaSelect").value;
+  const tipoId = document.getElementById("edit_tipoSelect").value;
+
+  const modeloSelect = document.getElementById("edit_modeloSelect");
+  modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+  if (!marcaId || !tipoId) {
+    console.warn("Faltan marcaId o tipoId; no se buscarán modelos.");
+    return;
+  }
+  const urlModelos = `/get_modelos/${marcaId}/${tipoId}`;
+  const response = await fetch(urlModelos);
+
+  if (!response.ok) {
+    console.error("Error al obtener modelos. Status:", response.status);
+    return;
+  }
+  const modelos = await response.json();
+
+  modelos.forEach((modelo) => {
+    const option = document.createElement("option");
+    option.value = modelo.idModelo_Equipo;
+    option.textContent = modelo.nombreModeloequipo;
+    modeloSelect.appendChild(option);
+  });
+}
+
+// Funcion para manejar el boton actualizar 
+document.addEventListener("DOMContentLoaded", function () {
+  document.getElementById("editEquipoForm").addEventListener("submit", async function (event) {
+      event.preventDefault(); // 🔥 Evita el envío automático del formulario
+
+      // 🔥 Cerrar el modal inmediatamente después de presionar "Actualizar"
+      let modal = bootstrap.Modal.getInstance(document.getElementById("editEquipoModal"));
+      modal.hide();
+
+      // 🔥 ESTO agregué: Esperar un pequeño tiempo y eliminar la capa oscura del modal
+      setTimeout(() => {
+          document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+          document.body.classList.remove("modal-open"); // 🔥 Evita que el body quede bloqueado
+      }, 300); // Espera 300ms para asegurar que Bootstrap termine de cerrar el modal
+
+      // Obtener el ID del equipo
+      const idEquipo = document.getElementById("edit_id_equipo").value;
+
+      // Capturar los datos del formulario
+      const datos = {
+          codigo_inventario: document.getElementById("edit_codigo_inventario").value.trim(),
+          numero_serie: document.getElementById("edit_numero_serie").value.trim(),
+          observacion_equipo: document.getElementById("edit_observacion_equipo").value.trim(),
+          codigoproveedor: document.getElementById("edit_codigoproveedor").value.trim(),
+          mac: document.getElementById("edit_mac").value.trim(),
+          imei: document.getElementById("edit_imei").value.trim(),
+          numero: document.getElementById("edit_numero").value.trim(),
+          codigo_Unidad: document.getElementById("edit_codigo_Unidad").value,
+          nombre_orden_compra: document.getElementById("edit_orden_compra").value,
+          nombre_modelo_equipo: document.getElementById("edit_modeloSelect").selectedOptions[0].textContent,
+          nombreTipo_equipo: document.getElementById("edit_tipoSelect").selectedOptions[0].textContent,
+          nombre_estado_equipo: document.getElementById("edit_estado_equipo").value
+      };
+
+      try {
+          // Enviar los datos al backend en segundo plano
+          const response = await fetch(`/update_equipo/${idEquipo}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(datos),
+          });
+
+          if (!response.ok) {
+              console.error("Error al actualizar el equipo.");
+              return;
+          }
+
+          // Actualizar la tabla sin recargar la página
+          const fila = document.querySelector(`tr[data-id="${idEquipo}"]`);
+          if (fila) {
+              fila.cells[1].textContent = datos.codigo_inventario;
+              fila.cells[2].textContent = datos.numero_serie;
+              fila.cells[4].textContent = datos.codigoproveedor || "-";
+              fila.cells[5].textContent = document.getElementById("edit_codigo_Unidad").selectedOptions[0].textContent;
+              fila.cells[6].textContent = datos.nombreTipo_equipo;
+              fila.cells[7].textContent = datos.nombre_modelo_equipo;
+          }
+
+      } catch (error) {
+          console.error("Error al actualizar el equipo:", error);
+      }
+  });
+});
+function mostrarCamposTelefonoEdit() {
+  const tipoSelect = document.getElementById("edit_tipoSelect");
+  const camposTelefono = document.getElementById("edit_camposTelefono");
+
+  if (!tipoSelect) return; // Evita errores si no existe el select
+  if (tipoSelect.selectedIndex < 0) return; // No hay opción seleccionada
+
+  // Lee el texto de la opción seleccionada
+  const tipoTexto = tipoSelect.options[tipoSelect.selectedIndex].text.toLowerCase();
+
+  // Verifica si es "teléfono" (con o sin tilde)
+  if (tipoTexto === "teléfono" || tipoTexto === "telefono") {
+    camposTelefono.style.display = "block";
+  } else {
+    camposTelefono.style.display = "none";
+  }
+}
+
+
+document.getElementById("edit_tipoSelect").addEventListener("change", function() {
+  mostrarCamposTelefonoEdit();
 });

@@ -323,27 +323,30 @@ CREATE TABLE `usuario` (
 -- Estructura Stand-in para la vista `super_equipo`
 -- (Véase abajo para la vista actual)
 --
-CREATE TABLE `super_equipo` (
-`idEquipo` int(11)
-,`Cod_inventarioEquipo` varchar(20)
-,`Num_serieEquipo` varchar(20)
-,`ObservacionEquipo` varchar(250)
-,`codigoproveedor_equipo` varchar(45)
-,`macEquipo` varchar(45)
-,`imeiEquipo` varchar(45)
-,`numerotelefonicoEquipo` varchar(12)
-,`idTipo_equipo` int(11)
-,`nombreTipo_equipo` varchar(45)
-,`idEstado_equipo` int(11)
-,`nombreEstado_equipo` varchar(45)
-,`idUnidad` int(11)
-,`nombreUnidad` varchar(45)
-,`idOrden_compra` varchar(45)
-,`nombreOrden_compra` varchar(45)
-,`idModelo_equipo` int(11)
-,`nombreModeloequipo` varchar(45)
-,`nombreFuncionario` varchar(45)
-,`rutFuncionario` varchar(20)
+
+CREATE TABLE IF NOT EXISTS `super_equipo` (
+  `idEquipo` INT(11),
+  `Cod_inventarioEquipo` VARCHAR(20),
+  `Num_serieEquipo` VARCHAR(20),
+  `ObservacionEquipo` VARCHAR(250),
+  `codigoproveedor_equipo` VARCHAR(45),
+  `macEquipo` VARCHAR(45),
+  `imeiEquipo` VARCHAR(45),
+  `numerotelefonicoEquipo` VARCHAR(12),
+  `idTipo_equipo` INT(11),
+  `nombreTipo_equipo` VARCHAR(45),
+  `idMarca_Equipo` INT(11), 
+  `nombreMarcaEquipo` VARCHAR(45),
+  `idEstado_equipo` INT(11),
+  `nombreEstado_equipo` VARCHAR(45),
+  `idUnidad` INT(11),
+  `nombreUnidad` VARCHAR(45),
+  `idOrden_compra` VARCHAR(45),
+  `nombreOrden_compra` VARCHAR(45),
+  `idModelo_equipo` INT(11),
+  `nombreModeloequipo` VARCHAR(45),
+  `nombreFuncionario` VARCHAR(45),
+  `rutFuncionario` VARCHAR(20)
 );
 --
 -- Estructura para la vista `super_equipo`
@@ -366,6 +369,8 @@ SELECT
     `e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`, 
     `te`.`idTipo_equipo` AS `idTipo_equipo`, 
     `te`.`nombreTipo_equipo` AS `nombreTipo_equipo`,
+    `ma`.`idMarca_Equipo` AS `idMarca_Equipo`,
+    `ma`.`nombreMarcaEquipo` AS `nombreMarcaEquipo`,
     `ee`.`idEstado_equipo` AS `idEstado_equipo`, 
     `ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`, 
     `u`.`idUnidad` AS `idUnidad`, 
@@ -382,6 +387,8 @@ FROM
         ON (`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)
     JOIN `marca_tipo_equipo` `mte`
         ON (`moe`.`idMarca_Tipo_Equipo` = `mte`.`idMarcaTipo`)
+    JOIN `marca_equipo` `ma`
+        ON (`ma`.`idMarca_Equipo` = `mte`.`idMarca_Equipo`)
     JOIN `tipo_equipo` `te`
         ON (`mte`.`idTipo_equipo` = `te`.`idTipo_equipo`)
     JOIN `estado_equipo` `ee` 
@@ -406,6 +413,8 @@ SELECT
     `e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`, 
     `te`.`idTipo_equipo` AS `idTipo_equipo`, 
     `te`.`nombreTipo_equipo` AS `nombreTipo_equipo`,
+    `ma`.`idMarca_Equipo` AS `idMarca_Equipo`,
+    `ma`.`nombreMarcaEquipo` AS `nombreMarcaEquipo`,
     `ee`.`idEstado_equipo` AS `idEstado_equipo`, 
     `ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`, 
     `u`.`idUnidad` AS `idUnidad`, 
@@ -422,6 +431,8 @@ FROM
         ON (`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)
     JOIN `marca_tipo_equipo` `mte`
         ON (`moe`.`idMarca_Tipo_Equipo` = `mte`.`idMarcaTipo`)
+    JOIN `marca_equipo` `ma`
+        ON (`ma`.`idMarca_Equipo` = `mte`.`idMarca_Equipo`)
     JOIN `tipo_equipo` `te`
         ON (`mte`.`idTipo_equipo` = `te`.`idTipo_equipo`)
     JOIN `unidad` `u` 
@@ -439,6 +450,8 @@ FROM
 WHERE 
     `ee`.`nombreEstado_equipo` LIKE 'EN USO'
     AND `a`.`ActivoAsignacion` = 1;
+
+
 
 
 --

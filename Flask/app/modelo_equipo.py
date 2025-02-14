@@ -451,7 +451,5 @@ def obtener_modelos(marca_id, tipo_id):
     modelos = cur.fetchall()  # Obtiene los resultados
     cur.close()
 
-    # Diagnóstico: Imprimir los datos devueltos por la consulta
-    print("Modelos obtenidos:", modelos)
 
     return jsonify(modelos)

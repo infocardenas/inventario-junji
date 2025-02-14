@@ -118,15 +118,14 @@
 
                 <!-- Título y Buscador -->
                 <div class="d-flex flex-grow-1 justify-content-center align-items-center">
-                    <form action="/consulta_equipo" method="POST" class="w-50">
-                        <div class="input-group">
-                            <input name="palabra" type="text" class="form-control rounded" placeholder="Buscar Equipos"
-                                id="buscador" onkeyup="busqueda('myTableBody')" aria-label="Buscar">
-                            <button class="input-group-text border-0" type="submit" id="search-addon">
-                                <i class="fas fa-search"></i>
-                            </button>
+                    <div >
+                        <div >
+                            <form action="/consulta_equipo" method="POST">
+                                <input name="palabra" type="text" class="search-box" placeholder="Buscar equipos" id="buscador"
+                                    onkeyup="busqueda('myTableBody')" />
+                            </form>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
                 <!-- Sección Derecha -->
@@ -176,35 +175,33 @@
                             <td class="checkbox-column">
                                 <input type="checkbox" class="checkbox-table row-checkbox">
                             </td>
-                            <td>{{equi.Cod_inventarioEquipo}}</td>
-                            <td>{{equi.Num_serieEquipo}}</td>
+                            <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
+                            <td class="toCheck">{{equi.Num_serieEquipo}}</td>
                             {% if equi.nombreFuncionario == '' %}
-                            <td>{{equi.nombreEstado_equipo}}</td>
+                            <td class="toCheck">{{equi.nombreEstado_equipo}}</td>
                             {% else %}
-                            <td>{{equi.nombreFuncionario}}</td>
+                            <td class="toCheck">{{equi.nombreFuncionario}}</td>
                             {% endif %}
-                            <td>{{equi.codigoproveedor_equipo if equi.codigoproveedor_equipo else '-'}}</td>
-                            <td>{{equi.nombreUnidad}}</td>
-                            <td>{{equi.nombreTipo_equipo}}</td>
-                            <td>{{equi.nombreModeloequipo}}</td>
+                            <td class="toCheck">{{equi.codigoproveedor_equipo if equi.codigoproveedor_equipo else '-'}}</td>
+                            <td class="toCheck">{{equi.nombreUnidad}}</td>
+                            <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
+                            <td class="toCheck">{{equi.nombreModeloequipo}}</td>
                             <td><a href="/equipo_detalles/{{equi.idEquipo}}" class="btn button-info"><i
                                         class="bi bi-eye-fill"></i></a></td>
                             <td>
-                                <button class="btn btn-warning edit-equipo-btn"
-                                data-bs-toggle="modal" data-bs-target="#editEquipoModal"
-                                data-id="{{ equi.idEquipo }}"
-                                data-codigo="{{ equi.Cod_inventarioEquipo }}"
-                                data-serie="{{ equi.Num_serieEquipo }}"
-                                data-observacion="{{ equi.ObservacionEquipo }}"
-                                data-estado="{{ equi.nombreEstado_equipo }}"
-                                data-unidad="{{ equi.nombreUnidad }}"
-                                data-orden="{{ equi.nombre_orden_compra }}"
-                                data-marca="{{ equi.idMarca_Equipo }}"
-                                data-tipo="{{ equi.idTipo_equipo }}"
-                                data-modelo="{{ equi.nombreModeloequipo }}">
-                                <i class="bi bi-pencil-square"></i>
-                            </button>
-                            
+                                <button class="btn btn-warning edit-equipo-btn" data-bs-toggle="modal"
+                                    data-bs-target="#editEquipoModal" data-id="{{ equi.idEquipo }}"
+                                    data-codigo="{{ equi.Cod_inventarioEquipo }}"
+                                    data-serie="{{ equi.Num_serieEquipo }}"
+                                    data-observacion="{{ equi.ObservacionEquipo }}" data-unidad="{{ equi.idUnidad }}"
+                                    data-orden="{{ equi.idOrden_compra }}" data-marca="{{ equi.idMarca_Equipo }}"
+                                    data-tipo="{{ equi.idTipo_equipo }}" data-modelo="{{ equi.idModelo_equipo }}"
+                                    data-proveedor="{{ equi.codigoproveedor_equipo}}" data-mac="{{ equi.macEquipo }}"
+                                    data-imei="{{ equi.imeiEquipo }}" data-numero="{{ equi.numerotelefonicoEquipo }}"
+                                    data-estado="{{ equi.nombreEstado_equipo }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
+
                             </td>
                         </tr>
                         {% endfor %}
@@ -221,6 +218,7 @@
         </div>
 
 
+
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
@@ -231,6 +229,6 @@
 
 
 
-        {% include 'Equipo/equipo.modals.html' %}
+        {% include 'Equipo/equipo.modals.html'%}
         {{ paginacion("equipo", page, lastpage) }}
         {% endblock %}

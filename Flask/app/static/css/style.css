@@ -656,7 +656,7 @@ a.mainbar-link {
     border-radius:0px;
 }
 .search-box {
-    font-size: 30px;
+    font-size: 22px;
     text-align:center;
 }
 
@@ -791,3 +791,4 @@ svg.bi {
 .table td, .table th {
     vertical-align: middle;
 }
+
