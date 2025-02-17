@@ -5,15 +5,18 @@
 <div class="row">
     <div class="col">
         <h2>Funcionarios</h2>
-        <!-- Fila para botón y barra de búsqueda -->
+        <!-- Barra de herramientas -->
         <div>
-            <!-- Barra de búsqueda -->
-            <div style="display: flex; justify-content: center;">
-                <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador" onkeyup="busqueda('myTableBody')" />
-            </div>
-            <!-- Botón para abrir el modal -->
-            <div class="d-flex justify-content-between" id="container-buttons-equipo">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFuncionarioModal">Agregar</button>
+            <div class="toolbar">
+                <div class="toolbar-1">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addFuncionarioModal">Agregar</button>
+                </div>
+                <div class="toolbar-2">
+                    <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador" onkeyup="busqueda('myTableBody')" />
+                </div>
+                <div class="toolbar-3">
+                    <!-- Sin botones -->
+                </div>
             </div>
         </div>
 
