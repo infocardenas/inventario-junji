@@ -35,68 +35,74 @@
                 </thead>
                 <tbody id="myTableBody">
                     <!-- Iterar sobre los funcionarios -->
-                    {% for fun in funcionario %}
-                    <tr>
-                        <td class="toCheck">{{ fun.rutFuncionario }}</td>
-                        <td class="toCheck">{{ fun.nombreFuncionario }}</td>
-                        <td class="toCheck">{{ fun.cargoFuncionario }}</td>
-                        <td class="toCheck">{{ fun.nombreUnidad }}</td>
-                        <td class="toCheck">{{ fun.correoFuncionario }}</td>
-                        <td style="width:200px">
-                            <div class="d-flex justify-content-center gap-2">
+                    {% if funcionario %}
+                        {% for fun in funcionario %}
+                        <tr>
+                            <td class="toCheck">{{ fun.rutFuncionario }}</td>
+                            <td class="toCheck">{{ fun.nombreFuncionario }}</td>
+                            <td class="toCheck">{{ fun.cargoFuncionario }}</td>
+                            <td class="toCheck">{{ fun.nombreUnidad }}</td>
+                            <td class="toCheck">{{ fun.correoFuncionario }}</td>
+                            <td style="width:200px">
+                                <div class="d-flex justify-content-center gap-2">
 
-                                <!-- Botón de editar -->
-                                <div data-bs-toggle="tooltip" data-bs-title="Editar">
-                                    <button class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                        data-bs-target="#editFuncionarioModal" data-rut="{{ fun.rutFuncionario }}"
-                                        data-nombre="{{ fun.nombreFuncionario }}" data-correo="{{ fun.correoFuncionario }}"
-                                        data-cargo="{{ fun.cargoFuncionario }}" data-unidad="{{ fun.idUnidad }}">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-                                </div>
+                                    <!-- Botón de editar -->
+                                    <div data-bs-toggle="tooltip" data-bs-title="Editar">
+                                        <button class="btn btn-warning edit-button" data-bs-toggle="modal"
+                                            data-bs-target="#editFuncionarioModal" data-rut="{{ fun.rutFuncionario }}"
+                                            data-nombre="{{ fun.nombreFuncionario }}" data-correo="{{ fun.correoFuncionario }}"
+                                            data-cargo="{{ fun.cargoFuncionario }}" data-unidad="{{ fun.idUnidad }}">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+                                    </div>
 
-                                <!-- Botón de eliminar -->
-                                {% if fun.equipos_asignados == 0 %}
-                                    <button type="button" class="btn btn-danger delete-button"
-                                        data-title="Eliminar funcionario"
-                                        data-message="¿Estás seguro de que deseas eliminar al funcionario {{ fun.nombreFuncionario }}?"
-                                        data-url="/delete_funcionario/{{ fun.rutFuncionario }}"
-                                        data-bs-toggle="tooltip"
-                                        data-bs-title="Eliminar">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-                                {% else %}
-                                    <div data-bs-toggle="tooltip" data-bs-title="Eliminar">
-                                        <button type="button" class="btn btn-danger"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#warningModal">
+                                    <!-- Botón de eliminar -->
+                                    {% if fun.equipos_asignados == 0 %}
+                                        <button type="button" class="btn btn-danger delete-button"
+                                            data-title="Eliminar funcionario"
+                                            data-message="¿Estás seguro de que deseas eliminar al funcionario {{ fun.nombreFuncionario }}?"
+                                            data-url="/delete_funcionario/{{ fun.rutFuncionario }}"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-title="Eliminar">
                                             <i class="bi bi-trash-fill"></i>
                                         </button>
-                                    </div>
-                                {% endif %}
+                                    {% else %}
+                                        <div data-bs-toggle="tooltip" data-bs-title="Eliminar">
+                                            <button type="button" class="btn btn-danger"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#warningModal">
+                                                <i class="bi bi-trash-fill"></i>
+                                            </button>
+                                        </div>
+                                    {% endif %}
 
-                                <!-- Botón de equipos asignados -->
-                                {% if fun.equipos_asignados > 0 %}
-                                    <div data-bs-toggle="tooltip" data-bs-title="Equipos asignados">
-                                        <button type="button" class="btn btn-secondary equipos-asignados"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-ver-equipo-asignado-{{ fun.rutFuncionario }}">
-                                            <i class="bi bi-pc-display"></i>
-                                        </button>
-                                    </div>
-                                {% else %}
-                                    <div data-bs-toggle="tooltip" data-bs-title="Equipos asignados">
-                                        <button type="button" class="btn btn-secondary equipos-asignados"
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modal-sin-equipos-asignados">
-                                            <i class="bi bi-pc-display"></i>
-                                        </button>
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </td>
-                    </tr>
-                    {% endfor %}
+                                    <!-- Botón de equipos asignados -->
+                                    {% if fun.equipos_asignados > 0 %}
+                                        <div data-bs-toggle="tooltip" data-bs-title="Equipos asignados">
+                                            <button type="button" class="btn btn-secondary equipos-asignados"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-ver-equipo-asignado-{{ fun.rutFuncionario }}">
+                                                <i class="bi bi-pc-display"></i>
+                                            </button>
+                                        </div>
+                                    {% else %}
+                                        <div data-bs-toggle="tooltip" data-bs-title="Equipos asignados">
+                                            <button type="button" class="btn btn-secondary equipos-asignados"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modal-sin-equipos-asignados">
+                                                <i class="bi bi-pc-display"></i>
+                                            </button>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6">No hay funcionarios registrados</td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
 

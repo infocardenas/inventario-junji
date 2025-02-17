@@ -41,66 +41,72 @@
                 </thead>
                 <!-- Contenido de la tabla -->
                 <tbody id="myTableBody">
-                    {% for asig in asignacion %}
-                    <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row">
-                        <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value" value="{{ asig.idEquipoAsignacion }}" {% if asig.fechaDevolucion %} data-devuelto="true" disabled {% else %} data-devuelto="false" {% endif %}></td>
-                        <td class="toCheck">{{ asig.idAsignacion }}</td>
-                        <td class="toCheck">{{ asig.nombreFuncionario }}</td>
-                        <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
-                        <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
-                        <td class="toCheck">{{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}</td>
+                    {% if asignacion %}
+                        {% for asig in asignacion %}
+                        <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row">
+                            <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value" value="{{ asig.idEquipoAsignacion }}" {% if asig.fechaDevolucion %} data-devuelto="true" disabled {% else %} data-devuelto="false" {% endif %}></td>
+                            <td class="toCheck">{{ asig.idAsignacion }}</td>
+                            <td class="toCheck">{{ asig.nombreFuncionario }}</td>
+                            <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
+                            <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
+                            <td class="toCheck">{{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}</td>
 
-                        <!-- Botones de actas -->
-                        <td>
-                            <div class="dropdown">
-                                <button class="options-button">Asignaciones</button>
-                                <div class="dropdown-options">
-                                    <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}"
-                                        class="info-button desplegable-button">Asignación</a>
-                                    <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}"
-                                        class="success-button desplegable-button">Firmar</a>
+                            <!-- Botones de actas -->
+                            <td>
+                                <div class="dropdown">
+                                    <button class="options-button">Asignaciones</button>
+                                    <div class="dropdown-options">
+                                        <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}"
+                                            class="info-button desplegable-button">Asignación</a>
+                                        <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}"
+                                            class="success-button desplegable-button">Firmar</a>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <!-- Si la asignación no está activa, se muestran opciones para devolución -->
-                            {% if asig.ActivoAsignacion != 1 %}
-                            <div class="dropdown">
-                                <button class="options-button">Devoluciones</button>
-                                <div class="dropdown-options">
-                                    <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}"
-                                        class="info-button desplegable-button">Devolución</a>
-                                    <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver"
-                                        class="success-button desplegable-button">Firmar</a>
+                                <!-- Si la asignación no está activa, se muestran opciones para devolución -->
+                                {% if asig.ActivoAsignacion != 1 %}
+                                <div class="dropdown">
+                                    <button class="options-button">Devoluciones</button>
+                                    <div class="dropdown-options">
+                                        <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}"
+                                            class="info-button desplegable-button">Devolución</a>
+                                        <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver"
+                                            class="success-button desplegable-button">Firmar</a>
+                                    </div>
                                 </div>
-                            </div>
-                            {% else %}
-                            <!-- Si la asignación está activa, muestra el botón para devolverla -->
-                            <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}"
-                                class="success-button">Devolver</a>
-                            {% endif %}
-                        </td>
-                        <!-- Fin botones de actas -->
+                                {% else %}
+                                <!-- Si la asignación está activa, muestra el botón para devolverla -->
+                                <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}"
+                                    class="success-button">Devolver</a>
+                                {% endif %}
+                            </td>
+                            <!-- Fin botones de actas -->
 
-                        <!-- Acciones -->
-                        <td class="d-flex justify-content-center gap-2">
-                            <div data-bs-toggle="tooltip" data-bs-title="Detalles">
-                                <button class="btn button-info"
-                                    data-bs-toggle="modal"
-                                    data-bs-target="#modal-view-{{ asig.idEquipoAsignacion }}">
-                                    <i class="bi bi-info-circle"></i>
+                            <!-- Acciones -->
+                            <td class="d-flex justify-content-center gap-2">
+                                <div data-bs-toggle="tooltip" data-bs-title="Detalles">
+                                    <button class="btn button-info"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modal-view-{{ asig.idEquipoAsignacion }}">
+                                        <i class="bi bi-info-circle"></i>
+                                    </button>
+                                </div>
+                                <button class="btn btn-danger delete-button"
+                                    data-bs-toggle="tooltip"
+                                    data-url="/delete_asignacion/{{asig.idAsignacion}}"
+                                    data-title="Eliminar asignación"
+                                    data-message="¿Estás seguro de que deseas eliminar esta asignación?"
+                                    data-bs-title="Eliminar">
+                                    <i class="bi bi-trash-fill"></i>
                                 </button>
-                            </div>
-                            <button class="btn btn-danger delete-button"
-                                data-bs-toggle="tooltip"
-                                data-url="/delete_asignacion/{{asig.idAsignacion}}"
-                                data-title="Eliminar asignación"
-                                data-message="¿Estás seguro de que deseas eliminar esta asignación?"
-                                data-bs-title="Eliminar">
-                                <i class="bi bi-trash-fill"></i>
-                            </button>
-                        </td>
-                    </tr>
-                    {% endfor %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="8">No hay asignaciones registradas</td>
+                        </tr>
+                    {% endif %}
                 </tbody>
             </table>
         </div>
