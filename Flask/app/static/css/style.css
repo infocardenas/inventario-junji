@@ -656,8 +656,16 @@ a.mainbar-link {
     border-radius:0px;
 }
 .search-box {
-    font-size: 22px;
-    text-align:center;
+    font-size: 1rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    max-width: 420px;
+    min-width: 180px;
+    width: 100%;
+}
+.search-box:focus {
+    outline: none;
 }
 
 .error-message {
@@ -792,3 +800,23 @@ svg.bi {
     vertical-align: middle;
 }
 
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+}
+.toolbar-1 {
+    justify-content: flex-start;
+}
+.toolbar-2 {
+    flex: 2;
+    display: flex;
+    justify-content: center;
+}
+.toolbar-3 {
+    justify-content: flex-end;
+}
+.toolbar-1, .toolbar-3 {
+    flex: 1;
+    display: flex;
+}

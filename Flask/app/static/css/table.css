@@ -122,3 +122,6 @@ th:hover {
     color: #fff;
     /* Asegúrate de que el texto se vea */
 }
+.selectable-row {
+    cursor: pointer;
+}

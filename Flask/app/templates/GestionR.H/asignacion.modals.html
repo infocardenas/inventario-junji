@@ -20,18 +20,45 @@
                             </div>
                         </div>
 
-                        <!-- RUT del funcionario -->
                         <div class="col-md-7">
+                            <!-- Campo para ingresar Nombre o RUT del Funcionario -->
                             <div class="mb-3">
-                                <label for="rut_funcionario">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
-                                <div style="display: flex; align-items: center;">
-                                    <input type="text" class="form-control campo-obligatorio rut-input" id="rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guión" maxlength="8" style="width: 70%;">
-                                    <span style="width: 10%; display: flex; justify-content: center;">-</span>
-                                    <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
+                                <label id="label-funcionario">Nombre del funcionario<span style="color: red; margin-left: 5px">*</span></label>
+                                <div class="d-flex">
+                                    <!-- Contenedor del NOMBRE (por defecto visible) -->
+                                    <div id="contenedorNombre" style="display: block; width: 100%;">
+                                        <input type="text" class="form-control" id="nombre_funcionario" name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" autocomplete="off">
+                                        <!-- Lista de sugerencias de autocompletado -->
+                                        <div id="sugerencias_funcionarios" class="list-group position-absolute w-50" style="z-index: 1000; display: none;"></div>
+                                    </div>
+
+                                    <!-- Contenedor del RUT (por defecto oculto) -->
+                                    <div id="contenedorRut" style="display: none; width: 100%;">
+                                        <div class="d-flex">
+                                            <input type="text" class="form-control rut-input" id="rut_funcionario" name="rut_funcionario_parcial"
+                                                placeholder="Ingrese RUT sin puntos ni guión" maxlength="8" style="width: 70%;">
+                                            <span style="width: 10%; display: flex; justify-content: center; align-items: center">-</span>
+                                            <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
+                                        </div>
+                                    </div>
+
+                                    <!-- Botón para cambiar entre Nombre y RUT -->
+                                    <button type="button" class="btn btn-secondary ms-2" id="toggleFuncionario" data-bs-toggle="tooltip" data-bs-title="Buscar por RUT">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </button>
                                 </div>
+                                <!-- Campo oculto para almacenar el RUT completo si lo deseas -->
+                                <input type="hidden" class="rut_completo" id="rut_completo" name="rut_funcionario">
                                 <div class="text-error-message"></div>
                             </div>
-                            <input type="hidden" class="rut_completo" id="rut_completo" name="rut_funcionario">
+
+                            <!-- Div para almacenar la lista de funcionarios en JSON -->
+                            <div id="listaFuncionarios" data-funcionarios='[
+                                {% for funcionario in funcionarios %}
+                                    {"nombre": "{{ funcionario.nombreFuncionario }}", "rut": "{{ funcionario.rutFuncionario }}"}{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            ]'>
+                            </div>
                         </div>
                     </div>
 
@@ -195,6 +222,9 @@
                     <tr><td><strong>Tipo</strong></td><td>{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else "No asignado" }}</td></tr>
                     <tr><td><strong>Marca</strong></td><td>{{ asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado" }}</td></tr>
                     <tr><td><strong>Modelo</strong></td><td>{{ asig.nombreModeloequipo if asig.nombreModeloequipo else "No asignado" }}</td></tr>
+                    <tr><td><strong>Cód. inventario</strong></td><td>{{ asig.Cod_inventarioEquipo if asig.Cod_inventarioEquipo else "" }}</td></tr>
+                    <tr><td><strong>N° serie</strong></td><td>{{ asig.Num_serieEquipo if asig.Num_serieEquipo else "" }}</td></tr>
+                    <tr><td><strong>Cód. proveedor</strong></td><td>{{ asig.codigoproveedor_equipo if codigoproveedor_equipo else "No informado" }}</td></tr>
                     <tr><td><strong>Observaciones</strong></td><td>{{ asig.ObservacionEquipo if asig.ObservacionEquipo else "" }}</td></tr>
                 </table>
             </div>
@@ -205,3 +235,54 @@
     </div>
 </div>
 {% endfor %}
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="modalConfirmarDevolucion" tabindex="-1" aria-labelledby="modalConfirmarDevolucionLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar devolución</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formDevolver" method="POST" action="/asignacion/devolver_equipos">
+                <div class="modal-body">
+                    <p>Se devolverán los siguientes equipos:</p>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Funcionario</th>
+                                    <th>Tipo equipo</th>
+                                    <th>Marca equipo</th>
+                                    <th>Modelo equipo</th>
+                                    <th>Cód. inventario</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for asig in asignacion %}
+                                <!-- Fila oculta por defecto -->
+                                <tr id="modal-row-{{ asig.idEquipoAsignacion }}" style="display: none;">
+                                    <td>{{ asig.idEquipoAsignacion }}</td>
+                                    <td>{{ asig.nombreFuncionario }}</td>
+                                    <td>{{ asig.nombreTipo_equipo }}</td>
+                                    <td>{{ asig.nombreMarcaEquipo }}</td>
+                                    <td>{{ asig.nombreModeloequipo }}</td>
+                                    <td>{{ asig.Cod_inventarioEquipo }}</td>
+                                </tr>
+                                <!-- Input oculto para enviar si el row se activa -->
+                                <input type="hidden" name="equiposSeleccionados" id="modal-input-{{ asig.idEquipoAsignacion }}" value="{{ asig.idEquipoAsignacion }}" style="display: none;">
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnContinuarDevolucion">Continuar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
