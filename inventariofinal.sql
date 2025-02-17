@@ -298,7 +298,7 @@ CREATE TABLE `devolucion` (
   `fechaDevolucion` DATE DEFAULT NULL,
   `observacionDevolucion` VARCHAR(250) DEFAULT NULL,
   `idEquipoAsignacion` INT NOT NULL,
-  CONSTRAINT `fk_devolucion_idAsignacion` FOREIGN KEY (`idEquipoAsignacion`) REFERENCES `equipo_asignacion` (`idEquipoAsignacion`)
+  CONSTRAINT `fk_devolucion_idAsignacion` FOREIGN KEY (`idEquipoAsignacion`) REFERENCES `equipo_asignacion` (`idEquipoAsignacion`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
