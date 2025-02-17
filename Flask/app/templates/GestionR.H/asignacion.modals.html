@@ -82,18 +82,24 @@
                                     </tr>
                                 </thead>
                                 <tbody id="equiposTable">
-                                    {% for equipo in equipos_sin_asignar %}
-                                    <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
-                                        data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
-                                        <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
-                                        <td>{{ equipo.nombreTipo_equipo }}</td>
-                                        <td>{{ equipo.nombreMarcaEquipo }}</td>
-                                        <td>{{ equipo.nombreModeloequipo }}</td>
-                                        <td>{{ equipo.Cod_inventarioEquipo }}</td>
-                                        <td>{{ equipo.Num_serieEquipo }}</td>
-                                        <td>{{ equipo.nombreUnidad }}</td>
-                                    </tr>
-                                    {% endfor %}
+                                    {% if equipos_sin_asignar %}
+                                        {% for equipo in equipos_sin_asignar %}
+                                        <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
+                                            data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
+                                            <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
+                                            <td>{{ equipo.nombreTipo_equipo }}</td>
+                                            <td>{{ equipo.nombreMarcaEquipo }}</td>
+                                            <td>{{ equipo.nombreModeloequipo }}</td>
+                                            <td>{{ equipo.Cod_inventarioEquipo }}</td>
+                                            <td>{{ equipo.Num_serieEquipo }}</td>
+                                            <td>{{ equipo.nombreUnidad }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7" style="text-align: center">No hay equipos disponibles</td>
+                                        </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
                         </div>
