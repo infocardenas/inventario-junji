@@ -304,11 +304,11 @@ def delete_asignacion(id):
         mysql.connection.commit()
         cur.execute("DELETE FROM asignacion WHERE idAsignacion = %s", (id,))
         mysql.connection.commit()
-        flash("asignacion eliminado correctamente")
+
+        flash("Asignación eliminada exitosamente", "success")
         return redirect(url_for("asignacion.Asignacion"))
     except Exception as e:
-        flash("Error al crear")
-        #flash(e.args[1])
+        flash(f"Error al eliminar: {e}", "danger")
         return redirect(url_for("asignacion.Asignacion"))
 
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
