@@ -1,6 +1,131 @@
 document.addEventListener("DOMContentLoaded", () => {
     refreshCheckboxListeners();
+
+    const btnDevolver = document.getElementById("devolver-seleccionados");
+
+    if (btnDevolver) {
+        btnDevolver.addEventListener("click", () => {
+            let checkboxes = document.querySelectorAll(".row-checkbox:checked");
+            if (checkboxes.length === 0) {
+                alert("Por favor, selecciona al menos un equipo para devolver.");
+                return; // Evita abrir el modal
+            }
+
+            actualizarModalDevolucion();
+
+            // Abrir el modal de confirmación
+            let modal = new bootstrap.Modal(document.getElementById("modalConfirmarDevolucion"));
+            modal.show();
+        });
+    }
+
+    // Vincular la función de envío al botón "Continuar" dentro del modal
+    const btnContinuar = document.getElementById("btnContinuarDevolucion");
+    if (btnContinuar) {
+        btnContinuar.addEventListener("click", devolverSeleccionados);
+    }
+
+    // Manejar el cambio de selección de checkboxes
+    document.querySelectorAll(".row-checkbox").forEach(checkbox => {
+        checkbox.addEventListener("change", function () {
+            let idEquipoAsignacion = this.value;
+            let rowModal = document.getElementById(`modal-row-${idEquipoAsignacion}`);
+            let inputHidden = document.getElementById(`modal-input-${idEquipoAsignacion}`);
+
+            if (this.checked) {
+                if (rowModal) rowModal.style.display = "";
+                if (inputHidden) inputHidden.style.display = "block";
+            } else {
+                if (rowModal) rowModal.style.display = "none";
+                if (inputHidden) inputHidden.style.display = "none";
+            }
+        });
+    });
+
+    // Permitir seleccionar la fila al hacer clic en ella (sin afectar el checkbox directamente)
+    document.querySelectorAll(".selectable-row").forEach(row => {
+        row.addEventListener("click", function (event) {
+            if (event.target.tagName === "INPUT") return;
+            let checkbox = this.querySelector(".row-checkbox");
+            checkbox.checked = !checkbox.checked;
+            checkbox.dispatchEvent(new Event("change"));
+        });
+    });
+
+    // Habilita/deshabilita el botón de devolver
+    document.querySelectorAll(".row-checkbox").forEach(checkbox => {
+        let idEquipoAsignacion = checkbox.value;
+        let row = document.getElementById(`row-${idEquipoAsignacion}`);
+
+        // Si el equipo ya fue devuelto, deshabilitar el checkbox y marcarlo como devuelto
+        if (checkbox.dataset.devuelto === "true") {
+            checkbox.disabled = true;
+            row.classList.add("equipo-devuelto"); // Clase visual para diferenciar equipos devueltos
+        }
+
+        // Agregar evento para actualizar el estado del botón cuando cambia la selección
+        checkbox.addEventListener("change", actualizarEstadoBotonDevolver);
+    });
+
+    // Llamar a la función al cargar la página para deshabilitar el botón si no hay equipos seleccionables
+    actualizarEstadoBotonDevolver();
 });
+
+// Función que actualiza el modal con las asignaciones seleccionadas
+function actualizarModalDevolucion() {
+    let checkboxes = document.querySelectorAll(".row-checkbox:checked");
+
+    checkboxes.forEach(checkbox => {
+        let idEquipoAsignacion = checkbox.value;
+        let rowModal = document.getElementById(`modal-row-${idEquipoAsignacion}`);
+        let inputHidden = document.getElementById(`modal-input-${idEquipoAsignacion}`);
+
+        if (rowModal) rowModal.style.display = "";  // Mostrar la fila en el modal
+        if (inputHidden) inputHidden.style.display = "block"; // Mostrar input hidden
+    });
+}
+
+// **Función para devolver equipos seleccionados**
+function devolverSeleccionados() {
+    let checkboxes = document.querySelectorAll(".row-checkbox:checked");
+    let idsEquipos = [];
+
+    checkboxes.forEach(checkbox => {
+        idsEquipos.push(checkbox.value);
+    });
+
+    if (idsEquipos.length === 0) {
+        alert("Por favor, selecciona al menos un equipo para devolver.");
+        return;
+    }
+
+    // Crear el formulario y enviarlo
+    let form = document.getElementById("formDevolver");
+
+    // Limpiar cualquier input oculto previo
+    document.querySelectorAll("#formDevolver input[name='equiposSeleccionados']").forEach(input => input.remove());
+
+    idsEquipos.forEach(id => {
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "equiposSeleccionados";
+        input.value = id;
+        form.appendChild(input);
+    });
+
+    form.submit();
+}
+
+function actualizarEstadoBotonDevolver() {
+    const checkboxes = document.querySelectorAll(".row-checkbox:checked:not(:disabled)");
+    const btnDevolver = document.getElementById("devolver-seleccionados");
+
+    if (checkboxes.length > 0) {
+        btnDevolver.removeAttribute("disabled");
+    } else {
+        btnDevolver.setAttribute("disabled", "true");
+    }
+}
 
 // Función para actualizar listeners de checkboxes
 function refreshCheckboxListeners() {

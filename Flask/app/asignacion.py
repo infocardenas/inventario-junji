@@ -628,83 +628,99 @@ def mostrar_pdf(id):
         #flash("no se encontro el pdf")
         #return redirect(url_for('asignacion.Asignacion'))
 
-@asignacion.route("/asignacion/devolver/<id>")
+@asignacion.route("/asignacion/devolver_equipos", methods=["POST"])
 @administrador_requerido
-def devolver(id):
+def devolver_equipos():
+    # Obtener los ID de equipo_asignacion desde el formulario
+    ids_equipos_asignacion = request.form.getlist("equiposSeleccionados")
+
+    if not ids_equipos_asignacion:
+        flash("No se seleccionó ningún equipo para devolver", "danger")
+        return redirect(url_for("asignacion.Asignacion"))
+
     today = date.today()
     cur = mysql.connection.cursor()
-    cur.execute("""
-    UPDATE asignacion a
-    SET a.ActivoAsignacion = 0,
-        fechaDevolucion = %s
-    WHERE a.idAsignacion = %s
-                """, (today, id,))
-    mysql.connection.commit()
 
-    #buscar argumentos
-    cur.execute("""
-    SELECT *
-    FROM asignacion a
-    WHERE a.idAsignacion = %s
-                """, (id,))
-    Asignacion = cur.fetchone()
-    cur.execute("""
-    SELECT *
-    FROM funcionario f
-    WHERE f.rutFuncionario = %s
-                """, (Asignacion['rutFuncionario'], ))
-    Funcionario = cur.fetchone()
-    cur.execute("""
-    SELECT *
-    FROM unidad u
-    WHERE u.idUnidad = %s
-                """, (str(Funcionario['idUnidad']),))
-    Unidad = cur.fetchone()
+    # Iniciar una transacción
+    cur.execute("START TRANSACTION")
+
+    # Obtener el ID del estado "SIN ASIGNAR"
+    cur.execute("SELECT idEstado_equipo FROM estado_equipo WHERE nombreEstado_equipo = 'SIN ASIGNAR'")
+    estado_sin_asignar = cur.fetchone()
+
+    if not estado_sin_asignar:
+        flash("No se encontró el estado 'SIN ASIGNAR'", "danger")
+        cur.execute("ROLLBACK")  # Cancelar cualquier cambio
+        return redirect(url_for("asignacion.Asignacion"))
+
+    id_estado_sin_asignar = estado_sin_asignar["idEstado_equipo"]
+
+    for id_equipo_asignacion in ids_equipos_asignacion:
+        # Verificar si ya fue devuelto
+        cur.execute("""
+            SELECT idDevolucion 
+            FROM devolucion 
+            WHERE idEquipoAsignacion = %s
+        """, (id_equipo_asignacion,))
+        if cur.fetchone():  # Si existe, detener todo el proceso
+            flash("Error: Uno o más equipos seleccionados ya fueron devueltos", "danger")
+            cur.execute("ROLLBACK")  # Cancelar todo el proceso
+            return redirect(url_for("asignacion.Asignacion"))
+
+
+    # Si no hay errores, proceder con la devolución
+    for id_equipo_asignacion in ids_equipos_asignacion:
+        # Obtener la asignación y el equipo correspondiente
+        cur.execute("""
+            SELECT ea.idAsignacion, ea.idEquipo
+            FROM equipo_asignacion ea
+            WHERE ea.idEquipoAsignacion = %s
+        """, (id_equipo_asignacion,))
+        equipo_asignacion_info = cur.fetchone()
+
+        if not equipo_asignacion_info:
+            flash(f"No se encontró información para el equipo asignado {id_equipo_asignacion}.", "warning")
+            cur.execute("ROLLBACK")  # Cancelar todo el proceso
+            return redirect(url_for("asignacion.Asignacion"))
+
+        id_asignacion = equipo_asignacion_info["idAsignacion"]
+        id_equipo = equipo_asignacion_info["idEquipo"]
+
+        # Registrar la devolución en la tabla devolucion
+        cur.execute("""
+            INSERT INTO devolucion (fechaDevolucion, idEquipoAsignacion)
+            VALUES (%s, %s)
+        """, (today, id_equipo_asignacion))
+
+        # Actualizar el estado del equipo a "SIN ASIGNAR"
+        cur.execute("""
+            UPDATE equipo
+            SET idEstado_equipo = %s
+            WHERE idEquipo = %s
+        """, (id_estado_sin_asignar, id_equipo))
+
+        # Verificar si todos los equipos de la asignación ya fueron devueltos
+        cur.execute("""
+            SELECT COUNT(*) AS equipos_no_devueltos
+            FROM equipo_asignacion ea
+            LEFT JOIN devolucion d ON ea.idEquipoAsignacion = d.idEquipoAsignacion
+            WHERE ea.idAsignacion = %s AND d.idDevolucion IS NULL
+        """, (id_asignacion,))
+        equipos_pendientes = cur.fetchone()
+
+        # Si no hay más equipos pendientes, actualizar la asignación como cerrada
+        if equipos_pendientes["equipos_no_devueltos"] == 0:
+            cur.execute("""
+                UPDATE asignacion
+                SET ActivoAsignacion = 0
+                WHERE idAsignacion = %s
+            """, (id_asignacion,))
+
+    # Si todo fue exitoso, confirmar cambios
+    cur.execute("COMMIT")
     
-    cur.execute("""
-    SELECT * 
-    FROM equipo_asignacion ea
-    WHERE ea.idAsignacion = %s
-                """, (str(Asignacion['idAsignacion']),))
-    equipo_asignacion_data = cur.fetchall()
-
-    tupla_equipos = ()
-    for equipo_asignacion in equipo_asignacion_data:
-        cur.execute("""
-        SELECT e.*, 
-            me.nombreModeloequipo, 
-            te.nombreTipo_equipo, 
-            mae.nombreMarcaEquipo, 
-            ee.nombreEstado_equipo, 
-            u.nombreUnidad
-        FROM equipo e
-        INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
-        INNER JOIN unidad u ON e.idUnidad = u.idUnidad
-        INNER JOIN estado_equipo ee ON ee.idEstado_equipo = e.idEstado_Equipo
-        WHERE e.idEquipo = %s
-                    """, (str(equipo_asignacion['idEquipo']),))
-        equipo = cur.fetchone()
-
-        cur.execute("""
-        SELECT *
-        FROM estado_equipo ee
-        WHERE ee.nombreEstado_equipo = "SIN ASIGNAR"
-                    """)
-        estadoEquipo = cur.fetchone()
-        cur.execute("""
-        UPDATE equipo
-        SET idEstado_equipo = %s
-        WHERE idEquipo = %s
-                    """, (str(estadoEquipo['idEstado_equipo']), str(equipo['idEquipo'])))
-        mysql.connection.commit()
-        tupla_equipos = tupla_equipos + (equipo,)
-
-
-    crear_pdf_devolucion(Funcionario, Unidad, Asignacion, tupla_equipos)
-    return redirect(url_for('asignacion.Asignacion'))
+    flash("Devolución de equipos realizada exitosamente", "success")
+    return redirect(url_for("asignacion.Asignacion"))
 
 
 def crear_pdf_devolucion(

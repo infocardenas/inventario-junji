@@ -235,3 +235,54 @@
     </div>
 </div>
 {% endfor %}
+
+<!-- Modal de confirmación -->
+<div class="modal fade" id="modalConfirmarDevolucion" tabindex="-1" aria-labelledby="modalConfirmarDevolucionLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmar devolución</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="formDevolver" method="POST" action="/asignacion/devolver_equipos">
+                <div class="modal-body">
+                    <p>Se devolverán los siguientes equipos:</p>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Funcionario</th>
+                                    <th>Tipo equipo</th>
+                                    <th>Marca equipo</th>
+                                    <th>Modelo equipo</th>
+                                    <th>Cód. inventario</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for asig in asignacion %}
+                                <!-- Fila oculta por defecto -->
+                                <tr id="modal-row-{{ asig.idEquipoAsignacion }}" style="display: none;">
+                                    <td>{{ asig.idEquipoAsignacion }}</td>
+                                    <td>{{ asig.nombreFuncionario }}</td>
+                                    <td>{{ asig.nombreTipo_equipo }}</td>
+                                    <td>{{ asig.nombreMarcaEquipo }}</td>
+                                    <td>{{ asig.nombreModeloequipo }}</td>
+                                    <td>{{ asig.Cod_inventarioEquipo }}</td>
+                                </tr>
+                                <!-- Input oculto para enviar si el row se activa -->
+                                <input type="hidden" name="equiposSeleccionados" id="modal-input-{{ asig.idEquipoAsignacion }}" value="{{ asig.idEquipoAsignacion }}" style="display: none;">
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary" id="btnContinuarDevolucion">Continuar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
