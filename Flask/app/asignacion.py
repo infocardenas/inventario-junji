@@ -65,11 +65,12 @@ def Asignacion(page=1):
         a.idAsignacion,
         a.fecha_inicioAsignacion,
         a.ObservacionAsignacion,
-        a.fechaDevolucion,
         a.ActivoAsignacion,
         f.rutFuncionario,
         f.nombreFuncionario,
         f.cargoFuncionario,
+        ea.idEquipoAsignacion,
+        d.fechaDevolucion,
         me.nombreModeloequipo,
         te.nombreTipo_equipo,
         mae.nombreMarcaEquipo,
@@ -78,13 +79,14 @@ def Asignacion(page=1):
         e.codigoproveedor_equipo,
         e.ObservacionEquipo
     FROM asignacion a
-    INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
-    LEFT JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
-    LEFT JOIN equipo e ON e.idEquipo = ea.idEquipo
-    LEFT JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
-    LEFT JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-    LEFT JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-    LEFT JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+    JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+    JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+    LEFT JOIN devolucion d ON ea.idEquipoAsignacion = d.idEquipoAsignacion
+    JOIN equipo e ON e.idEquipo = ea.idEquipo
+    JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+    JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+    JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+    JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
     LIMIT %s OFFSET %s
         """, (perpage, offset)
     )
@@ -349,12 +351,11 @@ def create_asignacion():
             INSERT INTO asignacion (
                 fecha_inicioAsignacion,
                 ObservacionAsignacion,
-                rutaactaAsignacion, 
                 rutFuncionario,
                 ActivoAsignacion
             )
-            VALUES (%s, %s, %s, %s, 1)
-            """, (fecha_asignacion, observacion, 'ruta', rut_funcionario))
+            VALUES (%s, %s, %s, 1)
+            """, (fecha_asignacion, observacion, rut_funcionario))
         id_asignacion = cur.lastrowid # Recupera el ID de la asignación recién insertada
 
         TuplaEquipos = ()
