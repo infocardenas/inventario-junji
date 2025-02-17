@@ -89,15 +89,11 @@ CREATE TABLE `funcionario` (
 --
 
 CREATE TABLE `asignacion` (
-  `idAsignacion` INT NOT NULL AUTO_INCREMENT,
+  `idAsignacion` INT PRIMARY KEY AUTO_INCREMENT,
   `fecha_inicioAsignacion` DATE NOT NULL,
   `ObservacionAsignacion` VARCHAR(250) DEFAULT NULL,
-  `rutaactaAsignacion` VARCHAR(45) NULL,
   `ActivoAsignacion` TINYINT DEFAULT 1,
   `rutFuncionario` VARCHAR(10) NOT NULL,
-  `idDevolucion` INT DEFAULT NULL,
-  `fechaDevolucion` DATE DEFAULT NULL,
-  PRIMARY KEY (`idAsignacion`),
   CONSTRAINT `fk_asignacion_funcionario` FOREIGN KEY (`rutFuncionario`) 
     REFERENCES `funcionario` (`rutFuncionario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -286,11 +282,11 @@ CREATE TABLE `incidencia` (
 --
 
 CREATE TABLE `equipo_asignacion` (
-  `idAsignacion` int(11) NOT NULL,
-  `idEquipo` int(11) NOT NULL,
-  PRIMARY KEY (`idAsignacion`,`idEquipo`),
-  CONSTRAINT `equipo_asignacion_ibfk_1` FOREIGN KEY (`idAsignacion`) REFERENCES `asignacion` (`idAsignacion`),
-  CONSTRAINT `equipo_asignacion_ibfk_2` FOREIGN KEY (`idEquipo`) REFERENCES `equipo` (`idEquipo`)
+  `idEquipoAsignacion` INT PRIMARY KEY AUTO_INCREMENT,
+  `idAsignacion` INT NOT NULL,
+  `idEquipo` INT NOT NULL,
+  CONSTRAINT `fk_equipo_asignacion_idAsignacion` FOREIGN KEY (`idAsignacion`) REFERENCES `asignacion` (`idAsignacion`),
+  CONSTRAINT `fk_equipo_asignacion_idEquipo` FOREIGN KEY (`idEquipo`) REFERENCES `equipo` (`idEquipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -298,14 +294,11 @@ CREATE TABLE `equipo_asignacion` (
 --
 
 CREATE TABLE `devolucion` (
-  `idDevolucion` int(11) NOT NULL,
-  `fechaDevolucion` date DEFAULT NULL,
-  `observacionDevolucion` varchar(250) DEFAULT NULL,
-  `rutaactaDevolucion` varchar(45) DEFAULT NULL,
-  `ActivoDevolucion` tinyint(4) DEFAULT NULL,
-  `rutFuncionario` varchar(10) NOT NULL,
-  PRIMARY KEY (`idDevolucion`),
-  CONSTRAINT `fk_devolucion_funcionario` FOREIGN KEY (`rutFuncionario`) REFERENCES `funcionario` (`rutFuncionario`)
+  `idDevolucion` INT PRIMARY KEY AUTO_INCREMENT,
+  `fechaDevolucion` DATE DEFAULT NULL,
+  `observacionDevolucion` VARCHAR(250) DEFAULT NULL,
+  `idEquipoAsignacion` INT NOT NULL,
+  CONSTRAINT `fk_devolucion_idAsignacion` FOREIGN KEY (`idEquipoAsignacion`) REFERENCES `equipo_asignacion` (`idEquipoAsignacion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
