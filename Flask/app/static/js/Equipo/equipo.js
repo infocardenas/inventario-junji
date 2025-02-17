@@ -97,6 +97,7 @@ document
   .getElementById("tipoSelect")
   .addEventListener("change", manejarCamposTelefono);
 
+  //Maneja boton de eliminar
   $(document).ready(function () {
     $("#delete-selected-button").on("click", function () {
         // Obtener los IDs de las filas seleccionadas
@@ -403,6 +404,7 @@ $(document).ready(function () {
     // Llenar el hidden input con el id del equipo
     $("#edit_id_equipo").val(idEquipo);
 
+    $("#editEquipoForm").attr("action", `/update_equipo/${idEquipo}`);
     // LLamar y cargar select de marca, tipo y modelo
     await cargarMarcasEdit();
     $("#edit_marcaSelect").val(idMarca);
@@ -505,69 +507,62 @@ async function cargarModelosEdit() {
   });
 }
 
-// Funcion para manejar el boton actualizar 
-document.addEventListener("DOMContentLoaded", function () {
-  document.getElementById("editEquipoForm").addEventListener("submit", async function (event) {
-      event.preventDefault(); // 🔥 Evita el envío automático del formulario
+// // Funcion para manejar el boton actualizar 
+// document.addEventListener("DOMContentLoaded", function () {
+//   document.getElementById("editEquipoForm").addEventListener("submit", async function (event) {
+//       event.preventDefault(); // Evita el envío automático del formulario
 
-      // 🔥 Cerrar el modal inmediatamente después de presionar "Actualizar"
-      let modal = bootstrap.Modal.getInstance(document.getElementById("editEquipoModal"));
-      modal.hide();
+//       // Cerrar el modal inmediatamente
+//       let modal = bootstrap.Modal.getInstance(document.getElementById("editEquipoModal"));
+//       modal.hide();
 
-      // 🔥 ESTO agregué: Esperar un pequeño tiempo y eliminar la capa oscura del modal
-      setTimeout(() => {
-          document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
-          document.body.classList.remove("modal-open"); // 🔥 Evita que el body quede bloqueado
-      }, 300); // Espera 300ms para asegurar que Bootstrap termine de cerrar el modal
+//       setTimeout(() => {
+//           document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
+//           document.body.classList.remove("modal-open"); // Evita que el body quede bloqueado
+//       }, 100);
 
-      // Obtener el ID del equipo
-      const idEquipo = document.getElementById("edit_id_equipo").value;
+//       // Obtener el ID del equipo
+//       const idEquipo = document.getElementById("edit_id_equipo").value;
 
-      // Capturar los datos del formulario
-      const datos = {
-          codigo_inventario: document.getElementById("edit_codigo_inventario").value.trim(),
-          numero_serie: document.getElementById("edit_numero_serie").value.trim(),
-          observacion_equipo: document.getElementById("edit_observacion_equipo").value.trim(),
-          codigoproveedor: document.getElementById("edit_codigoproveedor").value.trim(),
-          mac: document.getElementById("edit_mac").value.trim(),
-          imei: document.getElementById("edit_imei").value.trim(),
-          numero: document.getElementById("edit_numero").value.trim(),
-          codigo_Unidad: document.getElementById("edit_codigo_Unidad").value,
-          nombre_orden_compra: document.getElementById("edit_orden_compra").value,
-          nombre_modelo_equipo: document.getElementById("edit_modeloSelect").selectedOptions[0].textContent,
-          nombreTipo_equipo: document.getElementById("edit_tipoSelect").selectedOptions[0].textContent,
-          nombre_estado_equipo: document.getElementById("edit_estado_equipo").value
-      };
+//       // Capturar los datos del formulario
+//       const datos = {
+//           codigo_inventario: document.getElementById("edit_codigo_inventario").value.trim(),
+//           numero_serie: document.getElementById("edit_numero_serie").value.trim(),
+//           observacion_equipo: document.getElementById("edit_observacion_equipo").value.trim(),
+//           codigoproveedor: document.getElementById("edit_codigoproveedor").value.trim(),
+//           mac: document.getElementById("edit_mac").value.trim(),
+//           imei: document.getElementById("edit_imei").value.trim(),
+//           numero: document.getElementById("edit_numero").value.trim(),
+//           codigo_Unidad: document.getElementById("edit_codigo_Unidad").value,
+//           nombre_orden_compra: document.getElementById("edit_orden_compra").value,
+//           nombre_modelo_equipo: document.getElementById("edit_modeloSelect").selectedOptions[0].textContent,
+//           nombreTipo_equipo: document.getElementById("edit_tipoSelect").selectedOptions[0].textContent,
+//           nombre_estado_equipo: document.getElementById("edit_estado_equipo").value
+//       };
 
-      try {
-          // Enviar los datos al backend en segundo plano
-          const response = await fetch(`/update_equipo/${idEquipo}`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(datos),
-          });
+//       try {
+//           // Enviar los datos al backend en segundo plano
+//           const response = await fetch(`/update_equipo/${idEquipo}`, {
+//               method: "POST",
+//               headers: { "Content-Type": "application/json" },
+//               body: JSON.stringify(datos),
+//           });
 
-          if (!response.ok) {
-              console.error("Error al actualizar el equipo.");
-              return;
-          }
+//           if (!response.ok) {
+//               console.error("Error al actualizar el equipo.");
+//               return;
+//           }
 
-          // Actualizar la tabla sin recargar la página
-          const fila = document.querySelector(`tr[data-id="${idEquipo}"]`);
-          if (fila) {
-              fila.cells[1].textContent = datos.codigo_inventario;
-              fila.cells[2].textContent = datos.numero_serie;
-              fila.cells[4].textContent = datos.codigoproveedor || "-";
-              fila.cells[5].textContent = document.getElementById("edit_codigo_Unidad").selectedOptions[0].textContent;
-              fila.cells[6].textContent = datos.nombreTipo_equipo;
-              fila.cells[7].textContent = datos.nombre_modelo_equipo;
-          }
+//           // Retrasar la recarga para darle tiempo a que se muestre la alerta flash
+//           setTimeout(() => {
+//             window.location.reload();
+//           }, 2000); // 2000 milisegundos = 2 segundos
+//       } catch (error) {
+//           console.error("Error al actualizar el equipo:", error);
+//       }
+//   });
+// });
 
-      } catch (error) {
-          console.error("Error al actualizar el equipo:", error);
-      }
-  });
-});
 function mostrarCamposTelefonoEdit() {
   const tipoSelect = document.getElementById("edit_tipoSelect");
   const camposTelefono = document.getElementById("edit_camposTelefono");
@@ -589,4 +584,18 @@ function mostrarCamposTelefonoEdit() {
 
 document.getElementById("edit_tipoSelect").addEventListener("change", function() {
   mostrarCamposTelefonoEdit();
+});
+
+
+
+// funcion para manejar la incidencia 
+document.addEventListener("DOMContentLoaded", function () {
+  var incidenciaModal = document.getElementById('incidenciaModal');
+  incidenciaModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var idEquipo = button.getAttribute('data-id');
+      var inputEquipo = incidenciaModal.querySelector('#idEquipo');
+      inputEquipo.value = idEquipo;
+      console.log(idEquipo);
+  });
 });

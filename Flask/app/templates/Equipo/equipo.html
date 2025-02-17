@@ -118,11 +118,11 @@
 
                 <!-- Título y Buscador -->
                 <div class="d-flex flex-grow-1 justify-content-center align-items-center">
-                    <div >
-                        <div >
+                    <div>
+                        <div>
                             <form action="/consulta_equipo" method="POST">
-                                <input name="palabra" type="text" class="search-box" placeholder="Buscar equipos" id="buscador"
-                                    onkeyup="busqueda('myTableBody')" />
+                                <input name="palabra" type="text" class="search-box" placeholder="Buscar equipos"
+                                    id="buscador" onkeyup="busqueda('myTableBody')" />
                             </form>
                         </div>
                     </div>
@@ -138,10 +138,13 @@
                         data-bs-title="Devolver">
                         <i class="fa-solid fa-arrow-rotate-left" style="color: #ffffff;"></i>
                     </button>
-                    <button class="btn btn-secondary" id="incidencia-button" data-bs-toggle="tooltip"
-                        data-bs-title="Incidencia">
+                    <
+                    <button class="btn btn-secondary" id="incidencia-button" data-bs-toggle="modal"
+                        data-bs-target="#add_incidencia">
                         <i class="bi bi-incognito"></i>
                     </button>
+
+
                     <button class="btn btn-danger" id="delete-selected-button" data-bs-toggle="tooltip"
                         data-bs-title="Eliminar">
                         <i class="bi bi-trash-fill"></i>
@@ -182,7 +185,8 @@
                             {% else %}
                             <td class="toCheck">{{equi.nombreFuncionario}}</td>
                             {% endif %}
-                            <td class="toCheck">{{equi.codigoproveedor_equipo if equi.codigoproveedor_equipo else '-'}}</td>
+                            <td class="toCheck">{{equi.codigoproveedor_equipo if equi.codigoproveedor_equipo else '-'}}
+                            </td>
                             <td class="toCheck">{{equi.nombreUnidad}}</td>
                             <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
                             <td class="toCheck">{{equi.nombreModeloequipo}}</td>

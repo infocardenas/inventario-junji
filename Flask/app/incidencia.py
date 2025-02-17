@@ -64,37 +64,50 @@ def incidencia_form(idEquipo):
         )
 
 #recibe el form de la incidencia y crea la fila de una incidencia en la bbdd, redirige a la pestaña de agregar documentos
-@incidencia.route("/incidencia/add_incidencia", methods = ['POST'])
+@incidencia.route("/incidencia/add_incidencia", methods=['POST'])
 @administrador_requerido
 def add_incidencia():
     if request.method == "POST":
-         nombreIncidencia = request.form['nombreIncidencia']
-         observacionIncidencia = request.form['observacionIncidencia']
-         fechaIncidencia = request.form['fechaIncidencia']
-         idEquipo = request.form['idEquipo']
-         cur = mysql.connection.cursor()
-         cur.execute("""
-                    INSERT INTO incidencia (
-                        nombreIncidencia,
-                        observacionIncidencia,
-                        rutaActaIncidencia,
-                        fechaIncidencia,
-                        idEquipo,
-                        numDocumentos
-                        )
-                     VALUES (%s, %s, %s, %s, %s, %s)
-                    """, (nombreIncidencia, observacionIncidencia, "ruta", fechaIncidencia, idEquipo, 0)
-                    )
-         mysql.connection.commit()
-         flash("Incidencia Agregada Corectamante")
-         idIncidencia = cur.lastrowid 
-         cur.execute("""
-                    SELECT *
-                     FROM incidencia i
-                     WHERE i.idIncidencia = %s
-                     """, (idIncidencia,))
-         obj_incidencia = cur.fetchone()
-    return redirect("/incidencia/listar_pdf/" + str(idIncidencia))
+        nombreIncidencia = request.form.get('nombreIncidencia', '').strip()
+        observacionIncidencia = request.form.get('observacionIncidencia', '').strip()
+        fechaIncidencia = request.form.get('fechaIncidencia', '').strip()
+        idEquipo = request.form.get('idEquipo', '').strip()
+
+        if not idEquipo:
+            flash("Error: No se seleccionó un equipo.")
+            return redirect(url_for("equipo.listar_equipos"))
+
+        # Verificar si se subió un archivo
+        archivo = request.files.get('archivoIncidencia')
+        ruta_archivo = None
+
+        if archivo and archivo.filename:
+            # Crear carpeta si no existe
+            carpeta = os.path.join("pdf", f"incidencia_{idEquipo}")
+            os.makedirs(carpeta, exist_ok=True)
+
+            # Guardar archivo
+            ruta_archivo = os.path.join(carpeta, archivo.filename)
+            archivo.save(ruta_archivo)
+
+        # Insertar la incidencia en la base de datos
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            INSERT INTO incidencia (
+                nombreIncidencia,
+                observacionIncidencia,
+                rutaactaIncidencia,
+                fechaIncidencia,
+                idEquipo,
+                numDocumentos
+            ) VALUES (%s, %s, %s, %s, %s, %s)
+        """, (nombreIncidencia, observacionIncidencia, ruta_archivo, fechaIncidencia, idEquipo, 1 if ruta_archivo else 0))
+        
+        mysql.connection.commit()
+        idIncidencia = cur.lastrowid  # Obtener ID de la incidencia creada
+
+        flash("Incidencia registrada correctamente")
+        return redirect(url_for("incidencia.listar_pdf", idIncidencia=idIncidencia))
 
 @incidencia.route("/incidencia/delete_incidencia/<id>")
 @administrador_requerido

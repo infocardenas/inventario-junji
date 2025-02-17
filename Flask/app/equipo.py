@@ -256,136 +256,145 @@ def add_equipo():
             return redirect(url_for('equipo.Equipo'))
 
 
-
 @equipo.route("/update_equipo/<id>", methods=["POST"])
 @administrador_requerido
 def update_equipo(id):
     if "user" not in session:
         flash("No estás autorizado", "danger")
         return redirect("/ingresar")
+    try:
+        cur = mysql.connection.cursor()
 
-    if request.method == "POST":
+        # Obtener los datos enviados por el formulario (envío tradicional)
+        datos = {
+            'codigo_inventario': request.form.get("codigo_inventario", "").strip(),
+            'numero_serie': request.form.get("numero_serie", "").strip(),
+            'observacion_equipo': request.form.get("observacion_equipo", "").strip(),
+            'codigoproveedor': request.form.get("codigoproveedor", "").strip(),
+            'mac': request.form.get("mac", "").strip(),
+            'imei': request.form.get("imei", "").strip(),
+            'numero': request.form.get("numero", "").strip(),
+            'codigo_Unidad': request.form.get("codigo_Unidad", "").strip(),
+            'nombre_orden_compra': request.form.get("nombre_orden_compra", "").strip(),
+            # Recibimos los id en lugar de nombres para estos campos:
+            'tipo': request.form.get("tipo", "").strip(),
+            'marca': request.form.get("marca", "").strip(),
+            'modelo': request.form.get("modelo", "").strip(),
+        }
+
+        # Convertir cadenas vacías a None para campos opcionales
+        for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'codigoproveedor']:
+            if datos[key] == "":
+                datos[key] = None
+
+        # Definir el esquema de validación con Cerberus
+        schema = {
+            'codigo_inventario': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
+            'observacion_equipo': {'type': 'string', 'nullable': True},
+            'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$', 'nullable': True},
+            'mac': {'type': 'string', 'regex': '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$', 'nullable': True},
+            'imei': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
+            'numero': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
+            'codigo_Unidad': {'type': 'string', 'nullable': True},
+            'nombre_orden_compra': {'type': 'string', 'nullable': True},
+            # Los campos de tipo, marca y modelo se esperan como id (string, pero no vacíos)
+            'tipo': {'type': 'string', 'nullable': False},
+            'marca': {'type': 'string', 'nullable': False},
+            'modelo': {'type': 'string', 'nullable': False},
+        }
+
+        v = Validator(schema)
+        if not v.validate(datos):
+            errores = v.errors
+            mensaje_error = "Error en los siguientes campos:\n"
+            for campo, error in errores.items():
+                mensaje_error += f"- {campo}: {', '.join(error)}\n"
+            flash(mensaje_error, 'warning')
+            return redirect(url_for("equipo.Equipo"))
+
+        # Verificar si el código de inventario ya existe (excepto para el mismo equipo)
+        cur.execute("""
+            SELECT idEquipo FROM equipo 
+            WHERE Cod_inventarioEquipo = %s AND idEquipo != %s
+        """, (datos['codigo_inventario'], id))
+        if cur.fetchone():
+            flash("El código de inventario ya está en uso", 'warning')
+            return redirect(url_for("equipo.Equipo"))
+
+        # Verificar si el número de serie ya existe (excepto para el mismo equipo)
+        cur.execute("""
+            SELECT idEquipo FROM equipo 
+            WHERE Num_serieEquipo = %s AND idEquipo != %s
+        """, (datos['numero_serie'], id))
+        if cur.fetchone():
+            flash("El número de serie ya está en uso", 'warning')
+            return redirect(url_for("equipo.Equipo"))
+
+        # Obtener ID del modelo utilizando el id recibido (no el nombre)
         try:
-            cur = mysql.connection.cursor()
-
-            # Obtener los datos en formato JSON en lugar de request.form
-            data = request.get_json()
-
-            datos = {
-                'codigo_inventario': data.get("codigo_inventario", "").strip(),
-                'numero_serie': data.get("numero_serie", "").strip(),
-                'observacion_equipo': data.get("observacion_equipo", "").strip(),
-                'codigoproveedor': data.get("codigoproveedor", "").strip(),
-                'mac': data.get("mac", "").strip(),
-                'imei': data.get("imei", "").strip(),
-                'numero': data.get("numero", "").strip(),
-                'nombre_estado_equipo': data.get("nombre_estado_equipo", "").strip(),
-                'codigo_Unidad': data.get("codigo_Unidad", "").strip(),
-                'nombre_orden_compra': data.get("nombre_orden_compra", "").strip(),
-                'nombre_modelo_equipo': data.get("nombre_modelo_equipo", "").strip(),
-            }
-
-            # Convertir cadenas vacías a None para los campos opcionales
-            for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'codigoproveedor']:
-                if datos[key] == "":
-                    datos[key] = None
-
-            # Definir el esquema de validación
-            schema = {
-                'codigo_inventario': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
-                'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
-                'observacion_equipo': {'type': 'string', 'nullable': True},
-                'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$', 'nullable': True},
-                'mac': {'type': 'string', 'regex': '^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$', 'nullable': True},
-                'imei': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
-                'numero': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
-                'codigo_Unidad': {'type': 'string', 'nullable': True},
-                'nombre_orden_compra': {'type': 'string', 'nullable': True},
-                'nombre_modelo_equipo': {'type': 'string', 'nullable': True},
-                'nombre_estado_equipo': {'type': 'string', 'nullable': False},
-            }
-
-            # Validar los datos usando Cerberus
-            v = Validator(schema)
-            if not v.validate(datos):
-                errores = v.errors
-                mensaje_error = "Error en los siguientes campos:\n"
-                for campo, error in errores.items():
-                    mensaje_error += f"- {campo}: {', '.join(error)}\n"
-                flash(mensaje_error, 'warning')
-                return redirect(url_for("equipo.Equipo"))
-
-            # Verificar si el código de inventario ya existe (excepto para el mismo equipo)
-            cur.execute("""
-                SELECT idEquipo FROM equipo WHERE Cod_inventarioEquipo = %s AND idEquipo != %s
-            """, (datos['codigo_inventario'], id))
-            if cur.fetchone():
-                flash("El código de inventario ya está en uso", 'warning')
-                return redirect(url_for("equipo.Equipo"))
-
-            # Verificar si el número de serie ya existe (excepto para el mismo equipo)
-            cur.execute("""
-                SELECT idEquipo FROM equipo WHERE Num_serieEquipo = %s AND idEquipo != %s
-            """, (datos['numero_serie'], id))
-            if cur.fetchone():
-                flash("El número de serie ya está en uso", 'warning')
-                return redirect(url_for("equipo.Equipo"))
-
-            # Obtener ID del modelo
-            cur.execute("SELECT idModelo_Equipo FROM modelo_equipo WHERE nombreModeloequipo = %s", 
-                        (datos['nombre_modelo_equipo'],))
-            modelo = cur.fetchone()
-            if not modelo:
-                flash("El modelo seleccionado no existe", 'warning')
-                return redirect(url_for("equipo.Equipo"))
-
-            # Obtener ID del estado
-            cur.execute("SELECT idEstado_equipo FROM estado_equipo WHERE nombreEstado_equipo = %s", 
-                        (datos['nombre_estado_equipo'],))
-            estado = cur.fetchone()
-            if not estado:
-                flash("El estado seleccionado no existe", 'warning')
-                return redirect(url_for("equipo.Equipo"))
-
-            # Actualizar equipo
-            cur.execute("""
-                UPDATE equipo
-                SET Cod_inventarioEquipo = %s, Num_serieEquipo = %s, ObservacionEquipo = %s, 
-                    codigoproveedor_equipo = %s, macEquipo = %s, imeiEquipo = %s, 
-                    numerotelefonicoEquipo = %s, idUnidad = %s, idOrden_compra = %s, 
-                    idModelo_equipo = %s, idEstado_equipo = %s
-                WHERE idEquipo = %s
-            """, (
-                datos['codigo_inventario'], datos['numero_serie'], datos['observacion_equipo'], 
-                datos['codigoproveedor'], datos['mac'], datos['imei'], datos['numero'], 
-                datos['codigo_Unidad'], datos['nombre_orden_compra'], modelo['idModelo_Equipo'], 
-                estado['idEstado_equipo'], id
-            ))
-
-            mysql.connection.commit()
-            flash("Equipo editado correctamente", 'success')
-            print("Mensajes flash en sesión:")
-            print("Redirigiendo a la vista principal de equipos...") 
+            modelo_id = int(datos['modelo'])
+        except ValueError:
+            flash("El modelo seleccionado es inválido", 'warning')
             return redirect(url_for("equipo.Equipo"))
 
-        except IntegrityError as e:
-            mysql.connection.rollback()
-            mensaje_error = str(e)
-            if "Duplicate entry" in mensaje_error:
-                if "Cod_inventarioEquipo" in mensaje_error:
-                    flash("El código de inventario ya existe", 'warning')
-                elif "Num_serieEquipo" in mensaje_error:
-                    flash("El número de serie ya existe", 'warning')
-                else:
-                    flash("Error de duplicación en la base de datos", 'warning')
+        cur.execute("SELECT idModelo_Equipo FROM modelo_equipo WHERE idModelo_Equipo = %s", (modelo_id,))
+        modelo = cur.fetchone()
+        if not modelo:
+            flash("El modelo seleccionado no existe", 'warning')
+            return redirect(url_for("equipo.Equipo"))
+
+        # Actualizar equipo (no se actualiza estado, marca y tipo ya que no están en la tabla equipo)
+        cur.execute("""
+            UPDATE equipo
+            SET Cod_inventarioEquipo = %s, 
+                Num_serieEquipo = %s, 
+                ObservacionEquipo = %s, 
+                codigoproveedor_equipo = %s, 
+                macEquipo = %s, 
+                imeiEquipo = %s, 
+                numerotelefonicoEquipo = %s, 
+                idUnidad = %s, 
+                idOrden_compra = %s, 
+                idModelo_equipo = %s
+            WHERE idEquipo = %s
+        """, (
+            datos['codigo_inventario'], 
+            datos['numero_serie'], 
+            datos['observacion_equipo'], 
+            datos['codigoproveedor'], 
+            datos['mac'], 
+            datos['imei'], 
+            datos['numero'], 
+            datos['codigo_Unidad'], 
+            datos['nombre_orden_compra'], 
+            modelo['idModelo_Equipo'], 
+            id
+        ))
+
+        mysql.connection.commit()
+        flash("Equipo editado correctamente", 'success')
+        return redirect(url_for("equipo.Equipo"))
+
+    except IntegrityError as e:
+        mysql.connection.rollback()
+        mensaje_error = str(e)
+        if "Duplicate entry" in mensaje_error:
+            if "Cod_inventarioEquipo" in mensaje_error:
+                flash("El código de inventario ya existe", 'warning')
+            elif "Num_serieEquipo" in mensaje_error:
+                flash("El número de serie ya existe", 'warning')
             else:
-                flash("Error de integridad en la base de datos", 'danger')
-            return redirect(url_for("equipo.Equipo"))
+                flash("Error de duplicación en la base de datos", 'warning')
+        else:
+            flash("Error de integridad en la base de datos", 'danger')
+        return redirect(url_for("equipo.Equipo"))
 
-        except Exception as error:
-            mysql.connection.rollback()
-            flash(f"Error al actualizar el equipo: {str(error)}", 'danger')
-            return redirect(url_for("equipo.Equipo"))
+    except Exception as error:
+        mysql.connection.rollback()
+        flash(f"Error al actualizar el equipo: {str(error)}", 'danger')
+        return redirect(url_for("equipo.Equipo"))
+
 
 
 
