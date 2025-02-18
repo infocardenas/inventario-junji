@@ -350,16 +350,13 @@ def delete_modelo_equipo():
         # Eliminar dependencias en devolucion
         cur.execute("""
             DELETE FROM devolucion 
-            WHERE rutFuncionario IN (
-                SELECT rutFuncionario FROM funcionario 
-                WHERE rutFuncionario IN (
-                    SELECT rutFuncionario FROM asignacion 
-                    WHERE idAsignacion IN (
-                        SELECT idAsignacion FROM equipo_asignacion 
-                        WHERE idEquipo IN (
-                            SELECT idEquipo FROM equipo WHERE idModelo_equipo IN %s
-                        )
-                    )
+            WHERE idEquipoAsignacion IN (
+                SELECT idEquipoAsignacion
+                FROM equipo_asignacion
+                WHERE idEquipo IN (
+                    SELECT idEquipo
+                    FROM equipo 
+                    WHERE idModelo_equipo IN (%s)
                 )
             )
         """, (tuple(id_list),))
