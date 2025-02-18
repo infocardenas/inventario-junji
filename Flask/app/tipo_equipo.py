@@ -264,27 +264,19 @@ def delete_tipo_equipo(id):
         # PASO 3: Eliminar dependencias en devolucion
         cur.execute(f"""
             DELETE FROM devolucion 
-            WHERE rutFuncionario IN (
-                SELECT f.rutFuncionario 
-                FROM funcionario f
-                WHERE f.rutFuncionario IN (
-                    SELECT a.rutFuncionario 
-                    FROM asignacion a
-                    WHERE a.idAsignacion IN (
-                        SELECT ea.idAsignacion 
-                        FROM equipo_asignacion ea
-                        WHERE ea.idEquipo IN (
-                            SELECT e.idEquipo 
-                            FROM equipo e
-                            WHERE e.idModelo_equipo IN (
-                                SELECT me.idModelo_Equipo 
-                                FROM modelo_equipo me
-                                WHERE me.idMarca_Tipo_Equipo IN (
-                                    SELECT mte.idMarcaTipo 
-                                    FROM marca_tipo_equipo mte
-                                    WHERE mte.idTipo_equipo IN ({placeholders})
-                                )
-                            )
+            WHERE idEquipoAsignacion IN (
+                SELECT idEquipoAsignacion 
+                FROM equipo_asignacion
+                WHERE idEquipo IN (
+                    SELECT idEquipo 
+                    FROM equipo
+                    WHERE idModelo_equipo IN (
+                        SELECT idModelo_equipo 
+                        FROM modelo_equipo
+                        WHERE idMarca_Tipo_Equipo IN (
+                            SELECT idMarca_Tipo_Equipo
+                            FROM marca_tipo_equipo
+                            WHERE idTipo_equipo IN ({placeholders})
                         )
                     )
                 )
