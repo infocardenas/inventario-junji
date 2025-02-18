@@ -661,32 +661,34 @@ def equipo_detalles(idEquipo):
     #TODO: Revisar que hacer con las observaciones de Traslado, 
     #Revisar que hacer con observacion de Devolucion
     cur.execute("""
-                SELECT i.fechaIncidencia as fecha, i.idIncidencia as id,
-                    "Incidencia" as evento, i.observacionIncidencia as observacion,
-                    i.nombreIncidencia as nombre
-                FROM incidencia i
-                WHERE i.idEquipo = %s
-                UNION ALL
-                SELECT traslado.fechaTraslado, traslado.idTraslado, "Traslado",
-                    "Nombre", "observacion"
-                FROM traslado, traslacion
-                WHERE traslacion.idTraslado = traslado.idTraslado AND traslacion.idEquipo = %s
-                UNION ALL
-                SELECT a.fecha_inicioAsignacion, a.idAsignacion, "Asignacion",
-                    a.ObservacionAsignacion, f.nombreFuncionario 
-                FROM asignacion a
-                INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
-                INNER JOIN equipo_asignacion ea on a.idAsignacion = ea.idAsignacion
-                WHERE ea.idEquipo = %s
-                UNION ALL
-                SELECT a.fechaDevolucion, a.idAsignacion, "Devolucion",
-                    a.ObservacionAsignacion, f.nombreFuncionario
-                FROM asignacion a
-                INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
-                INNER JOIN equipo_asignacion ea on a.idAsignacion = ea.idAsignacion
-                WHERE ea.idEquipo = %s
-                ORDER BY fecha DESC
-                """, (idEquipo, idEquipo, idEquipo, idEquipo))
+            SELECT i.fechaIncidencia as fecha, i.idIncidencia as id,
+                "Incidencia" as evento, i.observacionIncidencia as observacion,
+                i.nombreIncidencia as nombre
+            FROM incidencia i
+            WHERE i.idEquipo = %s
+            UNION ALL
+            SELECT traslado.fechaTraslado, traslado.idTraslado, "Traslado",
+                "Nombre", "observacion"
+            FROM traslado, traslacion
+            WHERE traslacion.idTraslado = traslado.idTraslado AND traslacion.idEquipo = %s
+            UNION ALL
+            SELECT a.fecha_inicioAsignacion, a.idAsignacion, "Asignacion",
+                a.ObservacionAsignacion, f.nombreFuncionario 
+            FROM asignacion a
+            INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+            INNER JOIN equipo_asignacion ea on a.idAsignacion = ea.idAsignacion
+            WHERE ea.idEquipo = %s
+            UNION ALL
+            SELECT d.fechaDevolucion, ea.idAsignacion, "Devolucion",
+                d.observacionDevolucion, f.nombreFuncionario
+            FROM devolucion d
+            INNER JOIN equipo_asignacion ea on d.idEquipoAsignacion = ea.idEquipoAsignacion
+            INNER JOIN asignacion a on ea.idAsignacion = a.idAsignacion
+            INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
+            WHERE ea.idEquipo = %s
+            ORDER BY fecha DESC
+            """, (idEquipo, idEquipo, idEquipo, idEquipo))
+
     data_eventos = cur.fetchall()
     #cur.execute(
         #"""
