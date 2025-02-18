@@ -416,7 +416,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             # logo
             # imageUrl = url_for('static', filename='img/logo_junji.png')
             # print(imageUrl)
-            self.image("logo_junji.jpg", 10, 8, 25)
+            self.image("static/img/logo_junji.png", 10, 8, 32)
             # font
             self.set_font("times", "B", 12)
             self.set_text_color(170, 170, 170)
