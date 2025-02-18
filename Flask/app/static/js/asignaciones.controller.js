@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     refreshCheckboxListeners();
 
-    const btnDevolver = document.getElementById("devolver-seleccionados");
+    const btnDevolver = document.getElementById("devolver-button");
 
     if (btnDevolver) {
         btnDevolver.addEventListener("click", () => {
@@ -118,7 +118,7 @@ function devolverSeleccionados() {
 
 function actualizarEstadoBotonDevolver() {
     const checkboxes = document.querySelectorAll(".row-checkbox:checked");
-    const btnDevolver = document.getElementById("devolver-seleccionados");
+    const btnDevolver = document.getElementById("devolver-button");
 
     let hayDevuelto = false; // Variable para saber si hay al menos un equipo ya devuelto
 
