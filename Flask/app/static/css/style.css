@@ -819,6 +819,7 @@ svg.bi {
 .toolbar-1, .toolbar-3 {
     flex: 1;
     display: flex;
+    gap: 0.5rem;
 }
 /* Aplica el cursor pointer solo a las filas de la tabla con id "tablaEquipo" */
 #tablaEquipo tbody tr {

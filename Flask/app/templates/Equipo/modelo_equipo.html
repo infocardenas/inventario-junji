@@ -2,77 +2,69 @@
 {% block body %}
 {% from 'funciones_macro.html' import select_para_marca %}
 
-<h2 class="mb-4">Modelos de Equipos</h2>
+<div class="row">
+    <div class="col">
+        <h2>Modelos de equipos</h2>
+        <div id="alertContainer" class="alert d-none" role="alert"></div> <!-- ??? -->
 
-
-
-<div>
-
-    <div id="alertContainer" class="alert d-none" role="alert"></div>
-
-    <div class="row">
-        <div class="col-md-12">
-            <!-- Botón para abrir el modal -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addModeloModal">
-                    <i class="bi bi-plus-lg"></i> Agregar Modelo
-                </button>
-                <button class="btn btn-danger shadow-sm" id="eliminarSeleccionados">
-                    <i class="bi bi-trash"></i>
-                </button>
+        <div class="toolbar">
+            <div class="toolbar-1">
+                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addModeloModal"><i class="bi bi-plus-lg"></i> Agregar</button>
             </div>
-
-
-            <!-- Tabla de modelo equipos -->
-            <div>
-                <div class="table-responsive">
-                    <table class="table table-striped table-bordered">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-column" onclick="seleccionarTodo()">Todo</th>
-                                <th>Modelo Equipo</th>
-                                <th>Tipo Equipo</th>
-                                <th>Marca Equipo</th>
-                                <th>Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody id="myTableBody">
-                            {% if modelo_equipo %}
-                            {% for modeloe in modelo_equipo %}
-                            <tr data-id="{{ modeloe.idModelo_Equipo }}">
-                                <td class="checkbox-column">
-                                    <input type="checkbox" class="checkbox-table row-checkbox">
-                                </td>
-                                <td>{{ modeloe.nombreModeloequipo }}</td>
-                                <td data-tipo-id="{{ modeloe.idTipo_equipo }}">{{ modeloe.nombreTipo_equipo }}</td>
-                                <td data-marca-id="{{ modeloe.idMarca_Equipo }}">{{ modeloe.nombreMarcaEquipo }}</td>                                
-                                <td>
-                                    <button class="btn button-info btn-sm btn-editar-modelo"
-                                    data-bs-toggle="modal" data-bs-target="#editModeloEquipoModal"
-                                    data-id="{{ modeloe.idModelo_Equipo }}"
-                                    data-nombre="{{ modeloe.nombreModeloequipo }}">
-                                    <i class="bi bi-pencil-square"></i>
-                                    </button>   
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            {% else %}
-                            <tr>
-                                <td colspan="5" class="text-center">No hay datos disponibles.</td>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="toolbar-2">
+                <input name="palabra" type="text" class="search-box" placeholder="Buscar modelo..." id="buscador" onkeyup="busqueda('myTableBody')" />
             </div>
-
+            <div class="toolbar-3">
+                <button class="btn btn-danger shadow-sm" id="eliminarSeleccionados"><i class="bi bi-trash"></i></button>
+            </div>
         </div>
+
+        <!-- Tabla de modelo equipos -->
+        <div>
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th class="checkbox-column" onclick="seleccionarTodo()">Todo</th>
+                            <th>Modelo Equipo</th>
+                            <th>Tipo Equipo</th>
+                            <th>Marca Equipo</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="myTableBody">
+                        {% if modelo_equipo %}
+                        {% for modeloe in modelo_equipo %}
+                        <tr data-id="{{ modeloe.idModelo_Equipo }}">
+                            <td class="checkbox-column">
+                                <input type="checkbox" class="checkbox-table row-checkbox">
+                            </td>
+                            <td>{{ modeloe.nombreModeloequipo }}</td>
+                            <td data-tipo-id="{{ modeloe.idTipo_equipo }}">{{ modeloe.nombreTipo_equipo }}</td>
+                            <td data-marca-id="{{ modeloe.idMarca_Equipo }}">{{ modeloe.nombreMarcaEquipo }}</td>                                
+                            <td>
+                                <button class="btn button-info btn-sm btn-editar-modelo"
+                                data-bs-toggle="modal" data-bs-target="#editModeloEquipoModal"
+                                data-id="{{ modeloe.idModelo_Equipo }}"
+                                data-nombre="{{ modeloe.nombreModeloequipo }}">
+                                <i class="bi bi-pencil-square"></i>
+                                </button>   
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center">No hay datos disponibles.</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        {% include 'Equipo/modelo_equipo.modals.html'%}
+        <script src="{{ url_for('static', filename='js/Equipo/modeloEquipo.js') }}"></script>
+
+        {% endblock %}
     </div>
 </div>
-
-
-{% include 'Equipo/modelo_equipo.modals.html'%}
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-<script src="{{ url_for('static', filename='js/Equipo/modeloEquipo.js') }}"></script>
-
-{% endblock %}

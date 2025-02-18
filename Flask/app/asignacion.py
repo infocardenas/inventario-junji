@@ -304,11 +304,11 @@ def delete_asignacion(id):
         mysql.connection.commit()
         cur.execute("DELETE FROM asignacion WHERE idAsignacion = %s", (id,))
         mysql.connection.commit()
-        flash("asignacion eliminado correctamente")
+
+        flash("Asignación eliminada exitosamente", "success")
         return redirect(url_for("asignacion.Asignacion"))
     except Exception as e:
-        flash("Error al crear")
-        #flash(e.args[1])
+        flash(f"Error al eliminar: {e}", "danger")
         return redirect(url_for("asignacion.Asignacion"))
 
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
@@ -458,7 +458,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     class PDF(FPDF):
         def header(self):
             #imagen del encabezado
-            self.image("logo_junji.jpg", 10, 8, 25)
+            self.image("static/img/logo_junji.png", 10, 8, 32)
             # font
             self.set_font("times", "B", 12)
             self.set_text_color(170, 170, 170)
@@ -691,6 +691,7 @@ def devolver_equipos():
             INSERT INTO devolucion (fechaDevolucion, idEquipoAsignacion)
             VALUES (%s, %s)
         """, (today, id_equipo_asignacion))
+        id_devolucion = str(cur.lastrowid) # Recupera el ID de la devolución recién insertada
 
         # Actualizar el estado del equipo a "SIN ASIGNAR"
         cur.execute("""
@@ -716,31 +717,76 @@ def devolver_equipos():
                 WHERE idAsignacion = %s
             """, (id_asignacion,))
 
+    # Obtiene información relevante del funcionario para añadir al PDF
+    cur.execute("""
+        SELECT 
+            f.nombreFuncionario,
+            a.idAsignacion,
+            a.fecha_inicioAsignacion,
+            u.nombreUnidad
+        FROM funcionario f
+        JOIN asignacion a ON f.rutFuncionario = a.rutFuncionario
+        JOIN unidad u ON f.idUnidad = u.idUnidad
+        WHERE a.idAsignacion = %s
+    """, (id_asignacion,))
+    query = cur.fetchone()
+
+    data_funcionario_PDF = {
+        "nombre": query["nombreFuncionario"],
+        "id_asignacion": str(query["idAsignacion"]),
+        "fecha_asignacion": str(query["fecha_inicioAsignacion"].strftime("%d-%m-%Y")),
+        "unidad": query["nombreUnidad"]
+    }
+
+    # Obtiene información relevante de los equipos seleccionados para devolver para añadir al PDF
+    placeholders = ', '.join(['%s'] * len(ids_equipos_asignacion))
+    cur.execute(f"""
+        SELECT
+            te.nombreTipo_equipo,
+            mae.nombreMarcaEquipo,
+            me.nombreModeloequipo,
+            e.Num_serieEquipo,
+            e.Cod_inventarioEquipo
+        FROM equipo e
+        JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+        JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+        JOIN equipo_asignacion ea ON e.idEquipo = ea.idEquipo
+        WHERE ea.idEquipoAsignacion IN ({placeholders})
+    """, tuple(ids_equipos_asignacion))
+    query = cur.fetchall()
+
+    data_equipos_PDF = [
+        {
+            "tipo": equipo["nombreTipo_equipo"],
+            "marca": equipo["nombreMarcaEquipo"],
+            "modelo": equipo["nombreModeloequipo"],
+            "num_serie": str(equipo["Num_serieEquipo"]),
+            "cod_inventario": str(equipo["Cod_inventarioEquipo"])
+        }
+        for equipo in query
+    ]
+
     # Si todo fue exitoso, confirmar cambios
     cur.execute("COMMIT")
-    
+    crear_pdf_devolucion(data_funcionario_PDF, data_equipos_PDF, id_devolucion)
     flash("Devolución de equipos realizada exitosamente", "success")
     return redirect(url_for("asignacion.Asignacion"))
 
 
-def crear_pdf_devolucion(
-        Funcionario,
-        Unidad,
-        Asignacion,
-        Equipos):
+def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
     class PDF(FPDF):
         def header(self):
             #logo
-            #imageUrl = url_for('static', filename='img/logo_junji.png')
-            #print(imageUrl)
-            self.image('logo_junji.jpg', 10, 8, 25)
+            self.image("static/img/logo_junji.png", 10, 8, 32)
             #font
             self.set_font('times', 'B', 12)
             self.set_text_color(170,170,170)
             #Title
             self.cell(0, 30, '', border=False, ln=1, align='L')
-            self.cell(0, 5, 'JUNTA NACIONAL', border=False, ln=1, align='L')
-            self.cell(0, 5, 'INFANTILES', border=False, ln=1, align='L')
+            self.cell(0, 5, 'JUNTA NACIONAL DE', border=False, ln=1, align='L')
+            self.cell(0, 5, 'JARDINES INFANTILES', border=False, ln=1, align='L')
             self.cell(0, 5, 'Unidad de Inventarios', border=False, ln=1, align='L')
             #line break
             self.ln(10)
@@ -751,12 +797,12 @@ def crear_pdf_devolucion(
                 self.set_text_color(170,170,170)
                 self.cell(0,0, "", ln=1)
                 self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-                self.cell(0,12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1) #problema con el caracter ’
+                self.cell(0,12, "O'Higgins Poniente 77 Concepción. Tel: 412125579", ln=1) #problema con el caracter ’
                 self.cell(0,12, "www.junji.cl", ln=1)
         
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
-    titulo = "ACTA Devolucion de Equipo Informatico N°" + str(Asignacion['idAsignacion'])
+    titulo = "ACTA Devolución de Equipo Informático N°" + id_devolucion
     creado_por = "Documento creado por: " + session['user']
 
     pdf.set_font("times", "", 20)
@@ -764,13 +810,13 @@ def crear_pdf_devolucion(
     pdf.set_font("times", "", 12)
     pdf.cell(0, 10, creado_por, ln=True, align="L")
     presentacion1 = "Por el presente se hace entrega a: "
-    presentacion2 = "Dependiente de la Unidad: "
-    presentacion22 = "En la Fecha: "
+    presentacion2 = "Dependiente de la unidad: "
+    presentacion22 = "En la fecha: "
     presentacion3 = "Del siguiente equipo computacional"
 
-    nombreFuncionario = Funcionario["nombreFuncionario"]
-    nombreUnidad = Unidad["nombreUnidad"]
-    fechaAsignacion = str(Asignacion["fecha_inicioAsignacion"])
+    nombre_funcionario = funcionario["nombre"]
+    unidad_funcionario = funcionario["unidad"]
+    fecha_asignacion = funcionario["fecha_asignacion"]
 
     pdf.ln(10)
     with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
@@ -784,29 +830,28 @@ def crear_pdf_devolucion(
         cols.write(presentacion3)
         cols.ln()
         cols.new_column()
-        cols.write(nombreFuncionario)
+        cols.write(nombre_funcionario)
         cols.ln()
-        cols.write(nombreUnidad)
+        cols.write(unidad_funcionario)
         cols.ln()
-        cols.write(fechaAsignacion)
+        cols.write(fecha_asignacion)
 
     pdf.ln(20)
     TABLE_DATA = (
-        ("N°", "Tipo_Equipo", "Marca", "Modelo", "N° Serie", "N° Inventario"),
+        ("N°", "Tipo equipo", "Marca", "Modelo", "N° Serie", "N° Inventario"),
     )
     i = 0
-    for equipo in Equipos:
-        id = str(equipo["idEquipo"])
-        tipo_equipo = equipo["nombreTipo_equipo"]
-        marca = equipo["nombreMarcaEquipo"]
-        modelo = equipo["nombreModeloequipo"]
-        num_serie = str(equipo["Num_serieEquipo"])
-        num_inventario = str(equipo["Cod_inventarioEquipo"])
+    for equipo in equipos:
+        tipo = equipo["tipo"]
+        marca = equipo["marca"]
+        modelo = equipo["modelo"]
+        num_serie = equipo["num_serie"]
+        num_inventario = equipo["cod_inventario"]
 
         i += 1
 
         TABLE_DATA = TABLE_DATA + (
-            (str(i), tipo_equipo, marca, modelo, num_serie, num_inventario),
+            (str(i), tipo, marca, modelo, num_serie, num_inventario),
         )
     with pdf.table() as table:
         for datarow in TABLE_DATA:
@@ -816,11 +861,11 @@ def crear_pdf_devolucion(
 
     observacion = "Esta es una observacion"
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado TI:" 
-    rutEncargado = "Numero de RUT:"
+    nombreEncargado = "Nombre del encargado TI:" 
+    rutEncargado = "RUT:"
     firmaEncargado = "Firma:"
-    nombreMinistro = "Nombre Funcionario:"
-    rutMinistro = "Numero de RUT:"
+    nombreMinistro = "Nombre del funcionario:"
+    rutMinistro = "RUT:"
     firma = "Firma"
     with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
         cols.write(nombreEncargado)
@@ -846,17 +891,17 @@ def crear_pdf_devolucion(
         cols.ln()
         cols.new_column()
         for i in range(0, 3):
-            cols.write(text="_________________________")
+            cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
         cols.ln()
         cols.ln()
         for i in range(0, 3):
-            cols.write(text="_________________________")
+            cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
     creado_por = "documento creado por: " + session['user']
-    nombrePdf = "devolucion_" + str(Asignacion["idAsignacion"]) + ".pdf"
+    nombrePdf = "devolucion_" + id_devolucion + ".pdf"
     pdf.output(nombrePdf)
     shutil.move(nombrePdf, "pdf/")
 

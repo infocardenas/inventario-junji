@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     refreshCheckboxListeners();
 
-    const btnDevolver = document.getElementById("devolver-seleccionados");
+    const btnDevolver = document.getElementById("devolver-button");
 
     if (btnDevolver) {
         btnDevolver.addEventListener("click", () => {
@@ -117,13 +117,22 @@ function devolverSeleccionados() {
 }
 
 function actualizarEstadoBotonDevolver() {
-    const checkboxes = document.querySelectorAll(".row-checkbox:checked:not(:disabled)");
-    const btnDevolver = document.getElementById("devolver-seleccionados");
+    const checkboxes = document.querySelectorAll(".row-checkbox:checked");
+    const btnDevolver = document.getElementById("devolver-button");
 
-    if (checkboxes.length > 0) {
-        btnDevolver.removeAttribute("disabled");
-    } else {
+    let hayDevuelto = false; // Variable para saber si hay al menos un equipo ya devuelto
+
+    checkboxes.forEach(checkbox => {
+        if (checkbox.dataset.devuelto === "true") {
+            hayDevuelto = true;
+        }
+    });
+
+    // Si hay un equipo ya devuelto, deshabilitar el botón
+    if (hayDevuelto || checkboxes.length === 0) {
         btnDevolver.setAttribute("disabled", "true");
+    } else {
+        btnDevolver.removeAttribute("disabled");
     }
 }
 

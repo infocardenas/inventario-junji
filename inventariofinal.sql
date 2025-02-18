@@ -71,15 +71,13 @@ CREATE TABLE `unidad` (
 --
 
 CREATE TABLE `funcionario` (
-  `rutFuncionario` VARCHAR(10) NOT NULL,
+  `rutFuncionario` VARCHAR(10) PRIMARY KEY NOT NULL,
   `nombreFuncionario` VARCHAR(45) NOT NULL,
   `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TECNICO', 'DIRECTIVO') NOT NULL,
-  `idUnidad` INT DEFAULT NULL,
   `correoFuncionario` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`rutFuncionario`),
+  `idUnidad` INT NOT NULL,
   UNIQUE KEY `unique_correoFuncionario` (`correoFuncionario`),
-  CONSTRAINT `funcionario_ibfk_1` FOREIGN KEY (`idUnidad`) 
-    REFERENCES `unidad` (`idUnidad`)
+  CONSTRAINT `fk_funcionario_idUnidad` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 
@@ -298,7 +296,7 @@ CREATE TABLE `devolucion` (
   `fechaDevolucion` DATE DEFAULT NULL,
   `observacionDevolucion` VARCHAR(250) DEFAULT NULL,
   `idEquipoAsignacion` INT NOT NULL,
-  CONSTRAINT `fk_devolucion_idAsignacion` FOREIGN KEY (`idEquipoAsignacion`) REFERENCES `equipo_asignacion` (`idEquipoAsignacion`)
+  CONSTRAINT `fk_devolucion_idAsignacion` FOREIGN KEY (`idEquipoAsignacion`) REFERENCES `equipo_asignacion` (`idEquipoAsignacion`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --

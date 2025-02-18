@@ -5,39 +5,19 @@
 <div class="row">
     <div class="col">
         <div>
-            <h2>Tipos de Equipos</h2>
-            <!-- Fila para botón y barra de búsqueda -->
-            <div>
-                <!-- Barra de búsqueda -->
-                <div class="d-flex justify-content-center">
-                    <input name="palabra" type="text" class="search-box" placeholder="Buscar tipo de equipo..."
-                        id="buscador" onkeyup="busqueda('myTableBody')" />
-                </div>
+            <h2>Tipos de equipos</h2>
 
-                <div class="d-flex justify-content-between" id="container-buttons-equipo">
-                    <!-- Botón para agregar tipo de equipo -->
+            <!-- Barra de herramientas -->
+            <div class="toolbar">
+                <div class="toolbar-1">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTipoEquipoModal">Agregar</button>
-
-                    <div class="d-flex gap-2">
-                        <!-- Botón para editar tipo de equipo -->
-                        <button type="button" class="btn btn-warning edit-button" 
-                            data-bs-toggle="tooltip"
-                            data-bs-title="Editar"
-                            disabled>
-                            <i class="bi bi-pencil-square"></i>
-                        </button>
-
-                        <!-- Botón para eliminar tipo de equipo -->
-                        <button type="button" class="btn btn-danger delete-button"
-                            data-title="Eliminar tipo(s) de equipo"
-                            data-message="¿Estás seguro de que deseas eliminar los tipos seleccionados? Esto afectará las relaciones asociadas."
-                            data-url=""
-                            data-bs-toggle="tooltip"
-                            data-bs-title="Eliminar"
-                            disabled>
-                            <i class="bi bi-trash-fill"></i>
-                        </button>
-                    </div>
+                </div>
+                <div class="toolbar-2">
+                    <input name="palabra" type="text" class="search-box" placeholder="Buscar tipo de equipo..." id="buscador" onkeyup="busqueda('myTableBody')" />
+                </div>
+                <div class="toolbar-3">
+                    <button type="button" class="btn btn-warning edit-button" data-bs-toggle="tooltip" data-bs-title="Editar" disabled><i class="bi bi-pencil-square"></i></button>
+                    <button type="button" class="btn btn-danger delete-button" data-title="Eliminar tipo(s) de equipo" data-message="¿Estás seguro de que deseas eliminar los tipos seleccionados? Esto afectará las relaciones asociadas." data-url="" data-bs-toggle="tooltip" data-bs-title="Eliminar" disabled><i class="bi bi-trash-fill"></i></button>
                 </div>
             </div>
 

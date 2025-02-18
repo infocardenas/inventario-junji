@@ -82,18 +82,24 @@
                                     </tr>
                                 </thead>
                                 <tbody id="equiposTable">
-                                    {% for equipo in equipos_sin_asignar %}
-                                    <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
-                                        data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
-                                        <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
-                                        <td>{{ equipo.nombreTipo_equipo }}</td>
-                                        <td>{{ equipo.nombreMarcaEquipo }}</td>
-                                        <td>{{ equipo.nombreModeloequipo }}</td>
-                                        <td>{{ equipo.Cod_inventarioEquipo }}</td>
-                                        <td>{{ equipo.Num_serieEquipo }}</td>
-                                        <td>{{ equipo.nombreUnidad }}</td>
-                                    </tr>
-                                    {% endfor %}
+                                    {% if equipos_sin_asignar %}
+                                        {% for equipo in equipos_sin_asignar %}
+                                        <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
+                                            data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
+                                            <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
+                                            <td>{{ equipo.nombreTipo_equipo }}</td>
+                                            <td>{{ equipo.nombreMarcaEquipo }}</td>
+                                            <td>{{ equipo.nombreModeloequipo }}</td>
+                                            <td>{{ equipo.Cod_inventarioEquipo }}</td>
+                                            <td>{{ equipo.Num_serieEquipo }}</td>
+                                            <td>{{ equipo.nombreUnidad }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7" style="text-align: center">No hay equipos disponibles</td>
+                                        </tr>
+                                    {% endif %}
                                 </tbody>
                             </table>
                         </div>
@@ -138,7 +144,7 @@
     </div>
 </div>
 
-<!-- Modal para ver detalles de equipo dentro del modal de agregar equipo -->
+<!-- Modal para ver detalles de equipo dentro del modal de agregar equipo --> <!--! Modal obsoleto, se mantiene por posbile uso futuro-->
 <div class="modal fade" id="modalViewDetails" tabindex="-1" aria-labelledby="modalViewDetailsLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -191,7 +197,7 @@
 
 {% for asig in asignacion %}
 <!-- Modal para ver detalles de la asignación -->
-<div class="modal fade" id="modal-view-{{ asig.idAsignacion }}" tabindex="-1" aria-labelledby="modal-view-title-{{ asig.idAsignacion }}" aria-hidden="true">
+<div class="modal fade" id="modal-view-{{ asig.idEquipoAsignacion }}" tabindex="-1" aria-labelledby="modal-view-title-{{ asig.idAsignacion }}" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -236,7 +242,7 @@
 </div>
 {% endfor %}
 
-<!-- Modal de confirmación -->
+<!-- Modal de devolución de los equipos/asignaciones seleccionadas -->
 <div class="modal fade" id="modalConfirmarDevolucion" tabindex="-1" aria-labelledby="modalConfirmarDevolucionLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -264,7 +270,7 @@
                                 {% for asig in asignacion %}
                                 <!-- Fila oculta por defecto -->
                                 <tr id="modal-row-{{ asig.idEquipoAsignacion }}" style="display: none;">
-                                    <td>{{ asig.idEquipoAsignacion }}</td>
+                                    <td>{{ asig.idAsignacion }}</td>
                                     <td>{{ asig.nombreFuncionario }}</td>
                                     <td>{{ asig.nombreTipo_equipo }}</td>
                                     <td>{{ asig.nombreMarcaEquipo }}</td>

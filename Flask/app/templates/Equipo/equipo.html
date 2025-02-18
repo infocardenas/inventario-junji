@@ -92,66 +92,23 @@
         </div>
 
         <div>
-            <!-- Título -->
-            <div class="text-center mb-4">
-                <h2 class="mb-0">Equipos</h2>
-            </div>
+            <h2>Equipos</h2>
 
-            <!-- Toolbar con Título, Buscador y Botones -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <!-- Sección Izquierda -->
-                <div class="d-flex gap-2">
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipoModal">
-                        Agregar
-                    </button>
-                    <button class="btn btn-primary" onclick="showDiv('importar_excel', ['formularioExcel'])">
-                        <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Importar Excel"
-                            width="20" height="20" class="me-1">
-                        <span>Importar</span>
-                    </button>
-                    <button class="btn btn-primary" onclick="showDiv('formularioExcel', ['importar_excel'])">
-                        <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
-                            width="20" height="20" class="me-1">
-                        <span>Exportar</span>
-                    </button>
+            <!-- Barra de herramientas -->
+            <div class="toolbar">
+                <div class="toolbar-1">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipoModal">Agregar</button>
+                    <button class="btn btn-primary" onclick="showDiv('importar_excel', ['formularioExcel'])"><img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Importar Excel" width="20" height="20" class="me-1"><span>Importar</span></button>
+                    <button class="btn btn-primary" onclick="showDiv('formularioExcel', ['importar_excel'])"><img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel" width="20" height="20" class="me-1"><span>Exportar</span></button>
                 </div>
-
-                <!-- Título y Buscador -->
-                <div class="d-flex flex-grow-1 justify-content-center align-items-center">
-                    <div>
-                        <div>
-                            <form action="/consulta_equipo" method="POST">
-                                <input name="palabra" type="text" class="search-box" placeholder="Buscar equipos"
-                                    id="buscador" onkeyup="busqueda('myTableBody')" />
-                            </form>
-                        </div>
-                    </div>
+                <div class="toolbar-2">
+                    <input name="palabra" type="text" class="search-box" placeholder="Buscar equipos" id="buscador" onkeyup="busqueda('myTableBody')" />
                 </div>
-
-                <!-- Sección Derecha -->
-                <div class="d-flex gap-2">
-                    <button class="btn btn-success " id="assign-button" data-bs-toggle="tooltip"
-                        data-bs-title="Asignar">
-                        <i class="bi bi-person-fill-add"></i>
-                    </button>
-                    <button class="btn btn-warning " id="return-button" data-bs-toggle="tooltip"
-                        data-bs-title="Devolver">
-                        <i class="fa-solid fa-arrow-rotate-left" style="color: #ffffff;"></i>
-                    </button>
-
-                    <button class="btn btn-secondary" id="incidencia-button" data-bs-toggle="tooltip"
-                        data-bs-placement="top" title="Incidencia" onclick="setIdEquipoInModal()" disabled>
-                        <i class="bi bi-incognito"></i>
-                    </button>
-
-
-
-                    <button class="btn btn-danger" id="delete-selected-button" data-bs-toggle="tooltip"
-                        data-bs-title="Eliminar">
-                        <i class="bi bi-trash-fill"></i>
-                    </button>
-
-
+                <div class="toolbar-3">
+                    <button class="btn btn-success" id="assign-button" data-bs-toggle="tooltip" data-bs-title="Asignar"><i class="bi bi-person-fill-add"></i></button>
+                    <button class="btn btn-warning" id="return-button" data-bs-toggle="tooltip" data-bs-title="Devolver"><i class="fa-solid fa-arrow-rotate-left" style="color: #ffffff;"></i></button>
+                    <button class="btn btn-secondary" id="incidencia-button" data-bs-toggle="tooltip" title="Incidencia" onclick="setIdEquipoInModal()" disabled><i class="bi bi-incognito"></i></button>
+                    <button class="btn btn-danger" id="delete-selected-button" data-bs-toggle="tooltip" data-bs-title="Eliminar"><i class="bi bi-trash-fill"></i></button>
                 </div>
             </div>
 
