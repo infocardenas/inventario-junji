@@ -820,3 +820,7 @@ svg.bi {
     flex: 1;
     display: flex;
 }
+/* Aplica el cursor pointer solo a las filas de la tabla con id "tablaEquipo" */
+#tablaEquipo tbody tr {
+    cursor: pointer;
+}

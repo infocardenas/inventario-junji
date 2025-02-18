@@ -92,10 +92,15 @@ function manejarCamposTelefono() {
   }
 }
 
-// Escucha el cambio en el selector de tipo
-document
-  .getElementById("tipoSelect")
-  .addEventListener("change", manejarCamposTelefono);
+document.addEventListener("DOMContentLoaded", function () {
+  var tipoSelect = document.getElementById("tipoSelect");
+  if (tipoSelect) {
+      tipoSelect.addEventListener("change", manejarCamposTelefono);
+  } else {
+      console.warn("El elemento #tipoSelect no se encontró en el DOM.");
+  }
+});
+
 
   //Maneja boton de eliminar
   $(document).ready(function () {
@@ -116,7 +121,7 @@ document
         if (!confirmation) {
             return;
         }
-
+        console.log(ids)
         // Redirigir a la URL de eliminación con los IDs seleccionados
         window.location.href = `/delete_equipo/${ids.join(",")}`;
     });
@@ -507,61 +512,7 @@ async function cargarModelosEdit() {
   });
 }
 
-// // Funcion para manejar el boton actualizar 
-// document.addEventListener("DOMContentLoaded", function () {
-//   document.getElementById("editEquipoForm").addEventListener("submit", async function (event) {
-//       event.preventDefault(); // Evita el envío automático del formulario
 
-//       // Cerrar el modal inmediatamente
-//       let modal = bootstrap.Modal.getInstance(document.getElementById("editEquipoModal"));
-//       modal.hide();
-
-//       setTimeout(() => {
-//           document.querySelectorAll(".modal-backdrop").forEach(el => el.remove());
-//           document.body.classList.remove("modal-open"); // Evita que el body quede bloqueado
-//       }, 100);
-
-//       // Obtener el ID del equipo
-//       const idEquipo = document.getElementById("edit_id_equipo").value;
-
-//       // Capturar los datos del formulario
-//       const datos = {
-//           codigo_inventario: document.getElementById("edit_codigo_inventario").value.trim(),
-//           numero_serie: document.getElementById("edit_numero_serie").value.trim(),
-//           observacion_equipo: document.getElementById("edit_observacion_equipo").value.trim(),
-//           codigoproveedor: document.getElementById("edit_codigoproveedor").value.trim(),
-//           mac: document.getElementById("edit_mac").value.trim(),
-//           imei: document.getElementById("edit_imei").value.trim(),
-//           numero: document.getElementById("edit_numero").value.trim(),
-//           codigo_Unidad: document.getElementById("edit_codigo_Unidad").value,
-//           nombre_orden_compra: document.getElementById("edit_orden_compra").value,
-//           nombre_modelo_equipo: document.getElementById("edit_modeloSelect").selectedOptions[0].textContent,
-//           nombreTipo_equipo: document.getElementById("edit_tipoSelect").selectedOptions[0].textContent,
-//           nombre_estado_equipo: document.getElementById("edit_estado_equipo").value
-//       };
-
-//       try {
-//           // Enviar los datos al backend en segundo plano
-//           const response = await fetch(`/update_equipo/${idEquipo}`, {
-//               method: "POST",
-//               headers: { "Content-Type": "application/json" },
-//               body: JSON.stringify(datos),
-//           });
-
-//           if (!response.ok) {
-//               console.error("Error al actualizar el equipo.");
-//               return;
-//           }
-
-//           // Retrasar la recarga para darle tiempo a que se muestre la alerta flash
-//           setTimeout(() => {
-//             window.location.reload();
-//           }, 2000); // 2000 milisegundos = 2 segundos
-//       } catch (error) {
-//           console.error("Error al actualizar el equipo:", error);
-//       }
-//   });
-// });
 
 function mostrarCamposTelefonoEdit() {
   const tipoSelect = document.getElementById("edit_tipoSelect");
@@ -588,14 +539,93 @@ document.getElementById("edit_tipoSelect").addEventListener("change", function()
 
 
 
-// funcion para manejar la incidencia 
-document.addEventListener("DOMContentLoaded", function () {
-  var incidenciaModal = document.getElementById('incidenciaModal');
-  incidenciaModal.addEventListener('show.bs.modal', function (event) {
-      var button = event.relatedTarget;
-      var idEquipo = button.getAttribute('data-id');
-      var inputEquipo = incidenciaModal.querySelector('#idEquipo');
+function setIdEquipoInModal() {
+  // Obtener todos los checkboxes seleccionados
+  var selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
+  console.log("Cantidad de checkboxes seleccionados:", selectedCheckboxes.length);
+  
+  // Si no hay exactamente uno seleccionado, alerta y sale
+  if (selectedCheckboxes.length !== 1) {
+      alert("Por favor, seleccione un equipo.");
+      return;
+  }
+  
+  // Obtener la fila y extraer el id del equipo
+  var row = selectedCheckboxes[0].closest('tr');
+  console.log("Fila seleccionada:", row);
+  var idEquipo = row.getAttribute('data-id');
+  console.log("Valor obtenido del data-id:", idEquipo);
+  
+  // Asignar el id al input oculto dentro del modal
+  var inputEquipo = document.querySelector('#add_incidencia #idEquipo');
+  if (inputEquipo) {
       inputEquipo.value = idEquipo;
-      console.log(idEquipo);
+      console.log("idEquipo asignado en el input:", inputEquipo.value);
+  } else {
+      console.log("No se encontró el input #idEquipo dentro del modal.");
+  }
+  
+  // Abrir el modal manualmente usando la API de Bootstrap
+  var modalElement = document.getElementById('add_incidencia');
+  var modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+  modal.show();
+}
+
+
+document.addEventListener("DOMContentLoaded", function () {
+  var checkboxes = document.querySelectorAll(".row-checkbox");
+  var incidenciaButton = document.getElementById("incidencia-button");
+  var deleteButton = document.getElementById("delete-selected-button");
+
+  function actualizarEstadoBotones() {
+      var selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
+      var seleccionados = selectedCheckboxes.length;
+
+      // Habilita el botón de incidencia solo si hay exactamente 1 checkbox seleccionado
+      if (seleccionados === 1) {
+          incidenciaButton.removeAttribute("disabled");
+      } else {
+          incidenciaButton.setAttribute("disabled", "true");
+      }
+
+      // Habilita el botón de eliminar si hay al menos 1 checkbox seleccionado
+      if (seleccionados > 0) {
+          deleteButton.removeAttribute("disabled");
+      } else {
+          deleteButton.setAttribute("disabled", "true");
+      }
+  }
+
+  // Agregar eventos a cada checkbox para actualizar el estado de los botones
+  checkboxes.forEach(function (checkbox) {
+      checkbox.addEventListener("change", actualizarEstadoBotones);
   });
+
+  // Ejecutar al cargar la página por si hay valores previos
+  actualizarEstadoBotones();
 });
+
+
+  // Espera a que el DOM esté completamente cargado
+  document.addEventListener("DOMContentLoaded", function() {
+    // Selecciona todas las filas del cuerpo de la tabla
+    const rows = document.querySelectorAll("#myTableBody tr");
+    
+    rows.forEach(row => {
+      row.addEventListener("click", function(e) {
+        // Evita que se active el toggle si se hace clic en elementos interactivos
+        const tag = e.target.tagName.toLowerCase();
+        if (tag === "input" || tag === "a" || tag === "button") {
+          return;
+        }
+        // Busca el checkbox dentro de la fila y alterna su estado
+        const checkbox = row.querySelector("input.row-checkbox");
+        if (checkbox) {
+          checkbox.checked = !checkbox.checked;
+          // Dispara el evento 'change' para que se ejecuten otros manejadores
+          checkbox.dispatchEvent(new Event('change'));
+        }
+      });
+    });
+  });
+

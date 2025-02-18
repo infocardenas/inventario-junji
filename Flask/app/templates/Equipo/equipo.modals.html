@@ -160,7 +160,7 @@
                         </label>
                         <select class="form-select campo-obligatorio" id="edit_tipoSelect" name="tipo"
                             onchange="cargarModelosEdit()">
-                            <option value="">Seleccione un tipo</option> 
+                            <option value="">Seleccione un tipo</option>
                         </select>
                         <div class="text-error-message"></div>
                     </div>
@@ -268,7 +268,7 @@
     </div>
 </div>
 
-<!-- Modal para agregar marca -->
+<!-- Modal para agregar incidencia -->
 <div class="modal fade" id="add_incidencia" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -279,64 +279,32 @@
             </div>
             <!-- Contenido -->
             <div class="modal-body">
-                <form action="/incidencia/add_incidencia" method="POST" id="form-add-marca-equipo">
-                    <div class="mb-3">
-                        <label for="nombreIncidencia" class="form-label">Nombre de la incidencia</label>
-                        <input type="text" class="form-control" id="nombreIncidencia" name="nombreIncidencia" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="observacionIncidencia" class="form-label">Observaciones</label>
-                        <textarea class="form-control" id="observacionIncidencia" name="observacionIncidencia" rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="fechaIncidencia" class="form-label">Fecha de la incidencia</label>
-                        <input type="date" class="form-control" id="fechaIncidencia" name="fechaIncidencia" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="archivoIncidencia" class="form-label">Adjuntar documento (Opcional)</label>
-                        <input type="file" class="form-control" id="archivoIncidencia" name="archivoIncidencia" accept="application/pdf">
-                    </div>
-                </form>
-            </div>
-            <!-- Footer de botones -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="submit" class="btn btn-success">Guardar</button>
-            </div>
-        </div>
-    </div>
-</div>
+                <form action="/incidencia/add_incidencia" method="POST" id="form_add_incidencia">
+                    <input class="no-delete-value" type="hidden" id="idEquipo" name="idEquipo" value="">
 
-<!-- Modal de Crear Incidencia -->
-<div class="modal fade" id="incidenciaModal" tabindex="-1" aria-labelledby="incidenciaModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="incidenciaModalLabel">Registrar Nueva Incidencia</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <form action="{{ url_for('incidencia.add_incidencia') }}" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="nombreIncidencia" class="form-label">Nombre de la incidencia</label>
-                        <input type="text" class="form-control" id="nombreIncidencia" name="nombreIncidencia" required>
+                        <input type="text" class="form-control validar-letras" id="nombreIncidencia" name="nombreIncidencia" required>
+                        <div class="text-error-message"></div>
                     </div>
                     <div class="mb-3">
                         <label for="observacionIncidencia" class="form-label">Observaciones</label>
-                        <textarea class="form-control" id="observacionIncidencia" name="observacionIncidencia" rows="3"></textarea>
+                        <textarea class="form-control" id="observacionIncidencia" name="observacionIncidencia"
+                            rows="3"></textarea>
                     </div>
                     <div class="mb-3">
                         <label for="fechaIncidencia" class="form-label">Fecha de la incidencia</label>
-                        <input type="date" class="form-control" id="fechaIncidencia" name="fechaIncidencia" required>
+                        <input type="date" class="form-control validar-fecha-30-0" id="fechaIncidencia" name="fechaIncidencia" required>
                     </div>
                     <div class="mb-3">
                         <label for="archivoIncidencia" class="form-label">Adjuntar documento (Opcional)</label>
-                        <input type="file" class="form-control" id="archivoIncidencia" name="archivoIncidencia" accept="application/pdf">
+                        <input type="file" class="form-control" id="archivoIncidencia" name="archivoIncidencia"
+                            accept="application/pdf">
                     </div>
-                    <input type="hidden" id="idEquipo" name="idEquipo">
+                    <!-- Footer de botones -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-success">Guardar</button>
                     </div>
                 </form>
             </div>
