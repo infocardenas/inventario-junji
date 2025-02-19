@@ -45,7 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Permitir seleccionar la fila al hacer clic en ella (sin afectar el checkbox directamente)
     document.querySelectorAll(".selectable-row").forEach(row => {
         row.addEventListener("click", function (event) {
-            if (event.target.tagName === "INPUT") return;
+            if (event.target.tagName === "INPUT" && event.target.type === "checkbox") return; // 1. Evitar cambio si se hace clic sobre un checkbox directamente
+            if (event.target.closest("button") || event.target.closest("i")) return; // 2. Evitar cambio si el clic vino de un botón o ícono
+
             let checkbox = this.querySelector(".row-checkbox");
             checkbox.checked = !checkbox.checked;
             checkbox.dispatchEvent(new Event("change"));
