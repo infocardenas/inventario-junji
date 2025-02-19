@@ -240,13 +240,13 @@
                             <div class="col-md-6 mb-3">
                                 <label class="form-label" for="edit_imei">IMEI</label>
                                 <input type="text" class="form-control validar-numero" name="imei" id="edit_imei"
-                                    maxlength="17" placeholder="Ingrese el IMEI">
+                                    maxlength="16" placeholder="Ingrese el IMEI">
                                 <div class="text-error-message"></div>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="form-label" for="edit_mac">Mac</label>
                                 <input type="text" class="form-control validar-mac" name="mac" id="edit_mac"
-                                    maxlength="16" placeholder="Ingrese la dirección Mac">
+                                    maxlength="17" placeholder="Ingrese la dirección Mac">
                                 <div class="text-error-message"></div>
                             </div>
                         </div>
@@ -279,27 +279,25 @@
             </div>
             <!-- Contenido -->
             <div class="modal-body">
-                <form action="/incidencia/add_incidencia" method="POST" id="form_add_incidencia">
+                <form action="/incidencia/add_incidencia" method="POST" id="form_add_incidencia"
+                    enctype="multipart/form-data">
                     <input class="no-delete-value" type="hidden" id="idEquipo" name="idEquipo" value="">
 
                     <div class="mb-3">
                         <label for="nombreIncidencia" class="form-label">Nombre de la incidencia</label>
-                        <input type="text" class="form-control validar-letras" id="nombreIncidencia" name="nombreIncidencia" required>
+                        <input type="text" class="form-control validar-letras" id="nombreIncidencia"
+                            name="nombreIncidencia" required>
                         <div class="text-error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fechaIncidencia" class="form-label">Fecha de la incidencia</label>
+                        <input type="date" class="form-control validar-fecha-30-0" id="fechaIncidencia"
+                        name="fechaIncidencia" required>
                     </div>
                     <div class="mb-3">
                         <label for="observacionIncidencia" class="form-label">Observaciones</label>
                         <textarea class="form-control" id="observacionIncidencia" name="observacionIncidencia"
                             rows="3"></textarea>
-                    </div>
-                    <div class="mb-3">
-                        <label for="fechaIncidencia" class="form-label">Fecha de la incidencia</label>
-                        <input type="date" class="form-control validar-fecha-30-0" id="fechaIncidencia" name="fechaIncidencia" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="archivoIncidencia" class="form-label">Adjuntar documento (Opcional)</label>
-                        <input type="file" class="form-control" id="archivoIncidencia" name="archivoIncidencia"
-                            accept="application/pdf">
                     </div>
                     <!-- Footer de botones -->
                     <div class="modal-footer">

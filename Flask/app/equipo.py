@@ -426,8 +426,7 @@ def delete_equipo(id):
 
         # Si hay dependencias, mostrar confirmación antes de eliminar
         if any(count > 0 for count in dependencias.values()):
-            flash(
-                "El equipo tiene dependencias en otras tablas. ¿Deseas continuar con la eliminación?")
+            flash("El equipo tiene dependencias en otras tablas. ¿Deseas continuar con la eliminación?")
             return redirect(url_for("equipo.Equipo"))
 
         # Eliminar dependencias en cascada
@@ -438,12 +437,21 @@ def delete_equipo(id):
         # Finalmente eliminar el equipo
         cur.execute("DELETE FROM equipo WHERE idEquipo = %s", (id,))
         mysql.connection.commit()
-        flash("Equipo eliminado correctamente")
-        
+        flash("Equipo eliminado correctamente", "success")
+
     except Exception as e:
-        flash(f"Error al eliminar el equipo: {str(e)}")
+        error_message = f"Error al eliminar el equipo: {str(e)}"
+        print(error_message)  # Mostrar el error en la terminal
+        flash(error_message, "warning")
+
     finally:
+        try:
+            cur.close()
+        except Exception as close_error:
+            print(f"Error al cerrar el cursor: {str(close_error)}")
+        
         return redirect(url_for("equipo.Equipo"))
+
 
 
 

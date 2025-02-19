@@ -13,7 +13,7 @@
             </div>
 
             <div class="d-flex justify-content-between align-items-center mb-3">
-                
+
                 <!-- Buscador -->
                 <div class="d-flex flex-grow-1 justify-content-center align-items-center">
                     <div>
@@ -48,7 +48,7 @@
                         <tr data-id="{{ inc.idIncidencia }}">
                             <td class="toCheck">{{inc.nombreIncidencia}}</td>
                             <td class="toCheck">{{inc.observacionIncidencia}}</td>
-                            <td class="toCheck">{{inc.fechaIncidencia }}</td>
+                            <td class="toCheck">{{inc.fechaIncidencia.strftime("%d-%m-%Y")}}</td>
                             <td class="toCheck">{{inc.cod_inventarioEquipo}}</td>
                             <td class="toCheck">{{inc.Num_serieEquipo}}</td>
                             <td class="toCheck">{{inc.nombreTipo_equipo}}</td>
@@ -64,12 +64,15 @@
                                     <i class="bi bi-pencil-square"></i>
                                 </a>
 
-                                <form action="{{ url_for('incidencia.delete_incidencia', id=inc.idIncidencia) }}"
-                                    method="POST" style="display:inline;">
-                                    <button type="submit" class="btn btn-danger">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-                                </form>
+                                <!-- Botón de eliminación para incidencia con tooltip -->
+                                <button class="btn btn-danger" id="delete-incidencia-button" data-bs-toggle="tooltip"
+                                    data-bs-title="Eliminar" data-id="{{ inc.idIncidencia }}">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
+
+                                <!--  Formulario oculto para eliminar una incidencia-->
+                                <form id="deleteForm" method="POST" style="display: none;"></form>
+
                             </td>
                         </tr>
                         {% endfor %}
@@ -91,6 +94,7 @@
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"
             integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
+        <script src="{{ url_for('static', filename='js/Equipo/equipo.js') }}"></script>
         <script src="../static/js/main.js"></script>
 
         {{ paginacion("incidencia", page, lastpage) }}

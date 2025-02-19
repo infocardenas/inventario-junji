@@ -24,10 +24,40 @@
 
         <a class="nav-button" href="/incidencia">Volver</a>
         <!-- ----- -->
-        {{ subirArchivo("incidencia", idIncidencia) }}
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdjuntarPDF">
+            Agregar PDF
+        </button>
+        <!-- Modal para adjuntar PDF -->
+        <div class="modal fade" id="modalAdjuntarPDF" tabindex="-1" aria-labelledby="modalAdjuntarPDFLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="/incidencia/adjuntar_pdf/{{ idIncidencia }}" method="POST"
+                        enctype="multipart/form-data">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalAdjuntarPDFLabel">Adjuntar PDF a Incidencia</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="pdfFile" class="form-label">Selecciona el archivo PDF</label>
+                                <input type="file" class="form-control" id="pdfFile" name="file"
+                                    accept="application/pdf" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Subir PDF</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
     </div>
     <br />
-    <table id="posts">
+    <table id="posts" class="table table-striped table-bordered">
         <thead>
             <tr>
                 <td onclick="sortTable(0)">Cod. inventario</td>

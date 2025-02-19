@@ -191,7 +191,7 @@ def add_incidencia():
             """, (datos['idEquipo'],))
             mysql.connection.commit()
 
-            flash("Incidencia registrada correctamente y el equipo se marcó como siniestro", "success")
+            flash("Incidencia registrada correctamente", "success")
             return redirect(url_for("incidencia.listar_pdf", idIncidencia=idIncidencia))
         
         # ---------------------------
@@ -210,7 +210,7 @@ def add_incidencia():
 
         
         
-@incidencia.route("/incidencia/delete_incidencia/<id>", methods=["POST"])
+@incidencia.route("/incidencia/delete_incidencia/<id>",  methods=["GET", "POST"])
 @administrador_requerido
 def delete_incidencia(id):
     # Se asume que la validación de sesión se hace en el decorador @administrador_requerido.
@@ -404,7 +404,7 @@ def mostrar_pdf(id, nombrePdf):
         file = os.path.join(carpeta_incidencias, nombrePdf)
         print("file")
         print(file)
-        return send_file(file, as_attachment=True)
+        return send_file(file, as_attachment=False )
     except:
         flash("no se encontro pdf")
         return redirect(url_for("incidencia.Incidencia"))

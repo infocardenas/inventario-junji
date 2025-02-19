@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-  //Maneja boton de eliminar
+  //Maneja boton de eliminar equipo
   $(document).ready(function () {
     $("#delete-selected-button").on("click", function () {
         // Obtener los IDs de las filas seleccionadas
@@ -116,16 +116,36 @@ document.addEventListener("DOMContentLoaded", function () {
             return $(this).data("id");
         }).get();
 
-        // Confirmar eliminación
-        const confirmation = confirm("¿Estás seguro de que deseas eliminar los equipos seleccionados?");
-        if (!confirmation) {
-            return;
-        }
-        console.log(ids)
-        // Redirigir a la URL de eliminación con los IDs seleccionados
-        window.location.href = `/delete_equipo/${ids.join(",")}`;
+        // Configurar y mostrar el modal de confirmación
+        configureGenericModal(
+            "Confirmar Eliminación",
+            "¿Estás seguro de que deseas eliminar los equipos seleccionados?",
+            `/delete_equipo/${ids.join(",")}`
+        );
     });
 });
+
+// Manejar boton de eliminar incidencia
+$(document).ready(function () {
+  $("#delete-incidencia-button").on("click", function () {
+      // Obtener el ID de la incidencia (ya que es un único elemento)
+      const id = $(this).data("id");
+      if (!id) {
+          alert("No se encontró la incidencia.");
+          return;
+      }
+
+      // Configurar y mostrar el modal de confirmación con la URL de eliminación
+      configureGenericModal(
+          "Confirmar Eliminación",
+          "¿Estás seguro de que deseas eliminar esta incidencia?",
+          `/incidencia/delete_incidencia/${id}`
+      );
+  });
+});
+
+
+
 
 $(document).ready(function () {
   // Función para actualizar el estado de los botones
