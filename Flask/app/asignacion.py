@@ -88,6 +88,7 @@ def Asignacion(page=1):
     JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
     JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
     JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+    ORDER BY a.idAsignacion DESC
     LIMIT %s OFFSET %s
         """, (perpage, offset)
     )
