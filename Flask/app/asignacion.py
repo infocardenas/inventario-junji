@@ -70,6 +70,7 @@ def Asignacion(page=1):
         f.nombreFuncionario,
         f.cargoFuncionario,
         ea.idEquipoAsignacion,
+        d.idDevolucion,
         d.fechaDevolucion,
         me.nombreModeloequipo,
         te.nombreTipo_equipo,
@@ -437,8 +438,8 @@ def create_asignacion():
 
     flash("Asignación agregada exitosamente", 'success')
 
-    pdf_asignacion = crear_pdf(funcionario, TuplaEquipos)
-    if(traslado and funcionario['idUnidad'] == 1):
+    pdf_asignacion = crear_pdf_asignacion(funcionario, TuplaEquipos)
+    #if(traslado and funcionario['idUnidad'] == 1):
         #TODO: que hacer si multiples equipos vienen de distintas direcciones
 
         #mover desde su posicion actual a la posicion del funcionario
@@ -447,12 +448,10 @@ def create_asignacion():
         
         #si son distintas redirigir al metodo de crear traslado con
         #la informacion de la asignacion
-
-        crear_traslado_generico(fecha_asignacion, Funcionario['idUnidad']
-                                ,Unidad['idUnidad'], id_equipos)
+        #crear_traslado_generico(fecha_asignacion, funcionario['idUnidad'],Unidad['idUnidad'], id_equipos)
     return redirect(url_for('asignacion.Asignacion'))
 
-def crear_pdf(funcionario, equipos):
+def crear_pdf_asignacion(funcionario, equipos):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
@@ -599,32 +598,16 @@ def crear_pdf(funcionario, equipos):
         #flash("no se pudo enviar el correo")
     return nombrePdf
 
-@asignacion.route("/asignacion/mostrar_pdf/<id>")
+@asignacion.route("/asignacion/descargar_pdf_asignacion/<id>")
 @loguear_requerido
-def mostrar_pdf(id):
-    if inLinux():
-        nombrePdf = "asignacion_" + str(id) + ".pdf"
-        dir = 'pdf' 
-        file = os.path.join(dir, nombrePdf)
-        if os.path.exists(file):
-            print('file')
-            return send_file(file, as_attachment=True)
-        else:
-            flash("no se encontro el pdf")
-            return redirect("/asignacion")
-    else:
-        nombrePdf = "asignacion_" + str(id) + ".pdf"
-        dir = 'pdf' 
-        file = os.path.join(dir, nombrePdf)
-        if os.path.exists(file):
-            print("mostrar_pdf")
-            print(file)
-            return send_file(file, as_attachment=True)
-        else:
-            flash("no se encontro el pdf")
-            return redirect("/asignacion")
-        #flash("no se encontro el pdf")
-        #return redirect(url_for('asignacion.Asignacion'))
+def descargar_pdf_asignacion(id):
+    try:
+        nombrePDF = "asignacion_" + str(id) + ".pdf"
+        file = os.path.join("pdf", nombrePDF)
+        return send_file(file, as_attachment=True)
+    except:
+        flash("Error: No se encontró el PDF", "danger")
+        return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/devolver_equipos", methods=["POST"])
 @administrador_requerido
@@ -800,7 +783,7 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
         
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
-    titulo = "ACTA Devolución de Equipo Informático N°" + id_devolucion
+    titulo = "ACTA de Devolución de Equipo Informático N°" + id_devolucion
     creado_por = "Documento creado por: " + session['user']
 
     pdf.set_font("times", "", 20)
@@ -903,16 +886,15 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
     pdf.output(nombrePdf)
     shutil.move(nombrePdf, "pdf/")
 
-@asignacion.route("/asignacion/mostrar_pdf_devolucion/<id>")
+@asignacion.route("/asignacion/descargar_pdf_devolucion/<id>")
 @loguear_requerido
-def mostrar_pdf_devolucion(id):
+def descargar_pdf_devolucion(id):
     try:
-        nombrePdf = "devolucion_" + str(id) + ".pdf"
-        dir = 'pdf' 
-        file = os.path.join(dir, nombrePdf)
+        nombrePDF = "devolucion_" + str(id) + ".pdf"
+        file = os.path.join("pdf", nombrePDF)
         return send_file(file, as_attachment=True)
     except:
-        flash("no se encontro el pdf")
+        flash("Error: No se encontró el PDF", "danger")
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/buscar/<idAsignacion>")

@@ -69,6 +69,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Llamar a la función al cargar la página para deshabilitar el botón si no hay equipos seleccionables
     actualizarEstadoBotonDevolver();
+
+    // Funciones asociadas al manejo del botón de Descargar PDF
+    const btnDescargarPDF = document.getElementById("descargar-PDF-button");
+    const btnAsignaciones = document.getElementById("descargar-asignaciones");
+    const btnDevoluciones = document.getElementById("descargar-devoluciones");
+    const checkboxes = document.querySelectorAll(".row-checkbox");
+
+    function actualizarEstadoBotonDescargarPDF() {
+        // Filtra los checkboxes que están seleccionados
+        let seleccionados = Array.from(checkboxes).filter(cb => cb.checked);
+
+        if (seleccionados.length === 1) {
+            let checkbox = seleccionados[0];
+            let idAsignacion = checkbox.dataset.idAsignacion;
+            let idDevolucion = checkbox.dataset.idDevolucion;
+
+            btnDescargarPDF.removeAttribute("disabled");
+            btnAsignaciones.classList.remove("disabled");
+            btnAsignaciones.href = `/asignacion/descargar_pdf_asignacion/${idAsignacion}`;
+
+            // Para la opción de devolución, se habilita solo si existe un idDevolucion válido
+            if (idDevolucion && idDevolucion.trim() !== "") {
+                btnDevoluciones.classList.remove("disabled");
+                btnDevoluciones.href = `/asignacion/descargar_pdf_devolucion/${idDevolucion}`;
+            } else {
+                btnDevoluciones.classList.add("disabled");
+                btnDevoluciones.removeAttribute("href");
+            }
+        } else {
+            // Si no hay ninguno o hay más de uno, se deshabilitan ambos botones
+            btnDescargarPDF.setAttribute("disabled", "true");
+            btnAsignaciones.classList.add("disabled");
+            btnAsignaciones.removeAttribute("href");
+            btnDevoluciones.classList.add("disabled");
+            btnDevoluciones.removeAttribute("href");
+        }
+    }
+
+    // Actualiza el estado cada vez que cambia la selección de algún checkbox
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", actualizarEstadoBotonDescargarPDF);
+    });
+
+    actualizarEstadoBotonDescargarPDF();
+    // Fin de funciones asociadas al manejo del botón de Descargar PDF
 });
 
 // Función que actualiza el modal con las asignaciones seleccionadas

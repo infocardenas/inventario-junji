@@ -16,6 +16,13 @@
                     <input name="palabra" type="text" class="search-box" placeholder="Buscar asignación..." id="buscador" onkeyup="busqueda('myTableBody')" />
                 </div>
                 <div class="toolbar-3">
+                    <div class="dropdown">
+                        <button id="descargar-PDF-button" class="btn btn-danger dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="bi bi-file-earmark-pdf"></i> Descargar PDF</button>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a id="descargar-asignaciones" class="dropdown-item" href="#">Asignación</a></li>
+                            <li><a id="descargar-devoluciones" class="dropdown-item" href="#">Devolución</a></li>
+                        </ul>
+                    </div>
                     <div data-bs-toggle="tooltip" data-bs-title="Devolver">
                         <button type="button" class="btn btn-warning" id="devolver-button"><i class="fa-solid fa-arrow-rotate-left"></i></button>
                     </div>
@@ -44,7 +51,7 @@
                     {% if asignacion %}
                         {% for asig in asignacion %}
                         <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row">
-                            <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value" value="{{ asig.idEquipoAsignacion }}" {% if asig.fechaDevolucion %} data-devuelto="true" disabled {% else %} data-devuelto="false" {% endif %}></td>
+                            <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value" value="{{ asig.idEquipoAsignacion }}" data-id-devolucion="{{ asig.idDevolucion if asig.idDevolucion else '' }}" data-id-asignacion="{{ asig.idAsignacion if asig.idAsignacion else '' }}" {% if asig.fechaDevolucion %} data-devuelto="true" disabled {% else %} data-devuelto="false" {% endif %}></td>
                             <td class="toCheck">{{ asig.idAsignacion }}</td>
                             <td class="toCheck">{{ asig.nombreFuncionario }}</td>
                             <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
