@@ -70,6 +70,7 @@ def Asignacion(page=1):
         f.nombreFuncionario,
         f.cargoFuncionario,
         ea.idEquipoAsignacion,
+        d.idDevolucion,
         d.fechaDevolucion,
         me.nombreModeloequipo,
         te.nombreTipo_equipo,
@@ -87,6 +88,7 @@ def Asignacion(page=1):
     JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
     JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
     JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+    ORDER BY a.idAsignacion DESC
     LIMIT %s OFFSET %s
         """, (perpage, offset)
     )
@@ -402,6 +404,28 @@ def create_asignacion():
             TuplaEquipos = TuplaEquipos + (equipoTupla,)
         mysql.connection.commit()
 
+        # Obtiene información relevante del funcionario para añadir al PDF
+        cur.execute("""
+            SELECT
+                f.nombreFuncionario,
+                a.idAsignacion,
+                a.fecha_inicioAsignacion,
+                u.nombreUnidad,
+                u.idUnidad
+            FROM funcionario f
+            JOIN asignacion a ON f.rutFuncionario = a.rutFuncionario
+            JOIN unidad u ON f.idUnidad = u.idUnidad
+            WHERE a.idAsignacion = %s
+        """, (id_asignacion,))
+        query = cur.fetchone()
+
+        funcionario = {
+            "nombre": query["nombreFuncionario"],
+            "id_asignacion": str(query["idAsignacion"]),
+            "fecha_asignacion": str(query["fecha_inicioAsignacion"].strftime("%d-%m-%Y")),
+            "unidad": query["nombreUnidad"],
+            "idUnidad": query["idUnidad"]
+        }
     except IntegrityError as e:
         error_message = str(e)
         if "FOREIGN KEY (`rutFuncionario`) REFERENCES `funcionario` (`rutFuncionario`)" in error_message:
@@ -415,29 +439,8 @@ def create_asignacion():
 
     flash("Asignación agregada exitosamente", 'success')
 
-    #agregar argumentos para el excel
-    cur.execute("""
-                SELECT *
-                FROM funcionario f
-                WHERE f.rutFuncionario = %s
-                """, (rut_funcionario,))
-    Funcionario = cur.fetchone()
-    cur.execute("""
-                SELECT *
-                FROM unidad u
-                WHERE u.idUnidad = %s
-                """, (Funcionario['idUnidad'],))
-    Unidad = cur.fetchone()
-    cur.execute("""
-                SELECT *
-                FROM asignacion a
-                WHERE a.idAsignacion = %s
-                """, (id_asignacion,))
-    Asignacion = cur.fetchone()
-
-
-    pdf_asignacion = crear_pdf(Funcionario, Unidad, Asignacion, TuplaEquipos)
-    if(traslado and Funcionario['idUnidad'] == 1):
+    pdf_asignacion = crear_pdf_asignacion(funcionario, TuplaEquipos)
+    #if(traslado and funcionario['idUnidad'] == 1):
         #TODO: que hacer si multiples equipos vienen de distintas direcciones
 
         #mover desde su posicion actual a la posicion del funcionario
@@ -446,12 +449,10 @@ def create_asignacion():
         
         #si son distintas redirigir al metodo de crear traslado con
         #la informacion de la asignacion
-
-        crear_traslado_generico(fecha_asignacion, Funcionario['idUnidad']
-                                ,Unidad['idUnidad'], id_equipos)
+        #crear_traslado_generico(fecha_asignacion, funcionario['idUnidad'],Unidad['idUnidad'], id_equipos)
     return redirect(url_for('asignacion.Asignacion'))
 
-def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
+def crear_pdf_asignacion(funcionario, equipos):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
@@ -464,8 +465,8 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             self.set_text_color(170, 170, 170)
             # Title
             self.cell(0, 30, "", border=False, ln=1, align="L")
-            self.cell(0, 5, "JUNTA NACIONAL", border=False, ln=1, align="L")
-            self.cell(0, 5, "INFANTILES", border=False, ln=1, align="L")
+            self.cell(0, 5, "JUNTA NACIONAL DE", border=False, ln=1, align="L")
+            self.cell(0, 5, "JARDINES INFANTILES", border=False, ln=1, align="L")
             self.cell(0, 5, "Unidad de Inventarios", border=False, ln=1, align="L")
             # line break
             self.ln(10)
@@ -475,10 +476,8 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
             self.set_font("times", "B", 12)
             self.set_text_color(170, 170, 170)
             self.cell(0, 0, "", ln=1)
-            self.cell(0, 0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-            self.cell(
-                0, 12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1
-            )  # problema con el caracter ’
+            self.cell(0, 0, "Junta Nacional de Jardines Infantiles - JUNJI", ln=1)
+            self.cell(0, 12, "O'Higgins Poniente 77 Concepción. Tel: 412125579", ln=1)
             self.cell(0, 12, "www.junji.cl", ln=1)
 
     #P Portrait -> Vertical
@@ -487,7 +486,7 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
 
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
-    titulo = "ACTA De Asignacion de Equipo Informatico N°" + str(Asignacion['idAsignacion'])
+    titulo = "ACTA de Asignación de Equipo Informático N°" + funcionario["id_asignacion"]
 
     pdf.set_font("times", "", 20)
     pdf.cell(0, 10, titulo, ln=True, align="C")
@@ -495,13 +494,13 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     creado_por = "Documento creado por: " + session['user']
     pdf.cell(0, 10, creado_por, ln=True, align="L")
     presentacion1 = "Por el presente se hace entrega a: "
-    presentacion2 = "Dependiente de la Unidad: "
-    presentacion22 = "En la Fecha: "
+    presentacion2 = "Dependiente de la unidad: "
+    presentacion22 = "En la fecha: "
     presentacion3 = "Del siguiente equipo computacional"
 
-    nombreFuncionario = Funcionario["nombreFuncionario"]
-    nombreUnidad = Unidad["nombreUnidad"]
-    fechaAsignacion = str(Asignacion["fecha_inicioAsignacion"])
+    nombre_funcionario = funcionario["nombre"]
+    unidad_funcionario = funcionario["unidad"]
+    fecha_asignacion = funcionario["fecha_asignacion"]
 
     pdf.ln(10)
     #se hace en columnas para que quede ordenado
@@ -517,20 +516,19 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
         cols.ln()
         cols.new_column()
         #lo que se escribe despues de new_column va en la siguiente columna
-        cols.write(nombreFuncionario)
+        cols.write(nombre_funcionario)
         cols.ln()
-        cols.write(nombreUnidad)
+        cols.write(unidad_funcionario)
         cols.ln()
-        cols.write(fechaAsignacion)
+        cols.write(fecha_asignacion)
 
     pdf.ln(20)
     #Encabezado de la tabla
     TABLE_DATA = (
-        ("N°", "Tipo_Equipo", "Marca", "Modelo", "N° Serie", "N° Inventario"),
+        ("N°", "Tipo equipo", "Marca", "Modelo", "N° Serie", "N° Inventario"),
     )
     i = 0
-    for equipo in Equipos:
-        id = str(equipo["idEquipo"])
+    for equipo in equipos:
         tipo_equipo = equipo["nombreTipo_equipo"]
         marca = equipo["nombreMarcaEquipo"]
         modelo = equipo["nombreModeloequipo"]
@@ -551,11 +549,11 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
     observacion = "Esta es una observacion"
 
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado TI:" + session['user']
-    rutEncargado = "Numero de RUT:"
+    nombreEncargado = "Nombre del encargado TI:" + session['user']
+    rutEncargado = "RUT:"
     firmaEncargado = "Firma:"
-    nombreMinistro = "Nombre Funcionario:"
-    rutMinistro = "Numero de RUT:"
+    nombreMinistro = "Nombre del funcionario:"
+    rutMinistro = "RUT:"
     firma = "Firma"
     with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
         cols.write(nombreEncargado)
@@ -581,16 +579,16 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
         cols.ln()
         cols.new_column()
         for i in range(0, 3):
-            cols.write(text="_________________________")
+            cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
         cols.ln()
         cols.ln()
         for i in range(0, 3):
-            cols.write(text="_________________________")
+            cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
-    nombrePdf = "asignacion_" + str(Asignacion["idAsignacion"]) + ".pdf"
+    nombrePdf = "asignacion_" + funcionario["id_asignacion"] + ".pdf"
     pdf.output(nombrePdf)
     shutil.move(nombrePdf, "pdf/" + nombrePdf)
     #try:
@@ -601,32 +599,16 @@ def crear_pdf(Funcionario, Unidad, Asignacion, Equipos):
         #flash("no se pudo enviar el correo")
     return nombrePdf
 
-@asignacion.route("/asignacion/mostrar_pdf/<id>")
+@asignacion.route("/asignacion/descargar_pdf_asignacion/<id>")
 @loguear_requerido
-def mostrar_pdf(id):
-    if inLinux():
-        nombrePdf = "asignacion_" + str(id) + ".pdf"
-        dir = 'pdf' 
-        file = os.path.join(dir, nombrePdf)
-        if os.path.exists(file):
-            print('file')
-            return send_file(file, as_attachment=True)
-        else:
-            flash("no se encontro el pdf")
-            return redirect("/asignacion")
-    else:
-        nombrePdf = "asignacion_" + str(id) + ".pdf"
-        dir = 'pdf' 
-        file = os.path.join(dir, nombrePdf)
-        if os.path.exists(file):
-            print("mostrar_pdf")
-            print(file)
-            return send_file(file, as_attachment=True)
-        else:
-            flash("no se encontro el pdf")
-            return redirect("/asignacion")
-        #flash("no se encontro el pdf")
-        #return redirect(url_for('asignacion.Asignacion'))
+def descargar_pdf_asignacion(id):
+    try:
+        nombrePDF = "asignacion_" + str(id) + ".pdf"
+        file = os.path.join("pdf", nombrePDF)
+        return send_file(file, as_attachment=True)
+    except:
+        flash("Error: No se encontró el PDF", "danger")
+        return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/devolver_equipos", methods=["POST"])
 @administrador_requerido
@@ -796,13 +778,13 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
                 self.set_font('times', 'B', 12)
                 self.set_text_color(170,170,170)
                 self.cell(0,0, "", ln=1)
-                self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-                self.cell(0,12, "O'Higgins Poniente 77 Concepción. Tel: 412125579", ln=1) #problema con el caracter ’
+                self.cell(0,0, "Junta Nacional de Jardines Infantiles - JUNJI", ln=1)
+                self.cell(0,12, "O'Higgins Poniente 77 Concepción. Tel: 412125579", ln=1)
                 self.cell(0,12, "www.junji.cl", ln=1)
         
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
-    titulo = "ACTA Devolución de Equipo Informático N°" + id_devolucion
+    titulo = "ACTA de Devolución de Equipo Informático N°" + id_devolucion
     creado_por = "Documento creado por: " + session['user']
 
     pdf.set_font("times", "", 20)
@@ -905,16 +887,15 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
     pdf.output(nombrePdf)
     shutil.move(nombrePdf, "pdf/")
 
-@asignacion.route("/asignacion/mostrar_pdf_devolucion/<id>")
+@asignacion.route("/asignacion/descargar_pdf_devolucion/<id>")
 @loguear_requerido
-def mostrar_pdf_devolucion(id):
+def descargar_pdf_devolucion(id):
     try:
-        nombrePdf = "devolucion_" + str(id) + ".pdf"
-        dir = 'pdf' 
-        file = os.path.join(dir, nombrePdf)
+        nombrePDF = "devolucion_" + str(id) + ".pdf"
+        file = os.path.join("pdf", nombrePDF)
         return send_file(file, as_attachment=True)
     except:
-        flash("no se encontro el pdf")
+        flash("Error: No se encontró el PDF", "danger")
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/buscar/<idAsignacion>")

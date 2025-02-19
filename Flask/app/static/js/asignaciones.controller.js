@@ -45,7 +45,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // Permitir seleccionar la fila al hacer clic en ella (sin afectar el checkbox directamente)
     document.querySelectorAll(".selectable-row").forEach(row => {
         row.addEventListener("click", function (event) {
-            if (event.target.tagName === "INPUT") return;
+            if (event.target.tagName === "INPUT" && event.target.type === "checkbox") return; // 1. Evitar cambio si se hace clic sobre un checkbox directamente
+            if (event.target.closest("button") || event.target.closest("i")) return; // 2. Evitar cambio si el clic vino de un botón o ícono
+
             let checkbox = this.querySelector(".row-checkbox");
             checkbox.checked = !checkbox.checked;
             checkbox.dispatchEvent(new Event("change"));
@@ -69,6 +71,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Llamar a la función al cargar la página para deshabilitar el botón si no hay equipos seleccionables
     actualizarEstadoBotonDevolver();
+
+    // Funciones asociadas al manejo del botón de Descargar PDF
+    const btnDescargarPDF = document.getElementById("descargar-PDF-button");
+    const btnAsignaciones = document.getElementById("descargar-asignaciones");
+    const btnDevoluciones = document.getElementById("descargar-devoluciones");
+    const checkboxes = document.querySelectorAll(".row-checkbox");
+
+    function actualizarEstadoBotonDescargarPDF() {
+        // Filtra los checkboxes que están seleccionados
+        let seleccionados = Array.from(checkboxes).filter(cb => cb.checked);
+
+        if (seleccionados.length === 1) {
+            let checkbox = seleccionados[0];
+            let idAsignacion = checkbox.dataset.idAsignacion;
+            let idDevolucion = checkbox.dataset.idDevolucion;
+
+            btnDescargarPDF.removeAttribute("disabled");
+            btnAsignaciones.classList.remove("disabled");
+            btnAsignaciones.href = `/asignacion/descargar_pdf_asignacion/${idAsignacion}`;
+
+            // Para la opción de devolución, se habilita solo si existe un idDevolucion válido
+            if (idDevolucion && idDevolucion.trim() !== "") {
+                btnDevoluciones.classList.remove("disabled");
+                btnDevoluciones.href = `/asignacion/descargar_pdf_devolucion/${idDevolucion}`;
+            } else {
+                btnDevoluciones.classList.add("disabled");
+                btnDevoluciones.removeAttribute("href");
+            }
+        } else {
+            // Si no hay ninguno o hay más de uno, se deshabilitan ambos botones
+            btnDescargarPDF.setAttribute("disabled", "true");
+            btnAsignaciones.classList.add("disabled");
+            btnAsignaciones.removeAttribute("href");
+            btnDevoluciones.classList.add("disabled");
+            btnDevoluciones.removeAttribute("href");
+        }
+    }
+
+    // Actualiza el estado cada vez que cambia la selección de algún checkbox
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener("change", actualizarEstadoBotonDescargarPDF);
+    });
+
+    actualizarEstadoBotonDescargarPDF();
+    // Fin de funciones asociadas al manejo del botón de Descargar PDF
 });
 
 // Función que actualiza el modal con las asignaciones seleccionadas
@@ -168,31 +215,6 @@ function refreshCheckboxListeners() {
             }
         });
     });
-
-    // Permitir clic en toda la fila para seleccionar el checkbox
-    enableRowClick();
-}
-
-// Permite seleccionar checkbox haciendo clic en la fila
-function enableRowClick() {
-    const rows = document.querySelectorAll('#equiposTable tr');
-
-    rows.forEach(row => {
-        row.removeEventListener('click', rowClickHandler);
-        row.addEventListener('click', rowClickHandler);
-    });
-}
-
-function rowClickHandler(event) {
-    // Evitar que el evento se dispare si el clic es sobre el checkbox
-    if (event.target.tagName === 'INPUT' && event.target.type === 'checkbox') return;
-
-    // Encontrar el checkbox en la fila y alternar su estado
-    const checkbox = this.querySelector('.equipo-checkbox');
-    if (checkbox) {
-        checkbox.checked = !checkbox.checked;
-        checkbox.dispatchEvent(new Event('change')); // Disparar evento 'change' manualmente
-    }
 }
 
 // Búsqueda dinámica
