@@ -215,7 +215,32 @@ function refreshCheckboxListeners() {
             }
         });
     });
+    enableRowClick();
 }
+
+// ⬇ Funciones para seleccionar fila en la tabla de agregar asignación de equipo ⬇
+// Permite seleccionar checkbox haciendo clic en la fila
+function enableRowClick() {
+    const rows = document.querySelectorAll('#equiposTable tr');
+
+    rows.forEach(row => {
+        row.removeEventListener('click', rowClickHandler);
+        row.addEventListener('click', rowClickHandler);
+    });
+}
+
+function rowClickHandler(event) {
+    // Evitar que el evento se dispare si el clic es sobre el checkbox
+    if (event.target.tagName === 'INPUT' && event.target.type === 'checkbox') return;
+
+    // Encontrar el checkbox en la fila y alternar su estado
+    const checkbox = this.querySelector('.equipo-checkbox');
+    if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change')); // Disparar evento 'change' manualmente
+    }
+}
+// ⬆ Fin de funciones para seleccionar fila en la tabla de agregar asignación de equipo ⬆
 
 // Búsqueda dinámica
 document.getElementById('searchEquipo').addEventListener('input', function () {
