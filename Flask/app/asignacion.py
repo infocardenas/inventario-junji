@@ -59,9 +59,8 @@ def Asignacion(page=1):
     offset = (page - 1) * perpage
     cur = mysql.connection.cursor()
     #para la tabla
-    cur.execute(
-        """ 
-    SELECT  
+    cur.execute(""" 
+    SELECT
         a.idAsignacion,
         a.fecha_inicioAsignacion,
         a.ObservacionAsignacion,
@@ -89,9 +88,7 @@ def Asignacion(page=1):
     JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
     JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
     ORDER BY a.idAsignacion DESC
-    LIMIT %s OFFSET %s
-        """, (perpage, offset)
-    )
+    """)
     data = cur.fetchall()
 
     for row in data:
