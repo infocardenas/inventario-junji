@@ -52,13 +52,10 @@ PDFS_DIR = paths['pdf_path']
 @asignacion.route("/asignacion")
 @asignacion.route("/asignacion/<page>")
 @loguear_requerido
-def Asignacion(page=1):
-    #La url viene como string por lo que se convierte a int
-    page = int(page)
-    perpage = getPerPage()
-    offset = (page - 1) * perpage
+def Asignacion():
     cur = mysql.connection.cursor()
-    #para la tabla
+
+    # Datos para mostrar en la tabla
     cur.execute(""" 
     SELECT
         a.idAsignacion,
@@ -95,20 +92,16 @@ def Asignacion(page=1):
         row['fecha_inicio'] = row['fecha_inicioAsignacion'].strftime('%d-%m-%Y') if row['fecha_inicioAsignacion'] else 'N/A'
         row['fecha_devolucion'] = row['fechaDevolucion'].strftime('%d-%m-%Y') if row['fechaDevolucion'] else 'Sin devolver'
 
-    cur.execute(
-        """ SELECT 
-            f.rutFuncionario,
-            f.nombreFuncionario 
-        FROM funcionario f
-        ORDER BY f.nombreFuncionario
-        """
-    )
+    cur.execute("""
+    SELECT 
+        f.rutFuncionario,
+        f.nombreFuncionario 
+    FROM funcionario f
+    ORDER BY f.nombreFuncionario
+    """)
     funcionarios = cur.fetchall()
-    cur.execute('SELECT COUNT(*) FROM asignacion')
-    total = cur.fetchone()
-    total = int(str(total).split(':')[1].split('}')[0])
-    cur.execute(
-        """
+
+    cur.execute("""
     SELECT 
         e.idEquipo,
         e.Cod_inventarioEquipo,
@@ -127,17 +120,14 @@ def Asignacion(page=1):
     JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
     JOIN unidad u ON e.idUnidad = u.idUnidad
     WHERE ee.nombreEstado_equipo = 'SIN ASIGNAR';
-        """
-    )
+        """)
     equipos_sin_asignar = cur.fetchall()
+
     return render_template(
         'GestionR.H/asignacion.html', 
         funcionarios=funcionarios, 
         asignacion=data,
-        equipos_sin_asignar = equipos_sin_asignar,
-        page=page, 
-        lastpage= page < (total / perpage) + 1
-        )
+        equipos_sin_asignar = equipos_sin_asignar)
 
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
