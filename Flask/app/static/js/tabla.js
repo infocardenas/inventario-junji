@@ -44,7 +44,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextPageBtn = document.getElementById("next-page");
     const pageNumbersContainer = document.getElementById("page-numbers");
 
-    const rowsPerPage = 1; // Número de filas por página
+    const rowsPerPage = 10; // Número de filas por página
     let currentPage = 1;
     let totalRows;
     let rows;
