@@ -48,7 +48,6 @@
                         <th onclick="sortTable(3, this)">Tipo de equipo</th>
                         <th onclick="sortTable(4, this)">Fecha de asignación</th>
                         <th onclick="sortTable(5, this)">Fecha de devolución</th>
-                        <th>Actas</td>
                         <th>Acciones</td>
                     </tr>
                 </thead>
@@ -63,37 +62,6 @@
                             <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
                             <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
                             <td class="toCheck">{{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}</td>
-
-                            <!-- Botones de actas -->
-                            <td>
-                                <div class="dropdown">
-                                    <button class="options-button">Asignaciones</button>
-                                    <div class="dropdown-options">
-                                        <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}"
-                                            class="info-button desplegable-button">Asignación</a>
-                                        <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}"
-                                            class="success-button desplegable-button">Firmar</a>
-                                    </div>
-                                </div>
-
-                                <!-- Si la asignación no está activa, se muestran opciones para devolución -->
-                                {% if asig.ActivoAsignacion != 1 %}
-                                <div class="dropdown">
-                                    <button class="options-button">Devoluciones</button>
-                                    <div class="dropdown-options">
-                                        <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}"
-                                            class="info-button desplegable-button">Devolución</a>
-                                        <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver"
-                                            class="success-button desplegable-button">Firmar</a>
-                                    </div>
-                                </div>
-                                {% else %}
-                                <!-- Si la asignación está activa, muestra el botón para devolverla -->
-                                <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}"
-                                    class="success-button">Devolver</a>
-                                {% endif %}
-                            </td>
-                            <!-- Fin botones de actas -->
 
                             <!-- Acciones -->
                             <td class="d-flex justify-content-center gap-2">
