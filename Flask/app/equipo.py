@@ -872,13 +872,13 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
                 cur.execute("""
                 SELECT *
                 FROM tipo_adquisicion ta
-                WHERE LOWER(ta.nombreTipo_adquisicion) LIKE LOWER(%s)
+                WHERE LOWER(ta.nombre_tipo_adquisicion) LIKE LOWER(%s)
                 """, (nombre_tipo_adquisicion,))
                 tupla_adquisicion = cur.fetchall()
                 idTipo_adquisicion = ""
                 if(len(tupla_adquisicion) == 0):
                     cur.execute("""
-                    INSERT INTO tipo_adquisicion(nombreTipo_adquisicion)
+                    INSERT INTO tipo_adquisicion(nombre_tipo_adquisicion)
                     VALUES (%s)
                     """, (nombre_tipo_adquisicion,))
                     mysql.connection.commit()

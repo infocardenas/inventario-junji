@@ -73,7 +73,7 @@ CREATE TABLE `unidad` (
 CREATE TABLE `funcionario` (
   `rutFuncionario` VARCHAR(10) PRIMARY KEY NOT NULL,
   `nombreFuncionario` VARCHAR(45) NOT NULL,
-  `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TECNICO', 'DIRECTIVO') NOT NULL,
+  `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL') NOT NULL,
   `correoFuncionario` VARCHAR(45) NOT NULL,
   `idUnidad` INT NOT NULL,
   UNIQUE KEY `unique_correoFuncionario` (`correoFuncionario`),
@@ -152,8 +152,8 @@ CREATE TABLE `modelo_equipo` (
 --
 
 CREATE TABLE `tipo_adquisicion` (
-  `idTipo_adquisicion` int(11) NOT NULL AUTO_INCREMENT,
-  `nombreTipo_adquisicion` varchar(45) NOT NULL,
+  `idTipo_adquisicion` INT NOT NULL AUTO_INCREMENT,
+  `nombre_tipo_adquisicion` ENUM('COMPRA', 'ARRIENDO', 'PRÉSTAMO') NOT NULL,
   PRIMARY KEY (`idTipo_adquisicion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -515,6 +515,14 @@ INSERT INTO `estado_equipo` (`idEstado_equipo`, `nombreEstado_equipo`) VALUES
 (3, 'Siniestro'),
 (4, 'Baja'),
 (5, 'Mantencion');
+
+--
+-- Volcado de datos para la tabla `tipo_adquisicion`
+--
+INSERT INTO `tipo_adquisicion` (`idTipo_adquisicion`, `nombre_tipo_adquisicion`) VALUES
+(1, 'COMPRA'),
+(2, 'ARRIENDO'),
+(3, 'PRÉSTAMO');
 
 COMMIT;
 

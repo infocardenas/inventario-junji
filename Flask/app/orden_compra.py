@@ -23,7 +23,7 @@ def ordenCompra(page = 1):
     offset = (page-1) * perpage
     cur = mysql.connection.cursor()
     cur.execute(''' SELECT oc.idOrden_compra, oc.nombreOrden_compra, oc.fechacompraOrden_compra,oc.fechafin_ORDEN_COMPRA,oc.rutadocumentoOrden_compra,
-                p.nombreProveedor, p.idProveedor, ta.idTipo_adquisicion, ta.nombreTipo_adquisicion, oc.idProveedor, oc.idTipo_adquisicion
+                p.nombreProveedor, p.idProveedor, ta.idTipo_adquisicion, ta.nombre_tipo_adquisicion, oc.idProveedor, oc.idTipo_adquisicion
                 from orden_compra oc
                 inner join proveedor p on p.idProveedor = oc.idProveedor
                 inner join tipo_adquisicion ta on ta.idTipo_adquisicion = oc.idTipo_adquisicion
@@ -111,7 +111,7 @@ def add_ordenc():
 def edit_ordenc(id):
     try:
         cur = mysql.connection.cursor()
-        cur.execute(''' SELECT oc.idOrden_compra, oc.nombreOrden_compra, oc.fechacompraOrden_compra, oc.fechafin_ORDEN_COMPRA, oc.rutadocumentoOrden_compra, p.nombreProveedor, p.idProveedor, ta.idTipo_adquisicion, ta.nombreTipo_adquisicion
+        cur.execute(''' SELECT oc.idOrden_compra, oc.nombreOrden_compra, oc.fechacompraOrden_compra, oc.fechafin_ORDEN_COMPRA, oc.rutadocumentoOrden_compra, p.nombreProveedor, p.idProveedor, ta.idTipo_adquisicion, ta.nombre_tipo_adquisicion
                     , oc.idProveedor, oc.idTipo_adquisicion
                     from orden_compra oc
                     inner join proveedor p on p.idProveedor = oc.idProveedor

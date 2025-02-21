@@ -8,8 +8,6 @@
 
     <div class="row">
         <div class="col-md-12">
-        <!-- Contenedor para alertas dinámicas -->
-
 
             <!-- Botón agregar traslado -->
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -49,11 +47,11 @@
                                     <input class="form-control" type="date" name="fecha_fin_ordenc" id="fecha_fin_ordenc" required>
                                 </div>
                                 <div class="mb-3">
-                                    <label for="nombre_tipo_adquisicion_ordenc">Tipo de Adquisición:</label>
+                                    <label for="nombre_tipo_adquisicion_ordenc">Tipo de adquisición:</label>
                                     <select name="nombre_tipo_adquisicion_ordenc" class="form-control" required>
                                         <option value="">Elija el tipo de adquisición</option>
                                         {% for tip in tipo_adquisicion %}
-                                        <option value="{{ tip.idTipo_adquisicion }}">{{ tip.nombreTipo_adquisicion }}</option>
+                                            <option value="{{ tip.idTipo_adquisicion }}">{{ tip.nombre_tipo_adquisicion }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -108,7 +106,7 @@
                                     <select id="edit_nombre_tipo_adquisicion_ordenc" name="nombre_tipo_adquisicion_ordenc" class="form-control">
                                         <option value="">Elija el tipo de adquisición</option>
                                         {% for tip in tipo_adquisicion %}
-                                        <option value="{{ tip.idTipo_adquisicion }}">{{ tip.nombreTipo_adquisicion }}</option>
+                                        <option value="{{ tip.idTipo_adquisicion }}">{{ tip.nombre_tipo_adquisicion }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
@@ -175,7 +173,7 @@
                             <td>{{ ordenc.nombreOrden_compra }}</td>
                             <td>{{ ordenc.fechacompraOrden_compra }}</td>
                             <td>{{ ordenc.fechafin_ORDEN_COMPRA }}</td>
-                            <td>{{ ordenc.nombreTipo_adquisicion }}</td>
+                            <td>{{ ordenc.nombre_tipo_adquisicion }}</td>
                             <td>{{ ordenc.nombreProveedor }}</td>
                             <td>
                                 <button type="button" 
@@ -194,7 +192,6 @@
                         </tr>
                         {% endfor %}
                     </tbody>
-                    
                 </table>
             </div>
         </div>

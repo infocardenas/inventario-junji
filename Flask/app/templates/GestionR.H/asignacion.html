@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-{% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
     <div class="col">
@@ -11,16 +10,22 @@
                 <div class="toolbar-1">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAsignacionModal" onclick="fechaPorDefecto()">Agregar</button> <!-- onclick de fechaPorDefecto() para que no haya un delay entre que cargue completamente el modal y muestre la fecha. Al tener la función en onclick muestra la fecha instantáneamente -->
                 </div>
-                <!-- <button type="button" onclick="navigateTo('/add_asignacion')" class="btn btn-primary">Agregar asignación antigüo</button> -->
                 <div class="toolbar-2">
                     <input name="palabra" type="text" class="search-box" placeholder="Buscar asignación..." id="buscador" onkeyup="busqueda('myTableBody')" />
                 </div>
                 <div class="toolbar-3">
                     <div class="dropdown">
-                        <button id="descargar-PDF-button" class="btn btn-danger dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="bi bi-file-earmark-pdf"></i> Descargar PDF</button>
+                        <button id="firmar-button" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="bi bi-vector-pen"></i> Firmar</button>
                         <ul class="dropdown-menu dropdown-menu-dark">
-                            <li><a id="descargar-asignaciones" class="dropdown-item" href="#">Asignación</a></li>
-                            <li><a id="descargar-devoluciones" class="dropdown-item" href="#">Devolución</a></li>
+                            <li><a id="documento-firmado-asignacion" class="dropdown-item disabled" href="#">Asignación</a></li>
+                            <li><a id="documento-firmado-devolucion" class="dropdown-item disabled" href="#">Devolución</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
+                        <button id="descargar-PDF-button" class="btn btn-danger dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="bi bi-file-earmark-pdf"></i> Acta (PDF)</button>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a id="descargar-asignacion" class="dropdown-item" href="#" target="_blank">Asignación</a></li>
+                            <li><a id="descargar-devolucion" class="dropdown-item" href="#" target="_blank">Devolución</a></li>
                         </ul>
                     </div>
                     <div data-bs-toggle="tooltip" data-bs-title="Devolver">
@@ -42,7 +47,6 @@
                         <th onclick="sortTable(3, this)">Tipo de equipo</th>
                         <th onclick="sortTable(4, this)">Fecha de asignación</th>
                         <th onclick="sortTable(5, this)">Fecha de devolución</th>
-                        <th>Actas</td>
                         <th>Acciones</td>
                     </tr>
                 </thead>
@@ -57,37 +61,6 @@
                             <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
                             <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
                             <td class="toCheck">{{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}</td>
-
-                            <!-- Botones de actas -->
-                            <td>
-                                <div class="dropdown">
-                                    <button class="options-button">Asignaciones</button>
-                                    <div class="dropdown-options">
-                                        <a href="/asignacion/mostrar_pdf/{{asig.idAsignacion}}"
-                                            class="info-button desplegable-button">Asignación</a>
-                                        <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}"
-                                            class="success-button desplegable-button">Firmar</a>
-                                    </div>
-                                </div>
-
-                                <!-- Si la asignación no está activa, se muestran opciones para devolución -->
-                                {% if asig.ActivoAsignacion != 1 %}
-                                <div class="dropdown">
-                                    <button class="options-button">Devoluciones</button>
-                                    <div class="dropdown-options">
-                                        <a href="/asignacion/mostrar_pdf_devolucion/{{asig.idAsignacion}}"
-                                            class="info-button desplegable-button">Devolución</a>
-                                        <a href="/asignacion/listar_pdf/{{asig.idAsignacion}}/devolver"
-                                            class="success-button desplegable-button">Firmar</a>
-                                    </div>
-                                </div>
-                                {% else %}
-                                <!-- Si la asignación está activa, muestra el botón para devolverla -->
-                                <a target="_self" href="/asignacion/devolver/{{ asig.idAsignacion }}"
-                                    class="success-button">Devolver</a>
-                                {% endif %}
-                            </td>
-                            <!-- Fin botones de actas -->
 
                             <!-- Acciones -->
                             <td class="d-flex justify-content-center gap-2">
@@ -116,12 +89,21 @@
                     {% endif %}
                 </tbody>
             </table>
+            <nav aria-label="Paginación">
+                <ul id="pagination-container" class="pagination justify-content-center">
+                    <li class="page-item" id="prev-page-li">
+                        <a class="page-link" href="#" id="prev-page"><span>&laquo;</span></a>
+                    </li>
+                    <span id="page-numbers" class="d-flex"></span>
+                    <li class="page-item" id="next-page-li">
+                        <a class="page-link" href="#" id="next-page"><span>&raquo;</span></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
         {% include 'GestionR.H/asignacion.modals.html' %}
         <script src="../static/js/asignaciones.controller.js"></script>
-
-        {{ paginacion("asignacion", page, lastpage) }}
         {% endblock %}
     </div>
 </div>

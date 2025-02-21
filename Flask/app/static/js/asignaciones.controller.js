@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (rowModal) rowModal.style.display = "none";
                 if (inputHidden) inputHidden.style.display = "none";
             }
+            actualizarEstadoBotonFirmar();
         });
     });
 
@@ -74,8 +75,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Funciones asociadas al manejo del botón de Descargar PDF
     const btnDescargarPDF = document.getElementById("descargar-PDF-button");
-    const btnAsignaciones = document.getElementById("descargar-asignaciones");
-    const btnDevoluciones = document.getElementById("descargar-devoluciones");
+    const btnAsignaciones = document.getElementById("descargar-asignacion");
+    const btnDevoluciones = document.getElementById("descargar-devolucion");
     const checkboxes = document.querySelectorAll(".row-checkbox");
 
     function actualizarEstadoBotonDescargarPDF() {
@@ -115,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     actualizarEstadoBotonDescargarPDF();
+    actualizarEstadoBotonFirmar();
     // Fin de funciones asociadas al manejo del botón de Descargar PDF
 });
 
@@ -168,18 +170,35 @@ function actualizarEstadoBotonDevolver() {
     const btnDevolver = document.getElementById("devolver-button");
 
     let hayDevuelto = false; // Variable para saber si hay al menos un equipo ya devuelto
+    let idAsignacionBase = null;
+    let mismaAsignacion = true; // Variable para saber si todas las checkbox marcadas pertenecen a la misma asignación
 
-    checkboxes.forEach(checkbox => {
+    checkboxes.forEach((checkbox, index) => {
+        // 1. Verificar si ya fue devuelto
         if (checkbox.dataset.devuelto === "true") {
             hayDevuelto = true;
         }
+
+        // 2. Validar si comparten el mismo idAsignacion
+        if (index === 0) {
+            // Guardamos el idAsignacion del primer checkbox seleccionado
+            idAsignacionBase = checkbox.dataset.idAsignacion;
+        } else {
+            // Comparamos con el primer idAsignacion
+            if (checkbox.dataset.idAsignacion !== idAsignacionBase) {
+                mismaAsignacion = false;
+            }
+        }
     });
 
-    // Si hay un equipo ya devuelto, deshabilitar el botón
-    if (hayDevuelto || checkboxes.length === 0) {
-        btnDevolver.setAttribute("disabled", "true");
-    } else {
+    // Criterios para habilitar "Devolver":
+    // a) No hay equipos devueltos.
+    // b) Al menos un checkbox seleccionado.
+    // c) Todas las checkboxes pertenecen a la misma asignación.
+    if (!hayDevuelto && checkboxes.length > 0 && mismaAsignacion) {
         btnDevolver.removeAttribute("disabled");
+    } else {
+        btnDevolver.setAttribute("disabled", "true");
     }
 }
 
@@ -215,7 +234,32 @@ function refreshCheckboxListeners() {
             }
         });
     });
+    enableRowClick();
 }
+
+// ⬇ Funciones para seleccionar fila en la tabla de agregar asignación de equipo ⬇
+// Permite seleccionar checkbox haciendo clic en la fila
+function enableRowClick() {
+    const rows = document.querySelectorAll('#equiposTable tr');
+
+    rows.forEach(row => {
+        row.removeEventListener('click', rowClickHandler);
+        row.addEventListener('click', rowClickHandler);
+    });
+}
+
+function rowClickHandler(event) {
+    // Evitar que el evento se dispare si el clic es sobre el checkbox
+    if (event.target.tagName === 'INPUT' && event.target.type === 'checkbox') return;
+
+    // Encontrar el checkbox en la fila y alternar su estado
+    const checkbox = this.querySelector('.equipo-checkbox');
+    if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+        checkbox.dispatchEvent(new Event('change')); // Disparar evento 'change' manualmente
+    }
+}
+// ⬆ Fin de funciones para seleccionar fila en la tabla de agregar asignación de equipo ⬆
 
 // Búsqueda dinámica
 document.getElementById('searchEquipo').addEventListener('input', function () {
@@ -263,6 +307,42 @@ function setTooltipText(element, newText) {
     }
     new bootstrap.Tooltip(element); // Crea uno nuevo con el texto actualizado
 }
+function actualizarEstadoBotonFirmar() {
+    const checkboxes = document.querySelectorAll(".row-checkbox:checked");
+    const btnFirmar = document.getElementById("firmar-button");
+    const btnAsignacionFirmar = document.getElementById("documento-firmado-asignacion");
+    const btnDevolucionFirmar = document.getElementById("documento-firmado-devolucion");
+
+    if (checkboxes.length === 1) {
+        let checkbox = checkboxes[0];
+        let idAsignacion = checkbox.dataset.idAsignacion;
+        let idDevolucion = checkbox.dataset.idDevolucion;
+
+        // Habilitar el dropdown principal
+        btnFirmar.removeAttribute("disabled");
+
+        // Habilitar el botón de asignación
+        btnAsignacionFirmar.classList.remove("disabled");
+        btnAsignacionFirmar.href = `/asignacion/listar_pdf/${idAsignacion}`;
+
+        // Habilitar el botón de devolución solo si ya se devolvió el equipo
+        if (idDevolucion && idDevolucion.trim() !== "") {
+            btnDevolucionFirmar.classList.remove("disabled");
+            btnDevolucionFirmar.href = `/asignacion/listar_pdf/${idAsignacion}/devolver`;
+        } else {
+            btnDevolucionFirmar.classList.add("disabled");
+            btnDevolucionFirmar.removeAttribute("href");
+        }
+    } else {
+        // Deshabilitar todo si no hay exactamente una selección
+        btnFirmar.setAttribute("disabled", "true");
+        btnAsignacionFirmar.classList.add("disabled");
+        btnAsignacionFirmar.removeAttribute("href");
+        btnDevolucionFirmar.classList.add("disabled");
+        btnDevolucionFirmar.removeAttribute("href");
+    }
+}
+
 
 $(document).ready(function () {
     let listaFuncionarios = JSON.parse($("#listaFuncionarios").attr("data-funcionarios"));
