@@ -602,7 +602,7 @@ def descargar_pdf_asignacion(id):
     try:
         nombrePDF = "asignacion_" + str(id) + ".pdf"
         file = os.path.join("pdf", nombrePDF)
-        return send_file(file, as_attachment=True)
+        return send_file(file, as_attachment=False)
     except:
         flash("Error: No se encontró el PDF", "danger")
         return redirect(url_for('asignacion.Asignacion'))
@@ -890,7 +890,7 @@ def descargar_pdf_devolucion(id):
     try:
         nombrePDF = "devolucion_" + str(id) + ".pdf"
         file = os.path.join("pdf", nombrePDF)
-        return send_file(file, as_attachment=True)
+        return send_file(file, as_attachment=False)
     except:
         flash("Error: No se encontró el PDF", "danger")
         return redirect(url_for('asignacion.Asignacion'))
