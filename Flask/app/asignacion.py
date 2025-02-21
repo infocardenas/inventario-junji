@@ -501,7 +501,7 @@ def crear_pdf_asignacion(funcionario, equipos):
     observacion = "Esta es una observacion"
 
     pdf.ln(10)
-    nombreEncargado = "Nombre del encargado TI:" + session['user']
+    nombreEncargado = "Nombre del encargado TI:"
     rutEncargado = "RUT:"
     firmaEncargado = "Firma:"
     nombreMinistro = "Nombre del funcionario:"
@@ -531,7 +531,10 @@ def crear_pdf_asignacion(funcionario, equipos):
         cols.ln()
         cols.new_column()
         for i in range(0, 3):
-            cols.write(text="___________________________________")
+            if i == 0:
+                cols.write(text= session['user'])
+            else:
+                cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
         cols.ln()
@@ -825,7 +828,10 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
         cols.ln()
         cols.new_column()
         for i in range(0, 3):
-            cols.write(text="___________________________________")
+            if i == 0:
+                cols.write(text= session['user'])
+            else:
+                cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
         cols.ln()
