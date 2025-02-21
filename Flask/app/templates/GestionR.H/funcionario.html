@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-{% from 'funciones_macro.html' import paginacion %}
 
 <div class="row">
     <div class="col">
@@ -108,7 +107,6 @@
 
             {% include 'GestionR.H/funcionario.modals.html' %}
 
-            {{ paginacion("funcionario", page, lastpage) }}
         </div>
         {% endblock %}
     </div>

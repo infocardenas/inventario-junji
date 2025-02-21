@@ -3,48 +3,48 @@
 
 <a class="nav-button" href="/registrar">Volver</a>
 <div id="error-message" style="display: none;" class="error-message"></div>
-<div class="card card-body" id="formulario" >
+<div class="card card-body" id="formulario">
     <form action="/update_usuario/{{usuario.nombreUsuario}}" method="POST" class="mi-formulario">
         <h3>Editar Cuenta</h3>
         <div class="form-group">
             <label for="nombreUsuario">Nombre de Usuario</label>
-            <input type="text" class="validar-user" 
-            name="nombreUsuario" placeholder="Nombre Usuario" value="{{usuario.nombreUsuario}}">
+            <input type="text" class="validar-user" name="nombreUsuario" placeholder="Nombre Usuario"
+                value="{{usuario.nombreUsuario}}">
             <br>
-            <label>Es Administrador</label>
-            {% if usuario.privilegiosAdministrador == 1%}
-            <input type="checkbox" class="form-control", 
-            name="isAdmin" checked=""/>
-            {% else %}
-            <input type="checkbox" class="form-control", 
-            name="isAdmin"/>
-            {% endif %}
-            <br/>
-            <button class="agregar-button">Ingresar</button>
+            <label>Tipo de Usuario</label>
+            <select class="form-control" name="privilegiosAdministrador">
+                <option value="0" {% if usuario.privilegiosAdministrador==0 %}selected{% endif %}>Usuario Normal
+                </option>
+                <option value="1" {% if usuario.privilegiosAdministrador==1 %}selected{% endif %}>Administrador</option>
+            </select>
+            <br />
+            <button class="agregar-button">Actualizar</button>
         </div>
     </form>
 </div>
-<div class="card card-body" id="formulario" >
+
+<div class="card card-body" id="formulario">
     <form action="/update_usuario_contrasenna/{{usuario.nombreUsuario}}" method="POST" class="mi-formulario">
         <h3>Editar Contraseña</h3>
         <div class="form-group">
             <label for="nombreUsuario">Ingrese Contraseña Actual</label>
-            <input type="password" class="form-control" id="contrasenna"
-            name="contranna_vieja" placeholder="Contraseña Antigua">
-            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
-                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna"/>
+            <input type="password" class="form-control" id="contrasenna" name="contranna_vieja"
+                placeholder="Contraseña Antigua">
+            <img style="width: 20px; height:20px" src="../static/img/hidden.png"
+                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna" />
             <br>
             <label for="nombreUsuario">Ingrese Contraseña Nueva</label>
-            <input type="password" class="form-control" id="contrasenna_repetir"
-            name="contrasenna_nueva" placeholder="Contraseña Nueva" >
-            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
-                onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir"/>
+            <input type="password" class="form-control" id="contrasenna_repetir" name="contrasenna_nueva"
+                placeholder="Contraseña Nueva">
+            <img style="width: 20px; height:20px" src="../static/img/hidden.png"
+                onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir" />
 
             <button class="agregar-button">Ingresar</button>
         </div>
     </form>
 </div>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <script src="../static/js/main.js"></script>
 {% endblock %}

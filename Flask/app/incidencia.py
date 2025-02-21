@@ -66,100 +66,57 @@ def incidencia_form(idEquipo):
         'Operaciones/add_incidencia.html', 
         equipo=equipo
         )
-
-#recibe el form de la incidencia y crea la fila de una incidencia en la bbdd, redirige a la pestaña de agregar documentos
 @incidencia.route("/incidencia/add_incidencia", methods=['POST'])
 @administrador_requerido
 def add_incidencia():
     if request.method == "POST":
-        # ---------------------------
-        # 1. Recepción y limpieza de datos del formulario
-        # ---------------------------
+        # 1. Recepción de datos
         datos = {
             'nombreIncidencia': request.form['nombreIncidencia'],
             'observacionIncidencia': request.form['observacionIncidencia'],
             'fechaIncidencia': request.form['fechaIncidencia'],
             'idEquipo': request.form['idEquipo']
         }
-        print("datos")
-        print(datos)
-        # Verificar que se haya seleccionado un equipo
+
+        # 2. Validar si el ID del equipo está vacío o es inválido
         if not datos['idEquipo']:
             flash("Error: No se seleccionó un equipo.", "warning")
             return redirect(url_for("equipo.Equipo"))
 
-        # Convertir idEquipo a entero
         try:
             datos['idEquipo'] = int(datos['idEquipo'])
         except ValueError:
             flash("Error: ID de equipo inválido.", "warning")
             return redirect(url_for("equipo.Equipo"))
 
-        # ---------------------------
-        # 2. Validación de datos con Cerberus
-        # ---------------------------
-        schema = {
-            'nombreIncidencia': {'type': 'string', 'minlength': 1},
-            'observacionIncidencia': {'type': 'string', 'nullable': True},
-            'fechaIncidencia': {'type': 'string', 'regex': r'^\d{4}-\d{2}-\d{2}$'},  # Formato YYYY-MM-DD
-            'idEquipo': {'type': 'integer', 'min': 1},
+        # 3. Verificar si ya existe una incidencia activa para el equipo
+        cur = mysql.connection.cursor()
+        cur.execute("""
+            SELECT COUNT(*) AS count 
+            FROM incidencia 
+            WHERE idEquipo = %s
+        """, (datos['idEquipo'],))
+        incidencia_existente = cur.fetchone()
+
+        if incidencia_existente and incidencia_existente['count'] > 0:
+            flash("Este equipo ya tiene una incidencia registrada.", "warning")
+            return redirect(url_for("incidencia.Incidencia"))
+
+        # 4. Asignar el estado del equipo según la incidencia
+        estados_incidencia = {
+            'Robo': 3,              # Siniestro
+            'Perdido': 4,           # Baja
+            'Dañado/Averiado': 5    # Mantención
         }
 
-        v = Validator(schema)
-        if not v.validate(datos):
-            errores = v.errors
-            mensaje_error = "Errores en los siguientes campos:\n"
-            for campo, error in errores.items():
-                mensaje_error += f"- {campo}: {', '.join(error)}\n"
-            flash(mensaje_error, "warning")
-            return redirect(url_for("incidencia.listar_incidencias"))
+        nuevo_estado = estados_incidencia.get(datos['nombreIncidencia'])
+        if nuevo_estado is None:
+            flash("Tipo de incidencia inválido.", "warning")
+            return redirect(url_for("incidencia.Incidencia"))
 
-        # ---------------------------
-        # 3. Verificar existencia del equipo en la base de datos
-        # ---------------------------
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute("SELECT COUNT(*) AS count FROM equipo WHERE idEquipo = %s", (datos['idEquipo'],))
-            if cur.fetchone()['count'] == 0:
-                flash("El equipo seleccionado no existe.", "warning")
-                return redirect(url_for("equipo.listar_equipos"))
-        except Exception as e:
-            flash("Error al verificar el equipo: " + str(e), "danger")
-            return redirect(url_for("equipo.Equipo"))
-
-        # ---------------------------
-        # 4. Procesamiento del archivo adjunto (opcional)
-        # ---------------------------
-        archivo = request.files.get('archivoIncidencia')
-        ruta_archivo = None
-        if archivo and archivo.filename:
-            filename = secure_filename(archivo.filename)
-            # Validar que el archivo sea un PDF
-            if not filename.lower().endswith('.pdf'):
-                flash("El archivo debe ser un PDF.", "warning")
-                return redirect(url_for("incidencia.listar_incidencias"))
-
-            # Crear la carpeta destino
-            carpeta = os.path.join("pdf", f"incidencia_{datos['idEquipo']}")
-            os.makedirs(carpeta, exist_ok=True)
-
-            # Agregar un timestamp para evitar colisiones en el nombre
-            timestamp = int(time.time())
-            filename = f"{timestamp}_{filename}"
-            ruta_archivo = os.path.join(carpeta, filename)
-
-            try:
-                archivo.save(ruta_archivo)
-            except Exception as e:
-                flash("Error al guardar el archivo: " + str(e), "danger")
-                return redirect(url_for("incidencia.listar_incidencias"))
-
-        # ---------------------------
         # 5. Insertar la incidencia en la base de datos
-        # ---------------------------
         try:
-            cur.execute(
-                """
+            cur.execute("""
                 INSERT INTO incidencia (
                     nombreIncidencia,
                     observacionIncidencia,
@@ -168,45 +125,39 @@ def add_incidencia():
                     idEquipo,
                     numDocumentos
                 ) VALUES (%s, %s, %s, %s, %s, %s)
-                """,
-                (
-                    datos['nombreIncidencia'],
-                    datos['observacionIncidencia'],
-                    ruta_archivo,
-                    datos['fechaIncidencia'],
-                    datos['idEquipo'],
-                    1 if ruta_archivo else 0
-                )
-            )
+            """, (
+                datos['nombreIncidencia'],
+                datos['observacionIncidencia'],
+                None,  # Ruta del archivo (no se maneja en este paso)
+                datos['fechaIncidencia'],
+                datos['idEquipo'],
+                0
+            ))
             mysql.connection.commit()
-            idIncidencia = cur.lastrowid  # Obtener el ID de la incidencia creada
 
-            # ---------------------------
-            # 6. Actualizar el estado del equipo a siniestro (ID 3)
-            # ---------------------------
+            # 6. Actualizar el estado del equipo según la incidencia
             cur.execute("""
                 UPDATE equipo
-                SET idEstado_equipo = 3
+                SET idEstado_equipo = %s
                 WHERE idEquipo = %s
-            """, (datos['idEquipo'],))
+            """, (nuevo_estado, datos['idEquipo']))
             mysql.connection.commit()
 
-            flash("Incidencia registrada correctamente", "success")
-            return redirect(url_for("incidencia.listar_pdf", idIncidencia=idIncidencia))
-        
-        # ---------------------------
-        # 7. Manejo de errores
-        # ---------------------------
+            flash("Incidencia registrada correctamente y estado actualizado.", "success")
+            return redirect(url_for("incidencia.Incidencia"))
+
         except IntegrityError as e:
             mensaje_error = str(e)
             if "Duplicate entry" in mensaje_error:
                 flash("Error: La incidencia ya existe.", "warning")
             else:
                 flash("Error de integridad en la base de datos: " + mensaje_error, "danger")
-            return redirect(url_for("incidencia.listar_incidencias"))
+            return redirect(url_for("incidencia.Incidencia"))
         except Exception as e:
             flash("Error al crear la incidencia: " + str(e), "danger")
-            return redirect(url_for("incidencia.listar_incidencias"))
+            return redirect(url_for("incidencia.Incidencia"))
+
+
 
         
         

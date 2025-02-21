@@ -1,28 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
-{% with messages = get_flashed_messages() %}
-{% if messages %}
-{% for message in messages %}
-
-<div class="custom-alert" role="alert">
-    {{ message }}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
-{% endfor %}
-{% endif %}
-{% endwith %}
-<!-- Se termina la seccion de errores -->
 
 <!-- ----- -->
 
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUsuarioModal">
-        Agregar Usuario
-    </button>
-    
     <div class="modal fade" id="addUsuarioModal" tabindex="-1" aria-labelledby="addUsuarioModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -63,8 +44,15 @@
                             placeholder="Contraseña">
                             <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
                                 onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir"/>
-
                         </div>
+                        <div class="mb-3">
+                            <label for="privilegiosAdministrador">Tipo de Usuario:</label>
+                            <select class="form-control" name="privilegiosAdministrador" id="privilegiosAdministrador">
+                                <option value="0">Usuario Normal</option>
+                                <option value="1">Administrador</option>
+                            </select>
+                        </div>
+                        
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
@@ -75,38 +63,16 @@
         </div>
     </div>
 
-
-<a class="nav-button" href="/">Volver</a>
-<button class="nav-button" onclick="showDiv()">Agregar</button>
-<div id="error-message" style="display: none;" class="error-message"></div>
-<div class="card card-body" id="formulario" style="display: none;">
-    <form action="/crear_cuenta" method="POST" class="mi-formulario">
-        <div class="form-group">
-            <label for="nombreUsuario">Nombre de Usuario</label>
-            <input type="text" class="validar-user" name="nombreUsuario" placeholder="Nombre Usuario">
-            <br>
-            <label for="password">Contraseña: </label>
-            <input id="contrasenna" type="password" class="validar-contraseña" name="contrasenna" placeholder="Contraseña">
-            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
-                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna"/>
-            <br>
-            <label>Repetir Contraseña: </label>
-            <input id="contrasenna_repetir" type="password" class="validar-contraseña" name="repetir" placeholder="Contraseña">
-            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
-                onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir"/>
-            <br/>
-            <label>Es Administrador</label>
-            <input type="checkbox" class="form-control", name="isAdmin"/>
-            <br/>
-            <button class="agregar-button">Ingresar</button>
-        </div>
-    </form>
-</div>
-
 <h2>Usuarios</h2>
 <div style="position: relative;">
-    <!--  <a href="/agregarmarca.html" class="agregar-button" style="position: absolute; top: 0; right: 0;">Agregar Marca de Equipo</a>    -->
-    <div style="overflow-x:auto;">
+    <div class="toolbar">
+        <div class="toolbar-1">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUsuarioModal">
+                Agregar Usuario
+            </button>
+            <a class="btn btn-primary" href="/">Volver</a>
+        </div>
+    </div>
         <table id="posts">
             <thead id="myTableHead">
                 <tr>

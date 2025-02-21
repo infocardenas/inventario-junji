@@ -79,75 +79,82 @@ def registrar():
     FROM usuario
                 """)
     usuarios = cur.fetchall()
-    return render_template("register.html", usuarios=usuarios)
+    print(usuarios)
+    return render_template(
+        "register.html", 
+        usuarios=usuarios)
 
 @cuentas.route("/crear_cuenta", methods=["GET", "POST"])
 @administrador_requerido
 def crear_cuenta():
-    data={
-    'nombreUsuario' : request.form['nombreUsuario'],
-    'contrasenna' : request.form['contrasenna'],
-    'contrasenna2 ': request.form['repetir']
+    # Captura de datos correctamente
+    data = {
+        'nombreUsuario': request.form['nombreUsuario'],
+        'contrasenna': request.form['contrasenna'],
+        'contrasenna2': request.form['repetir'],
     }
-    isAdmin = request.form.get("isAdmin")
 
+    # Obtener el valor directamente del <select>
+    privilegios_admin = request.form.get("privilegiosAdministrador", type=int)
+
+    # Validación de datos
     schema = {
-        'nombreUsuario' : {
-            'required' : True,
-            'type' : 'string',
-            'regex' : '^[a-zA-Z0-9@.]+$'},
-        'contrasenna' : {
-            'required' : True,
-            'type' : 'string',
-            'regex' : '^[a-zA-Z0-9!@#$%^&*]+$'},
-        'contrasenna2' : {
-            'required' : True,
-            'type' : 'string',
-            'regex' : '^[a-zA-Z0-9!@#$%^&*]+$'}, 
+        'nombreUsuario': {
+            'required': True,
+            'type': 'string',
+            'regex': '^[a-zA-Z0-9@.]+$'
+        },
+        'contrasenna': {
+            'required': True,
+            'type': 'string',
+            'regex': '^[a-zA-Z0-9!@#$%^&*]+$'
+        },
+        'contrasenna2': {
+            'required': True,
+            'type': 'string',
+            'regex': '^[a-zA-Z0-9!@#$%^&*]+$'
+        }
     }
+
     v = Validator(schema)
     if not v.validate(data):
-        flash("caracteres no permitidos")
+        flash("Caracteres no permitidos","warning")
         return redirect(url_for('cuentas.registrar'))
-    
-    if isAdmin == "on":
-        isAdmin = 1
-    else:
-        isAdmin = 0
 
-    if 'contrasenna' != 'contrasenna2':
-        flash("Las contraseñas son diferentes")
+    # Validación de contraseñas iguales
+    if data['contrasenna'] != data['contrasenna2']:
+        flash("Las contraseñas son diferentes","warning")
         return redirect("/registrar")
 
-
-    #revisar si existe un usuario con ese nombre
+    # Verificar si el usuario ya existe
     cur = mysql.connection.cursor()
     cur.execute("""
-    SELECT * 
-    FROM usuario u
-    WHERE u.nombreUsuario = %s
-        """, ('nombreUsuario',))
-    #se usa fetchall para que este en forma de tupla
+        SELECT * 
+        FROM usuario u
+        WHERE u.nombreUsuario = %s
+    """, (data['nombreUsuario'],))  # Corregido: ahora se pasa el valor correcto
     usuarios = cur.fetchall()
+
     if len(usuarios) == 1:
-        flash("El usuario ya existe, ingrese un nombre distinto")
+        flash("El usuario ya existe, ingrese un nombre distinto","warning")
         return redirect("/registrar")
 
-    
-    #Encriptar contraseña
-    contraseñaHasheda = bcrypt.generate_password_hash('contrasenna').decode('utf-8')
-    print(contraseñaHasheda)
+    # Encriptar contraseña correctamente
+    contraseña_hashed = bcrypt.generate_password_hash(data['contrasenna']).decode('utf-8')
 
-    #subir datos a la base de datos
+    # Insertar usuario en la base de datos
     cur.execute("""
-    INSERT INTO usuario(
-        nombreUsuario,
-        contrasennaUsuario,
-        privilegiosAdministrador
-    ) VALUES (%s, %s, %s)
-    """, ('nombreUsuario', contraseñaHasheda, str(isAdmin)))
+        INSERT INTO usuario(
+            nombreUsuario,
+            contrasennaUsuario,
+            privilegiosAdministrador
+        ) VALUES (%s, %s, %s)
+    """, (data['nombreUsuario'], contraseña_hashed, privilegios_admin))
+    
     mysql.connection.commit()
+    flash("Usuario creado con exito", "success")
     return redirect("/registrar")
+
 
 @cuentas.route("/protected")
 @loguear_requerido
@@ -219,26 +226,23 @@ def edit_contrasenna(nombre_usuario):
 @cuentas.route("/update_usuario/<nombreUsuario>", methods=["POST"])
 @administrador_requerido
 def update_usuario(nombreUsuario):
+    # Capturar datos del formulario
     nombreUsuarioNuevo = request.form['nombreUsuario']
-    isAdmin = request.form.get('isAdmin')
-    print("isAdmin")
-    print(isAdmin)
-    if isAdmin == "on":
-        isAdmin = "1"
-    else:
-        isAdmin = "0"
+    privilegios_admin = request.form.get('privilegiosAdministrador', type=int)
 
+    # Actualizar el usuario en la base de datos
     cur = mysql.connection.cursor()
     cur.execute("""
-    UPDATE usuario
-    SET nombreUsuario = %s,
-        privilegiosAdministrador = %s
-    WHERE nombreUsuario = %s
-                """, (nombreUsuarioNuevo, isAdmin, nombreUsuario))
+        UPDATE usuario
+        SET nombreUsuario = %s,
+            privilegiosAdministrador = %s
+        WHERE nombreUsuario = %s
+    """, (nombreUsuarioNuevo, privilegios_admin, nombreUsuario))
+
     mysql.connection.commit()
-    flash("usuario actualizado")
+    flash("Usuario actualizado correctamente")
     return redirect("/registrar")
-    
+
 
 
 @cuentas.route("/delete_usuario/<nombreUsuario>", methods=["GET", "POST"])
@@ -250,5 +254,5 @@ def delete_usuario(nombreUsuario):
     WHERE nombreUsuario = %s
                 """, (nombreUsuario,))
     mysql.connection.commit()
-    flash("usuario ha sido eliminado")
+    flash("usuario ha sido eliminado","success")
     return redirect("/registrar")

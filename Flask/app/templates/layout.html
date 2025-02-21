@@ -150,12 +150,15 @@
                             <img src="static/img/account.png" alt="Profile" class="avatar">
                         </a>
                         <div class="user-link-dropdown">
+                            <span class="user-name">👤 {{ session['user'] }}</span> <!-- Muestra el nombre del usuario -->
+                        
                             {% if privilegio == 1 %}
-                            <a href="/registrar">Administrar Usuarios</a>
+                                <a href="/registrar" class="card">Administrar Usuarios</a> <!-- Solo visible para admin -->
                             {% endif %}
-                            <a href="/ingresar" class="card">{{session['user']}}</a>
-                            <a href="/desloguear" class="card">Desloguear</a>
+                        
+                            <a href="/desloguear" class="card">Salir</a> <!-- Cambiado de "Desloguear" a "Salir" -->
                         </div>
+                        
                     </li>
                 </ul>
             </div>

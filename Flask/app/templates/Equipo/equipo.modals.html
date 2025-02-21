@@ -284,15 +284,19 @@
                     <input class="no-delete-value" type="hidden" id="idEquipo" name="idEquipo" value="">
 
                     <div class="mb-3">
-                        <label for="nombreIncidencia" class="form-label">Nombre de la incidencia</label>
-                        <input type="text" class="form-control validar-letras" id="nombreIncidencia"
-                            name="nombreIncidencia" required>
-                        <div class="text-error-message"></div>
+                        <label for="nombreIncidencia" class="form-label">Tipo de Incidencia</label>
+                        <select class="form-control" id="nombreIncidencia" name="nombreIncidencia" required>
+                            <option value="" disabled selected>Seleccione tipo de incidencia</option> <!-- Placeholder -->
+                            <option value="Robo">Robo</option>
+                            <option value="Perdido">Perdido</option>
+                            <option value="Dañado/Averiado">Dañado/Averiado</option>
+                        </select>
                     </div>
+                    
                     <div class="mb-3">
                         <label for="fechaIncidencia" class="form-label">Fecha de la incidencia</label>
                         <input type="date" class="form-control validar-fecha-30-0" id="fechaIncidencia"
-                        name="fechaIncidencia" required>
+                            name="fechaIncidencia" required>
                     </div>
                     <div class="mb-3">
                         <label for="observacionIncidencia" class="form-label">Observaciones</label>
@@ -309,6 +313,90 @@
         </div>
     </div>
 </div>
+
+
+<!-- Modal para exportar excel-->
+<div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg"  style="margin-top: 5%;">
+        <div class="modal-content">
+
+            <!-- Encabezado del modal con título centrado -->
+            <div class="modal-header justify-content-center">
+                <h5 class="modal-title w-100 text-center" id="exportModalLabel">Exportar Excel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+
+            <!-- Cuerpo del modal -->
+            <div class="modal-body">
+                <!-- Subtítulo Filtros, alineado con los selectores -->
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <h6 class="mb-0">Filtros</h6>
+                    </div>
+                </div>
+
+                <!-- Primera fila: Provincia, Unidad, Tipo -->
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="provinciaSelect" class="form-label">Provincia</label>
+                        <select id="provinciaSelect" class="form-select">
+                            <option value="" selected>Seleccione provincia</option>
+                            {% for prov in provincia%}
+                            <option value="{{ prov.idProvincia }}">{{ prov.nombreProvincia }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="unidadSelect" class="form-label">Unidad</label>
+                        <select id="unidadSelect" class="form-select">
+                            <option selected disabled>Seleccione unidad</option>
+                            {% for unidad in Unidad %}
+                            <option value="{{ unidad.idUnidad }}">{{ unidad.nombreUnidad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="tipoSelect" class="form-label">Tipo</label>
+                        <select id="tipoSelect" class="form-select">
+                            <option selected disabled>Seleccione tipo</option>
+                            {% for tipo in tipo_equipo %}
+                            <option value="{{ tipo.idTipo_equipo }}">{{ tipo.nombreTipo_equipo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Segunda fila: Estado, Fecha Inicio, Fecha Fin -->
+                <div class="row mb-3">
+                    <div class="col">
+                        <label for="estadoSelect" class="form-label">Estado</label>
+                        <select id="estadoSelect" class="form-select">
+                            <option selected disabled>Seleccione estado</option>
+                            {% for esta in estado %}
+                            <option value="{{ esta.idEstado_equipo }}">{{ esta.nombreEstado_equipo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col">
+                        <label for="fechaInicio" class="form-label">Fecha Inicio</label>
+                        <input type="date" id="fechaInicio" class="form-control">
+                    </div>
+                    <div class="col">
+                        <label for="fechaFin" class="form-label">Fecha Fin</label>
+                        <input type="date" id="fechaFin" class="form-control">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pie del modal con botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-primary" >Exportar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 
 

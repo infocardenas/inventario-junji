@@ -1,6 +1,5 @@
 {% extends "layout.html" %}
 {% block body %}
-{% from 'funciones_macro.html' import paginacion, select, select_modelo, select_tipo%}
 
 <div class="row">
 
@@ -99,28 +98,28 @@
                 <div class="toolbar-1">
                     <button class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#addEquipoModal">Agregar</button>
-                    <button class="btn btn-primary" onclick="showDiv('importar_excel', ['formularioExcel'])"><img
+                    <!-- <button class="btn btn-primary" onclick="showDiv('importar_excel', ['formularioExcel'])"><img
                             src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Importar Excel"
-                            width="20" height="20" class="me-1"><span>Importar</span></button>
-                    <button class="btn btn-primary" onclick="showDiv('formularioExcel', ['importar_excel'])"><img
+                            width="20" height="20" class="me-1"><span>Importar</span></button> -->
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal"><img
                             src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
                             width="20" height="20" class="me-1"><span>Exportar</span></button>
+                    <button class="btn btn-primary" data-bs-toggle="tooltip" title="Exportar Busqueda"><img
+                            src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
+                            width="20" height="20" class="me-1"><span>Exportar </span><i class="bi bi-search"></i></button>
                 </div>
                 <div class="toolbar-2">
                     <input name="palabra" type="text" class="search-box" placeholder="Buscar equipos" id="buscador"
                         onkeyup="busqueda('myTableBody')" />
                 </div>
                 <div class="toolbar-3">
-                    <button type="button" class="btn btn-success" id="assign-button" data-bs-toggle="modal"
-                        data-bs-target="#addAsignacionModal" data-bs-title="Asignar" onclick="fechaPorDefecto()">
-                        <i class="bi bi-person-fill-add"></i>
-                    </button>
-
+                    <button class="btn btn-success" id="assign-button" data-bs-toggle="tooltip"
+                        data-bs-title="Asignar"><i class="bi bi-person-fill-add"></i></button>
                     <button class="btn btn-warning" id="return-button" data-bs-toggle="tooltip"
                         data-bs-title="Devolver"><i class="fa-solid fa-arrow-rotate-left"
                             style="color: #ffffff;"></i></button>
                     <button class="btn btn-secondary" id="incidencia-button" data-bs-toggle="tooltip" title="Incidencia"
-                        onclick="setIdEquipoInModal()" disabled><i class="bi bi-exclamation-triangle-fill"></i></button>
+                        onclick="setIdEquipoInModal()" disabled><i class="bi bi-incognito"></i></button>
                     <button class="btn btn-danger" id="delete-selected-button" data-bs-toggle="tooltip"
                         data-bs-title="Eliminar"><i class="bi bi-trash-fill"></i></button>
                 </div>
@@ -156,7 +155,7 @@
                             {% else %}
                             <td class="toCheck">{{equi.nombreFuncionario}}</td>
                             {% endif %}
-                            <td class="toCheck">{{equi.codigoproveedor_equipo or ''}}
+                            <td class="toCheck">{{equi.codigoproveedor_equipo if equi.codigoproveedor_equipo else '-'}}
                             </td>
                             <td class="toCheck">{{equi.nombreUnidad}}</td>
                             <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
@@ -183,7 +182,7 @@
                         </tr>
                         {% endfor %}
                         {% else %}
-                    </tbody>
+                    </tbody> 
                     <tfoot>
                         <tr>
                             <td colspan="10" class="text-center">No hay datos disponibles.</td>
@@ -207,5 +206,4 @@
 
 
         {% include 'Equipo/equipo.modals.html'%}
-        {{ paginacion("equipo", page, lastpage) }}
         {% endblock %}
