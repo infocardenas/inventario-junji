@@ -54,7 +54,7 @@ def add_tipoa():
 
         try:    
             cur = mysql.connection.cursor()
-            cur.execute('INSERT INTO tipo_adquisicion (nombreTipo_adquisicion) VALUES(%s)', (data['nombre_tipoa'],))
+            cur.execute('INSERT INTO tipo_adquisicion (nombre_tipo_adquisicion) VALUES(%s)', (data['nombre_tipoa'],))
             mysql.connection.commit()
             flash('Tipo de adquisicion agregado exitosamente')
             return redirect(url_for('tipo_adquisicion.tipoAdquisicion'))
@@ -106,7 +106,7 @@ def actualizar_tipoa(id):
             cur = mysql.connection.cursor()
             cur.execute(""" 
             UPDATE tipo_adquisicion 
-            SET nombreTipo_adquisicion = %s                  
+            SET nombre_tipo_adquisicion = %s                  
             WHERE idTipo_adquisicion = %s                                    
             """, (data['nombre_tipoa'], id))
             mysql.connection.commit()
