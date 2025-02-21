@@ -16,6 +16,13 @@
                 </div>
                 <div class="toolbar-3">
                     <div class="dropdown">
+                        <button id="firmar-button" class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="bi bi-vector-pen"></i> Firmar</button>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            <li><a id="documento-firmado-asignacion" class="dropdown-item" href="#">Asignación</a></li>
+                            <li><a id="documento-firmado-devolucion" class="dropdown-item" href="#">Devolución</a></li>
+                        </ul>
+                    </div>
+                    <div class="dropdown">
                         <button id="descargar-PDF-button" class="btn btn-danger dropdown-toggle" type="button" data-bs-toggle="dropdown"><i class="bi bi-file-earmark-pdf"></i> Descargar PDF</button>
                         <ul class="dropdown-menu dropdown-menu-dark">
                             <li><a id="descargar-asignaciones" class="dropdown-item" href="#">Asignación</a></li>
@@ -115,6 +122,17 @@
                     {% endif %}
                 </tbody>
             </table>
+            <nav aria-label="Paginación">
+                <ul id="pagination-container" class="pagination justify-content-center">
+                    <li class="page-item" id="prev-page-li">
+                        <a class="page-link" href="#" id="prev-page"><span>&laquo;</span></a>
+                    </li>
+                    <span id="page-numbers" class="d-flex"></span>
+                    <li class="page-item" id="next-page-li">
+                        <a class="page-link" href="#" id="next-page"><span>&raquo;</span></a>
+                    </li>
+                </ul>
+            </nav>
         </div>
 
         {% include 'GestionR.H/asignacion.modals.html' %}
