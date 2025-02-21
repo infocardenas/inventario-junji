@@ -139,177 +139,6 @@ def Asignacion(page=1):
         lastpage= page < (total / perpage) + 1
         )
 
-# ↓ Deprecated 😛 ↓
-@asignacion.route("/add_asignacion", methods=["GET"])
-@asignacion.route("/add_asignacion/<idEquipo>")
-@administrador_requerido
-def add_asignacion(idEquipo = "None"):
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
-    if(idEquipo != "None"):
-        idEquipo = int(idEquipo)
-    cur = mysql.connection.cursor()
-    #los funcionarios son para el select en el formulario de agregar
-    cur.execute("""
-                SELECT *
-                FROM funcionario f
-                """)
-    funcionarios_data = cur.fetchall()
-
-    #estos son los equipos que van en la tabla para adjuntar a la asignacion
-    #tienen que ser los sin asignar por que los otros ya estan asignados a otros 
-    #funcionarios
-    cur.execute("""
-                SELECT e.*, 
-                    me.nombreModeloequipo, 
-                    te.nombreTipo_equipo, 
-                    u.nombreUnidad, 
-                    ee.nombreEstado_equipo
-                FROM equipo e
-                INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-                INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-                INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-                INNER JOIN unidad u ON e.idUnidad = u.idUnidad
-                INNER JOIN estado_equipo ee ON ee.idEstado_Equipo = e.idEstado_Equipo
-                WHERE ee.nombreEstado_equipo = %s
-                """, ("SIN ASIGNAR",))
-    equipos_data = cur.fetchall()
-    return render_template(
-        'GestionR.H/add_asignacion.html',
-        equipos=equipos_data,
-        funcionarios=funcionarios_data,
-        equipoSeleccionado = idEquipo
-        )
-# ↑ Deprecated 😛 ↑
-
-
-# enviar datos a vista editar
-@asignacion.route("/asignacion/edit_asignacion/<id>", methods=["POST", "GET"])
-@administrador_requerido
-def edit_asignacion(id):
-    try:
-        cur = mysql.connection.cursor()
-        #se obtiene la asignacion actual
-        cur.execute(
-            """ 
-           SELECT  
-                a.idAsignacion,
-                a.fecha_inicioAsignacion,
-                a.observacionAsignacion,
-                a.rutaactaAsignacion,
-                a.rutFuncionario,
-                f.nombreFuncionario,
-                d.fechaDevolucion
-                FROM asignacion a
-                INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
-                LEFT JOIN devolucion d ON a.idDevolucion = d.idDevolucion
-            WHERE idAsignacion = %s""",
-            (id,),
-        )
-        #esto para los select
-        data = cur.fetchone()
-        cur.execute("SELECT * FROM funcionario")
-        f_data = cur.fetchall()
-        #creo que el equipo se deberia porder borrar
-        cur.execute("SELECT * FROM equipo")
-        eq_data = cur.fetchall()
-        #print(data)
-        #print(data['observacionAsignacion'])
-        return render_template(
-            'GestionR.H/editAsignacion.html', 
-            asignacion=data, 
-            funcionario=f_data, 
-            equipo=eq_data
-        )
-    except Exception as e:
-        flash("Error al crear")
-        #flash(e.args[1])
-        return redirect(url_for("asignacion.Asignacion"))
-
-
-# actualizar
-@asignacion.route("/asignacion/update_asignacion/<id>", methods=["POST"])
-@administrador_requerido
-def update_asignacion(id):
-    if request.method == "POST":
-        #obtener informacion del formulario
-        fechaasignacion = request.form["fechaasignacion"]
-        observacionasignacion = request.form["observacionasignacion"]
-        rutFuncionario = request.form["rutFuncionario"]
-        try:
-            cur = mysql.connection.cursor()
-            cur.execute(
-                """
-            UPDATE asignacion
-            SET fecha_inicioAsignacion = %s,
-                ObservacionAsignacion = %s,
-                rutFuncionario = %s
-            WHERE idAsignacion = %s
-            """,
-                (
-                    fechaasignacion,
-                    observacionasignacion,
-                    rutFuncionario,
-                    id,
-                ),
-            )
-            mysql.connection.commit()
-            flash("asignacion actualizado correctamente")
-            return redirect(url_for("asignacion.Asignacion"))
-        except Exception as e:
-
-            flash("Error al crear")
-            #flash(e.args[1])
-            return redirect(url_for("asignacion.Asignacion"))
-
-
-# eliminar
-@asignacion.route("/delete_asignacion/<id>", methods=["POST", "GET"])
-@administrador_requerido
-def delete_asignacion(id):
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute("""
-                    SELECT *
-                    FROM asignacion
-                    WHERE idAsignacion = %s
-                    """, (id,))
-        asignacionAborrar = cur.fetchone()
-        #encontrar todas las tablas equipo_asignacion que contengan la id de la asignacion
-        cur.execute("""SELECT *
-                        FROM equipo_asignacion
-                        WHERE idAsignacion= %s
-        """, (id,))
-        asignaciones = cur.fetchall()
-        #revisar cada equipo_asignacion individualmente
-        for asignacion in asignaciones:
-            idEquipo = asignacion['idEquipo']
-            #encontrar la id del estado sin asignar
-            cur.execute("""
-                        SELECT *
-                        FROM estado_equipo
-                        WHERE nombreEstado_equipo = %s
-                        """, ("SIN ASIGNAR",))
-            estado_equipo_data = cur.fetchone()
-            #cambiar el estado de cada equipo en la asignacion eliminada a sin asignar
-            cur.execute("""
-                        UPDATE equipo
-                        SET idEstado_equipo = %s
-                        WHERE idEquipo = %s
-                        """, (estado_equipo_data['idEstado_equipo'], idEquipo))
-            mysql.connection.commit()
-        cur.execute("DELETE FROM equipo_asignacion WHERE idAsignacion = %s", (id,))
-        mysql.connection.commit()
-        cur.execute("DELETE FROM asignacion WHERE idAsignacion = %s", (id,))
-        mysql.connection.commit()
-
-        flash("Asignación eliminada exitosamente", "success")
-        return redirect(url_for("asignacion.Asignacion"))
-    except Exception as e:
-        flash(f"Error al eliminar: {e}", "danger")
-        return redirect(url_for("asignacion.Asignacion"))
-
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
 def create_asignacion():
@@ -446,8 +275,134 @@ def create_asignacion():
         
         #si son distintas redirigir al metodo de crear traslado con
         #la informacion de la asignacion
-        #crear_traslado_generico(fecha_asignacion, funcionario['idUnidad'],Unidad['idUnidad'], id_equipos)
+        #crear_traslado_generico(fecha_asignacion, funcionario['idUnidad'], funcionario['idUnidad'], id_equipos)
     return redirect(url_for('asignacion.Asignacion'))
+
+# enviar datos a vista editar
+@asignacion.route("/asignacion/edit_asignacion/<id>", methods=["POST", "GET"])
+@administrador_requerido
+def edit_asignacion(id):
+    try:
+        cur = mysql.connection.cursor()
+        #se obtiene la asignacion actual
+        cur.execute(
+            """ 
+           SELECT  
+                a.idAsignacion,
+                a.fecha_inicioAsignacion,
+                a.observacionAsignacion,
+                a.rutaactaAsignacion,
+                a.rutFuncionario,
+                f.nombreFuncionario,
+                d.fechaDevolucion
+                FROM asignacion a
+                INNER JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+                LEFT JOIN devolucion d ON a.idDevolucion = d.idDevolucion
+            WHERE idAsignacion = %s""",
+            (id,),
+        )
+        #esto para los select
+        data = cur.fetchone()
+        cur.execute("SELECT * FROM funcionario")
+        f_data = cur.fetchall()
+        #creo que el equipo se deberia porder borrar
+        cur.execute("SELECT * FROM equipo")
+        eq_data = cur.fetchall()
+        #print(data)
+        #print(data['observacionAsignacion'])
+        return render_template(
+            'GestionR.H/editAsignacion.html', 
+            asignacion=data, 
+            funcionario=f_data, 
+            equipo=eq_data
+        )
+    except Exception as e:
+        flash("Error al crear")
+        #flash(e.args[1])
+        return redirect(url_for("asignacion.Asignacion"))
+
+
+# actualizar
+@asignacion.route("/asignacion/update_asignacion/<id>", methods=["POST"])
+@administrador_requerido
+def update_asignacion(id):
+    if request.method == "POST":
+        #obtener informacion del formulario
+        fechaasignacion = request.form["fechaasignacion"]
+        observacionasignacion = request.form["observacionasignacion"]
+        rutFuncionario = request.form["rutFuncionario"]
+        try:
+            cur = mysql.connection.cursor()
+            cur.execute(
+                """
+            UPDATE asignacion
+            SET fecha_inicioAsignacion = %s,
+                ObservacionAsignacion = %s,
+                rutFuncionario = %s
+            WHERE idAsignacion = %s
+            """,
+                (
+                    fechaasignacion,
+                    observacionasignacion,
+                    rutFuncionario,
+                    id,
+                ),
+            )
+            mysql.connection.commit()
+            flash("asignacion actualizado correctamente")
+            return redirect(url_for("asignacion.Asignacion"))
+        except Exception as e:
+
+            flash("Error al crear")
+            #flash(e.args[1])
+            return redirect(url_for("asignacion.Asignacion"))
+
+
+# eliminar
+@asignacion.route("/delete_asignacion/<id>", methods=["POST", "GET"])
+@administrador_requerido
+def delete_asignacion(id):
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute("""
+                    SELECT *
+                    FROM asignacion
+                    WHERE idAsignacion = %s
+                    """, (id,))
+        asignacionAborrar = cur.fetchone()
+        #encontrar todas las tablas equipo_asignacion que contengan la id de la asignacion
+        cur.execute("""SELECT *
+                        FROM equipo_asignacion
+                        WHERE idAsignacion= %s
+        """, (id,))
+        asignaciones = cur.fetchall()
+        #revisar cada equipo_asignacion individualmente
+        for asignacion in asignaciones:
+            idEquipo = asignacion['idEquipo']
+            #encontrar la id del estado sin asignar
+            cur.execute("""
+                        SELECT *
+                        FROM estado_equipo
+                        WHERE nombreEstado_equipo = %s
+                        """, ("SIN ASIGNAR",))
+            estado_equipo_data = cur.fetchone()
+            #cambiar el estado de cada equipo en la asignacion eliminada a sin asignar
+            cur.execute("""
+                        UPDATE equipo
+                        SET idEstado_equipo = %s
+                        WHERE idEquipo = %s
+                        """, (estado_equipo_data['idEstado_equipo'], idEquipo))
+            mysql.connection.commit()
+        cur.execute("DELETE FROM equipo_asignacion WHERE idAsignacion = %s", (id,))
+        mysql.connection.commit()
+        cur.execute("DELETE FROM asignacion WHERE idAsignacion = %s", (id,))
+        mysql.connection.commit()
+
+        flash("Asignación eliminada exitosamente", "success")
+        return redirect(url_for("asignacion.Asignacion"))
+    except Exception as e:
+        flash(f"Error al eliminar: {e}", "danger")
+        return redirect(url_for("asignacion.Asignacion"))
 
 def crear_pdf_asignacion(funcionario, equipos):
     if "user" not in session:
