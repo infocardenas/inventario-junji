@@ -170,18 +170,35 @@ function actualizarEstadoBotonDevolver() {
     const btnDevolver = document.getElementById("devolver-button");
 
     let hayDevuelto = false; // Variable para saber si hay al menos un equipo ya devuelto
+    let idAsignacionBase = null;
+    let mismaAsignacion = true; // Variable para saber si todas las checkbox marcadas pertenecen a la misma asignación
 
-    checkboxes.forEach(checkbox => {
+    checkboxes.forEach((checkbox, index) => {
+        // 1. Verificar si ya fue devuelto
         if (checkbox.dataset.devuelto === "true") {
             hayDevuelto = true;
         }
+
+        // 2. Validar si comparten el mismo idAsignacion
+        if (index === 0) {
+            // Guardamos el idAsignacion del primer checkbox seleccionado
+            idAsignacionBase = checkbox.dataset.idAsignacion;
+        } else {
+            // Comparamos con el primer idAsignacion
+            if (checkbox.dataset.idAsignacion !== idAsignacionBase) {
+                mismaAsignacion = false;
+            }
+        }
     });
 
-    // Si hay un equipo ya devuelto, deshabilitar el botón
-    if (hayDevuelto || checkboxes.length === 0) {
-        btnDevolver.setAttribute("disabled", "true");
-    } else {
+    // Criterios para habilitar "Devolver":
+    // a) No hay equipos devueltos.
+    // b) Al menos un checkbox seleccionado.
+    // c) Todas las checkboxes pertenecen a la misma asignación.
+    if (!hayDevuelto && checkboxes.length > 0 && mismaAsignacion) {
         btnDevolver.removeAttribute("disabled");
+    } else {
+        btnDevolver.setAttribute("disabled", "true");
     }
 }
 
