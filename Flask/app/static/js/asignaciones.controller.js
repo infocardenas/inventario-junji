@@ -39,6 +39,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (rowModal) rowModal.style.display = "none";
                 if (inputHidden) inputHidden.style.display = "none";
             }
+            actualizarEstadoBotonFirmar();
         });
     });
 
@@ -115,6 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     actualizarEstadoBotonDescargarPDF();
+    actualizarEstadoBotonFirmar();
     // Fin de funciones asociadas al manejo del botón de Descargar PDF
 });
 
@@ -288,6 +290,42 @@ function setTooltipText(element, newText) {
     }
     new bootstrap.Tooltip(element); // Crea uno nuevo con el texto actualizado
 }
+function actualizarEstadoBotonFirmar() {
+    const checkboxes = document.querySelectorAll(".row-checkbox:checked");
+    const btnFirmar = document.getElementById("firmar-button");
+    const btnAsignacionFirmar = document.getElementById("documento-firmado-asignacion");
+    const btnDevolucionFirmar = document.getElementById("documento-firmado-devolucion");
+
+    if (checkboxes.length === 1) {
+        let checkbox = checkboxes[0];
+        let idAsignacion = checkbox.dataset.idAsignacion;
+        let idDevolucion = checkbox.dataset.idDevolucion;
+
+        // Habilitar el dropdown principal
+        btnFirmar.removeAttribute("disabled");
+
+        // Habilitar el botón de asignación
+        btnAsignacionFirmar.classList.remove("disabled");
+        btnAsignacionFirmar.href = `/asignacion/listar_pdf/${idAsignacion}`;
+
+        // Habilitar el botón de devolución solo si ya se devolvió el equipo
+        if (idDevolucion && idDevolucion.trim() !== "") {
+            btnDevolucionFirmar.classList.remove("disabled");
+            btnDevolucionFirmar.href = `/asignacion/listar_pdf/${idAsignacion}/devolver`;
+        } else {
+            btnDevolucionFirmar.classList.add("disabled");
+            btnDevolucionFirmar.removeAttribute("href");
+        }
+    } else {
+        // Deshabilitar todo si no hay exactamente una selección
+        btnFirmar.setAttribute("disabled", "true");
+        btnAsignacionFirmar.classList.add("disabled");
+        btnAsignacionFirmar.removeAttribute("href");
+        btnDevolucionFirmar.classList.add("disabled");
+        btnDevolucionFirmar.removeAttribute("href");
+    }
+}
+
 
 $(document).ready(function () {
     let listaFuncionarios = JSON.parse($("#listaFuncionarios").attr("data-funcionarios"));
