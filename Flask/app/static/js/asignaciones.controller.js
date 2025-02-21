@@ -74,8 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Funciones asociadas al manejo del botón de Descargar PDF
     const btnDescargarPDF = document.getElementById("descargar-PDF-button");
-    const btnAsignaciones = document.getElementById("descargar-asignaciones");
-    const btnDevoluciones = document.getElementById("descargar-devoluciones");
+    const btnAsignaciones = document.getElementById("descargar-asignacion");
+    const btnDevoluciones = document.getElementById("descargar-devolucion");
     const checkboxes = document.querySelectorAll(".row-checkbox");
 
     function actualizarEstadoBotonDescargarPDF() {
