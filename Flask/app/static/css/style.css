@@ -488,51 +488,6 @@ label {
     }
 }
 
-/*Pagination */
-
-.pagination.pagination-circle .page-item.active .page-link {
-  border-radius: 50%;
-}
-.pagination .page-item .page-link:hover {
-  -webkit-transition: all 0.3s linear;
-  transition: all 0.3s linear;
-  border-radius: 0.125rem;
-  background-color: #eee;
-}
-.pagination.pg-blue .page-item.active .page-link:hover {
-  background-color: #2bbbad;
-}
-.pagination .page-item.active .page-link {
-  -webkit-transition: all 0.2s linear;
-  transition: all 0.2s linear;
-  border-radius: 0.125rem;
-  background-color: #2bbbad;
-  color: #fff;
-}
-.pagination .page-item .page-link {
-  -webkit-transition: all 0.3s linear;
-  transition: all 0.3s linear;
-  outline: 0;
-  border: 0;
-  background-color: transparent;
-  font-size: 0.9rem;
-  color: #999;
-  font-weight: bold;
-}
-.pagination.pagination-circle .page-item .page-link:hover {
-  border-radius: 50%;
-}
-.pagination.pagination-circle .page-item .page-link {
-  margin-left: 2px;
-  margin-right: 2px;
-  border-radius: 50%;
-}
-.pagination .page-item.active .page-link {
-  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-}
-.page-link {
-  border: none !important;
-}
 .text-sort {
     color: #444;
 }
@@ -597,11 +552,6 @@ label {
   
   /* Show the dropdown menu (use JS to add this class to the .dropdown-content container when the user clicks on the dropdown button) */
   .show {display:block;}
-  /*end dropdown search*/
-  .pagination {
-    display: flex;
-    flex-wrap: wrap;
-  }
   .main-ul {
     width: 85px;
     min-width: 85px;
