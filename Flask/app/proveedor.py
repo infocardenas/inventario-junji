@@ -1,5 +1,5 @@
 #se importa flask
-from flask import Blueprint, render_template, request, url_for, redirect,flash, session, jsonify
+from flask import Blueprint, render_template, request, url_for, redirect,flash, session, jsonify, redirect
 #se importa dependencias para conexion con mysql
 from db import mysql
 #importamos el modulo que creamos
@@ -135,11 +135,8 @@ def edit_proveedor(id):
 @administrador_requerido
 def actualizar_proveedor(id):
     if "user" not in session:
-        return jsonify({
-            "status": "error",
-            "message": "No estás autorizado para realizar esta acción.",
-            "tipo_alerta": "warning"
-        }), 403
+        flash("No estás autorizado para realizar esta acción.", "warning")
+        return redirect(url_for('proveedor.Proveedor'))
 
     try:
         nombre_proveedor = request.form.get('nombre_proveedor', '').strip()
@@ -148,11 +145,8 @@ def actualizar_proveedor(id):
         data = {'nombre_proveedor': nombre_proveedor}
         v = Validator(schema_proveedor)
         if not v.validate(data):
-            return jsonify({
-                "status": "error",
-                "message": "Entrada inválida: Caracteres no permitidos.",
-                "tipo_alerta": "warning"
-            }), 400
+            flash("Entrada inválida: Caracteres no permitidos.", "warning")
+            return redirect(url_for('proveedor.Proveedor'))
 
         # Ejecutar actualización en la base de datos
         cur = mysql.connection.cursor()
@@ -166,24 +160,17 @@ def actualizar_proveedor(id):
 
         # Verificar si se actualizaron filas
         if cur.rowcount == 0:
-            return jsonify({
-                "status": "error",
-                "message": "No se encontró el proveedor o no se realizaron cambios.",
-                "tipo_alerta": "warning"
-            }), 404
+            flash("No se encontró el proveedor o no se realizaron cambios.", "warning")
+            return redirect(url_for('proveedor.index'))
 
-        return jsonify({
-            "status": "success",
-            "message": "Proveedor actualizado correctamente",
-            "tipo_alerta": "success"
-        }), 200
+        flash("Proveedor actualizado correctamente.", "success")
+        return redirect(url_for('proveedor.Proveedor'))
 
     except Exception as e:
-        return jsonify({
-            "status": "error",
-            "message": "Error en el servidor. Intente nuevamente.",
-            "tipo_alerta": "danger"
-        }), 500
+        # Captura cualquier error inesperado
+        flash("Error en el servidor. Intente nuevamente.", "danger")
+        print(f"Error al actualizar el proveedor: {str(e)}")  # Log en consola
+        return redirect(url_for('proveedor.Proveedor'))
 
 
     

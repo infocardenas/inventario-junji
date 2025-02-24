@@ -1,0 +1,83 @@
+<!-- Modal para agregar nueva orden -->
+<div class="modal fade" id="addOrdenCompraModal" tabindex="-1" aria-labelledby="addOrdenCompraModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addOrdenCompraModalLabel">Agregar Orden de Compra</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="addOrdenCompraForm" action="/add_ordenc" method="POST">
+                <div class="modal-body">
+                    <!-- Campos del formulario -->
+                    <div class="mb-3">
+                        <label for="id_ordenc" class="form-label">ID Orden</label>
+                        <input class="form-control" type="text" id="id_ordenc" name="id_ordenc"
+                            placeholder="Serie orden de compra" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre_ordenc">Nombre de Orden:</label>
+                        <input class="form-control" type="text" name="nombre_ordenc"
+                            placeholder="Nombre orden de compra" maxlength="45" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre_proveedor_ordenc">Nombre de Proveedor:</label>
+                        <select name="nombre_proveedor_ordenc" class="form-control" required>
+                            <option value="">Elija el proveedor</option>
+                            {% for pro in proveedor %}
+                            <option value="{{ pro.idProveedor }}">{{ pro.nombreProveedor }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombre_tipo_adquisicion_ordenc">Tipo de adquisición:</label>
+                        <!-- Le agregamos un ID para manejar el JS más fácil -->
+                        <select name="nombre_tipo_adquisicion_ordenc" id="tipoAdquisicionSelect" class="form-control"
+                            required>
+                            <option value="">Elija el tipo de adquisición</option>
+                            {% for tip in tipo_adquisicion %}
+                            <option value="{{ tip.idTipo_adquisicion }}">{{ tip.nombre_tipo_adquisicion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="fecha_compra_ordenc">Fecha de Orden de Compra:</label>
+                        <input class="form-control" type="date" name="fecha_compra_ordenc" id="fecha_compra_ordenc"
+                            required>
+                    </div>
+                    <!-- El contenedor de la fecha final -->
+                    <div class="mb-3" id="fechaFinContainer">
+                        <label for="fecha_fin_ordenc">Fecha Final de Orden de Compra:</label>
+                        <input class="form-control" type="date" name="fecha_fin_ordenc" id="fecha_fin_ordenc" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal de Confirmación para Eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar las órdenes de compra seleccionadas? Esta acción no se puede
+                deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+            </div>
+        </div>
+    </div>
+</div>

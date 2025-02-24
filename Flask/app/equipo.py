@@ -33,7 +33,7 @@ def Equipo(page=1):
         LIMIT %s OFFSET %s
     """, (perpage, offset))
     equipos = cur.fetchall()
-
+    print(equipos)
 
     # Obtener tipos de equipo
     cur.execute("SELECT * FROM tipo_equipo")
@@ -78,6 +78,7 @@ def Equipo(page=1):
     # Obtener los estados
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo;")
     estados = cur.fetchall()
+    print(estados)
     # Obtener las provincias
     cur.execute("SELECT idProvincia, nombreProvincia FROM provincia")
     provincias = cur.fetchall()
@@ -287,6 +288,8 @@ def update_equipo(id):
             'tipo': request.form.get("tipo", "").strip(),
             'marca': request.form.get("marca", "").strip(),
             'modelo': request.form.get("modelo", "").strip(),
+            # Agregamos la captura del estado (idEstado_equipo)
+            'estado_equipo': request.form.get("estado_equipo", "").strip()
         }
 
         # Convertir cadenas vacías a None para campos opcionales
@@ -305,10 +308,12 @@ def update_equipo(id):
             'numero': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
             'codigo_Unidad': {'type': 'string', 'nullable': True},
             'nombre_orden_compra': {'type': 'string', 'nullable': True},
-            # Los campos de tipo, marca y modelo se esperan como id (string, pero no vacíos)
+            # Campos de tipo, marca y modelo se esperan como id
             'tipo': {'type': 'string', 'nullable': False},
             'marca': {'type': 'string', 'nullable': False},
             'modelo': {'type': 'string', 'nullable': False},
+            # Validamos también estado_equipo (id)
+            'estado_equipo': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': False},
         }
 
         v = Validator(schema)
@@ -351,7 +356,21 @@ def update_equipo(id):
             flash("El modelo seleccionado no existe", 'warning')
             return redirect(url_for("equipo.Equipo"))
 
-        # Actualizar equipo (no se actualiza estado, marca y tipo ya que no están en la tabla equipo)
+        # Obtener ID de estado_equipo
+        try:
+            estado_equipo_id = int(datos['estado_equipo'])
+        except ValueError:
+            flash("El estado seleccionado es inválido", 'warning')
+            return redirect(url_for("equipo.Equipo"))
+
+        # Verificar que el estado exista en la tabla estado_equipo (opcional pero recomendable)
+        cur.execute("SELECT idEstado_equipo FROM estado_equipo WHERE idEstado_equipo = %s", (estado_equipo_id,))
+        estado_valido = cur.fetchone()
+        if not estado_valido:
+            flash("El estado seleccionado no existe", 'warning')
+            return redirect(url_for("equipo.Equipo"))
+
+        # Actualizar equipo (incluyendo el estado)
         cur.execute("""
             UPDATE equipo
             SET Cod_inventarioEquipo = %s, 
@@ -363,7 +382,8 @@ def update_equipo(id):
                 numerotelefonicoEquipo = %s, 
                 idUnidad = %s, 
                 idOrden_compra = %s, 
-                idModelo_equipo = %s
+                idModelo_equipo = %s,
+                idEstado_equipo = %s
             WHERE idEquipo = %s
         """, (
             datos['codigo_inventario'], 
@@ -375,7 +395,8 @@ def update_equipo(id):
             datos['numero'], 
             datos['codigo_Unidad'], 
             datos['nombre_orden_compra'], 
-            modelo['idModelo_Equipo'], 
+            modelo['idModelo_Equipo'],
+            estado_equipo_id,  # <--- Se actualiza aquí
             id
         ))
 
@@ -401,6 +422,7 @@ def update_equipo(id):
         mysql.connection.rollback()
         flash(f"Error al actualizar el equipo: {str(error)}", 'danger')
         return redirect(url_for("equipo.Equipo"))
+
 
 
 

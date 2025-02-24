@@ -423,8 +423,7 @@ $(document).ready(function () {
     const imei = limpiarDato($(this).data("imei"));
     const numero = limpiarDato($(this).data("numero"));
     const estado = limpiarDato($(this).data("estado"));
-    // Llenar el hidden input con el estado
-    $("#edit_estado_equipo").val(estado);
+
 
     // Llenar el hidden input con el id del equipo
     $("#edit_id_equipo").val(idEquipo);
@@ -447,6 +446,7 @@ $(document).ready(function () {
     $("#edit_orden_compra").val(orden);
     $("#edit_numero_serie").val(serie);
     $("#edit_codigoproveedor").val(proveedor);
+    $("#edit_estado_equipo").val(estado);
     $("#edit_observacion_equipo").val(observacion);
     $("#edit_mac").val(mac);
     $("#edit_imei").val(imei);
@@ -649,7 +649,3 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-// Mostrar y ocultar la sidebar en dispositivos móviles
-document.getElementById("menuToggle").addEventListener("click", function () {
-  document.querySelector(".sidebar").classList.toggle("active");
-});

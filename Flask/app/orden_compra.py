@@ -55,7 +55,7 @@ def ordenCompra(page = 1):
 def add_ordenc():
     if request.method == 'POST':
         fecha_compra = request.form["fecha_compra_ordenc"],
-        fecha_fin = request.form["fecha_fin_ordenc"],
+        fecha_fin = request.form["fecha_fin_ordenc"] or None,
 
         data  = {
         'id_ordenc' : request.form["id_ordenc"],
@@ -67,7 +67,7 @@ def add_ordenc():
         orden_compra_schema = {
             'id_ordenc': {
                 'type': 'string',
-                'regex': '^[a-zA-Z0-9 -]*$'  # Permitir solo letras, números y espacios
+                'regex': '^[a-zA-Z0-9\\-\\s]*$'  # Permitir solo letras, números y espacios
             },
             'nombre_ordenc': {
                 'type': 'string',
@@ -84,8 +84,18 @@ def add_ordenc():
         }
         v = Validator(orden_compra_schema)
         if not v.validate(data):
-            flash("caracteres no permitidos")
-            return redirect(url_for('orden_compra.ordenCompra'))
+            errores = v.errors  # Obtiene los errores de validación
+            mensajes_error = []
+
+            for campo, mensaje in errores.items():
+                # Personalizar el mensaje de error
+                mensajes_error.append(f"Error en el campo '{campo}': {mensaje[0]}")
+
+            # Combinar todos los errores en un solo mensaje
+            mensaje_final = " | ".join(mensajes_error)
+            flash(mensaje_final, "warning")
+            return redirect(url_for('orden_compra.ordenCompra'))# Si el formulario no es válido
+
 
         
         try:      
@@ -97,12 +107,14 @@ def add_ordenc():
                         ''', (data['id_ordenc'], data['nombre_ordenc'], fecha_compra, fecha_fin, data['nombre_tipoa'], data['nombre_proveedor']))
             
             cur.connection.commit()
-            flash("Orden de compra agregada correctamente")
+            flash("Orden de compra agregada correctamente","success")
             return redirect(url_for('orden_compra.ordenCompra'))
         except Exception as e:
-            error_message = f"Error: {str(e)}"
-            print(error_message)  # Imprime el error en la consola
-            flash(error_message)
+            error_message = str(e)
+            if "1062" in error_message and "PRIMARY" in error_message:
+                flash("Error: Ya existe una orden de compra con ese ID", "warning")
+            else:
+                flash(f"Error inesperado: {error_message}", "danger")
             return redirect(url_for('orden_compra.ordenCompra'))
 
 #Envias datos a formulario editar

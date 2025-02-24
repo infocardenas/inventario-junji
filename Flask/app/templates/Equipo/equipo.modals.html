@@ -210,14 +210,28 @@
                         <div class="text-error-message"></div>
                     </div>
 
-                    <!-- Estado del equipo (Hidden) -->
-                    <input type="hidden" name="estado_equipo" id="edit_estado_equipo">
+
 
                     <div class="col-md-6">
                         <label class="form-label" for="edit_numero_serie">Número de Serie <span
                                 style="color:red;">*</span></label>
                         <input type="text" class="form-control campo-obligatorio validar-numeros-letras"
                             name="numero_serie" id="edit_numero_serie" placeholder="Ingrese el Número de Serie">
+                        <div class="text-error-message"></div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label" for="edit_estado_equipo">Estado</label>
+                        <select class="form-select no-delete-value" name="estado_equipo" id="edit_estado_equipo">
+                            <option value="">Seleccione el estado</option>
+                            {% for est in estado %}
+                                {% if est.idEstado_equipo != 2 %}
+                                    <option value="{{ est.idEstado_equipo }}">
+                                        {{ est.nombreEstado_equipo }}
+                                    </option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>                        
                         <div class="text-error-message"></div>
                     </div>
 

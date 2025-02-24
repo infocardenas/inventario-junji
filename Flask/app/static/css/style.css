@@ -772,6 +772,6 @@ svg.bi {
     gap: 0.5rem;
 }
 /* Aplica el cursor pointer solo a las filas de la tabla con id "tablaEquipo" */
-#tablaEquipo tbody tr {
+tbody tr {
     cursor: pointer;
 }
