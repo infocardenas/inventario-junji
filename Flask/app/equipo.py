@@ -38,7 +38,6 @@ def Equipo(page=1):
     # Obtener tipos de equipo
     cur.execute("SELECT * FROM tipo_equipo")
     tipo_equipo = cur.fetchall()
-    print(tipo_equipo)
 
     # Obtener unidades
     cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
@@ -79,11 +78,9 @@ def Equipo(page=1):
     # Obtener los estados
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo;")
     estados = cur.fetchall()
-    print(estados)
     # Obtener las provincias
     cur.execute("SELECT idProvincia, nombreProvincia FROM provincia")
     provincias = cur.fetchall()
-    print(provincias)
     cur.close()
 
     # Llenar marcas con tipos de equipo
@@ -617,8 +614,7 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
                 ORDER BY a.fecha_inicioAsignacion DESC
                 """, (rutFuncionario,))
     asignaciones = cur.fetchall()
-    print("########################")
-    print(asignaciones)
+
     if(len(asignaciones) == 0):
         
         return render_template(

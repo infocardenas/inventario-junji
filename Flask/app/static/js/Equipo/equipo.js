@@ -649,3 +649,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+// Mostrar y ocultar la sidebar en dispositivos móviles
+document.getElementById("menuToggle").addEventListener("click", function () {
+  document.querySelector(".sidebar").classList.toggle("active");
+});
