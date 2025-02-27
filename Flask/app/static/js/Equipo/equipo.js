@@ -167,7 +167,7 @@ $(document).ready(function () {
 
       // Habilitar o deshabilitar botones según los estados
       const allSinAsignar = estados.every((estado) => estado === "SIN ASIGNAR");
-      const allEnUso = estados.every((estado) => estado === "EN USO");
+      const allEnUso = estados.every((estado) => estado !== "SIN ASIGNAR");
 
       $("#assign-button").prop("disabled", !allSinAsignar); // Habilitar solo si todos son "SIN ASIGNAR"
       $("#return-button").prop("disabled", !allEnUso);     // Habilitar solo si todos son "EN USO"

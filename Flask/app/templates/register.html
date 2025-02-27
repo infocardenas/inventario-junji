@@ -4,64 +4,51 @@
 
 <!-- ----- -->
 
-    <div class="modal fade" id="addUsuarioModal" tabindex="-1" aria-labelledby="addUsuarioModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addUsuarioModalLabel">Agregar Usuario</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <form id="form_addUsuarioModal" action="/crear_cuenta" method="POST">
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="nombreUsuario">Nombre de Usuario</label>
-                            <input 
-                            type="text" 
-                            class="validar-user form-control" 
-                            name="nombreUsuario" 
-                            placeholder="Nombre Usuario">
-                        </div>
-                        <div class="mb-3">
-                            <label for="password">Contraseña: </label>
-                            <input 
-                            class="form-control"
-                            id="contrasenna" 
-                            type="password" 
-                            class="validar-contraseña" 
-                            name="contrasenna" 
-                            placeholder="Contraseña">
-                            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
-                                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna"/>
-                        </div>
-                        <div class="mb-3">
-                            <label>Repetir Contraseña: </label>
-                            <input 
-                            class="form-control"
-                            id="contrasenna_repetir" 
-                            type="password" 
-                            class="validar-contraseña" 
-                            name="repetir" 
-                            placeholder="Contraseña">
-                            <img style="width: 20px; height:20px" src="../static/img/hidden.png" 
-                                onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir"/>
-                        </div>
-                        <div class="mb-3">
-                            <label for="privilegiosAdministrador">Tipo de Usuario:</label>
-                            <select class="form-control" name="privilegiosAdministrador" id="privilegiosAdministrador">
-                                <option value="0">Usuario Normal</option>
-                                <option value="1">Administrador</option>
-                            </select>
-                        </div>
-                        
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-primary">Guardar</button>
-                    </div>
-                </form>
+<div class="modal fade" id="addUsuarioModal" tabindex="-1" aria-labelledby="addUsuarioModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUsuarioModalLabel">Agregar Usuario</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+            <form id="form_addUsuarioModal" action="/crear_cuenta" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nombreUsuario">Nombre de Usuario</label>
+                        <input type="text" class="validar-user form-control" name="nombreUsuario"
+                            placeholder="Nombre Usuario">
+                    </div>
+                    <div class="mb-3">
+                        <label for="password">Contraseña: </label>
+                        <input class="form-control" id="contrasenna" type="password" class="validar-contraseña"
+                            name="contrasenna" placeholder="Contraseña">
+                        <img style="width: 20px; height:20px" src="../static/img/hidden.png"
+                            onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna" />
+                    </div>
+                    <div class="mb-3">
+                        <label>Repetir Contraseña: </label>
+                        <input class="form-control" id="contrasenna_repetir" type="password" class="validar-contraseña"
+                            name="repetir" placeholder="Contraseña">
+                        <img style="width: 20px; height:20px" src="../static/img/hidden.png"
+                            onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="privilegiosAdministrador">Tipo de Usuario:</label>
+                        <select class="form-control" name="privilegiosAdministrador" id="privilegiosAdministrador">
+                            <option value="0">Usuario Normal</option>
+                            <option value="1">Administrador</option>
+                        </select>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
 <h2>Usuarios</h2>
 <div style="position: relative;">
@@ -73,39 +60,39 @@
             <a class="btn btn-primary" href="/">Volver</a>
         </div>
     </div>
-        <table id="posts">
-            <thead id="myTableHead">
-                <tr>
-                    <th onclick="sortTable(0)">Nombre</th>
-                    <th onclick="sortTable(1)">Privilegios</th>
-                    <th onclick="sortTable(2)">Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="myTableBody">
-                {% for usuario in usuarios %}
-                <tr>
-                    <td>{{usuario.nombreUsuario}}</td>
-                    <td>
-                        {% if usuario.privilegiosAdministrador == 1 %}
-                        Admin
-                        {% else %}
-                        Usuario
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="/edit_usuario/{{usuario.nombreUsuario}}" class="success-button" 
-                           >Editar</a>
-                        <a href="/delete_usuario/{{usuario.nombreUsuario}}" class="btn btn-danger delete-button"
-                           >Eliminar</a>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+    <table id="posts">
+        <thead id="myTableHead">
+            <tr>
+                <th onclick="sortTable(0)">Nombre</th>
+                <th onclick="sortTable(1)">Privilegios</th>
+                <th onclick="sortTable(2)">Acciones</th>
+            </tr>
+        </thead>
+        <tbody id="myTableBody">
+            {% for usuario in usuarios %}
+            <tr>
+                <td>{{usuario.nombreUsuario}}</td>
+                <td>
+                    {% if usuario.privilegiosAdministrador == 1 %}
+                    Admin
+                    {% else %}
+                    Usuario
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="/edit_usuario/{{usuario.nombreUsuario}}" class="success-button">Editar</a>
+                    <a href="/delete_usuario/{{usuario.nombreUsuario}}"
+                        class="btn btn-danger delete-button">Eliminar</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <script src="../static/js/main.js"></script>
 {% endblock %}

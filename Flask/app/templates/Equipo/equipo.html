@@ -2,6 +2,7 @@
 {% block body %}
 
 <div class="row">
+    <a href="/equipo/exportar_equipos" class="btn btn-success">Exportar Equipos a Excel</a>
 
     <div>
         <!-- Exportar -->
@@ -101,9 +102,11 @@
                     <!-- <button class="btn btn-primary" onclick="showDiv('importar_excel', ['formularioExcel'])"><img
                             src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Importar Excel"
                             width="20" height="20" class="me-1"><span>Importar</span></button> -->
-                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exportModal"><img
-                            src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
-                            width="20" height="20" class="me-1"><span>Exportar</span></button>
+                            <button class="btn btn-primary" id="openExportModalButton" data-bs-toggle="modal" data-bs-target="#exportModal">
+                                <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel" width="20" height="20" class="me-1">
+                                <span>Exportar</span>
+                            </button>
+                            
                     <button class="btn btn-primary" data-bs-toggle="tooltip" title="Exportar Busqueda"><img
                             src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
                             width="20" height="20" class="me-1"><span>Exportar </span><i class="bi bi-search"></i></button>

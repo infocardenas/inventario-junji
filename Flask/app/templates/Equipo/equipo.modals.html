@@ -327,35 +327,32 @@
         </div>
     </div>
 </div>
-
-
-<!-- Modal para exportar excel-->
+<!-- Modal para exportar Excel -->
 <div class="modal fade" id="exportModal" tabindex="-1" aria-labelledby="exportModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg"  style="margin-top: 5%;">
+    <div class="modal-dialog modal-lg" style="margin-top: 5%;">
         <div class="modal-content">
 
-            <!-- Encabezado del modal con título centrado -->
+            <!-- Encabezado del modal -->
             <div class="modal-header justify-content-center">
                 <h5 class="modal-title w-100 text-center" id="exportModalLabel">Exportar Excel</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
 
-            <!-- Cuerpo del modal -->
+            <!-- Cuerpo del modal con filtros -->
             <div class="modal-body">
-                <!-- Subtítulo Filtros, alineado con los selectores -->
                 <div class="row mb-3">
                     <div class="col-12">
                         <h6 class="mb-0">Filtros</h6>
                     </div>
                 </div>
 
-                <!-- Primera fila: Provincia, Unidad, Tipo -->
+                <!-- Filtros de búsqueda -->
                 <div class="row mb-3">
                     <div class="col">
                         <label for="provinciaSelect" class="form-label">Provincia</label>
                         <select id="provinciaSelect" class="form-select">
                             <option value="" selected>Seleccione provincia</option>
-                            {% for prov in provincia%}
+                            {% for prov in provincia %}
                             <option value="{{ prov.idProvincia }}">{{ prov.nombreProvincia }}</option>
                             {% endfor %}
                         </select>
@@ -380,7 +377,7 @@
                     </div>
                 </div>
 
-                <!-- Segunda fila: Estado, Fecha Inicio, Fecha Fin -->
+                <!-- Filtros de estado y rango de fechas -->
                 <div class="row mb-3">
                     <div class="col">
                         <label for="estadoSelect" class="form-label">Estado</label>
@@ -405,7 +402,7 @@
             <!-- Pie del modal con botones -->
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <button type="button" class="btn btn-primary" >Exportar</button>
+                <button type="button" class="btn btn-primary" id="exportButton">Exportar</button>
             </div>
         </div>
     </div>

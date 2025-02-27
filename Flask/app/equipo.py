@@ -15,12 +15,10 @@ equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 
 # envia datos al formulario y tabla de equipo CAMBIA FK_IDCODIGO_PROVEEDOR
 @equipo.route("/equipo")
-@equipo.route("/equipo/<page>")
+@equipo.route("/equipo")
 @loguear_requerido
-def Equipo(page=1):
-    page = int(page)
-    perpage = getPerPage()
-    offset = (page - 1) * perpage
+def Equipo():
+
 
     cur = mysql.connection.cursor()
     cur.execute("SELECT COUNT(*) AS total FROM equipo")
@@ -30,8 +28,7 @@ def Equipo(page=1):
     cur.execute("""
         SELECT *
         FROM super_equipo
-        LIMIT %s OFFSET %s
-    """, (perpage, offset))
+    """)
     equipos = cur.fetchall()
     print(equipos)
 
@@ -98,8 +95,6 @@ def Equipo(page=1):
         modelo_equipo=modelos_por_tipo,
         estado=estados,
         provincia=provincias,
-        page=page,
-        lastpage=page < (total / perpage) + 1,
         session=session
     )
 
@@ -1302,3 +1297,6 @@ def consulta_equipo(page = 1):
         page=page,
         lastpage=page < (total / perpage) + 1,
     )
+    
+    
+    

@@ -960,35 +960,11 @@ $(document).ready(function () {
     combinarCorreoCompleto(modal);
   });
 });
-document.addEventListener("DOMContentLoaded", function() {
-  const tableBody = document.getElementById("myTableBody");
-  if (!tableBody) return;
 
-  // Seleccionamos todas las filas del tbody
-  const rows = tableBody.querySelectorAll("tr");
 
-  rows.forEach(row => {
-    // Agregamos un listener de click a cada fila
-    row.addEventListener("click", function(e) {
-      // Si el clic ocurrió sobre un <button>, <a> o <input type="checkbox">
-      // entonces NO togglear (para no interferir con su comportamiento)
-      if (
-        e.target.closest("button") ||
-        e.target.closest("a") ||
-        e.target.closest("input[type='checkbox']")
-      ) {
-        return; 
-      }
 
-      // Buscamos el checkbox de esta fila
-      const checkbox = row.querySelector(".row-checkbox");
-      if (checkbox) {
-        // Cambiamos su estado (marcado <-> desmarcado)
-        checkbox.checked = !checkbox.checked;
-      }
-    });
-  });
-});
+
+
 
 
 document.addEventListener("DOMContentLoaded", function() {
@@ -1023,4 +999,5 @@ document.addEventListener("DOMContentLoaded", function() {
   // Re-ejecutar cada vez que cambie la selección
   selectAdquisicion.addEventListener("change", toggleFechaFin);
 });
+
 
