@@ -147,52 +147,13 @@ $(document).ready(function () {
 
 
 
+//Redireccion al modulo de asignacion desde equipos
 $(document).ready(function () {
-  // Función para actualizar el estado de los botones
-  function updateButtonStates() {
-      // Obtener las filas seleccionadas
-      const selectedRows = $(".row-checkbox:checked").closest("tr");
-
-      // Si no hay filas seleccionadas, deshabilitar ambos botones
-      if (!selectedRows.length) {
-          $("#assign-button").prop("disabled", true);
-          $("#return-button").prop("disabled", true);
-          return;
-      }
-
-      // Obtener los estados de los equipos seleccionados
-      const estados = selectedRows.map(function () {
-          return $(this).find("td:nth-child(4)").text().trim(); // Cambiar índice según la columna de estado
-      }).get();
-
-      // Habilitar o deshabilitar botones según los estados
-      const allSinAsignar = estados.every((estado) => estado === "SIN ASIGNAR");
-      const allEnUso = estados.every((estado) => estado !== "SIN ASIGNAR");
-
-      $("#assign-button").prop("disabled", !allSinAsignar); // Habilitar solo si todos son "SIN ASIGNAR"
-      $("#return-button").prop("disabled", !allEnUso);     // Habilitar solo si todos son "EN USO"
-  }
-
-  // Actualizar botones al cambiar checkboxes
-  $(".row-checkbox").on("change", updateButtonStates);
-
-  // Acción del botón Asignar
   $("#assign-button").on("click", function () {
-      const selectedRow = $(".row-checkbox:checked").closest("tr").first();
-      const id = selectedRow.data("id");
-      window.location.href = `/add_asignacion/${id}`;
+      window.location.href = "/asignacion"; // Cambia "/asignacion" por la URL correcta
   });
-
-  // Acción del botón Devolver
-  $("#return-button").on("click", function () {
-      const selectedRow = $(".row-checkbox:checked").closest("tr").first();
-      const id = selectedRow.data("id");
-      window.location.href = `/asignacion/devolver_uno/${id}`;
-  });
-
-  // Deshabilitar botones al cargar la página
-  updateButtonStates();
 });
+
 $(document).ready(function () {
   function validarSoloNumeros(inputField) {
     const regex = /^[0-9]+$/; // Solo permite números positivos
@@ -318,22 +279,21 @@ $(document).ready(function () {
 });
 $(document).ready(function () {
   function validarMAC(inputField) {
-    // Expresión regular para validar direcciones MAC con ":" o "-" como separadores
-    const regex = /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$|^[0-9A-Fa-f]{12}$/;
+    // Expresión regular para direcciones MAC válidas
+    const regex = /^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$|^[0-9A-Fa-f]{12}$/;
     const input = inputField.val().trim();
 
     if (input.length === 0) {
       limpiarError(inputField);
-      return true;
+      return true; // Permite el campo vacío
     }
 
     if (!regex.test(input)) {
-      mostrarError(inputField, "Ingrese una dirección MAC válida (Ej: AA:BB:CC:DD:EE:FF)");
+      mostrarError(inputField, "⚠️ Ingrese una dirección MAC válida (Ej: AA:BB:CC:DD:EE:FF o AABBCCDDEEFF)");
       return false;
-    } else {
-      limpiarError(inputField);
     }
 
+    limpiarError(inputField);
     return true;
   }
 
@@ -354,7 +314,7 @@ $(document).ready(function () {
     });
 
     if (!esValido) {
-      event.preventDefault();
+      event.preventDefault(); // Evita el envío si hay errores
     }
   });
 
@@ -363,21 +323,22 @@ $(document).ready(function () {
     let errorMessage = inputField.siblings(".text-error-message");
 
     if (errorMessage.length === 0) {
-      errorMessage = $('<div class="text-error-message text-danger"></div>');
+      errorMessage = $('<div class="text-error-message text-danger small mt-1"></div>');
       inputField.after(errorMessage);
     }
 
-    errorMessage.text(mensaje).show();
-    inputField.addClass("border border-danger");
+    errorMessage.text(mensaje).fadeIn();
+    inputField.addClass("is-invalid");
   }
 
   // Función para limpiar el mensaje de error
   function limpiarError(inputField) {
     let errorMessage = inputField.siblings(".text-error-message");
-    errorMessage.hide();
-    inputField.removeClass("border border-danger");
+    errorMessage.fadeOut();
+    inputField.removeClass("is-invalid");
   }
 });
+
 
 $(document).ready(function () {
   // Función para limitar caracteres en campos específicos

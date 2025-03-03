@@ -179,7 +179,7 @@ def add_equipo():
             'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
             'observacion_equipo': {'type': 'string', 'nullable': True},
             'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$', 'nullable': True},
-            'mac': {'type': 'string', 'regex': '^^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$', 'nullable': True},
+            'mac': {'type': 'string', 'regex': r'^([0-9A-Fa-f]{2}[:-]){5}[0-9A-Fa-f]{2}$', 'nullable': True},
             'imei': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
             'numero': {'type': 'string', 'regex': '^[0-9]+$', 'nullable': True},
             'codigo_Unidad': {'type': 'string', 'nullable': True},
@@ -1240,63 +1240,144 @@ def buscar_equipo(id):
     )
 
 #buscar todos los equipos en base a una palabra de busqueda
-@equipo.route("/consulta_equipo", methods =["POST"])
-@equipo.route("/consulta_equipo/<page>", methods =["POST"])
+# @equipo.route("/consulta_equipo", methods =["POST"])
+# @equipo.route("/consulta_equipo/<page>", methods =["POST"])
+# @loguear_requerido
+# def consulta_equipo(page = 1):
+#     palabra = request.form["palabra"]
+#     if palabra == "":
+#         print("error_redirect")
+#     page = int(page)
+#     perpage = getPerPage()
+#     offset = (int(page) - 1) * perpage
+#     cur = mysql.connection.cursor()
+#     cur.execute("SELECT COUNT(*) FROM equipo")
+#     total = cur.fetchone()
+#     total = int(str(total).split(":")[1].split("}")[0])
+#     cur = mysql.connection.cursor()
+#     query = f"""
+#     set palabra = CONVERT('%{palabra}%' USING utf8)
+#     SELECT *
+#     FROM superequipo se
+#     WHERE se.Cod_inventarioEquipo LIKE palabra OR
+#     se.Num_serieEquipo LIKE '%{palabra}%' OR
+#     se.codigoproveedor_equipo LIKE '%{palabra}%' OR
+#     se.nombreidTipoequipo LIKE '%{palabra}%' OR
+#     se.nombreEstado_equipo LIKE '%{palabra}%' OR
+#     se.idUnidad LIKE '%{palabra}%' OR
+#     se.nombreUnidad LIKE '%{palabra}%' OR
+#     se.nombreOrden_compra LIKE '%{palabra}%' OR
+#     se.nombreModeloequipo LIKE '%{palabra}%' OR
+#     se.nombreFuncionario LIKE '%{palabra}%'
+#     LIMIT {perpage} OFFSET {offset}
+#     """
+#     print(query)
+#     cur.execute(query)
+#     equipos = cur.fetchall()
+
+#     cur.execute("SELECT * FROM tipo_equipo")
+#     tipoe_data = cur.fetchall()
+#     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
+#     estadoe_data = cur.fetchall()
+#     cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
+#     ubi_data = cur.fetchall()
+#     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
+#     ordenc_data = cur.fetchall()
+#     cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
+#     modeloe_data = cur.fetchall()
+
+#     return render_template(
+#         "equipo.html",
+#         equipo=equipos,
+#         tipo_equipo=tipoe_data,
+#         estado_equipo=estadoe_data,
+#         orden_compra=ordenc_data,
+#         Unidad=ubi_data,
+#         modelo_equipo=modeloe_data,
+#         page=page,
+#         lastpage=page < (total / perpage) + 1,
+#     )
+    
+    
+    
+# exportar a pdf
+@equipo.route("/crear_excel")
 @loguear_requerido
-def consulta_equipo(page = 1):
-    palabra = request.form["palabra"]
-    if palabra == "":
-        print("error_redirect")
-    page = int(page)
-    perpage = getPerPage()
-    offset = (int(page) - 1) * perpage
+def crear_excel():
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
+    # buscar columnas
+    wb = Workbook()
+    ws = wb.active
+
+    # consulta datos
     cur = mysql.connection.cursor()
-    cur.execute("SELECT COUNT(*) FROM equipo")
-    total = cur.fetchone()
-    total = int(str(total).split(":")[1].split("}")[0])
-    cur = mysql.connection.cursor()
-    query = f"""
-    set palabra = CONVERT('%{palabra}%' USING utf8)
-    SELECT *
-    FROM superequipo se
-    WHERE se.Cod_inventarioEquipo LIKE palabra OR
-    se.Num_serieEquipo LIKE '%{palabra}%' OR
-    se.codigoproveedor_equipo LIKE '%{palabra}%' OR
-    se.nombreidTipoequipo LIKE '%{palabra}%' OR
-    se.nombreEstado_equipo LIKE '%{palabra}%' OR
-    se.idUnidad LIKE '%{palabra}%' OR
-    se.nombreUnidad LIKE '%{palabra}%' OR
-    se.nombreOrden_compra LIKE '%{palabra}%' OR
-    se.nombreModeloequipo LIKE '%{palabra}%' OR
-    se.nombreFuncionario LIKE '%{palabra}%'
-    LIMIT {perpage} OFFSET {offset}
+    cur.execute(
+        """ 
+    SELECT * 
+    FROM super_equipo se
+    INNER JOIN unidad u ON u.idUnidad = se.idUnidad
+    INNER JOIN modalidad m ON u.idModalidad = m.idModalidad
+    INNER JOIN comuna c ON c.idComuna = u.idComuna
+    INNER JOIN provincia p ON c.idProvincia = p.idProvincia
+    INNER JOIN modelo_equipo me ON me.idModelo_Equipo = se.idModelo_Equipo
+    INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo  -- ✅ Nuevo JOIN
+    INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo        -- ✅ Se une correctamente
+    INNER JOIN orden_compra oc ON oc.idOrden_compra = se.idOrden_compra
+    INNER JOIN proveedor pvr ON pvr.idProveedor = oc.idProveedor;
     """
-    print(query)
-    cur.execute(query)
-    equipos = cur.fetchall()
-
-    cur.execute("SELECT * FROM tipo_equipo")
-    tipoe_data = cur.fetchall()
-    cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
-    estadoe_data = cur.fetchall()
-    cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
-    ubi_data = cur.fetchall()
-    cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
-    ordenc_data = cur.fetchall()
-    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
-    modeloe_data = cur.fetchall()
-
-    return render_template(
-        "equipo.html",
-        equipo=equipos,
-        tipo_equipo=tipoe_data,
-        estado_equipo=estadoe_data,
-        orden_compra=ordenc_data,
-        Unidad=ubi_data,
-        modelo_equipo=modeloe_data,
-        page=page,
-        lastpage=page < (total / perpage) + 1,
     )
-    
-    
-    
+    equipo_data = cur.fetchall()
+
+    print(equipo_data)
+    # generar encabezado
+    # encabezado
+
+    encabezado = [
+        "Provincia",
+        "Comuna",
+        "Modalidad",
+        "Codigo Proveedor",
+        "Nombre",
+        "Tipo de Bien",
+        "Marca",
+        "Modelo",
+        "N° Serie",
+        "Codigo Inventario",
+        "Nombre Proveedor",
+    ]
+    for i in range(0, len(encabezado)):
+        char = chr(65 + i)
+        ws[char + str(1)].fill = PatternFill(start_color="000ff000", fill_type="solid")
+        ws.column_dimensions[char].width = 20
+        ws[char + str(1)] = encabezado[i]
+
+    i = 0
+
+    def fillCell(data, fila):
+        nonlocal i
+        char = chr(65 + i)
+        i += 1
+        ws[char + str(fila)] = data
+
+    for fila in range(0, len(equipo_data)):
+        i = 0
+        # 65 = A en ASCII
+        # consegir lista de valores y extraer la lista de valires en cada for interior
+        fillCell(equipo_data[fila]["nombreProvincia"], fila + 2)
+        fillCell(equipo_data[fila]["nombreComuna"], fila + 2)
+        fillCell(equipo_data[fila]["nombreModalidad"], fila + 2)
+        fillCell(equipo_data[fila]["codigoproveedor_equipo"], fila + 2)
+        fillCell(equipo_data[fila]["nombreUnidad"], fila + 2)
+        fillCell(equipo_data[fila]["nombreTipo_equipo"], fila + 2)
+        fillCell(equipo_data[fila]["nombreMarcaEquipo"], fila + 2)
+        fillCell(equipo_data[fila]["nombreModeloequipo"], fila + 2)
+        fillCell(equipo_data[fila]["Num_serieEquipo"], fila + 2)
+        fillCell(equipo_data[fila]["Cod_inventarioEquipo"], fila + 2)
+        fillCell(equipo_data[fila]["nombreProveedor"], fila + 2)
+
+    # ingresar datos
+    wb.save("datos_exportados.xlsx")
+    return send_file("datos_exportados.xlsx", as_attachment=True)
+
