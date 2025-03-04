@@ -588,7 +588,7 @@ def mostrar_pdf(id, firmado="0"):
         flash(f"El archivo PDF {nombrePdf} no se encuentra disponible.")
         return redirect("/traslado")  # Redirige a la página principal en vez de caer en error
 
-    return send_file(dir_pdf, as_attachment=True)
+    return send_file(dir_pdf, as_attachment=False)
 
 @traslado.route("/traslado/buscar/<idTraslado>")
 @loguear_requerido

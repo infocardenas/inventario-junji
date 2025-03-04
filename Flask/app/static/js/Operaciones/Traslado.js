@@ -48,10 +48,6 @@ document.getElementById("trasladoForm").addEventListener("submit", function(even
             mostrarAlerta("❌ Hubo un error al crear el traslado.", "danger");
         }
     })
-    .catch(error => {
-        console.error("❌ Error en la conexión:", error);
-        mostrarAlerta("❌ Error en la conexión. Intenta de nuevo.", "danger");
-    });
 });
 
 

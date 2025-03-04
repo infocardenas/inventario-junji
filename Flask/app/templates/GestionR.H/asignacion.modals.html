@@ -8,6 +8,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <!-- Contenido -->
+            <form id="trasladoForm" method="POST" action="{{ url_for('traslado.create_traslado') }}">
             <div class="modal-body">
                 <form class="asignaciones" id="form-asignacion-modal" action="/asignacion/create_asignacion" method="POST">
                     <div class="row">
@@ -110,29 +111,13 @@
                     
                     <div class="row">
                         <!-- Sección para observaciones -->
-                        <div class="col-md-6">
+                        <div>
                             <div class="mb-3">
                                 <label for="observaciones">Observaciones</label>
                                 <textarea name="observacion" id="observaciones" rows="4" class="form-control"></textarea>
                             </div>
                         </div>
-                    
-                        <!-- Sección para seleccionar traslado -->
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label>¿Realiza el traslado?</label>
-                                <div class="d-flex">
-                                    <div class="form-check me-3">
-                                        <input class="form-check-input no-delete-value" type="radio" name="traslado" id="trasladoSi" value="si">
-                                        <label class="form-check-label" for="trasladoSi">Sí</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input no-delete-value" type="radio" name="traslado" id="trasladoNo" value="no" checked>
-                                        <label class="form-check-label" for="trasladoNo">No</label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     </div>
                 </form>
             </div>

@@ -91,7 +91,6 @@
                     <th onclick="sortTable(1)">Evento</th>
                     <th onclick="sortTable(2)">Nombre</th>
                     <th onclick="sortTable(3)">Observacion</th>
-                    <th onclick="sortTable(4)">Buscar</th>
                     <th>Documentos</th>
                 </tr>
             </thead>
@@ -112,22 +111,7 @@
                     {% else %}
                     <td></td>
                     {% endif%}
-                    <td>
-                        {# buscar el elemento correspondiente en su tabla#}
-                        {% if evento.evento == "Incidencia" %}
-                        <a class="nav-button2" href="/incidencia/buscar/{{evento.id}}">Buscar</a>
-                        {% endif %}
-                        {% if evento.evento == "Traslado" %}
-                        <a class="nav-button2" href="/traslado/buscar/{{evento.id}}">Buscar</a>
-                        {% endif %}
-                        {% if evento.evento == "Asignacion" %}
-                        <a class="nav-button2" href="/asignacion/buscar/{{evento.id}}">Buscar</a>
-                        {% endif %}
-                        {% if evento.evento == "Devolucion" %}
-                        <a class="nav-button2" href="/asignacion/buscar/{{evento.id}}">Buscar</a>
-                        {% endif %}
 
-                    </td>
                     <td>
                         {% if evento.evento == "Incidencia" %}
                         <a href="/incidencia/listar_pdf/{{evento.id}}" class="info-button" style="width: 90%;">Actas
