@@ -1307,27 +1307,50 @@ def crear_excel():
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
-    # buscar columnas
+
+    # Obtener los IDs desde la URL
+    ids_param = request.args.get("ids")  # Recibe '1,2,3,4'
+    ids_lista = ids_param.split(",") if ids_param else None
+
+    # Crear Excel
     wb = Workbook()
     ws = wb.active
 
-    # consulta datos
+    # Consulta SQL (si hay IDs, filtramos)
     cur = mysql.connection.cursor()
-    cur.execute(
-        """ 
-    SELECT * 
-    FROM super_equipo se
-    INNER JOIN unidad u ON u.idUnidad = se.idUnidad
-    INNER JOIN modalidad m ON u.idModalidad = m.idModalidad
-    INNER JOIN comuna c ON c.idComuna = u.idComuna
-    INNER JOIN provincia p ON c.idProvincia = p.idProvincia
-    INNER JOIN modelo_equipo me ON me.idModelo_Equipo = se.idModelo_Equipo
-    INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo  -- ✅ Nuevo JOIN
-    INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo        -- ✅ Se une correctamente
-    INNER JOIN orden_compra oc ON oc.idOrden_compra = se.idOrden_compra
-    INNER JOIN proveedor pvr ON pvr.idProveedor = oc.idProveedor;
-    """
-    )
+    if ids_lista:
+        placeholders = ",".join(["%s"] * len(ids_lista))
+        query = f"""
+        SELECT * 
+        FROM super_equipo se
+        INNER JOIN unidad u ON u.idUnidad = se.idUnidad
+        INNER JOIN modalidad m ON u.idModalidad = m.idModalidad
+        INNER JOIN comuna c ON c.idComuna = u.idComuna
+        INNER JOIN provincia p ON c.idProvincia = p.idProvincia
+        INNER JOIN modelo_equipo me ON me.idModelo_Equipo = se.idModelo_Equipo
+        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+        INNER JOIN orden_compra oc ON oc.idOrden_compra = se.idOrden_compra
+        INNER JOIN proveedor pvr ON pvr.idProveedor = oc.idProveedor
+        WHERE se.idEquipo IN ({placeholders})
+        """
+        cur.execute(query, ids_lista)
+    else:
+        query = """
+        SELECT * 
+        FROM super_equipo se
+        INNER JOIN unidad u ON u.idUnidad = se.idUnidad
+        INNER JOIN modalidad m ON u.idModalidad = m.idModalidad
+        INNER JOIN comuna c ON c.idComuna = u.idComuna
+        INNER JOIN provincia p ON c.idProvincia = p.idProvincia
+        INNER JOIN modelo_equipo me ON me.idModelo_Equipo = se.idModelo_Equipo
+        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+        INNER JOIN orden_compra oc ON oc.idOrden_compra = se.idOrden_compra
+        INNER JOIN proveedor pvr ON pvr.idProveedor = oc.idProveedor;
+        """
+        cur.execute(query)
+
     equipo_data = cur.fetchall()
 
     if not equipo_data:
@@ -1337,49 +1360,30 @@ def crear_excel():
     # encabezado
 
     encabezado = [
-        "Provincia",
-        "Comuna",
-        "Modalidad",
-        "Codigo Proveedor",
-        "Nombre",
-        "Tipo de Bien",
-        "Marca",
-        "Modelo",
-        "N° Serie",
-        "Codigo Inventario",
-        "Nombre Proveedor",
+        "Provincia", "Comuna", "Modalidad", "Código Proveedor",
+        "Nombre", "Tipo de Bien", "Marca", "Modelo",
+        "N° Serie", "Código Inventario", "Nombre Proveedor"
     ]
-    for i in range(0, len(encabezado)):
+    for i in range(len(encabezado)):
         char = chr(65 + i)
-        ws[char + str(1)].fill = PatternFill(start_color="000ff000", fill_type="solid")
+        ws[char + "1"].fill = PatternFill(start_color="000ff000", fill_type="solid")
         ws.column_dimensions[char].width = 20
-        ws[char + str(1)] = encabezado[i]
+        ws[char + "1"] = encabezado[i]
 
-    i = 0
+    # Llenar los datos en el Excel
+    for fila_idx, fila in enumerate(equipo_data, start=2):
+        ws[f"A{fila_idx}"] = fila["nombreProvincia"]
+        ws[f"B{fila_idx}"] = fila["nombreComuna"]
+        ws[f"C{fila_idx}"] = fila["nombreModalidad"]
+        ws[f"D{fila_idx}"] = fila["codigoproveedor_equipo"]
+        ws[f"E{fila_idx}"] = fila["nombreUnidad"]
+        ws[f"F{fila_idx}"] = fila["nombreTipo_equipo"]
+        ws[f"G{fila_idx}"] = fila["nombreMarcaEquipo"]
+        ws[f"H{fila_idx}"] = fila["nombreModeloequipo"]
+        ws[f"I{fila_idx}"] = fila["Num_serieEquipo"]
+        ws[f"J{fila_idx}"] = fila["Cod_inventarioEquipo"]
+        ws[f"K{fila_idx}"] = fila["nombreProveedor"]
 
-    def fillCell(data, fila):
-        nonlocal i
-        char = chr(65 + i)
-        i += 1
-        ws[char + str(fila)] = data
-
-    for fila in range(0, len(equipo_data)):
-        i = 0
-        # 65 = A en ASCII
-        # consegir lista de valores y extraer la lista de valires en cada for interior
-        fillCell(equipo_data[fila]["nombreProvincia"], fila + 2)
-        fillCell(equipo_data[fila]["nombreComuna"], fila + 2)
-        fillCell(equipo_data[fila]["nombreModalidad"], fila + 2)
-        fillCell(equipo_data[fila]["codigoproveedor_equipo"], fila + 2)
-        fillCell(equipo_data[fila]["nombreUnidad"], fila + 2)
-        fillCell(equipo_data[fila]["nombreTipo_equipo"], fila + 2)
-        fillCell(equipo_data[fila]["nombreMarcaEquipo"], fila + 2)
-        fillCell(equipo_data[fila]["nombreModeloequipo"], fila + 2)
-        fillCell(equipo_data[fila]["Num_serieEquipo"], fila + 2)
-        fillCell(equipo_data[fila]["Cod_inventarioEquipo"], fila + 2)
-        fillCell(equipo_data[fila]["nombreProveedor"], fila + 2)
-
-    # ingresar datos
+    # Guardar y devolver el archivo
     wb.save("datos_exportados.xlsx")
     return send_file("datos_exportados.xlsx", as_attachment=True)
-

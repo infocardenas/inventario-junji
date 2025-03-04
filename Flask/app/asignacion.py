@@ -818,7 +818,7 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
     creado_por = "documento creado por: " + session['user']
     nombrePdf = "devolucion_" + id_devolucion + ".pdf"
     pdf.output(nombrePdf)
-    shutil.move(nombrePdf, "pdf/")
+    shutil.move(nombrePdf, "pdf/" + nombrePdf)
 
 @asignacion.route("/asignacion/descargar_pdf_devolucion/<id>")
 @loguear_requerido
