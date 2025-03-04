@@ -40,6 +40,7 @@ def ordenCompra(page = 1):
     datas = cur.fetchall()
     cur.execute('SELECT * FROM tipo_adquisicion')
     ta_data = cur.fetchall()
+    print(ta_data)
     cur.close()
     return render_template(
         'GestionP/orden_compra.html', 
@@ -117,37 +118,7 @@ def add_ordenc():
                 flash(f"Error inesperado: {error_message}", "danger")
             return redirect(url_for('orden_compra.ordenCompra'))
 
-#Envias datos a formulario editar
-@orden_compra.route('/edit_ordenc/<id>', methods = ['POST', 'GET'])
-@administrador_requerido
-def edit_ordenc(id):
-    try:
-        cur = mysql.connection.cursor()
-        cur.execute(''' SELECT oc.idOrden_compra, oc.nombreOrden_compra, oc.fechacompraOrden_compra, oc.fechafin_ORDEN_COMPRA, oc.rutadocumentoOrden_compra, p.nombreProveedor, p.idProveedor, ta.idTipo_adquisicion, ta.nombre_tipo_adquisicion
-                    , oc.idProveedor, oc.idTipo_adquisicion
-                    from orden_compra oc
-                    inner join proveedor p on p.idProveedor = oc.idProveedor
-                    inner join tipo_adquisicion ta on ta.idTipo_adquisicion = oc.idTipo_adquisicion
-                    WHERE idOrden_compra = %s
-        ''', (id,))
-        data = cur.fetchall()
-        cur.execute('SELECT * FROM proveedor')
-        datas = cur.fetchall()
-        cur.execute('SELECT * FROM tipo_adquisicion')
-        dataso = cur.fetchall()
-        cur.close()
-        return render_template(
-            'GestionP/editOrden_compra.html', 
-            orden_compra = data[0], 
-            tipo_adquisicion = dataso, 
-            proveedor = datas
-            )
-    except Exception as e:
-        #flash(e.args[1])
-        flash("Error al crear")
-        return redirect(url_for('orden_compra.ordenCompra'))
-    
-#actualizar
+
 @orden_compra.route('/update_ordenc/<id>', methods=['POST'])
 @administrador_requerido
 def update_ordenc(id):
@@ -156,6 +127,11 @@ def update_ordenc(id):
         try:
             fecha_compra_ordenc = request.form['fecha_compra_ordenc']
             fecha_fin_ordenc = request.form['fecha_fin_ordenc']
+            
+            # Convertir fecha_fin_ordenc a NULL si está vacía
+            if fecha_fin_ordenc.strip() == "":
+                fecha_fin_ordenc = None  # Python interpreta None como NULL en MySQL
+                
             data = {
                 'id_orden_compra': request.form['id_orden_compra'],
                 'nombre_ordenc': request.form['nombre_ordenc'],
@@ -187,7 +163,7 @@ def update_ordenc(id):
             v = Validator(orden_compra_schema)
             if not v.validate(data):
                 # Depuración de errores de validación
-                flash(f"Errores en los datos proporcionados: {v.errors}")
+                flash(f"Errores en los datos proporcionados: {v.errors}", "warning")
                 return redirect(url_for('orden_compra.ordenCompra'))
 
             # Depuración de datos validados
@@ -217,19 +193,19 @@ def update_ordenc(id):
             mysql.connection.commit()
 
             # Confirmar éxito
-            flash('Orden de compra actualizada correctamente')
+            flash('Orden de compra actualizada correctamente', 'success')
             return redirect(url_for('orden_compra.ordenCompra'))
 
         except KeyError as key_error:
             # Depuración de error por falta de clave
             print(f"Faltan datos en el formulario: {key_error}")
-            flash(f"Faltan datos obligatorios: {key_error}")
+            flash(f"Faltan datos obligatorios: {key_error}", 'warning')
             return redirect(url_for('orden_compra.ordenCompra'))
 
         except Exception as e:
             # Depuración de errores generales
             print(f"Error durante la actualización: {e}")
-            flash(f"Error al actualizar la orden de compra: {str(e)}")
+            flash(f"Error al actualizar la orden de compra: {str(e)}", "warning")
             return redirect(url_for('orden_compra.ordenCompra'))
 
         

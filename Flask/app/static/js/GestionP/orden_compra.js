@@ -11,7 +11,14 @@ document.addEventListener("DOMContentLoaded", function () {
             const fechaFin = this.dataset.fechaFin;
             const tipo = this.dataset.tipo;
             const proveedor = this.dataset.proveedor;
-
+            
+            // Verificar qué valores están llegando
+            console.log("ID Orden:", id);
+            console.log("Nombre Orden:", nombre);
+            console.log("Fecha Compra:", fechaCompra);
+            console.log("Fecha Fin:", fechaFin);
+            console.log("Tipo de Adquisición:", tipo);
+            console.log("Proveedor:", proveedor);
             // Asignar valores al formulario del modal
             document.getElementById("edit_id_ordenc").value = id;
             document.getElementById("edit_nombre_ordenc").value = nombre;
@@ -172,4 +179,96 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
+});
+
+// Funcion para ocultar o mostrar la fecha final en orden de compra
+document.addEventListener("DOMContentLoaded", function() {
+    // 📌 Elementos del formulario de agregar
+    const selectAdquisicionAdd = document.getElementById("tipoAdquisicionSelect");
+    const fechaFinContainerAdd = document.getElementById("fechaFinContainer");
+    const fechaFinInputAdd = document.getElementById("fecha_fin_ordenc");
+
+    // 📌 Elementos del formulario de edición
+    const selectAdquisicionEdit = document.getElementById("edit_nombre_tipo_adquisicion_ordenc");
+    const fechaFinContainerEdit = document.getElementById("editFechaFinContainer");
+    const fechaFinInputEdit = document.getElementById("edit_fecha_fin_ordenc");
+
+    // 📌 Función general para ocultar/mostrar la fecha final
+    function toggleFechaFin(selectElement, fechaFinContainer, fechaFinInput) {
+        const valorSeleccionado = selectElement.value;
+        
+        if (valorSeleccionado === "" || valorSeleccionado === "1") {
+            // Ocultar fecha final si es Compra
+            fechaFinContainer.style.display = "none";
+            fechaFinInput.required = false;
+            fechaFinInput.value = ""; // Limpiar su valor
+        } else {
+            // Mostrar fecha final si es Préstamo o Arriendo
+            fechaFinContainer.style.display = "block";
+            fechaFinInput.required = true;
+        }
+    }
+
+    // 📌 Aplicar la función al cargar la página (para agregar)
+    if (selectAdquisicionAdd) {
+        toggleFechaFin(selectAdquisicionAdd, fechaFinContainerAdd, fechaFinInputAdd);
+        selectAdquisicionAdd.addEventListener("change", function () {
+            toggleFechaFin(selectAdquisicionAdd, fechaFinContainerAdd, fechaFinInputAdd);
+        });
+    }
+
+    // 📌 Evento para abrir el modal de edición y configurar la visibilidad correcta
+    document.querySelectorAll(".btn-edit").forEach(button => {
+        button.addEventListener("click", function () {
+            // Obtener datos del botón de edición
+            const id = this.dataset.id;
+            const nombre = this.dataset.nombre;
+            const fechaCompra = this.dataset.fechaCompra;
+            const fechaFin = this.dataset.fechaFin;
+            const tipo = this.dataset.tipo; // Tipo de adquisición
+            const proveedor = this.dataset.proveedor;
+
+            // Asignar valores al formulario del modal
+            document.getElementById("edit_id_ordenc").value = id;
+            document.getElementById("edit_nombre_ordenc").value = nombre;
+            document.getElementById("edit_fecha_compra_ordenc").value = fechaCompra;
+            document.getElementById("edit_fecha_fin_ordenc").value = fechaFin;
+            document.getElementById("edit_nombre_proveedor_ordenc").value = proveedor;
+            document.getElementById("edit_nombre_tipo_adquisicion_ordenc").value = tipo;
+
+            // 📌 Llamar a la función para decidir si la fecha final debe mostrarse
+            toggleFechaFin(selectAdquisicionEdit, fechaFinContainerEdit, fechaFinInputEdit);
+        });
+    });
+
+    // 📌 Evento para detectar cambios en el select de tipo de adquisición en edición
+    if (selectAdquisicionEdit) {
+        selectAdquisicionEdit.addEventListener("change", function () {
+            toggleFechaFin(selectAdquisicionEdit, fechaFinContainerEdit, fechaFinInputEdit);
+        });
+    }
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const editFechaCompra = document.getElementById("edit_fecha_compra_ordenc");
+
+    document.querySelectorAll(".btn-edit").forEach(button => {
+        button.addEventListener("click", function () {
+            const fechaGuardada = this.dataset.fechaCompra; // La fecha que ya tenía guardada
+            const fechaHoy = new Date().toISOString().split("T")[0]; // Fecha de hoy en formato YYYY-MM-DD
+            
+            console.log("Fecha Guardada:", fechaGuardada);
+            console.log("Fecha de Hoy:", fechaHoy);
+
+            // Si la fecha guardada es anterior a hoy, se permite
+            if (fechaGuardada < fechaHoy) {
+                editFechaCompra.removeAttribute("min"); // Permite la fecha guardada aunque sea anterior
+            } else {
+                editFechaCompra.setAttribute("min", fechaHoy); // Si la fecha guardada es mayor, aplica validación normal
+            }
+
+            // Asignar la fecha guardada al campo
+            editFechaCompra.value = fechaGuardada;
+        });
+    });
 });
