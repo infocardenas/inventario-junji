@@ -18,10 +18,10 @@ def estadoEquipo(page=1):
 
     # Obtener estados de equipos con conteo
     cur.execute("""
-        SELECT ee.idEstado_equipo, ee.nombreEstado_equipo, COUNT(e.idEquipo) AS conteo, e.idUnidad
+        SELECT ee.idEstado_equipo, ee.nombreEstado_equipo, COUNT(e.idEquipo) AS conteo
         FROM estado_equipo ee
         LEFT JOIN equipo e ON ee.idEstado_equipo = e.idEstado_equipo
-        GROUP BY ee.idEstado_equipo, ee.nombreEstado_equipo, e.idUnidad
+        GROUP BY ee.idEstado_equipo, ee.nombreEstado_equipo
         ORDER BY conteo DESC
         LIMIT %s OFFSET %s
     """, (perpage, offset))
