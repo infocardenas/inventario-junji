@@ -60,6 +60,60 @@
     </div>
 </div>
 
+<!--    Modal para editar orden de compra-->
+<div class="modal fade" id="editOrdenCompraModal" tabindex="-1" aria-labelledby="editOrdenCompraModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editOrdenCompraModalLabel">Editar Orden de Compra</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="form_editOrdenCompraModal" method="POST" action="">
+                <div class="modal-body">
+                    <!-- Campos del formulario (iguales al modal de agregar) -->
+                    <div class="mb-3">
+                        <label for="edit_id_ordenc" class="form-label">ID Orden</label>
+                        <input class="form-control" type="text" id="edit_id_ordenc" name="id_orden_compra" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_nombre_ordenc">Nombre de Orden:</label>
+                        <input class="form-control" type="text" id="edit_nombre_ordenc" name="nombre_ordenc" maxlength="45">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_nombre_proveedor_ordenc">Nombre de Proveedor:</label>
+                        <select id="edit_nombre_proveedor_ordenc" name="nombre_proveedor_ordenc" class="form-control">
+                            <option value="">Elija el proveedor</option>
+                            {% for pro in proveedor %}
+                            <option value="{{ pro.idProveedor }}">{{ pro.nombreProveedor }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_nombre_tipo_adquisicion_ordenc">Tipo de Adquisición:</label>
+                        <select id="edit_nombre_tipo_adquisicion_ordenc" name="nombre_tipo_adquisicion_ordenc" class="form-control no-delete-value">
+                            <option value="">Elija el tipo de adquisición</option>
+                            {% for tip in tipo_adquisicion %}
+                            <option value="{{ tip.idTipo_adquisicion }}">{{ tip.nombre_tipo_adquisicion }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_fecha_compra_ordenc">Fecha de Orden de Compra:</label>
+                        <input class="form-control" type="date" id="edit_fecha_compra_ordenc" name="fecha_compra_ordenc">
+                    </div>
+                    <div class="mb-3" id="editFechaFinContainer">
+                        <label for="edit_fecha_fin_ordenc">Fecha Final de Orden de Compra:</label>
+                        <input class="form-control" type="date" id="edit_fecha_fin_ordenc" name="fecha_fin_ordenc">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" form="form_editOrdenCompraModal" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 <!-- Modal de Confirmación para Eliminación -->
 <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"

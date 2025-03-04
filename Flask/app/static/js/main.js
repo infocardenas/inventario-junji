@@ -965,39 +965,3 @@ $(document).ready(function () {
 
 
 
-
-
-document.addEventListener("DOMContentLoaded", function() {
-  const selectAdquisicion = document.getElementById("tipoAdquisicionSelect");
-  const fechaFinContainer = document.getElementById("fechaFinContainer");
-  const fechaFinInput = document.getElementById("fecha_fin_ordenc");
-
-  function toggleFechaFin() {
-    // Obtenemos el valor (el "idTipo_adquisicion")
-    const valorSeleccionado = selectAdquisicion.value;
-    
-    // Si es "", no se ha elegido nada (o es "1" para Compra),
-    // entonces ocultamos. Caso contrario, mostramos.
-    if (valorSeleccionado === "" || valorSeleccionado === "1") {
-      // Ocultamos
-      fechaFinContainer.style.display = "none";
-      // Quitamos 'required'
-      fechaFinInput.required = false;
-      // (Opcional) limpiar su valor
-      fechaFinInput.value = "";
-    } else {
-      // Mostramos
-      fechaFinContainer.style.display = "block";
-      // Volvemos a ponerlo required
-      fechaFinInput.required = true;
-    }
-  }
-
-  // Ejecutar inmediatamente al cargar la página
-  toggleFechaFin();
-
-  // Re-ejecutar cada vez que cambie la selección
-  selectAdquisicion.addEventListener("change", toggleFechaFin);
-});
-
-
