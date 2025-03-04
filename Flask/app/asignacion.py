@@ -39,10 +39,6 @@ schema_asignacion = {
         'type': 'list',
         'minlength': 1,  # Al menos un equipo debe ser seleccionado
         'schema': {'type': 'integer'},  # Los valores deben ser enteros
-    },
-    'traslado': {
-        'type': 'string',
-        'allowed': ['si', 'no'],  # Los valores permitidos son 'si' o 'no'
     }
 }
 
@@ -144,7 +140,6 @@ def create_asignacion():
     rut_funcionario = request.form.get('rut_funcionario')
     observacion = request.form.get('observacion')
     id_equipos = [int(equipo) for equipo in request.form.getlist('equiposAsignados[]')]
-    traslado = request.form.get('traslado')
 
     # Se crea un objeto para poder validar los datos recibidos
     data = {
@@ -152,7 +147,6 @@ def create_asignacion():
         'rut_funcionario': rut_funcionario,
         'observacion': observacion,
         'equipos_asignados': id_equipos,
-        'traslado': traslado
     }
 
     # Valida los campos y muestra solo el primer mensaje de error
@@ -256,16 +250,7 @@ def create_asignacion():
     flash("Asignación agregada exitosamente", 'success')
 
     pdf_asignacion = crear_pdf_asignacion(funcionario, TuplaEquipos)
-    #if(traslado and funcionario['idUnidad'] == 1):
-        #TODO: que hacer si multiples equipos vienen de distintas direcciones
-
-        #mover desde su posicion actual a la posicion del funcionario
-        #primero revisar si las posiciones son iguales.
-
-        
-        #si son distintas redirigir al metodo de crear traslado con
-        #la informacion de la asignacion
-        #crear_traslado_generico(fecha_asignacion, funcionario['idUnidad'], funcionario['idUnidad'], id_equipos)
+    
     return redirect(url_for('asignacion.Asignacion'))
 
 # enviar datos a vista editar
