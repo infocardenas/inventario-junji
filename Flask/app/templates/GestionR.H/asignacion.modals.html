@@ -8,7 +8,6 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <!-- Contenido -->
-            <form id="trasladoForm" method="POST" action="{{ url_for('traslado.create_traslado') }}">
             <div class="modal-body">
                 <form class="asignaciones" id="form-asignacion-modal" action="/asignacion/create_asignacion" method="POST">
                     <div class="row">
@@ -117,7 +116,7 @@
                                 <textarea name="observacion" id="observaciones" rows="4" class="form-control"></textarea>
                             </div>
                         </div>
-
+                    
                     </div>
                 </form>
             </div>
