@@ -1330,7 +1330,9 @@ def crear_excel():
     )
     equipo_data = cur.fetchall()
 
-    print(equipo_data)
+    if not equipo_data:
+        flash("No hay equipos visibles para exportar.","warning")
+        return redirect(request.referrer or "/")
     # generar encabezado
     # encabezado
 
