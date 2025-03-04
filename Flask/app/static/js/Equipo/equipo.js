@@ -610,3 +610,15 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
+
+  function exportarBusqueda() {
+    let button = document.getElementById("exportarBusqueda");
+    let ids = button.getAttribute("data-ids");
+    
+    if (ids) {
+      window.location.href = `/crear_excel?ids=${ids}`;
+    } else {
+      alert("No hay datos visibles para exportar.");
+    }
+  }
+  

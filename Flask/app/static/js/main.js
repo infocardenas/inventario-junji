@@ -213,24 +213,35 @@ function sortTable(n) {
 }
 
 function busqueda(tableBodyId = "myTBody") {
-  var input, a, filter, tbody;
-  input = document.getElementById("buscador")
+  var input, filter, tbody, tr, visibleIds = [];
+  input = document.getElementById("buscador");
   filter = input.value.toLowerCase();
-  tbody = document.getElementById(tableBodyId)
-  tr = tbody.getElementsByTagName("tr")
+  tbody = document.getElementById(tableBodyId);
+  tr = tbody.getElementsByTagName("tr");
+
   for (let i = 0; i < tr.length; i++) {
-    td = tr[i].querySelectorAll(".toCheck")
+    let td = tr[i].querySelectorAll(".toCheck");
+    let found = false;
     for (let j = 0; j < td.length; j++) {
-      texto = td[j].textContent.toLowerCase()
+      let texto = td[j].textContent.toLowerCase();
       if (texto.indexOf(filter) > -1) {
-        tr[i].style.display = ""
-        break;
-      } else {
-        tr[i].style.display = "none"
-      }
+        tr[i].style.display = "";
+        found = true;
+      } 
+    }
+    if (!found) {
+      tr[i].style.display = "none";
+    } else {
+      // Obtener el ID del equipo (asumiendo que está en un atributo data-id)
+      let equipoId = tr[i].getAttribute("data-id");
+      if (equipoId) visibleIds.push(equipoId);
     }
   }
+
+  // Guardar los IDs en un atributo del botón de exportar búsqueda
+  document.getElementById("exportarBusqueda").setAttribute("data-ids", visibleIds.join(","));
 }
+
 //al tocar el boton radio todo se destickea todo lo demas
 function todoCheck() {
   checkboxContainer = document.getElementById("checkbox_container")
