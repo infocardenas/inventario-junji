@@ -205,7 +205,7 @@ def add_equipo():
                             (datos['idModelo_equipo'],))
                 modelo_existe = cur.fetchone()['count']
                 if modelo_existe == 0:
-                    flash("El modelo seleccionado no existe")
+                    flash("El modelo seleccionado no existe", "warning")
                     return redirect(url_for("equipo.Equipo"))
 
             # Insertar equipo
@@ -245,17 +245,17 @@ def add_equipo():
             mensaje_error = str(e)
             if "Duplicate entry" in mensaje_error:
                 if "Cod_inventarioEquipo" in mensaje_error:
-                    flash("El código de inventario ya existe")
+                    flash("El código de inventario ya existe","warning")
                 elif "Num_serieEquipo" in mensaje_error:
-                    flash("El número de serie ya existe")
+                    flash("El número de serie ya existe","warning")
                 else:
-                    flash("Error de duplicación en la base de datos")
+                    flash("Error de duplicación en la base de datos","warning")
             else:
-                flash("Error de integridad en la base de datos")
+                flash("Error de integridad en la base de datos","warning")
             return redirect(url_for('equipo.Equipo'))
 
         except Exception as e:
-            flash(f"Error al crear el equipo: {str(e)}")
+            flash(f"Error al crear el equipo: {str(e)}", "warning")
             return redirect(url_for('equipo.Equipo'))
 
 
