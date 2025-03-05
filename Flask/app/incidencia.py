@@ -68,6 +68,7 @@ def incidencia_form(idEquipo):
         )
 @incidencia.route("/incidencia/add_incidencia", methods=['POST'])
 @administrador_requerido
+
 def add_incidencia():
     if request.method == "POST":
         # 1. Recepción de datos
@@ -108,7 +109,7 @@ def add_incidencia():
             'Perdido': 4,           # Baja
             'Dañado/Averiado': 5    # Mantención
         }
-
+        # se obtiene el estado para ingresarlo a nuevo?estado
         nuevo_estado = estados_incidencia.get(datos['nombreIncidencia'])
         if nuevo_estado is None:
             flash("Tipo de incidencia inválido.", "warning")
@@ -194,30 +195,51 @@ def edit_incidencia(id):
         incidencia=incidencia
         )
 
-     
 @incidencia.route("/incidencia/update_incidencia/<id>", methods=["POST"])
 @administrador_requerido
 def update_incidencia(id):
-   if "user" not in session:
+    if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
-   nombreIncidencia = request.form['nombreIncidencia'] 
-   ObservacionIncidencia = request.form['observacionIncidencia']
-   fechaIncidencia = request.form['fechaIncidencia']
+    print("AQUI COMIENZA EL UPDATE")
+    nombreIncidencia = request.form.get('nombreIncidencia', '').strip()
+    ObservacionIncidencia = request.form.get('observacionIncidencia', '').strip()
+    fechaIncidencia = request.form.get('fechaIncidencia', '').strip()
+    
+    print("ESTE ES EL ID ",id)
+    print("ESTE ES EL NOMBRE ",nombreIncidencia)
+    print("ESTA ES LA OBSERVACION ",ObservacionIncidencia)
+    print("ESTA ES LA FECHA ",fechaIncidencia)
+    # Si ObservacionIncidencia está vacío, asignar None (para almacenar NULL en la BD)
+    if not ObservacionIncidencia:
+        ObservacionIncidencia = None
 
-   
-   cur = mysql.connection.cursor()
-   cur.execute("""
+    # Asignar el estado del equipo según la incidencia
+    estados_incidencia = {
+        'Robo': 3,              # Siniestro
+        'Perdido': 4,           # Baja
+        'Dañado/Averiado': 5    # Mantención
+    }
+
+    nuevo_estado = estados_incidencia.get(nombreIncidencia)
+    if nuevo_estado is None:
+        flash("Tipo de incidencia inválido.", "warning")
+        return redirect(url_for("incidencia.Incidencia"))
+
+    cur = mysql.connection.cursor()
+    cur.execute("""
         UPDATE incidencia
         SET nombreIncidencia = %s,
             observacionIncidencia = %s,
             fechaIncidencia = %s
         WHERE idIncidencia = %s
-               """, (nombreIncidencia, ObservacionIncidencia, fechaIncidencia, id)) 
-   mysql.connection.commit()
-   flash("Incidencia actualizada correctamente")
-   return redirect(url_for("incidencia.Incidencia"))
- 
+    """, (nombreIncidencia, ObservacionIncidencia, fechaIncidencia, id)) 
+
+    mysql.connection.commit()
+    flash("Incidencia actualizada correctamente")
+    return redirect(url_for("incidencia.Incidencia"))
+
+
 ALLOWED_EXTENSIONS = {'pdf'}
 
 def allowed_file(filename):
