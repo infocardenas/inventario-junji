@@ -148,22 +148,22 @@ def crear_lista_modelo_tipo_marca():
 
 
     pass
-# agrega registro para id
 @equipo.route("/add_equipo", methods=["POST"])
 def add_equipo():
     if request.method == "POST":
         datos = {
-            'codigo_inventario': request.form["codigo_inventario"],
-            'numero_serie': request.form["numero_serie"],
-            'observacion_equipo': request.form["observacion_equipo"],
-            'codigoproveedor': request.form["codigoproveedor"],
-            'mac': request.form["mac"],
-            'imei': request.form["imei"],
-            'numero': request.form["numero"],
-            'codigo_Unidad': request.form["codigo_Unidad"],
-            'nombre_orden_compra': request.form["nombre_orden_compra"],
-            'idModelo_equipo': request.form["modelo_equipo"],
+            'codigo_inventario': request.form["codigo_inventario"].strip(),
+            'numero_serie': request.form["numero_serie"].strip(),
+            'observacion_equipo': request.form["observacion_equipo"].strip(),
+            'codigoproveedor': request.form["codigoproveedor"].strip(),
+            'mac': request.form["mac"].strip(),
+            'imei': request.form["imei"].strip(),
+            'numero': request.form["numero"].strip(),
+            'codigo_Unidad': request.form["codigo_Unidad"].strip(),
+            'nombre_orden_compra': request.form["nombre_orden_compra"].strip(),
+            'idModelo_equipo': request.form["modelo_equipo"].strip(),
         }
+
         # Convertir cadenas vacías a None para los campos opcionales
         for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo', 'codigoproveedor']:
             if datos[key] == "":
@@ -197,9 +197,41 @@ def add_equipo():
             flash(mensaje_error, 'warning')
             return redirect(url_for("equipo.Equipo"))
 
-        # Verificar existencia del modelo
+        # 🔍 **Conexión con la base de datos**
         try:
             cur = mysql.connection.cursor()
+
+            # 🛠 **Verificar duplicados antes de la inserción**
+
+            # ✅ Verificar si el código de inventario ya existe
+            if datos['codigo_inventario']:
+                cur.execute("SELECT idEquipo FROM equipo WHERE Cod_inventarioEquipo = %s", (datos['codigo_inventario'],))
+                if cur.fetchone():
+                    flash("El código de inventario ya existe", 'warning')
+                    return redirect(url_for("equipo.Equipo"))
+
+            # ✅ Verificar si el número de serie ya existe
+            if datos['numero_serie']:
+                cur.execute("SELECT idEquipo FROM equipo WHERE Num_serieEquipo = %s", (datos['numero_serie'],))
+                if cur.fetchone():
+                    flash("El número de serie ya existe", 'warning')
+                    return redirect(url_for("equipo.Equipo"))
+
+            # ✅ Verificar si el código de proveedor ya existe
+            if datos['codigoproveedor']:
+                cur.execute("SELECT idEquipo FROM equipo WHERE codigoproveedor_equipo = %s", (datos['codigoproveedor'],))
+                if cur.fetchone():
+                    flash("El código de proveedor ya está en uso", 'warning')
+                    return redirect(url_for("equipo.Equipo"))
+
+            # ✅ Verificar si el número telefónico ya existe
+            if datos['numero']:
+                cur.execute("SELECT idEquipo FROM equipo WHERE numerotelefonicoEquipo = %s", (datos['numero'],))
+                if cur.fetchone():
+                    flash("El número telefónico ya está en uso", 'warning')
+                    return redirect(url_for("equipo.Equipo"))
+
+            # ✅ Verificar existencia del modelo
             if datos['idModelo_equipo']:
                 cur.execute("SELECT COUNT(*) AS count FROM modelo_equipo WHERE idModelo_Equipo = %s", 
                             (datos['idModelo_equipo'],))
@@ -208,7 +240,7 @@ def add_equipo():
                     flash("El modelo seleccionado no existe", "warning")
                     return redirect(url_for("equipo.Equipo"))
 
-            # Insertar equipo
+            # 🛠 **Insertar equipo en la base de datos**
             cur.execute(
                 """ INSERT INTO equipo (
                     Cod_inventarioEquipo, 
@@ -241,20 +273,8 @@ def add_equipo():
             flash("Equipo agregado correctamente", 'success')
             return redirect(url_for("equipo.Equipo"))
 
-        except IntegrityError as e:
-            mensaje_error = str(e)
-            if "Duplicate entry" in mensaje_error:
-                if "Cod_inventarioEquipo" in mensaje_error:
-                    flash("El código de inventario ya existe","warning")
-                elif "Num_serieEquipo" in mensaje_error:
-                    flash("El número de serie ya existe","warning")
-                else:
-                    flash("Error de duplicación en la base de datos","warning")
-            else:
-                flash("Error de integridad en la base de datos","warning")
-            return redirect(url_for('equipo.Equipo'))
-
         except Exception as e:
+            mysql.connection.rollback()
             flash(f"Error al crear el equipo: {str(e)}", "warning")
             return redirect(url_for('equipo.Equipo'))
 
@@ -423,19 +443,18 @@ def update_equipo(id):
 
 
 
-        
 
 @equipo.route("/delete_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
 def delete_equipo(id):
     if "user" not in session:
-        flash("No estás autorizado")
+        flash("No estás autorizado", "warning")
         return redirect("/ingresar")
 
     try:
         cur = mysql.connection.cursor()
 
-        # Validar dependencias
+        # **Validar si el equipo tiene dependencias en otras tablas**
         dependencias_queries = {
             "asignaciones": "SELECT COUNT(*) AS count FROM asignacion WHERE idAsignacion IN (SELECT idAsignacion FROM equipo_asignacion WHERE idEquipo = %s)",
             "equipo_asignacion": "SELECT COUNT(*) AS count FROM equipo_asignacion WHERE idEquipo = %s",
@@ -448,33 +467,38 @@ def delete_equipo(id):
             cur.execute(query, (id,))
             dependencias[key] = cur.fetchone()["count"]
 
-        # Si hay dependencias, mostrar confirmación antes de eliminar
+        # **Si hay dependencias, NO eliminar y mostrar un mensaje claro**
         if any(count > 0 for count in dependencias.values()):
-            flash("El equipo tiene dependencias en otras tablas. ¿Deseas continuar con la eliminación?")
+            mensaje = "No se puede eliminar el equipo porque tiene registros relacionados en:\n"
+            for key, count in dependencias.items():
+                if count > 0:
+                    mensaje += f"- {key.replace('_', ' ').capitalize()}: {count} registros.\n"
+            flash(mensaje, "danger")
             return redirect(url_for("equipo.Equipo"))
 
-        # Eliminar dependencias en cascada
+        # **Si no tiene dependencias, proceder con la eliminación**
         cur.execute("DELETE FROM equipo_asignacion WHERE idEquipo = %s", (id,))
         cur.execute("DELETE FROM traslacion WHERE idEquipo = %s", (id,))
         cur.execute("DELETE FROM incidencia WHERE idEquipo = %s", (id,))
-
-        # Finalmente eliminar el equipo
         cur.execute("DELETE FROM equipo WHERE idEquipo = %s", (id,))
         mysql.connection.commit()
+
         flash("Equipo eliminado correctamente", "success")
 
     except Exception as e:
+        mysql.connection.rollback()
         error_message = f"Error al eliminar el equipo: {str(e)}"
-        print(error_message)  # Mostrar el error en la terminal
-        flash(error_message, "warning")
+        print(error_message)  # Registrar el error en la terminal
+        flash(error_message, "danger")
 
     finally:
         try:
             cur.close()
         except Exception as close_error:
             print(f"Error al cerrar el cursor: {str(close_error)}")
-        
+
         return redirect(url_for("equipo.Equipo"))
+
 
 
 
