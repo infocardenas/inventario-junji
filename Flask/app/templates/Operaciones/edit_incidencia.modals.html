@@ -1,0 +1,49 @@
+
+
+
+
+<!-- Modal para agregar incidencia -->
+<div class="modal fade" id="edit_incidencia" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Incidencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Contenido -->
+            <div class="modal-body">
+                <form action="" method="POST" id="form_edit_incidencia"
+                    enctype="multipart/form-data">
+                    <input class="no-delete-value" type="hidden" id="edit_idEquipo" name="idEquipo" value="">
+
+                    <div class="mb-3">
+                        <label for="edit_nombreIncidencia" class="form-label">Tipo de Incidencia</label>
+                        <select class="form-control" id="edit_nombreIncidencia" name="nombreIncidencia" required>
+                            <option value="" disabled selected>Seleccione tipo de incidencia</option> <!-- Placeholder -->
+                            <option value="Robo">Robo</option>
+                            <option value="Perdido">Perdido</option>
+                            <option value="Dañado/Averiado">Dañado/Averiado</option>
+                        </select>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="edit_fechaIncidencia" class="form-label">Fecha de la incidencia</label>
+                        <input type="date" class="form-control validar-fecha-30-0" id="edit_fechaIncidencia"
+                            name="fechaIncidencia" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_observacionIncidencia" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="edit_observacionIncidencia" name="observacionIncidencia"
+                            rows="3"></textarea>
+                    </div>
+                    <!-- Footer de botones -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
