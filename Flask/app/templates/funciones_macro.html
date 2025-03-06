@@ -38,18 +38,17 @@
     <table id="posts">
         <thead>
             <tr>
-                <td onclick="sortTable(0)">Nombre pdf</td>
-                <td>Operations</td>
+                <td onclick="sortTable(0)">Nombre PDF</td>
+                <td>Operaciones</td>
             </tr>
         </thead>
         <tbody id="myTableBody">
-            <!-- Se inicia iteracion for para mostrar todos los proveedores -->
             {% for documento in documentos %}
-            {% if documento != "None" %}
+            {% if documento %}  <!-- Evita mostrar None o vacíos -->
             <tr>
-                <td>{{documento}}</td>
+                <td>{{ documento }}</td>
                 <td>
-                    <a href="/{{location}}/mostrar_pdf/{{id}}/{{documento}}" class="info-button">Abrir</a>
+                    <a href="/{{ location }}/mostrar_pdf/{{ id }}" class="info-button">Abrir</a>
                 </td>
             </tr>
             {% endif %}
@@ -58,6 +57,7 @@
     </table>
 </div>
 {% endmacro %}
+
 
 
 {#

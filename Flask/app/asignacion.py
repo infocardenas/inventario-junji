@@ -870,60 +870,7 @@ def buscar(idAsignacion):
         page=1, 
         lastpage=True
     )
-#@asignacion.route("/asignacion/buscar_devolucion/<idDevolucion>")
-#@loguear_requerido
-#def buscar_devolucion():
 
-    #pass
-
-@asignacion.route("/asignacion/devolver_uno/<id_equipo>")
-@administrador_requerido
-def devolver_uno(id_equipo):
-    def consulta():
-        cur = mysql.connection.cursor()
-        #encontrar la id de la asignacion del equipo
-        cur.execute("""
-        SELECT * 
-        FROM equipo_asignacion ea
-        INNER JOIN asignacion a ON ea.idAsignacion = a.idAsignacion 
-        WHERE ea.idEquipo = %s
-        AND a.ActivoAsignacion = 1
-                    """, (id_equipo,))
-        asignacion_vieja = cur.fetchone()
-        #si tiene mas de uno seguir de lo contrario redirigir a devolucion
-        #encontar todos los equipos excepto el que se devuelve
-        cur.execute("""
-        SELECT *
-        FROM equipo_asignacion ea
-        WHERE NOT ea.idEquipo = %s
-        AND ea.idAsignacion = %s
-                    """, (id_equipo, asignacion_vieja['idAsignacion']))
-        equipos = cur.fetchall()
-        return (asignacion_vieja, equipos)
-    resultados_consulta = consulta()
-    equipos = resultados_consulta[1]
-    asignacion_vieja = resultados_consulta[0]
-
-    if len(equipos) == 0:
-        return devolver(asignacion_vieja['idAsignacion'])
-    #else:
-        #flash("Este equipo forma parte de una asignacion de multiples equipos")
-        #return redirect('/equipo')
-    #extraer las ids
-    equipos_id = []
-    for equipo in equipos:
-        equipos_id.append(equipo['idEquipo'])
-
-        
-    print("asignacion vieja")
-    print(asignacion_vieja)
-    devolver(asignacion_vieja['idAsignacion'])
-    creacionAsignacion(str(date.today()), asignacion_vieja['ObservacionAsignacion'], 
-        asignacion_vieja['rutFuncionario'], equipos_id, True)
-
-
-    #cambiar redirect
-    return redirect("/equipo")
 
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>")
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>/<devolver>")
