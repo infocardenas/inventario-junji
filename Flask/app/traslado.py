@@ -295,6 +295,9 @@ def create_traslado(origen):
     destino = request.form["Destino"]
     equipos = request.form.getlist("trasladar[]")
 
+    if destino == str(origen):  # Convertimos origen a str para evitar errores de comparación
+        return jsonify({"success": False, "message": "El destino no puede ser igual al origen"}), 400
+
     if not destino or not equipos:
         return jsonify({"success": False, "message": "Destino o equipos no seleccionados"}), 400
 

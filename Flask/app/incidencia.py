@@ -483,17 +483,17 @@ def create_pdf(incidencia):
 
     # 📌 Sección para firmas
     pdf.set_font("Arial", "B", 12)
-    pdf.cell(0, 10, "Firmas de Responsables:", ln=True)
+    pdf.cell(0, 10, "Firmas:", ln=True)
     pdf.ln(15)
 
     # 📌 Espacio para firmas
-    pdf.cell(90, 10, "Nombre del Responsable:", border=0)
+    pdf.cell(90, 10, "Nombre del Encargado:", border=0)
     pdf.cell(90, 10, "Nombre del Funcionario:", border=0, ln=True)
     pdf.cell(90, 10, "_____________________________", border=0)
     pdf.cell(90, 10, "_____________________________", border=0, ln=True)
     pdf.ln(5)
 
-    pdf.cell(90, 10, "Firma del Responsable:", border=0)
+    pdf.cell(90, 10, "Firma del Encargado:", border=0)
     pdf.cell(90, 10, "Firma del Funcionario:", border=0, ln=True)
     pdf.cell(90, 10, "_____________________________", border=0)
     pdf.cell(90, 10, "_____________________________", border=0, ln=True)

@@ -37,35 +37,38 @@
             <div class="toolbar">
                 <div class="toolbar-1">
 
-                    <a href="{{ url_for('equipo.crear_excel') }}" class="btn btn-primary">
-                        Excel
-                    </a>
-
                     <button class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#addEquipoModal">Agregar</button>
+                    <a href="{{ url_for('equipo.crear_excel') }}" class="btn btn-primary">
+                        Exportar Todo <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}"
+                            alt="Exportar Excel" width="20" height="20" class="me-1">
+                    </a>
+
                     <!-- <button class="btn btn-primary" onclick="showDiv('importar_excel', ['formularioExcel'])"><img
                             src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Importar Excel"
                             width="20" height="20" class="me-1"><span>Importar</span></button> -->
-                    <button class="btn btn-primary" id="openExportModalButton" data-bs-toggle="modal"
+                    <!-- <button class="btn btn-primary" id="openExportModalButton" data-bs-toggle="modal"
                         data-bs-target="#exportModal">
                         <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
                             width="20" height="20" class="me-1">
                         <span>Exportar</span>
-                    </button>
+                    </button> -->
 
                 </div>
                 <div class="toolbar-2">
                     <input name="palabra" type="text" class="search-box" placeholder="Buscar equipos" id="buscador"
-                    onkeyup="busqueda('myTableBody')" />
-                    <button class="btn btn-primary" data-bs-toggle="tooltip" title="Exportar Busqueda" id="exportarBusqueda" onclick="exportarBusqueda()"><img
-                        src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
-                        width="20" height="20" class="me-1"><span>Exportar </span><i
-                        class="bi bi-search"></i></button>
+                        onkeyup="busqueda('myTableBody')" />
+                    <button class="btn btn-primary" data-bs-toggle="tooltip" title="Exportar Busqueda"
+                        id="exportarBusqueda" onclick="exportarBusqueda()"><img
+                            src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
+                            width="20" height="20" class="me-1"><span>Exportar </span><i
+                            class="bi bi-search"></i></button>
                 </div>
                 <div class="toolbar-3">
-                    <button class="btn btn-success" id="assign-button" data-bs-toggle="tooltip" title="Asignar/Devolver">
+                    <button class="btn btn-success" id="assign-button" data-bs-toggle="tooltip"
+                        title="Asignar/Devolver">
                         <i class="bi bi-person-fill-add"></i>
-                    </button>                    
+                    </button>
 
 
                     <button class="btn btn-secondary" id="incidencia-button" data-bs-toggle="tooltip" title="Incidencia"
@@ -96,7 +99,7 @@
                         {% for equi in equipo %}
                         <tr data-id="{{ equi.idEquipo }}">
                             <td class="checkbox-column">
-                                <input type="checkbox" class="checkbox-table row-checkbox no-delete-value">
+                                <input type="checkbox" class="checkbox-table row-checkbox no-delete-value" >
                             </td>
                             <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
                             <td class="toCheck">{{equi.Num_serieEquipo}}</td>
