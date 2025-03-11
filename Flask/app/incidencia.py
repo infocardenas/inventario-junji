@@ -66,6 +66,7 @@ def incidencia_form(idEquipo):
         'Operaciones/add_incidencia.html', 
         equipo=equipo
         )
+
 @incidencia.route("/incidencia/add_incidencia", methods=['POST'])
 @administrador_requerido
 def add_incidencia():
@@ -89,8 +90,17 @@ def add_incidencia():
             flash("Error: ID de equipo inválido.", "warning")
             return redirect(url_for("equipo.Equipo"))
 
-        # 3. Verificar si ya existe una incidencia activa para el equipo
         cur = mysql.connection.cursor()
+
+        # 3. Verificar si el equipo existe
+        cur.execute("SELECT idEquipo FROM equipo WHERE idEquipo = %s", (datos['idEquipo'],))
+        equipo_existente = cur.fetchone()
+        if not equipo_existente:
+            flash("Error: El equipo no existe.", "warning")
+            cur.close()
+            return redirect(url_for("equipo.Equipo"))
+
+        # 4. Verificar si ya existe una incidencia activa para el equipo
         cur.execute("""
             SELECT COUNT(*) AS count 
             FROM incidencia 
@@ -100,21 +110,36 @@ def add_incidencia():
 
         if incidencia_existente and incidencia_existente['count'] > 0:
             flash("Este equipo ya tiene una incidencia registrada.", "warning")
+            cur.close()
             return redirect(url_for("incidencia.Incidencia"))
 
-        # 4. Asignar el estado del equipo según la incidencia
+        # 5. Asignar el estado del equipo según la incidencia
         estados_incidencia = {
             'Robo': 3,              # Siniestro
             'Perdido': 4,           # Baja
             'Dañado/Averiado': 5    # Mantención
         }
-
         nuevo_estado = estados_incidencia.get(datos['nombreIncidencia'])
+
         if nuevo_estado is None:
             flash("Tipo de incidencia inválido.", "warning")
+            cur.close()
             return redirect(url_for("incidencia.Incidencia"))
 
-        # 5. Insertar la incidencia en la base de datos
+        # 6. Actualizar el estado del equipo
+        try:
+            cur.execute("""
+                UPDATE equipo
+                SET idEstado_equipo = %s
+                WHERE idEquipo = %s
+            """, (nuevo_estado, datos['idEquipo']))
+            mysql.connection.commit()
+        except Exception as e:
+            flash("Error al actualizar el estado del equipo: " + str(e), "danger")
+            cur.close()
+            return redirect(url_for("incidencia.Incidencia"))
+
+        # 7. Insertar la incidencia en la base de datos
         try:
             cur.execute("""
                 INSERT INTO incidencia (
@@ -128,23 +153,30 @@ def add_incidencia():
             """, (
                 datos['nombreIncidencia'],
                 datos['observacionIncidencia'],
-                None,  # Ruta del archivo (no se maneja en este paso)
+                None,  # Ruta del archivo (se actualizará después)
                 datos['fechaIncidencia'],
                 datos['idEquipo'],
                 0
             ))
             mysql.connection.commit()
 
-            # 6. Actualizar el estado del equipo según la incidencia
+            # Obtener el ID generado
+            cur.execute("SELECT LAST_INSERT_ID() as idIncidencia")
+            idIncidencia = cur.fetchone()['idIncidencia']
+            datos['idIncidencia'] = idIncidencia
+
+            # Crear el PDF y obtener la ruta
+            ruta_pdf = create_pdf(datos)
+
+            # Actualizar la base de datos con la ruta del PDF
             cur.execute("""
-                UPDATE equipo
-                SET idEstado_equipo = %s
-                WHERE idEquipo = %s
-            """, (nuevo_estado, datos['idEquipo']))
+                UPDATE incidencia
+                SET rutaactaIncidencia = %s
+                WHERE idIncidencia = %s
+            """, (ruta_pdf, idIncidencia))
             mysql.connection.commit()
 
-            flash("Incidencia registrada correctamente y estado actualizado.", "success")
-            return redirect(url_for("incidencia.Incidencia"))
+            flash("Incidencia registrada y PDF generado correctamente.", "success")
 
         except IntegrityError as e:
             mensaje_error = str(e)
@@ -152,10 +184,14 @@ def add_incidencia():
                 flash("Error: La incidencia ya existe.", "warning")
             else:
                 flash("Error de integridad en la base de datos: " + mensaje_error, "danger")
-            return redirect(url_for("incidencia.Incidencia"))
         except Exception as e:
             flash("Error al crear la incidencia: " + str(e), "danger")
-            return redirect(url_for("incidencia.Incidencia"))
+
+        finally:
+            cur.close()
+
+        return redirect(url_for("incidencia.Incidencia"))
+
 
 
 
@@ -194,30 +230,51 @@ def edit_incidencia(id):
         incidencia=incidencia
         )
 
-     
 @incidencia.route("/incidencia/update_incidencia/<id>", methods=["POST"])
 @administrador_requerido
 def update_incidencia(id):
-   if "user" not in session:
+    if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
-   nombreIncidencia = request.form['nombreIncidencia'] 
-   ObservacionIncidencia = request.form['observacionIncidencia']
-   fechaIncidencia = request.form['fechaIncidencia']
+    print("AQUI COMIENZA EL UPDATE")
+    nombreIncidencia = request.form.get('nombreIncidencia', '').strip()
+    ObservacionIncidencia = request.form.get('observacionIncidencia', '').strip()
+    fechaIncidencia = request.form.get('fechaIncidencia', '').strip()
+    
+    print("ESTE ES EL ID ",id)
+    print("ESTE ES EL NOMBRE ",nombreIncidencia)
+    print("ESTA ES LA OBSERVACION ",ObservacionIncidencia)
+    print("ESTA ES LA FECHA ",fechaIncidencia)
+    # Si ObservacionIncidencia está vacío, asignar None (para almacenar NULL en la BD)
+    if not ObservacionIncidencia:
+        ObservacionIncidencia = None
 
-   
-   cur = mysql.connection.cursor()
-   cur.execute("""
+    # Asignar el estado del equipo según la incidencia
+    estados_incidencia = {
+        'Robo': 3,              # Siniestro
+        'Perdido': 4,           # Baja
+        'Dañado/Averiado': 5    # Mantención
+    }
+
+    nuevo_estado = estados_incidencia.get(nombreIncidencia)
+    if nuevo_estado is None:
+        flash("Tipo de incidencia inválido.", "warning")
+        return redirect(url_for("incidencia.Incidencia"))
+
+    cur = mysql.connection.cursor()
+    cur.execute("""
         UPDATE incidencia
         SET nombreIncidencia = %s,
             observacionIncidencia = %s,
             fechaIncidencia = %s
         WHERE idIncidencia = %s
-               """, (nombreIncidencia, ObservacionIncidencia, fechaIncidencia, id)) 
-   mysql.connection.commit()
-   flash("Incidencia actualizada correctamente")
-   return redirect(url_for("incidencia.Incidencia"))
- 
+    """, (nombreIncidencia, ObservacionIncidencia, fechaIncidencia, id)) 
+
+    mysql.connection.commit()
+    flash("Incidencia actualizada correctamente")
+    return redirect(url_for("incidencia.Incidencia"))
+
+
 ALLOWED_EXTENSIONS = {'pdf'}
 
 def allowed_file(filename):
@@ -266,139 +323,188 @@ def adjuntar_pdf(id):
     flash("se subio correctamente")
     return redirect("/incidencia/listar_pdf/" + str(obj_incidencia['idIncidencia']))
 
+
 @incidencia.route("/incidencia/listar_pdf/<idIncidencia>")
 @loguear_requerido
 def listar_pdf(idIncidencia):
-    #verificar la existencia de la carpeta incidencia
-    #try:
-    cur = mysql.connection.cursor()
-    cur.execute("""
-    SELECT idEquipo
-    FROM incidencia i
-    WHERE i.idIncidencia = %s
-                """, (idIncidencia,))
-    Incidencia = cur.fetchone()
-    print(Incidencia)
-    idEquipo = Incidencia['idEquipo']
-    cur.execute("""
-                SELECT *
-                FROM super_equipo e
-                WHERE e.idEquipo = %s
-                """, (idEquipo,))
-    data_equipo = cur.fetchone()
-    #if inLinux():
-    dir = "pdf"
-    #else:
-        #dir = "app/pdf"
-    carpeta_incidencias = os.path.join(dir, "incidencia_" + str(idIncidencia))
-    if(not os.path.exists(carpeta_incidencias)):
-        #insertar numero de documentos
-        cur = mysql.connection.cursor()
-        cur.execute("""
-            UPDATE incidencia
-            SET numDocumentos = %s
-            WHERE idIncidencia = %s
-                    """, (0 , Incidencia['idEquipo']))
-        mysql.connection.commit()
-        print("equipo")
-        print(data_equipo)
-        return render_template(
-            'Operaciones/mostrar_pdf_incidencia.html', 
-            idIncidencia=idIncidencia,
-            documentos=(), 
-            equipo=data_equipo
-            )
+    # 📂 Ruta de la carpeta donde están los PDFs de esta incidencia
+    pdf_directory = "pdf/Incidencias"
+    carpeta_incidencia = os.path.join(pdf_directory, f"incidencia_{idIncidencia}")
 
-        
-    #except:
-        #flash("ERROR")
-        #return redirect(url_for("incidencia.Incidencia"))
+    # 🔍 Verificar si la carpeta de la incidencia existe
+    if not os.path.exists(carpeta_incidencia):
+        flash("No hay documentos para esta incidencia.", "warning")
+        return redirect(url_for("incidencia.Incidencia"))
 
-    #obtener un listado de los nombres de la carpeta
-    #generar las tuplas tal que se pueda abrir en otra ventana
-    print("pdfTupla añadir documentos")
-    pdfTupla = []
-    print("antes de crear pdfTupla")
-    for fileName in os.listdir(carpeta_incidencias):
-        print(fileName)
-        #if(fileName.endswith('.pdf') or fileName.endswith('.PDF')): #¿pueden existir .pDf?, se podria arreglar con un split . y la segunda parte toLower asi siempre en minuscula
-        pdfTupla.append(fileName) 
-    print(pdfTupla)
-    pdfTupla = tuple(pdfTupla)
+    # 📄 Obtener la lista de PDFs en la carpeta
+    pdfTupla = tuple(
+        fileName for fileName in os.listdir(carpeta_incidencia)
+        if fileName.lower().endswith('.pdf')  # Filtra solo archivos PDF
+    )
 
-    #TODO:
-    #insertar numero de documentos
+    # 🔄 Actualizar el número de documentos en la base de datos
     cur = mysql.connection.cursor()
     cur.execute("""
         UPDATE incidencia
         SET numDocumentos = %s
         WHERE idIncidencia = %s
-                """, (len(pdfTupla), idIncidencia))
+    """, (len(pdfTupla), idIncidencia))
     mysql.connection.commit()
-    
+
+    # 📊 Obtener datos del equipo relacionado con la incidencia
+    cur.execute("""
+        SELECT * FROM super_equipo WHERE idEquipo = (
+            SELECT idEquipo FROM incidencia WHERE idIncidencia = %s
+        )
+    """, (idIncidencia,))
+    data_equipo = cur.fetchone()
+
     return render_template(
         'Operaciones/mostrar_pdf_incidencia.html', 
         idIncidencia=idIncidencia, 
-        documentos=pdfTupla, 
+        documentos=pdfTupla,  # Lista de PDFs encontrados
         equipo=data_equipo, 
         location='incidencia'
-        )
+    )
             
-@incidencia.route("/incidencia/mostrar_pdf/<id>/<nombrePdf>")
-@loguear_requerido
-def mostrar_pdf(id, nombrePdf):
-    try:
-        nombrePdf = nombrePdf
-        dir = 'pdf'
-        #busca la carpeta de la incidencia asociada a la id
-        carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
-        file = os.path.join(carpeta_incidencias, nombrePdf)
-        print("file")
-        print(file)
-        return send_file(file, as_attachment=False )
-    except:
-        flash("no se encontro pdf")
-        return redirect(url_for("incidencia.Incidencia"))
-#def create_pdf(Incidencia):
+@incidencia.route("/incidencia/mostrar_pdf/<id>")
+def mostrar_pdf(id):
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT rutaactaIncidencia FROM incidencia WHERE idIncidencia = %s", (id,))
+    resultado = cur.fetchone()
     
-    #class PDF(FPDF):
-        #def header(self):
-            ##logo
-            ##imageUrl = url_for('static', filename='img/logo_junji.png')
-            ##print(imageUrl)
-            #self.image('logo_junji.png', 10, 8, 25)
-            ##font
-            #self.set_font('times', 'B', 12)
-            #self.set_text_color(170,170,170)
-            ##Title
-            #self.cell(0, 30, '', border=False, ln=1, align='L')
-            #self.cell(0, 5, 'JUNTA NACIONAL', border=False, ln=1, align='L')
-            #self.cell(0, 5, 'INFANTILES', border=False, ln=1, align='L')
-            #self.cell(0, 5, 'Unidad de Inventarios', border=False, ln=1, align='L')
-            ##line break
-            #self.ln(10)
-        
-        #def footer(self):
-            #self.set_y(-30)
-            #self.set_font('times', 'B', 12)
-            #self.set_text_color(170,170,170)
-            #self.cell(0,0, "", ln=1)
-            #self.cell(0,0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-            #self.cell(0,12, "OHiggins Poniente 77 Concepción. 041-2125541", ln=1) #problema con el caracter ’
-            #self.cell(0,12, "www.junji.cl", ln=1)
-     
-    #pdf = PDF('P', 'mm', 'A4')
-    #pdf.add_page()
+    if resultado and resultado['rutaactaIncidencia']:
+        return send_file(resultado['rutaactaIncidencia'], as_attachment=False)
+    else:
+        flash("No se encontró el archivo PDF.", "warning")
+        return redirect(url_for("incidencia.Incidencia"))
 
 
-    #nombrePdf = "incidencia_" + str(Incidencia['idIncidencia']) + ".pdf"
-    #pdf.output(nombrePdf)
-    #shutil.move(nombrePdf, "app/pdf")
-    #return
+from fpdf import FPDF
+import os
 
-#@incidencia.route("/incidencia/mostrar_pdf/<id>")
-#def mostrar_pdf(id):
-    #pass
+def create_pdf(incidencia):
+    from flask import current_app
+
+    cur = mysql.connection.cursor()
+
+    # 📌 Consultar la información del equipo dentro de esta función
+    cur.execute("""
+        SELECT nombreTipo_equipo, nombreMarcaEquipo, nombreModeloequipo, Num_serieEquipo, Cod_inventarioEquipo
+        FROM super_equipo
+        WHERE idEquipo = %s
+    """, (incidencia['idEquipo'],))
+
+    equipo = cur.fetchone()
+
+    if not equipo:
+        current_app.logger.error(f"No se encontró información del equipo con ID {incidencia['idEquipo']}")
+        return None  # Evita errores si no hay equipo
+
+    class PDF(FPDF):
+        def header(self):
+            self.image('static/img/logo_junji.png', 10, 8, 25)
+            self.set_font('Arial', 'B', 12)
+            self.set_text_color(50, 50, 50)
+            self.cell(0, 10, 'JUNTA NACIONAL DE JARDINES INFANTILES', ln=True, align='C')
+            self.cell(0, 10, 'Unidad de Inventarios', ln=True, align='C')
+            self.ln(10)
+
+        def footer(self):
+            self.set_y(-30)
+            self.set_font('Arial', 'I', 10)
+            self.set_text_color(150, 150, 150)
+            self.cell(0, 10, 'Junta Nacional de Jardines Infantiles - JUNJI', ln=True, align='C')
+            self.cell(0, 10, 'OHiggins Poniente 77 Concepción - Tel: 041-2125541', ln=True, align='C')
+            self.cell(0, 10, 'www.junji.cl', ln=True, align='C')
+
+    # 📂 Crear la carpeta de la incidencia si no existe
+    pdf_directory = "pdf/Incidencias"
+    if not os.path.exists(pdf_directory):
+        os.makedirs(pdf_directory)
+
+    incidencia_folder = os.path.join(pdf_directory, f"incidencia_{incidencia['idIncidencia']}")
+    if not os.path.exists(incidencia_folder):
+        os.makedirs(incidencia_folder)
+
+    # 📄 Crear el PDF
+    pdf = PDF("P", "mm", "A4")
+    pdf.add_page()
+    pdf.set_font('Arial', '', 12)
+
+    # 📌 Título del documento
+    titulo = f"ACTA de Incidencia N° {incidencia['idIncidencia']}"
+    pdf.set_font('Arial', 'B', 16)
+    pdf.cell(0, 10, titulo, ln=True, align="C")
+    pdf.set_font('Arial', '', 12)
+    pdf.ln(10)
+
+    # 📌 Información general de la incidencia
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Información de la Incidencia:", ln=True)
+    pdf.set_font("Arial", "", 12)
+
+    pdf.cell(50, 10, "Nombre:", border=0)
+    pdf.cell(100, 10, incidencia["nombreIncidencia"], border=0, ln=True)
+
+    pdf.cell(50, 10, "Fecha:", border=0)
+    pdf.cell(100, 10, incidencia["fechaIncidencia"], border=0, ln=True)
+
+    pdf.ln(10)
+
+    # 📌 Información del equipo afectado
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Equipo Afectado:", ln=True)
+    pdf.set_font("Arial", "", 12)
+
+    pdf.cell(50, 10, "Tipo de Equipo:", border=0)
+    pdf.cell(100, 10, equipo["nombreTipo_equipo"], border=0, ln=True)
+
+    pdf.cell(50, 10, "Marca:", border=0)
+    pdf.cell(100, 10, equipo["nombreMarcaEquipo"], border=0, ln=True)
+
+    pdf.cell(50, 10, "Modelo:", border=0)
+    pdf.cell(100, 10, equipo["nombreModeloequipo"], border=0, ln=True)
+
+    pdf.cell(50, 10, "Número de Serie:", border=0)
+    pdf.cell(100, 10, equipo["Num_serieEquipo"], border=0, ln=True)
+
+    pdf.cell(50, 10, "Código de Inventario:", border=0)
+    pdf.cell(100, 10, equipo["Cod_inventarioEquipo"], border=0, ln=True)
+
+    pdf.ln(10)
+
+    # 📌 Observaciones
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Observaciones:", ln=True)
+    pdf.set_font("Arial", "", 12)
+    pdf.multi_cell(0, 10, incidencia["observacionIncidencia"])
+    pdf.ln(10)
+
+    # 📌 Sección para firmas
+    pdf.set_font("Arial", "B", 12)
+    pdf.cell(0, 10, "Firmas:", ln=True)
+    pdf.ln(15)
+
+    # 📌 Espacio para firmas
+    pdf.cell(90, 10, "Nombre del Encargado:", border=0)
+    pdf.cell(90, 10, "Nombre del Funcionario:", border=0, ln=True)
+    pdf.cell(90, 10, "_____________________________", border=0)
+    pdf.cell(90, 10, "_____________________________", border=0, ln=True)
+    pdf.ln(5)
+
+    pdf.cell(90, 10, "Firma del Encargado:", border=0)
+    pdf.cell(90, 10, "Firma del Funcionario:", border=0, ln=True)
+    pdf.cell(90, 10, "_____________________________", border=0)
+    pdf.cell(90, 10, "_____________________________", border=0, ln=True)
+
+    # 📄 Guardar el PDF en la carpeta de la incidencia
+    nombre_pdf = f"incidencia_{incidencia['idIncidencia']}.pdf"
+    ruta_pdf = os.path.join(incidencia_folder, nombre_pdf)
+    pdf.output(ruta_pdf)
+
+    return ruta_pdf
+
     
 
 @incidencia.route("/incidencia/buscar/<idIncidencia>")

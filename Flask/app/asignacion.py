@@ -694,7 +694,7 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
             self.image("static/img/logo_junji.png", 10, 8, 32)
             #font
             self.set_font('times', 'B', 12)
-            self.set_text_color(170,170,170)
+            self.set_text_color(170, 170, 170)
             #Title
             self.cell(0, 30, '', border=False, ln=1, align='L')
             self.cell(0, 5, 'JUNTA NACIONAL DE', border=False, ln=1, align='L')
@@ -704,14 +704,30 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
             self.ln(10)
 
         def footer(self):
-                self.set_y(-30)
-                self.set_font('times', 'B', 12)
-                self.set_text_color(170,170,170)
-                self.cell(0,0, "", ln=1)
-                self.cell(0,0, "Junta Nacional de Jardines Infantiles - JUNJI", ln=1)
-                self.cell(0,12, "O'Higgins Poniente 77 Concepción. Tel: 412125579", ln=1)
-                self.cell(0,12, "www.junji.cl", ln=1)
-        
+            self.set_y(-30)
+            self.set_font('times', 'B', 12)
+            self.set_text_color(170, 170, 170)
+            self.cell(0, 0, "", ln=1)
+            self.cell(0, 0, "Junta Nacional de Jardines Infantiles - JUNJI", ln=1)
+            self.cell(0, 12, "O'Higgins Poniente 77 Concepción. Tel: 412125579", ln=1)
+            self.cell(0, 12, "www.junji.cl", ln=1)
+
+    cur = mysql.connection.cursor()
+
+    # 📌 Consultar la fecha de devolución en la base de datos
+    cur.execute("""
+        SELECT fechaDevolucion
+        FROM devolucion
+        WHERE idDevolucion = %s
+    """, (id_devolucion,))
+
+    devolucion_data = cur.fetchone()
+
+    # Convertir a string para evitar errores con fpdf ademas se cambia el orden de la fecha 
+    fecha_devolucion = (
+    devolucion_data["fechaDevolucion"].strftime("%d/%m/%Y") if devolucion_data else "FECHA NO DISPONIBLE"
+    )
+    
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
     titulo = "ACTA de Devolución de Equipo Informático N°" + id_devolucion
@@ -728,7 +744,6 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
 
     nombre_funcionario = funcionario["nombre"]
     unidad_funcionario = funcionario["unidad"]
-    fecha_asignacion = funcionario["fecha_asignacion"]
 
     pdf.ln(10)
     with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
@@ -746,7 +761,7 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
         cols.ln()
         cols.write(unidad_funcionario)
         cols.ln()
-        cols.write(fecha_asignacion)
+        cols.write(fecha_devolucion)  # ✅ Ahora ya no dará error
 
     pdf.ln(20)
     TABLE_DATA = (
@@ -870,60 +885,7 @@ def buscar(idAsignacion):
         page=1, 
         lastpage=True
     )
-#@asignacion.route("/asignacion/buscar_devolucion/<idDevolucion>")
-#@loguear_requerido
-#def buscar_devolucion():
 
-    #pass
-
-@asignacion.route("/asignacion/devolver_uno/<id_equipo>")
-@administrador_requerido
-def devolver_uno(id_equipo):
-    def consulta():
-        cur = mysql.connection.cursor()
-        #encontrar la id de la asignacion del equipo
-        cur.execute("""
-        SELECT * 
-        FROM equipo_asignacion ea
-        INNER JOIN asignacion a ON ea.idAsignacion = a.idAsignacion 
-        WHERE ea.idEquipo = %s
-        AND a.ActivoAsignacion = 1
-                    """, (id_equipo,))
-        asignacion_vieja = cur.fetchone()
-        #si tiene mas de uno seguir de lo contrario redirigir a devolucion
-        #encontar todos los equipos excepto el que se devuelve
-        cur.execute("""
-        SELECT *
-        FROM equipo_asignacion ea
-        WHERE NOT ea.idEquipo = %s
-        AND ea.idAsignacion = %s
-                    """, (id_equipo, asignacion_vieja['idAsignacion']))
-        equipos = cur.fetchall()
-        return (asignacion_vieja, equipos)
-    resultados_consulta = consulta()
-    equipos = resultados_consulta[1]
-    asignacion_vieja = resultados_consulta[0]
-
-    if len(equipos) == 0:
-        return devolver(asignacion_vieja['idAsignacion'])
-    #else:
-        #flash("Este equipo forma parte de una asignacion de multiples equipos")
-        #return redirect('/equipo')
-    #extraer las ids
-    equipos_id = []
-    for equipo in equipos:
-        equipos_id.append(equipo['idEquipo'])
-
-        
-    print("asignacion vieja")
-    print(asignacion_vieja)
-    devolver(asignacion_vieja['idAsignacion'])
-    creacionAsignacion(str(date.today()), asignacion_vieja['ObservacionAsignacion'], 
-        asignacion_vieja['rutFuncionario'], equipos_id, True)
-
-
-    #cambiar redirect
-    return redirect("/equipo")
 
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>")
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>/<devolver>")
