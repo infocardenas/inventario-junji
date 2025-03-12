@@ -127,44 +127,68 @@ function mostrarAlerta(mensaje, tipo = "success") {
 }
 
 // Eliminar traslados seleccionados con alertas de Bootstrap
-document.getElementById("eliminarSeleccionados").addEventListener("click", function () {
-    let seleccionados = Array.from(document.querySelectorAll(".checkbox-table.row-checkbox.no-delete-value:checked"))
-        .map(checkbox => checkbox.value);
+document.addEventListener("DOMContentLoaded", function () {
+    // Seleccionar/Deseleccionar todos los checkboxes
+    document.getElementById("selectAll").addEventListener("change", function () {
+        let checkboxes = document.querySelectorAll(".row-checkbox");
+        checkboxes.forEach(cb => cb.checked = this.checked);
+    });
 
-    if (seleccionados.length > 0) {
-        // Mostrar confirmación dentro de la app en lugar del navegador
-        if (confirm(`¿Seguro que deseas eliminar ${seleccionados.length} traslado(s)?`)) {
-            fetch('/traslado/delete_multiple', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ traslados: seleccionados })
-            })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        mostrarAlerta("Traslados eliminados correctamente.", "success");
+    // Botón de eliminar traslados seleccionados
+    document.getElementById("eliminarSeleccionados").addEventListener("click", function () {
+        let seleccionados = Array.from(document.querySelectorAll(".row-checkbox:checked"))
+            .map(checkbox => checkbox.value);
 
-                        // Eliminar filas de la tabla dinámicamente
-                        seleccionados.forEach(id => {
-                            let row = document.querySelector(`input[value="${id}"]`).closest("tr");
-                            if (row) row.remove();
-                        });
-
-                        // Desmarcar el checkbox de "Seleccionar todo"
-                        document.getElementById("selectAll").checked = false;
-                    } else {
-                        mostrarAlerta("Error al eliminar traslados.", "danger");
-                    }
+        if (seleccionados.length > 0) {
+            if (confirm(`¿Seguro que deseas eliminar ${seleccionados.length} traslado(s)?`)) {
+                fetch('/traslado/delete_multiple', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ traslados: seleccionados })
                 })
-                .catch(error => {
-                    console.error('Error:', error);
-                    mostrarAlerta("Ocurrió un error inesperado.", "danger");
-                });
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            mostrarAlerta("Traslados eliminados correctamente.", "success");
+
+                            // Eliminar filas de la tabla
+                            seleccionados.forEach(id => {
+                                let row = document.querySelector(`input[value="${id}"]`).closest("tr");
+                                if (row) row.remove();
+                            });
+
+                            // Desmarcar el checkbox de "Seleccionar todo"
+                            document.getElementById("selectAll").checked = false;
+                        } else {
+                            mostrarAlerta("Error al eliminar traslados.", "danger");
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        mostrarAlerta("Ocurrió un error inesperado.", "danger");
+                    });
+            }
+        } else {
+            mostrarAlerta("No has seleccionado ningún traslado.", "warning");
         }
-    } else {
-        mostrarAlerta("No has seleccionado ningún traslado.", "warning");
-    }
+    });
 });
+
+// Función para mostrar alertas dinámicas
+function mostrarAlerta(mensaje, tipo) {
+    let alertContainer = document.getElementById("alertContainer");
+    alertContainer.innerHTML = `<div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+                                    ${mensaje}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>`;
+    alertContainer.classList.remove("d-none");
+
+    setTimeout(() => {
+        alertContainer.classList.add("d-none");
+        alertContainer.innerHTML = "";
+    }, 4000);
+}
+
 
 // Función para formatear la fecha en el formato deseado
 function formatearFecha(fechaISO) {
