@@ -272,3 +272,22 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll("#myTableBody tr").forEach(row => {
+        row.addEventListener("click", function (event) {
+            // Evitar que el clic en el checkbox o botones de acción active/desactive el checkbox
+            if (event.target.tagName === "INPUT" || event.target.tagName === "BUTTON" || event.target.tagName === "I") {
+                return;
+            }
+
+            // Encontramos el checkbox dentro de la fila
+            let checkbox = row.querySelector(".row-checkbox");
+
+            if (checkbox) {
+                // Alternar el estado del checkbox
+                checkbox.checked = !checkbox.checked;
+            }
+        });
+    });
+});

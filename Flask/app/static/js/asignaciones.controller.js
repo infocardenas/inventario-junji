@@ -60,12 +60,12 @@ document.addEventListener("DOMContentLoaded", () => {
         let idEquipoAsignacion = checkbox.value;
         let row = document.getElementById(`row-${idEquipoAsignacion}`);
 
-        // Si el equipo ya fue devuelto, deshabilitar el checkbox y marcarlo como devuelto
+        /* Si el equipo ya fue devuelto, deshabilitar el checkbox y marcarlo como devuelto
         if (checkbox.dataset.devuelto === "true") {
             checkbox.disabled = true;
             row.classList.add("equipo-devuelto"); // Clase visual para diferenciar equipos devueltos
         }
-
+        */
         // Agregar evento para actualizar el estado del botón cuando cambia la selección
         checkbox.addEventListener("change", actualizarEstadoBotonDevolver);
     });

@@ -41,7 +41,7 @@
                 <!-- Encabezado de la tabla -->
                 <thead>
                     <tr>
-                        <td></td>
+                        <th class="checkbox-column" onclick="toggleSelectAll()">Todo</th>
                         <th onclick="sortTable(1, this)">ID</th>
                         <th onclick="sortTable(2, this)">Funcionario</th>
                         <th onclick="sortTable(3, this)">Tipo de equipo</th>
@@ -55,7 +55,7 @@
                     {% if asignacion %}
                         {% for asig in asignacion %}
                         <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row">
-                            <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value" value="{{ asig.idEquipoAsignacion }}" data-id-devolucion="{{ asig.idDevolucion if asig.idDevolucion else '' }}" data-id-asignacion="{{ asig.idAsignacion if asig.idAsignacion else '' }}" {% if asig.fechaDevolucion %} data-devuelto="true" disabled {% else %} data-devuelto="false" {% endif %}></td>
+                            <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value" value="{{ asig.idEquipoAsignacion }}" data-id-devolucion="{{ asig.idDevolucion if asig.idDevolucion else '' }}" data-id-asignacion="{{ asig.idAsignacion if asig.idAsignacion else '' }}" {% if asig.fechaDevolucion %} data-devuelto="true" {% else %} data-devuelto="false" {% endif %}></td>
                             <td class="toCheck">{{ asig.idAsignacion }}</td>
                             <td class="toCheck">{{ asig.nombreFuncionario }}</td>
                             <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
