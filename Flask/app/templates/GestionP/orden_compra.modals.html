@@ -1,56 +1,69 @@
 <!-- Modal para agregar nueva orden -->
-<div class="modal fade" id="addOrdenCompraModal" tabindex="-1" aria-labelledby="addOrdenCompraModalLabel"
-    aria-hidden="true">
+<div class="modal fade" id="addOrdenCompraModal" tabindex="-1" aria-labelledby="addOrdenCompraModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addOrdenCompraModalLabel">Agregar Orden de Compra</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="addOrdenCompraForm" action="/add_ordenc" method="POST">
+            <form id="addOrdenCompraForm" action="/add_ordenc" method="POST" class="needs-validation" novalidate>
                 <div class="modal-body">
-                    <!-- Campos del formulario -->
+                    <!-- ID Orden: Solo números -->
                     <div class="mb-3">
                         <label for="id_ordenc" class="form-label">ID Orden</label>
-                        <input class="form-control" type="text" id="id_ordenc" name="id_ordenc"
-                            placeholder="Serie orden de compra" required>
+                        <input type="text" class="form-control" id="id_ordenc" name="id_ordenc"
+                            placeholder="Serie orden de compra" required pattern="^[0-9]+$" maxlength="10">
+                        <div class="invalid-feedback">Solo se permiten números (máx. 10).</div>
                     </div>
+
+                    <!-- Nombre de Orden: Sin caracteres especiales -->
                     <div class="mb-3">
                         <label for="nombre_ordenc">Nombre de Orden:</label>
-                        <input class="form-control" type="text" name="nombre_ordenc"
-                            placeholder="Nombre orden de compra" maxlength="45" required>
+                        <input type="text" class="form-control" name="nombre_ordenc" id="nombre_ordenc"
+                            placeholder="Nombre orden de compra" maxlength="45" required
+                            pattern="^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$">
+                        <div class="invalid-feedback">No se permiten caracteres especiales.</div>
                     </div>
+
+                    <!-- Nombre de Proveedor -->
                     <div class="mb-3">
                         <label for="nombre_proveedor_ordenc">Nombre de Proveedor:</label>
-                        <select name="nombre_proveedor_ordenc" class="form-control" required>
+                        <select name="nombre_proveedor_ordenc" class="form-select" required>
                             <option value="">Elija el proveedor</option>
                             {% for pro in proveedor %}
                             <option value="{{ pro.idProveedor }}">{{ pro.nombreProveedor }}</option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">Debe seleccionar un proveedor.</div>
                     </div>
+
+                    <!-- Tipo de Adquisición -->
                     <div class="mb-3">
                         <label for="nombre_tipo_adquisicion_ordenc">Tipo de adquisición:</label>
-                        <!-- Le agregamos un ID para manejar el JS más fácil -->
-                        <select name="nombre_tipo_adquisicion_ordenc" id="tipoAdquisicionSelect" class="form-control"
-                            required>
+                        <select name="nombre_tipo_adquisicion_ordenc" class="form-select" required>
                             <option value="">Elija el tipo de adquisición</option>
                             {% for tip in tipo_adquisicion %}
                             <option value="{{ tip.idTipo_adquisicion }}">{{ tip.nombre_tipo_adquisicion }}</option>
                             {% endfor %}
                         </select>
+                        <div class="invalid-feedback">Debe seleccionar un tipo de adquisición.</div>
                     </div>
+
+                    <!-- Fecha de Compra -->
                     <div class="mb-3">
                         <label for="fecha_compra_ordenc">Fecha de Orden de Compra:</label>
-                        <input class="form-control" type="date" name="fecha_compra_ordenc" id="fecha_compra_ordenc"
-                            required>
+                        <input type="date" class="form-control" name="fecha_compra_ordenc" id="fecha_compra_ordenc" required>
+                        <div class="invalid-feedback">Seleccione una fecha válida.</div>
                     </div>
-                    <!-- El contenedor de la fecha final -->
-                    <div class="mb-3" id="fechaFinContainer">
+
+                    <!-- Fecha Final de Orden de Compra -->
+                    <div class="mb-3">
                         <label for="fecha_fin_ordenc">Fecha Final de Orden de Compra:</label>
-                        <input class="form-control" type="date" name="fecha_fin_ordenc" id="fecha_fin_ordenc" required>
+                        <input type="date" class="form-control" name="fecha_fin_ordenc" id="fecha_fin_ordenc" required>
+                        <div class="invalid-feedback">Seleccione una fecha final válida.</div>
                     </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
@@ -59,6 +72,7 @@
         </div>
     </div>
 </div>
+
 
 <!--    Modal para editar orden de compra-->
 <div class="modal fade" id="editOrdenCompraModal" tabindex="-1" aria-labelledby="editOrdenCompraModalLabel" aria-hidden="true">
