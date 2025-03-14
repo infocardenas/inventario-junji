@@ -934,9 +934,9 @@ def mostrar_pdf_devolucion_fimarmado(id, nombreArchivo):
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
 
-@asignacion.route("/asignacion/mostrar_pdf/<id>/<nombreArchivo>")
+@asignacion.route("/asignacion/mostrar_pdf/<id>/")
 @loguear_requerido
-def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
+def mostrar_pdf_asignacion_fimarmado(id):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
@@ -944,7 +944,7 @@ def mostrar_pdf_asignacion_fimarmado(id, nombreArchivo):
         nombrePdf = "asignacion_" + str(id) + "_firmado.pdf"
         dir =  'pdf'
         file = os.path.join(dir, nombrePdf)
-        return send_file(file, as_attachment=True)
+        return send_file(file, as_attachment=False)
     except:
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
