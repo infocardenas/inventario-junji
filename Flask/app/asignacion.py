@@ -518,9 +518,14 @@ def crear_pdf_asignacion(funcionario, equipos):
             cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
+    #*(path cambiado y creacion de carpeta asignaciones)
+    ruta_asignaciones = "pdf/asignaciones"
+    # Asegurar que la carpeta "pdf/asignaciones" exista
+    os.makedirs(ruta_asignaciones, exist_ok=True)
     nombrePdf = "asignacion_" + funcionario["id_asignacion"] + ".pdf"
     pdf.output(nombrePdf)
-    shutil.move(nombrePdf, "pdf/" + nombrePdf)
+    shutil.move(nombrePdf, os.path.join(ruta_asignaciones, nombrePdf))
+    #******
     #try:
     #funcion para enviar un correo a un funcionario (se envia el acta)
         #enviar_correo(nombrePdf, 'correo')
@@ -534,7 +539,7 @@ def crear_pdf_asignacion(funcionario, equipos):
 def descargar_pdf_asignacion(id):
     try:
         nombrePDF = "asignacion_" + str(id) + ".pdf"
-        file = os.path.join("pdf", nombrePDF)
+        file = os.path.join("pdf/asignaciones", nombrePDF)#******
         return send_file(file, as_attachment=False)
     except:
         flash("Error: No se encontró el PDF", "danger")
@@ -830,17 +835,21 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
             cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
-    creado_por = "documento creado por: " + session['user']
+    creado_por = "documento creado por: " + session['user']#! codigo basura????
+    #* Definir la ruta donde se almacenarán los PDFs de devoluciones
+    ruta_devoluciones = "pdf/devoluciones"
+    # Asegurar que la carpeta "pdf/devoluciones" exista
+    os.makedirs(ruta_devoluciones, exist_ok=True)
     nombrePdf = "devolucion_" + id_devolucion + ".pdf"
     pdf.output(nombrePdf)
-    shutil.move(nombrePdf, "pdf/" + nombrePdf)
+    shutil.move(nombrePdf, os.path.join(ruta_devoluciones, nombrePdf))
 
 @asignacion.route("/asignacion/descargar_pdf_devolucion/<id>")
 @loguear_requerido
 def descargar_pdf_devolucion(id):
     try:
         nombrePDF = "devolucion_" + str(id) + ".pdf"
-        file = os.path.join("pdf", nombrePDF)
+        file = os.path.join("pdf/devoluciones", nombrePDF)
         return send_file(file, as_attachment=False)
     except:
         flash("Error: No se encontró el PDF", "danger")
@@ -918,88 +927,105 @@ def listar_pdf(idAsignacion, devolver="None"):
 
 
 
-
-@asignacion.route("/devolucion/mostrar_pdf/<id>/<nombreArchivo>")
+#**APARTADO DE FIRMAS****
+@asignacion.route("/devolucion/mostrar_pdf/<id>/")
 @loguear_requerido
-def mostrar_pdf_devolucion_fimarmado(id, nombreArchivo):
+def mostrar_pdf_devolucion_firmado(id):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
     try:
-        nombrePdf = "devolucion_" + str(id) + "_firmado.pdf"
-        dir = 'pdf' 
-        file = os.path.join(dir, nombrePdf)
-        return send_file(file, as_attachment=True)
+        nombrePDF = "devolucion_" + str(id) + "_firmado.pdf"
+        file = os.path.join("pdf/firmas_devoluciones", nombrePDF)
+        return send_file(file, as_attachment=False)
     except:
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
 
 @asignacion.route("/asignacion/mostrar_pdf/<id>/")
 @loguear_requerido
-def mostrar_pdf_asignacion_fimarmado(id):
+def mostrar_pdf_asignacion_firmado(id):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
     try:
-        nombrePdf = "asignacion_" + str(id) + "_firmado.pdf"
-        dir =  'pdf'
-        file = os.path.join(dir, nombrePdf)
+        nombrePDF = "asignacion_" + str(id) + "_firmado.pdf"
+        file = os.path.join("pdf/firmas_asignaciones", nombrePDF)
         return send_file(file, as_attachment=False)
     except:
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
+#*************************
 
 @asignacion.route("/asignacion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
 @administrador_requerido
 def adjuntar_pdf_asignacion(idAsignacion):
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("You are NOT authorized")
         return redirect("/ingresar")
-    #TODO: revisar que sea pdf
-    file = request.files["file"]
-    #subir archivo
-    if inLinux:
-        dir = 'pdf'
-    else:
-        dir = 'app/pdf' #TODO cuando la ruta relativa es app/pdf y cuando es pdf?
-    filenameToDelete = "asignacion_" + str(idAsignacion) + "_firmado.pdf"
-    filenameToDelete = secure_filename(filenameToDelete)
-    if os.path.exists(os.path.join(dir, filenameToDelete)):
-        os.remove(os.path.join(dir, filenameToDelete))
-    #renombrar archivo
-    filename = file.filename
-    sfilename = secure_filename(filename)
-    file.save(os.path.join(
-        dir, secure_filename(sfilename)
-    ))
 
-    os.rename(os.path.join(dir, sfilename), 
-              os.path.join(dir, "asignacion_" + str(idAsignacion) + "_firmado.pdf"))
-    flash("Se subio la firma correctamente")
-    return redirect("/asignacion/listar_pdf/" + str(idAsignacion))
+    # Obtener el archivo
+    file = request.files["file"]
+
+    # Definir la carpeta donde se guardará el archivo
+    dir = "pdf/firmas_asignaciones" if inLinux else "app/pdf/firmas_asignaciones"
+
+    # Crear la carpeta si no existe
+    os.makedirs(dir, exist_ok=True)
+
+    # Nombre del archivo que debe eliminarse si ya existe
+    filenameToDelete = f"asignacion_{idAsignacion}_firmado.pdf"
+    filenameToDelete = secure_filename(filenameToDelete)
+
+    # Verificar si el archivo ya existe y eliminarlo
+    file_path = os.path.join(dir, filenameToDelete)
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    # Guardar el nuevo archivo con un nombre seguro
+    sfilename = secure_filename(file.filename)
+    temp_file_path = os.path.join(dir, sfilename)
+    file.save(temp_file_path)
+
+    # Renombrar el archivo al formato correcto
+    new_file_path = os.path.join(dir, f"asignacion_{idAsignacion}_firmado.pdf")
+    os.rename(temp_file_path, new_file_path)
+
+    flash("Se subió la firma correctamente")
+    return redirect(f"/asignacion/listar_pdf/{idAsignacion}")
+
 
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
 @administrador_requerido
 def adjuntar_pdf_devolucion(idAsignacion):
-    #TODO: revisar que sea pdf
-    #si existe eliminar
-    dir = 'pdf'
-    filenameToDelete = "devolucion_" + str(idAsignacion) + "_firmado.pdf"
-    if os.path.exists(os.path.join(dir, filenameToDelete)):
-        os.remove(os.path.join(dir, filenameToDelete))
+    # Definir la carpeta donde se guardará el archivo
+    dir = "pdf/firmas_devoluciones"
+
+    # Crear la carpeta si no existe
+    os.makedirs(dir, exist_ok=True)
+
+    # Nombre del archivo que debe eliminarse si ya existe
+    filenameToDelete = f"devolucion_{idAsignacion}_firmado.pdf"
+    file_path = os.path.join(dir, filenameToDelete)
+
+    # Verificar si el archivo ya existe y eliminarlo
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    # Obtener el archivo desde la solicitud
     file = request.files["file"]
-    #subir archivo
-    #renombrar archivo
-    filename = file.filename
-    sfilename = secure_filename(filename)
-    file.save(os.path.join(
-        dir, secure_filename(sfilename)
-    ))
-    os.rename(os.path.join(dir, sfilename), 
-              os.path.join(dir, "devolucion_" + str(idAsignacion) + 
-                           "_firmado.pdf"))
-    return redirect("/asignacion/listar_pdf/" + str(idAsignacion) + 
-                    "/devolver")
+
+    # Guardar el archivo con un nombre seguro
+    sfilename = secure_filename(file.filename)
+    temp_file_path = os.path.join(dir, sfilename)
+    file.save(temp_file_path)
+
+    # Renombrar el archivo al formato correcto
+    new_file_path = os.path.join(dir, f"devolucion_{idAsignacion}_firmado.pdf")
+    os.rename(temp_file_path, new_file_path)
+
+    return redirect(f"/asignacion/listar_pdf/{idAsignacion}/devolver")
+
 #/asignacion/listar_pdf/<idAsignacion>/<devolver>
 
 #junji
