@@ -86,10 +86,11 @@
                             <th class="checkbox-column" onclick="toggleSelectAll()">Todo</th>
                             <th onclick="sortTable(1,this)" class="sortable-column">C. Inv</th>
                             <th onclick="sortTable(2,this)" class="sortable-column">N° Serie</th>
-                            <th onclick="sortTable(3,this)" class="sortable-column">Funcionario</th>
-                            <th onclick="sortTable(4,this)" class="sortable-column">C. Prov</th>
-                            <th onclick="sortTable(5,this)" class="sortable-column">Unidad</th>
-                            <th onclick="sortTable(6,this)" class="sortable-column">Tipo equipo</th>
+                            <th onclick="sortTable(3,this)" class="sortable-column">Estado equipo</th>
+                            <th onclick="sortTable(4,this)" class="sortable-column">Funcionario</th>
+                            <th onclick="sortTable(5,this)" class="sortable-column">C. Prov</th>
+                            <th onclick="sortTable(6,this)" class="sortable-column">Unidad</th>
+                            <th onclick="sortTable(7,this)" class="sortable-column">Tipo equipo</th>
                             <th onclick="sortTable(7,this)" class="sortable-column">Modelo</th>
                             <th>Acciones</th>
                         </tr>
@@ -103,16 +104,19 @@
                             </td>
                             <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
                             <td class="toCheck">{{equi.Num_serieEquipo}}</td>
-                            {% if equi.nombreFuncionario == '' %}
-                            <td class="toCheck">{{equi.nombreEstado_equipo}}</td>
-                            {% else %}
-                            <td class="toCheck">{{equi.nombreFuncionario}}</td>
-                            {% endif %}
+
+                            <td class="toCheck">
+                                {{ equi.nombreIncidencia if equi.nombreIncidencia else equi.nombreEstado_equipo }}
+                            </td>
+
+                            <td class="toCheck">{{equi.nombreFuncionario if equi.nombreFuncionario else '-'}}</td>
+
                             <td class="toCheck">{{equi.codigoproveedor_equipo if equi.codigoproveedor_equipo else '-'}}
                             </td>
                             <td class="toCheck">{{equi.nombreUnidad}}</td>
                             <td class="toCheck">{{equi.nombreTipo_equipo}}</td>
                             <td class="toCheck">{{equi.nombreModeloequipo}}</td>
+
                             <td>
                                 <a href="/equipo_detalles/{{equi.idEquipo}}" class="btn button-info"><i
                                         class="bi bi-eye-fill"></i>
