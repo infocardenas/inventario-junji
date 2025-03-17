@@ -1,0 +1,74 @@
+<!-- Modal para agregar marca -->
+<div class="modal fade" id="modal-add-unidad" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar Unidad</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Contenido -->
+            <div class="modal-body">
+                <form action="/add_Unidad" id="form-add-unidad" method="POST">
+                    <div class="mb-3">
+                        <label for="codigo_unidad" class="form-label">Código de la unidad<span
+                                style="color: red; margin-left: 5px">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio validar-numero" name="codigo_unidad"
+                            placeholder="Código">
+                        <div class="text-error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombreUnidad" class="form-label">Nombre de la unidad<span
+                                style="color: red; margin-left: 5px">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio validar-letras" name="nombreUnidad"
+                            placeholder="Nombre unidad">
+                        <div class="text-error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="contactoUnidad" class="form-label">Contacto<span
+                                style="color: red; margin-left: 5px">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio solo-numeros" name="contactoUnidad"
+                            placeholder="Contacto">
+                        <div class="text-error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="direccionUnidad" class="form-label">Dirección<span
+                                style="color: red; margin-left: 5px">*</span></label>
+                        <input type="text" class="form-control campo-obligatorio" name="direccionUnidad"
+                            placeholder="Dirección">
+                        <div class="text-error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombreComuna" class="form-label">Comuna<span
+                                style="color: red; margin-left: 5px">*</span>
+                            <select class="form-select" aria-label="nombreComuna" name="idComuna">
+                                <option selected>Seleccione la comuna</option>
+                                {% for comuna in comuna %}
+                                <option value="{{ comuna.idComuna  }}">
+                                    {{ comuna.nombreComuna}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="nombreModalidad" class="form-label">Modalidad<span
+                                style="color: red; margin-left: 5px">*</span>
+                            <select class="form-select" aria-label="nombreModalidad" name="idModalidad" required>
+                                <option value="">Seleccione la modalidad</option>
+                                {% for modalidad in Modalidades %}
+                                <option value="{{ modalidad.idModalidad  }}">
+                                    {{ modalidad.nombreModalidad}}
+                                </option>
+                                {% endfor %}
+                            </select>
+                    </div>
+                </form>
+            </div>
+            <!-- Footer de botones -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" form="form-add-unidad" class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
