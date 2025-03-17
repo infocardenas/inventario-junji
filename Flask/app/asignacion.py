@@ -912,10 +912,10 @@ def listar_pdf(idAsignacion, devolver="None"):
         #print(nombreFirmado)
         location = "devolucion"
     #revisa si el archivo esta firmado
-    if not os.path.exists(os.path.join(dir, nombreFirmado)):
+    if not os.path.exists(os.path.join("pdf/firmas_asignaciones", nombreFirmado)) and not os.path.exists(os.path.join("pdf/firmas_devoluciones", nombreFirmado)):
         #mostrar
         #print("#####NombreFirmado = None #######")
-        nombreFirmado = "None"
+        nombreFirmado = "No existen firmas para este documento"
     #print("exists")
     return render_template(
         'GestionR.H/firma.html', 
