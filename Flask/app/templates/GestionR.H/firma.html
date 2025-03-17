@@ -31,7 +31,11 @@
         {{ subirArchivo(location, id) }}
     </div>
     <br />
-        <h2>Documento de Traslado</h2>
+        {% if location == 'asignacion' %}
+            <h2>Firmas de Asignaciones</h2>
+        {% else %}
+            <h2>Firmas de Devoluciones</h2>
+        {% endif %}
         {{tablaDocumentos(id, (nombreFirmado,), location)}}
 
 {% endblock %}
