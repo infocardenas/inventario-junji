@@ -126,10 +126,6 @@ function mostrarAlerta(mensaje, tipo = "success") {
     }, 5000);
 }
 
-<<<<<<< HEAD
-// Eliminar traslados seleccionados con alertas de Bootstrap
-=======
->>>>>>> isaac
 document.addEventListener("DOMContentLoaded", function () {
     // Seleccionar/Deseleccionar todos los checkboxes
     document.getElementById("selectAll").addEventListener("change", function () {
