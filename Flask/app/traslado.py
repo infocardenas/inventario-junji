@@ -665,26 +665,44 @@ def listar_pdf(idTraslado, devolver="None"):
 
 
 
-@traslado.route("/traslado/mostrar_pdf/<idTraslado>/")
-@administrador_requerido
-def mostrar_pdf_traslado(idTraslado):
+@traslado.route("/traslado/mostrar_pdf/<id>/")
+@loguear_requerido
+def mostrar_pdf_traslado_firmado(id):
     if "user" not in session:
-        flash("You are NOT authorized")
+        flash("Se necesita ingresar para acceder a esta ruta")
         return redirect("/ingresar")
     
     try:
-        # Nombre del archivo PDF a mostrar
-        nombrePDF = f"traslado_{idTraslado}_firmado.pdf"
+        # Definir el nombre del archivo PDF basado en el ID
+        nombrePDF = "traslado_" + str(id) + "_firmado.pdf"
         file_path = os.path.join("pdf/firmas_traslados", nombrePDF)
+
+        # Verificar si el archivo existe antes de enviarlo
+        if not os.path.exists(file_path):
+            flash("No se encontró el archivo PDF solicitado.")
+            return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige a la página de traslados
+
+        # Si el archivo existe, enviarlo para su visualización
         return send_file(file_path, as_attachment=False)
+
     except FileNotFoundError:
-        flash("No se encontró el PDF")
-        return redirect(url_for('traslado'))
+        flash("El archivo PDF no se encuentra en el servidor.")
+        return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige en caso de error con el archivo
+
+    except Exception as e:
+        # Captura cualquier otra excepción y muestra un mensaje genérico
+        flash(f"Error al intentar mostrar el archivo: {str(e)}")
+        return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige en caso de cualquier otro error
+
+    
 
 # Ruta para subir un archivo PDF relacionado con el traslado
 @traslado.route("/traslado/adjuntar_pdf/<idTraslado>", methods=["POST"])
 @administrador_requerido
 def adjuntar_pdf_traslado(idTraslado):
+    if "user" not in session:
+        flash("You are NOT authorized")
+        return redirect("/ingresar")
     # Definir la carpeta donde se guardará el archivo
     dir = "pdf/firmas_traslados"
 
@@ -716,9 +734,6 @@ def adjuntar_pdf_traslado(idTraslado):
 
     os.rename(temp_file_path, new_file_path)
 
-        # Renombrar el archivo al formato correcto
-    new_file_path = os.path.join(dir, f"devolucion_{idTraslado}_firmado.pdf")
-    os.rename(temp_file_path, new_file_path)
 
     # Redirigir a la lista de PDFs del traslado
     return redirect(f"/traslado/listar_pdf/{idTraslado}")

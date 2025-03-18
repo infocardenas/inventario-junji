@@ -954,6 +954,7 @@ def mostrar_pdf_asignacion_firmado(id):
     except:
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
+    
 #*************************
 
 @asignacion.route("/asignacion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
