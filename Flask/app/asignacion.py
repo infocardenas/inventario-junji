@@ -925,9 +925,8 @@ def listar_pdf(idAsignacion, devolver="None"):
         )
 
 
+#**APARTADO DE FIRMAS**** 
 
-
-#**APARTADO DE FIRMAS****
 @asignacion.route("/devolucion/mostrar_pdf/<id>/")
 @loguear_requerido
 def mostrar_pdf_devolucion_firmado(id):
@@ -1025,6 +1024,8 @@ def adjuntar_pdf_devolucion(idAsignacion):
     os.rename(temp_file_path, new_file_path)
 
     return redirect(f"/asignacion/listar_pdf/{idAsignacion}/devolver")
+
+
 
 #/asignacion/listar_pdf/<idAsignacion>/<devolver>
 

@@ -18,10 +18,13 @@
             </div>
             {% endif %}
 
-            <!-- Botón agregar traslado -->
+            <!-- Botón agregar traslado y firmar traslado -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#trasladoModal">
                     <i class="bi bi-plus-lg"></i> Agregar Traslado
+                </button>
+                <button class="btn btn-success shadow-sm" id="firmarTraslado">
+                    <i class="bi bi-pencil"></i> Firmar Traslado
                 </button>
                 <button class="btn btn-danger shadow-sm" id="eliminarSeleccionados">
                     <i class="bi bi-trash"></i> Eliminar Seleccionados
@@ -81,5 +84,22 @@
 </script>
 
 <script src="{{ url_for('static', filename='js/Operaciones/Traslado.js') }}"></script>
+
+<script>
+document.getElementById("firmarTraslado").addEventListener("click", function() {
+    let seleccionados = document.querySelectorAll(".row-checkbox:checked");
+    let ids = Array.from(seleccionados).map(cb => cb.value);
+    
+    if (ids.length === 0) {
+        alert("Selecciona al menos un traslado para firmar.");
+        return;
+    }
+    
+    // Redirigir a la página de firma con los IDs de los traslados seleccionados asignacion/listar_pdf/19
+    let url = `/traslado/listar_pdf/${ids}`;
+    window.location.href = url;
+});
+
+</script>º
 
 {% endblock %}
