@@ -67,11 +67,12 @@ def incidencia_form(idEquipo):
         equipo=equipo
         )
 
+# Ruta para agregar una incidencia
 @incidencia.route("/incidencia/add_incidencia", methods=['POST'])
 @administrador_requerido
 def add_incidencia():
     if request.method == "POST":
-        # 1. Recepción de datos
+        # 1. Recepción de datos del formulario
         datos = {
             'nombreIncidencia': request.form['nombreIncidencia'],
             'observacionIncidencia': request.form['observacionIncidencia'],
@@ -79,7 +80,7 @@ def add_incidencia():
             'idEquipo': request.form['idEquipo']
         }
 
-        # 2. Validar si el ID del equipo está vacío o es inválido
+        # 2. Validar que el ID del equipo sea válido
         if not datos['idEquipo']:
             flash("Error: No se seleccionó un equipo.", "warning")
             return redirect(url_for("equipo.Equipo"))
@@ -100,12 +101,24 @@ def add_incidencia():
             cur.close()
             return redirect(url_for("equipo.Equipo"))
 
-        # 4. Verificar si ya existe una incidencia activa para el equipo
+        # 4. Verificar si hay un funcionario asignado al equipo
         cur.execute("""
-            SELECT COUNT(*) AS count 
-            FROM incidencia 
-            WHERE idEquipo = %s
+            SELECT f.rutFuncionario, f.nombreFuncionario
+            FROM equipo_asignacion ea
+            JOIN asignacion a ON ea.idAsignacion = a.idAsignacion
+            JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+            WHERE ea.idEquipo = %s AND a.ActivoAsignacion = 1
         """, (datos['idEquipo'],))
+
+        funcionario_asignado = cur.fetchone()
+
+        if not funcionario_asignado:
+            flash("Error: No hay un funcionario asignado a este equipo.", "warning")
+            cur.close()
+            return redirect(url_for("incidencia.Incidencia"))
+
+        # 5. Verificar si ya existe una incidencia activa para el equipo
+        cur.execute("SELECT COUNT(*) AS count FROM incidencia WHERE idEquipo = %s", (datos['idEquipo'],))
         incidencia_existente = cur.fetchone()
 
         if incidencia_existente and incidencia_existente['count'] > 0:
@@ -113,14 +126,11 @@ def add_incidencia():
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
 
-        # 5. Asignar el estado del equipo según la incidencia
+        # 6. Determinar el nuevo estado del equipo
         estados_incidencia = {
-            'Robo': 3,              # Siniestro
-            'Perdido': 4,           # Baja
-            'Siniestro': 5,
-            'Reparado': 6,
-            'Cambiado': 7,
-            'Dañado/Averiado': 8    
+            'Robo': 3,             # Siniestro
+            'Perdido': 4,          # Baja
+            'Dañado/Averiado': 5   # Dañado
         }
         nuevo_estado = estados_incidencia.get(datos['nombreIncidencia'])
 
@@ -129,7 +139,7 @@ def add_incidencia():
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
 
-        # 6. Actualizar el estado del equipo
+        # 7. Actualizar el estado del equipo
         try:
             cur.execute("""
                 UPDATE equipo
@@ -142,7 +152,7 @@ def add_incidencia():
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
 
-        # 7. Insertar la incidencia en la base de datos
+        # 8. Insertar la incidencia en la base de datos
         try:
             cur.execute("""
                 INSERT INTO incidencia (
@@ -163,7 +173,7 @@ def add_incidencia():
             ))
             mysql.connection.commit()
 
-            # Obtener el ID generado
+            # Obtener el ID de la incidencia recién creada
             cur.execute("SELECT LAST_INSERT_ID() as idIncidencia")
             idIncidencia = cur.fetchone()['idIncidencia']
             datos['idIncidencia'] = idIncidencia
@@ -171,7 +181,7 @@ def add_incidencia():
             # Crear el PDF y obtener la ruta
             ruta_pdf = create_pdf(datos)
 
-            # Actualizar la base de datos con la ruta del PDF
+            # Actualizar la incidencia con la ruta del PDF
             cur.execute("""
                 UPDATE incidencia
                 SET rutaactaIncidencia = %s
@@ -194,8 +204,6 @@ def add_incidencia():
             cur.close()
 
         return redirect(url_for("incidencia.Incidencia"))
-
-
 
 
         
