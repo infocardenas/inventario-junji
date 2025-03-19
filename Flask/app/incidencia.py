@@ -117,7 +117,10 @@ def add_incidencia():
         estados_incidencia = {
             'Robo': 3,              # Siniestro
             'Perdido': 4,           # Baja
-            'Dañado/Averiado': 5    # Mantención
+            'Siniestro': 5,
+            'Reparado': 6,
+            'Cambiado': 7,
+            'Dañado/Averiado': 8    
         }
         nuevo_estado = estados_incidencia.get(datos['nombreIncidencia'])
 
@@ -253,7 +256,10 @@ def update_incidencia(id):
     estados_incidencia = {
         'Robo': 3,              # Siniestro
         'Perdido': 4,           # Baja
-        'Dañado/Averiado': 5    # Mantención
+        'Siniestro': 5,
+        'Reparado': 6,
+        'Cambiado': 7,
+        'Dañado/Averiado': 8      
     }
 
     nuevo_estado = estados_incidencia.get(nombreIncidencia)
@@ -379,9 +385,6 @@ def mostrar_pdf(id):
         flash("No se encontró el archivo PDF.", "warning")
         return redirect(url_for("incidencia.Incidencia"))
 
-
-from fpdf import FPDF
-import os
 
 def create_pdf(incidencia):
     from flask import current_app
