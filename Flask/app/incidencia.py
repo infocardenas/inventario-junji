@@ -103,7 +103,7 @@ def add_incidencia():
 
         # 4. Verificar si hay un funcionario asignado al equipo
         cur.execute("""
-            SELECT f.rutFuncionario, f.nombreFuncionario
+            SELECT f.rutFuncionario, f.nombreFuncionario, ea.idEquipo
             FROM equipo_asignacion ea
             JOIN asignacion a ON ea.idAsignacion = a.idAsignacion
             JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
@@ -111,6 +111,7 @@ def add_incidencia():
         """, (datos['idEquipo'],))
 
         funcionario_asignado = cur.fetchone()
+        print("Funcionario asignado:", funcionario_asignado)
 
         if not funcionario_asignado:
             flash("Error: No hay un funcionario asignado a este equipo.", "warning")
@@ -205,8 +206,6 @@ def add_incidencia():
 
         return redirect(url_for("incidencia.Incidencia"))
 
-
-        
         
 @incidencia.route("/incidencia/delete_incidencia/<id>",  methods=["GET", "POST"])
 @administrador_requerido
