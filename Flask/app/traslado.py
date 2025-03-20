@@ -589,7 +589,7 @@ def mostrar_pdf(id, firmado="0"):
 
     if not os.path.exists(dir_pdf):
         flash(f"El archivo PDF {nombrePdf} no se encuentra disponible.")
-        return redirect("/traslado")  # Redirige a la página principal en vez de caer en error
+        return redirect("/traslado")  # Redirige a la página principal en vez de caer en error 
 
     return send_file(dir_pdf, as_attachment=False)
 
@@ -635,43 +635,107 @@ def buscar(idTraslado):
 
 
 @traslado.route("/traslado/listar_pdf/<idTraslado>")
+@traslado.route("/traslado/listar_pdf/<idTraslado>/<devolver>")
 @loguear_requerido
-def listar_pdf(idTraslado):
+def listar_pdf(idTraslado, devolver="None"):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("Se necesita ingresar para acceder a esa ruta")
         return redirect("/ingresar")
-    dir = "pdf"
-    nombreFirmado = "traslado_" + str(idTraslado) + "_" + "firmado.pdf"
-    # revisa si el archivo esta firmado
-    if not os.path.exists(os.path.join(dir, nombreFirmado)):
-        # mostrar
-        print("#####NombreFirmado = None #######")
-        nombreFirmado = "None"
-    print("exists")
+
+    dir = "pdf"   
+
+    if devolver == "None":
+        nombreFirmado = "traslado_" + str(idTraslado) + "_" + "firmado.pdf"
+        location = "traslado"
+    else:
+        nombreFirmado = "devolucion_" + str(idTraslado) + "_" + "firmado.pdf"
+        location = "devolucion"
+
+    # Revisa si el archivo está firmado
+    if not os.path.exists(os.path.join(dir, "firmas_traslados", nombreFirmado)) and not os.path.exists(os.path.join(dir, "firmas_devoluciones", nombreFirmado)):
+        # Si no existe el archivo firmado
+        nombreFirmado = "No existen firmas para este documento"
+    
     return render_template(
-        "GestionR.H/firma.html", 
-        nombreFirmado=nombreFirmado, 
-        id=idTraslado, 
-        location="traslado"
+        'GestionR.H/firma.html',
+        nombreFirmado=nombreFirmado,
+        id=idTraslado,
+        location=location
     )
 
 
+
+@traslado.route("/traslado/mostrar_pdf/<id>/")
+@loguear_requerido
+def mostrar_pdf_traslado_firmado(id):
+    if "user" not in session:
+        flash("Se necesita ingresar para acceder a esta ruta")
+        return redirect("/ingresar")
+    
+    try:
+        # Definir el nombre del archivo PDF basado en el ID
+        nombrePDF = "traslado_" + str(id) + "_firmado.pdf"
+        file_path = os.path.join("pdf/firmas_traslados", nombrePDF)
+
+        # Verificar si el archivo existe antes de enviarlo
+        if not os.path.exists(file_path):
+            flash("No se encontró el archivo PDF solicitado.")
+            return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige a la página de traslados
+
+        # Si el archivo existe, enviarlo para su visualización
+        return send_file(file_path, as_attachment=False)
+
+    except FileNotFoundError:
+        flash("El archivo PDF no se encuentra en el servidor.")
+        return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige en caso de error con el archivo
+
+    except Exception as e:
+        # Captura cualquier otra excepción y muestra un mensaje genérico
+        flash(f"Error al intentar mostrar el archivo: {str(e)}")
+        return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige en caso de cualquier otro error
+
+    
+
+# Ruta para subir un archivo PDF relacionado con el traslado
 @traslado.route("/traslado/adjuntar_pdf/<idTraslado>", methods=["POST"])
 @administrador_requerido
-def adjuntar_firmado(idTraslado):
+def adjuntar_pdf_traslado(idTraslado):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("You are NOT authorized")
         return redirect("/ingresar")
-    # TODO: revisar que sea pdf
+    # Definir la carpeta donde se guardará el archivo
+    dir = "pdf/firmas_traslados"
+
+    # Crear la carpeta si no existe
+    os.makedirs(dir, exist_ok=True)
+
+    # Nombre del archivo que debe eliminarse si ya existe
+    filenameToDelete = f"traslado_{idTraslado}_firmado.pdf"
+    file_path = os.path.join(dir, filenameToDelete)
+
+    # Verificar si el archivo ya existe y eliminarlo
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    # Obtener el archivo desde la solicitud
     file = request.files["file"]
-    # subir archivo
-    dir = "pdf"
-    # renombrar archivo
-    filename = file.filename
-    sfilename = secure_filename(filename)
-    file.save(os.path.join(dir, secure_filename(sfilename)))
-    os.rename(
-        os.path.join(dir, sfilename),
-        os.path.join(dir, "traslado_" + str(idTraslado) + "_firmado.pdf"),
-    )
-    return redirect("/traslado/listar_pdf/" + str(idTraslado))
+
+    # Guardar el archivo con un nombre seguro
+    sfilename = secure_filename(file.filename)
+    temp_file_path = os.path.join(dir, sfilename)
+    file.save(temp_file_path)
+
+    # Renombrar el archivo al formato correcto
+    new_file_path = os.path.join(dir, f"traslado_{idTraslado}_firmado.pdf")
+    
+    # Eliminar el archivo si ya existe antes de renombrar
+    if os.path.exists(new_file_path):
+        os.remove(new_file_path)
+
+    os.rename(temp_file_path, new_file_path)
+
+
+    # Redirigir a la lista de PDFs del traslado
+    return redirect(f"/traslado/listar_pdf/{idTraslado}")
+
+
