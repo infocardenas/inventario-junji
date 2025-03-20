@@ -54,11 +54,6 @@ document.getElementById("trasladoForm").addEventListener("submit", function (eve
                 // Cerrar modal y resetear formulario
                 $('#trasladoModal').modal('hide');
                 this.reset();
-
-                // ✅ Esperar 1.5s antes de recargar la página para evitar cortes visuales
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
             } else {
                 mostrarAlerta(`${data.message}`, "danger");
             }
