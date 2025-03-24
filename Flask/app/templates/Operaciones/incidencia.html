@@ -45,15 +45,16 @@
                 <table class="table table-striped table-bordered table-hover">
                     <thead class="col-md-12">
                         <tr>
-
+                            <th onclick="sortTable(7,this)" class="sortable-column">Estado</th>
+                            <th onclick="sortTable(6,this)" class="sortable-column">Tipo equipo</th>
                             <th onclick="sortTable(1,this)" class="sortable-column">Tipo Incidencia</th>
                             <th onclick="sortTable(2,this)" class="sortable-column">Observacion</th>
                             <th onclick="sortTable(3,this)" class="sortable-column">Fecha</th>
                             <th onclick="sortTable(4,this)" class="sortable-column" data-bs-toggle="tooltip"
                                 title="Codigo de Inventario" data-bs-custom-class="custom-tooltip">C. Inv</th>
                             <th onclick="sortTable(5,this)" class="sortable-column">N° Serie</th>
-                            <th onclick="sortTable(6,this)" class="sortable-column">Tipo equipo</th>
                             <th onclick="sortTable(7,this)" class="sortable-column">Modelo</th>
+                            
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -63,12 +64,14 @@
                         <tr data-id="{{ inc.idIncidencia }}">
 
                             <!--!NOMBRES A USAR PARA INCIDENCIAS-->
+                            <td class="toCheck">{{inc.estadoIncidencia}}</td>
+                            <td class="toCheck">{{inc.nombreTipo_equipo}}</td>
                             <td class="toCheck">{{inc.nombreIncidencia}}</td>
                             <td class="toCheck">{{inc.observacionIncidencia or '-'}}</td>
                             <td class="toCheck">{{inc.fechaIncidencia.strftime("%d-%m-%Y")}}</td>
                             <td class="toCheck">{{inc.cod_inventarioEquipo}}</td>
                             <td class="toCheck">{{inc.Num_serieEquipo}}</td>
-                            <td class="toCheck">{{inc.nombreTipo_equipo}}</td>
+                            
                             <td class="toCheck">{{inc.nombreModeloequipo}}</td>
                             <td>
                                 <!--! BOTON PARA VER ESPECIFICACIONES -->

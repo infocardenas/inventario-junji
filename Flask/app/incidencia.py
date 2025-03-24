@@ -27,7 +27,7 @@ def Incidencia(page = 1):
             i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
             e.cod_inventarioEquipo, e.Num_serieEquipo, 
             te.nombreTipo_equipo, me.nombreModeloequipo,
-            i.numDocumentos
+            i.numDocumentos, i.estadoIncidencia
         FROM incidencia i
         INNER JOIN equipo e ON i.idEquipo = e.idEquipo
         INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
@@ -100,33 +100,23 @@ def add_incidencia():
             flash("Error: El equipo no existe.", "warning")
             cur.close()
             return redirect(url_for("equipo.Equipo"))
+        
 
-        # 4. Verificar si hay un funcionario asignado al equipo
+        #!CAMBIAR LOGICA PARA COMENZAR A TRABAJAR CON LOS ESTADOS DE LA INCIDENCIA
+        # 5. Verificar si existe una incidencia activa para el equipo
         cur.execute("""
-            SELECT f.rutFuncionario, f.nombreFuncionario, ea.idEquipo
-            FROM equipo_asignacion ea
-            JOIN asignacion a ON ea.idAsignacion = a.idAsignacion
-            JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
-            WHERE ea.idEquipo = %s AND a.ActivoAsignacion = 1
+            SELECT idIncidencia
+            FROM incidencia
+            WHERE idEquipo = %s
+            AND estadoIncidencia = 'pendiente'
         """, (datos['idEquipo'],))
-
-        funcionario_asignado = cur.fetchone()
-        print("Funcionario asignado:", funcionario_asignado)
-
-        if not funcionario_asignado:
-            flash("Error: No hay un funcionario asignado a este equipo.", "warning")
+        incidencia_activa = cur.fetchone()
+        if incidencia_activa:
+            flash("Error: Ya existe una incidencia pendiente para este equipo.", "warning")
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
-
-        # 5. Verificar si ya existe una incidencia activa para el equipo
-        cur.execute("SELECT COUNT(*) AS count FROM incidencia WHERE idEquipo = %s", (datos['idEquipo'],))
-        incidencia_existente = cur.fetchone()
-
-        if incidencia_existente and incidencia_existente['count'] > 0:
-            flash("Este equipo ya tiene una incidencia registrada.", "warning")
-            cur.close()
-            return redirect(url_for("incidencia.Incidencia"))
-
+        
+        #!------------------------------------------------------------------------
         # 6. Determinar el nuevo estado del equipo
         estados_incidencia = {
             'Robo': 3,             # Siniestro

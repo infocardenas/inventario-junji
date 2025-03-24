@@ -4,7 +4,8 @@ venv
 
 # Archivos de configuración
 .DS_Store
+#ignorar archivos pdf
+*.pdf
 
 **/__pycache__/
-#ignorar archivos pdf
-.pdf
+
