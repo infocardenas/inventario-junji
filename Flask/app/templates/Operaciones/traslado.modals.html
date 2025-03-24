@@ -110,12 +110,11 @@
             </div>
             <div class="modal-body">
                 <!-- Formulario para editar traslado -->
-                <form id="editarTrasladoForm" method="POST" action="/traslado/editar">
+                <form id="editarTrasladoForm" method="POST" action="/traslado/edit_traslado/{{ traslado.idTraslado }}">
                     <div class="mb-3">
                         <label for="editarFechaTraslado" class="form-label">Fecha Traslado</label>
                         <input type="date" class="form-control" id="editarFechaTraslado" name="fechaTraslado" required>
                     </div>
-                    <input type="hidden" id="editarIdTraslado" name="idTraslado"> <!-- Campo oculto para el ID del traslado -->
                     <button type="submit" class="btn btn-primary">Guardar Cambios</button>
                 </form>
             </div>

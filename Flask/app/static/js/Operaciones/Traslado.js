@@ -270,7 +270,11 @@ function mostrarAlerta(mensaje, tipo = "success") {
 
 
 function cargarEditarTraslado(idTraslado, fechaTraslado) {
-    document.getElementById("editarIdTraslado").value = idTraslado;
+    // Asignar la fecha al campo correspondiente
     document.getElementById("editarFechaTraslado").value = fechaTraslado;
+
+    // Actualizar dinámicamente la acción del formulario con el ID del traslado
+    document.getElementById("editarTrasladoForm").action = `/traslado/edit_traslado/${idTraslado}`;
+
     console.log("Cargando traslado:", idTraslado, fechaTraslado); // Depuración
 }
