@@ -1,0 +1,92 @@
+{% extends "layout.html" %}
+{% block body %}
+{% from 'funciones_macro.html' import paginacion, subirArchivo, tablaDocumentos %}
+
+<div class="row">
+
+    <div class="col-md-5">
+        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        {% for message in messages %}
+
+        <div class="custom-alert" role="alert">
+            {{ message }}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+        <!-- Se termina la seccion de errores que se aga en traslado lso datos  --> 
+
+        <a class="nav-button" href="/traslado">Volver</a> 
+        <!-- ----- -->
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAdjuntarPDF">
+            Agregar PDF
+        </button>
+        <!-- Modal para adjuntar PDF -->
+        <div class="modal fade" id="modalAdjuntarPDF" tabindex="-1" aria-labelledby="modalAdjuntarPDFLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form action="/traslado/listar_pdf/{{ ids }}" method="POST"
+                        enctype="multipart/form-data">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalAdjuntarPDFLabel">Adjuntar PDF a Incidencia</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Cerrar"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label for="pdfFile" class="form-label">Selecciona el archivo PDF</label>
+                                <input type="file" class="form-control" id="pdfFile" name="file"
+                                    accept="application/pdf" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                            <button type="submit" class="btn btn-success">Subir PDF</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <table id="posts" class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <td onclick="sortTable(0)">Cod. inventario</td>
+                <td onclick="sortTable(1)">Num. serie</td>
+                <td onclick="sortTable(2)">Funcionario</td>
+                <td onclick="sortTable(3)">Codigo Proveedor</td>
+                <td onclick="sortTable(4)">Unidad</td>
+                <td onclick="sortTable(5)">Tipo equipo</td>
+                <td onclick="sortTable(6)">Modelo</td>
+            </tr>
+        </thead>
+        <tbody id="myTableBody">
+            <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+            <tr>
+                <td class="toCheck">{{equipo.Cod_inventarioEquipo}}</td>
+                <td class="toCheck">{{equipo.Num_serieEquipo}}</td>
+                {% if equipo.nombreFuncionario == '' %}
+                <td class="toCheck">No asignado</td>
+                {% else %}
+                <td class="toCheck">{{equipo.nombreFuncionario}}</td>
+                {% endif %}
+                <td class="toCheck">{{equipo.codigoproveedor_equipo}}</td>
+                <td class="toCheck">{{equipo.nombreUnidad}}</td>
+                <td class="toCheck">{{equipo.nombreTipo_equipo}}</td>
+                <td class="toCheck">{{equipo.nombreModeloequipo}}</td>
+            </tr>
+        </tbody>
+    </table>
+    <div>
+        <h2>Documentos de Incidencia</h2>
+        {{tablaDocumentos(idIncidencia, documentos, location)}}
+        {% endblock %}
