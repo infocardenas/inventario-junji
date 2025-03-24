@@ -1,11 +1,12 @@
 {% extends "layout.html" %}
+
 {% block body %}
 {% from 'funciones_macro.html' import paginacion, subirArchivo, tablaDocumentos %}
 
 <div class="row">
 
     <div class="col-md-5">
-        <!-- esta seccion se utiliza para mostrar los errores a traves de flash siempre y cuando existan errores -->
+        <!-- Esta sección muestra los errores a través de flash, si es que existen -->
         {% with messages = get_flashed_messages() %}
         {% if messages %}
         {% for message in messages %}
@@ -21,21 +22,30 @@
         {% endfor %}
         {% endif %}
         {% endwith %}
-        <!-- Se termina la seccion de errores -->
+        <!-- Fin de la sección de errores -->
+        
         {% if location == 'devolucion' %}
             <a class="nav-button" href="/asignacion">Volver</a>
+        {% elif location == 'traslado' %}
+            <a class="nav-button" href="/traslado">Volver</a>
         {% else %}
-            <a class="nav-button" href="/{{location}}">Volver</a>
+            <a class="nav-button" href="/{{ location }}">Volver</a>
         {% endif %}
         <!-- ----- -->
         {{ subirArchivo(location, id) }}
     </div>
+    
     <br />
-        {% if location == 'asignacion' %}
-            <h2>Firmas de Asignaciones</h2>
-        {% else %}
-            <h2>Firmas de Devoluciones</h2>
-        {% endif %}
-        {{tablaDocumentos(id, (nombreFirmado,), location)}}
+    
+    {% if location == 'asignacion' %}
+        <h2>Firmas de Asignaciones</h2>
+    {% elif location == 'traslado' %}
+        <h2>Firmas de Traslados</h2>
+    {% else %}
+        <h2>Firmas de Devoluciones</h2>
+    {% endif %}
+    
+    <!-- Tabla que muestra los documentos según el tipo -->
+    {{ tablaDocumentos(id, (nombreFirmado,), location) }}
 
 {% endblock %}
