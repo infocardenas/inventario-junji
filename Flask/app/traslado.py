@@ -655,7 +655,6 @@ def listar_pdf(idTraslado):
         location="traslado"
     )
 
-
 @traslado.route("/traslado/adjuntar_pdf/<idTraslado>", methods=["POST"])
 @administrador_requerido
 def adjuntar_firmado(idTraslado):
@@ -675,3 +674,33 @@ def adjuntar_firmado(idTraslado):
         os.path.join(dir, "traslado_" + str(idTraslado) + "_firmado.pdf"),
     )
     return redirect("/traslado/listar_pdf/" + str(idTraslado))
+
+@traslado.route("/traslado/editar", methods=["POST"])
+@administrador_requerido
+def editar_traslado():
+    if "user" not in session:
+        flash("Se necesita ingresar para acceder a esa ruta")
+        return redirect("/ingresar")
+    
+    id_Traslado = request.form.get("idTraslado")
+    nueva_fecha = request.form.get("fechaTraslado")
+
+    print(f"ID Traslado: {id_Traslado}, Nueva Fecha: {nueva_fecha}")  # Depuración
+
+    if not id_Traslado or not nueva_fecha:
+        flash("No se proporcionaron datos para la edición.")
+        return redirect("/traslado")
+    
+    cur = mysql.connection.cursor()
+    cur.execute(
+        """
+        UPDATE traslado
+        SET fechatraslado = %s
+        WHERE idTraslado = %s
+        """,
+        (nueva_fecha, id_Traslado),
+    )
+    mysql.connection.commit()
+    cur.close()
+    flash("Fecha de traslado editada con éxito")
+    return redirect("/traslado")
