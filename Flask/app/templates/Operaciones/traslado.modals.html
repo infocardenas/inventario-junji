@@ -99,3 +99,26 @@
         </div>
     </div>
 </div>
+
+<!-- Modal de editar Traslado -->
+<div class="modal fade" id="editarTrasladoModal" tabindex="-1" aria-labelledby="editarTrasladoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editarTrasladoModalLabel">Editar Traslado</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para editar traslado -->
+                <form id="editarTrasladoForm" method="POST" action="/traslado/editar">
+                    <div class="mb-3">
+                        <label for="editarFechaTraslado" class="form-label">Fecha Traslado</label>
+                        <input type="date" class="form-control" id="editarFechaTraslado" name="fechaTraslado" required>
+                    </div>
+                    <input type="hidden" id="editarIdTraslado" name="idTraslado"> <!-- Campo oculto para el ID del traslado -->
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

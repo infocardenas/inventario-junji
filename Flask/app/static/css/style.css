@@ -775,3 +775,40 @@ svg.bi {
 #tablaEquipo tbody tr {
     cursor: pointer;
 }
+
+/* Estilos específicos para la barra de herramientas en orden_compra.html */
+.orden-compra-toolbar {
+    display: flex;
+    justify-content: center; /* Centra todos los elementos horizontalmente */
+    align-items: center; /* Centra todos los elementos verticalmente */
+    gap: 1rem; /* Espaciado entre los elementos */
+    width: 100%;
+    margin: 20px 0; /* Espaciado superior e inferior */
+}
+
+.orden-compra-toolbar-1,
+.orden-compra-toolbar-3 {
+    flex: 1; /* Ocupan el mismo espacio */
+    display: flex;
+    justify-content: flex-start; /* Alinea a la izquierda */
+}
+
+.orden-compra-toolbar-3 {
+    justify-content: flex-end; /* Alinea a la derecha */
+}
+
+.orden-compra-toolbar-2 {
+    flex: 2; /* Ocupa más espacio que los otros elementos */
+    display: flex;
+    justify-content: center; /* Centra el campo de búsqueda */
+}
+
+.orden-compra-search-box {
+    font-size: 1rem;
+    text-align: center;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 300px; /* Ancho fijo */
+    max-width: 100%; /* Asegura que no exceda el contenedor */
+    padding: 5px 10px; /* Espaciado interno */
+}

@@ -56,14 +56,34 @@
 
                 </div>
                 <div class="toolbar-2">
-                    <input name="palabra" type="text" class="search-box" placeholder="Buscar equipos" id="buscador"
+                    <input id="buscador" name="palabra" type="text" class="search-box" placeholder="Buscar equipos" 
                         onkeyup="busqueda('myTableBody')" />
                     <button class="btn btn-primary" data-bs-toggle="tooltip" title="Exportar Busqueda"
-                        id="exportarBusqueda" onclick="exportarBusqueda()"><img
-                            src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
-                            width="20" height="20" class="me-1"><span>Exportar </span><i
-                            class="bi bi-search"></i></button>
+                        id="exportarBusqueda" onclick="exportarBusqueda()">
+                        <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel"
+                            width="20" height="20" class="me-1">
+                        <span>Exportar </span><i class="bi bi-search"></i>
+                    </button>
                 </div>
+                
+                <script src="../../static/js/funciones.js"></script>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        // Define los placeholders dinámicos
+                        const placeholders = [
+                            "Buscar por código de inventario",
+                            "Buscar por número de serie",
+                            "Buscar por estado del equipo",
+                            "Buscar por funcionario",
+                            "Buscar por código de proveedor",
+                            "Buscar por unidad",
+                            "Buscar por tipo de equipo",
+                            "Buscar por modelo",
+                        ];
+                        enableDynamicPlaceholder("buscador", placeholders, 2000)
+                    });
+                </script>
+                
                 <div class="toolbar-3">
                     <button class="btn btn-success" id="assign-button" data-bs-toggle="tooltip"
                         title="Asignar/Devolver">

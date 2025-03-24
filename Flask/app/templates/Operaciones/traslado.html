@@ -30,7 +30,6 @@
                     <i class="bi bi-trash"></i> Eliminar Seleccionados
                 </button>
             </div>
-
             <!-- Tabla de traslados -->
             <div class="table-responsive">
                 <table id="posts" class="table table-striped table-hover align-middle">
@@ -39,9 +38,9 @@
                             <th>
                                 <input type="checkbox" id="selectAll">
                             </th>
-                            <th>Fecha Traslado</th>
                             <th>Origen</th>
                             <th>Destino</th>
+                            <th>Fecha Traslado</th>
                             <th>Detalles</th>
                             <th>Acta</th>
                         </tr>
@@ -52,19 +51,29 @@
                             <td>
                                 <input type="checkbox" class="row-checkbox" value="{{ tras.idTraslado }}">
                             </td>
-                            <td>{{ tras.fechatraslado }}</td>
                             <td>{{ tras.nombreOrigen }}</td>
                             <td>{{ tras.nombreDestino }}</td>
+                            <td>{{ tras.fechatraslado }}
+                                <!-- Botón Editar -->
+                                <button class="btn btn-warning btn-sm ms-2" data-bs-toggle="modal"
+                                    data-bs-target="#editarTrasladoModal"
+                                    onclick="cargarEditarTraslado('{{ tras.idTraslado }}', '{{ tras.fechatraslado }}')">
+                                    <i class="bi bi-pencil"></i> <!--Editar-->
+                                </button>
+                            </td>
+                            
                             <td>
-                                <button class="btn btn-secondary btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#detalleTrasladoModal"
-                                        onclick="cargarDetallesTraslado('{{ tras.idTraslado }}')">
+                                <!-- Botón Ver Detalles -->
+                                <button class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#detalleTrasladoModal"
+                                    onclick="cargarDetallesTraslado('{{ tras.idTraslado }}')">
                                     <i class="bi bi-eye"></i> Ver Detalles
-                                </button>   
+                                </button>
+
                             </td>
                             <td>
-                                <a href="/traslado/mostrar_pdf/{{ tras.idTraslado }}" class="btn btn-info btn-sm" target="_blank">
+                                <a href="/traslado/mostrar_pdf/{{ tras.idTraslado }}" class="btn btn-info btn-sm"
+                                    target="_blank">
                                     <i class="bi bi-file-earmark-pdf"></i> Acta
                                 </a>
                             </td>
@@ -85,6 +94,9 @@
 
 <script src="{{ url_for('static', filename='js/Operaciones/Traslado.js') }}"></script>
 
+
+
+
 <script>
 document.getElementById("firmarTraslado").addEventListener("click", function() {
     let seleccionados = document.querySelectorAll(".row-checkbox:checked");
@@ -103,3 +115,4 @@ document.getElementById("firmarTraslado").addEventListener("click", function() {
 </script>º
 
 {% endblock %}
+

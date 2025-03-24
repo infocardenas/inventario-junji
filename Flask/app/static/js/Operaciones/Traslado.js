@@ -267,3 +267,10 @@ function mostrarAlerta(mensaje, tipo = "success") {
         alertContainer.innerHTML = "";
     }, 5000);
 }
+
+
+function cargarEditarTraslado(idTraslado, fechaTraslado) {
+    document.getElementById("editarIdTraslado").value = idTraslado;
+    document.getElementById("editarFechaTraslado").value = fechaTraslado;
+    console.log("Cargando traslado:", idTraslado, fechaTraslado); // Depuración
+}
