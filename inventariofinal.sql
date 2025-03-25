@@ -512,5 +512,14 @@ INSERT INTO `tipo_adquisicion` (`idTipo_adquisicion`, `nombre_tipo_adquisicion`)
 (2, 'ARRIENDO'),
 (3, 'PRÉSTAMO');
 
+LOAD DATA INFILE '/Exel_import/UNUDADES_add.csv'
+INTO TABLE unidad
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad);
+
+
 COMMIT;
 
