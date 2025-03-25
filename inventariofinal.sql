@@ -512,6 +512,10 @@ INSERT INTO `tipo_adquisicion` (`idTipo_adquisicion`, `nombre_tipo_adquisicion`)
 (2, 'ARRIENDO'),
 (3, 'PRÉSTAMO');
 
+--
+-- Ejecutar improtaciond de datos de Exel unidades 
+--
+
 LOAD DATA INFILE '/Exel_import/UNUDADES_add.csv'
 INTO TABLE unidad
 FIELDS TERMINATED BY ',' 
@@ -519,6 +523,18 @@ ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad);
+
+--
+-- Ejecutar improtaciond de datos de Exel funcionarios  
+--
+
+LOAD DATA INFILE '/Exel_import/FUNCIONARIOS_add.csv'
+INTO TABLE funcionario
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(rutFuncionario, nombreFuncionario, cargoFuncionario, correoFuncionario, idUnidad);
 
 
 COMMIT;
