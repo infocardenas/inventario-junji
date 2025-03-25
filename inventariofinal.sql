@@ -55,9 +55,9 @@ CREATE TABLE `modalidad` (
 
 CREATE TABLE `unidad` (
   `idUnidad` int(11) NOT NULL AUTO_INCREMENT,
-  `nombreUnidad` varchar(45) DEFAULT NULL,
-  `contactoUnidad` varchar(45) DEFAULT NULL,
-  `direccionUnidad` varchar(45) CHARACTER SET armscii8 COLLATE armscii8_general_ci DEFAULT NULL,
+  `nombreUnidad` varchar(255) DEFAULT NULL,
+  `contactoUnidad` varchar(255) DEFAULT NULL,
+  `direccionUnidad` varchar(255) CHARACTER SET armscii8 COLLATE armscii8_general_ci DEFAULT NULL,
   `idComuna` int(11) NOT NULL,
   `idModalidad` int(11) DEFAULT NULL,
   PRIMARY KEY (`idUnidad`),
@@ -454,7 +454,11 @@ INSERT INTO `provincia` (`idProvincia`, `nombreProvincia`) VALUES
 --
 -- Volcado de datos para la tabla `comuna`
 --
+SET GLOBAL local_infile = 1;
 
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Insertar datos en comuna
 INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 (1, 'Concepcion', 1),
 (2, 'Coronel', 1),
@@ -490,11 +494,34 @@ INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 (32, 'Quilaco', 3),
 (33, 'Yumbel', 3);
 
+-- Cargar datos desde el archivo CSV a la tabla unidad
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/UNUDADES_add.csv'
+INTO TABLE unidad
+FIELDS TERMINATED BY ';'  
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad);
+
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/FUNCIONARIOS_add.csv'
+INTO TABLE funcionario
+FIELDS TERMINATED BY ';' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(rutFuncionario, nombreFuncionario, cargoFuncionario, correoFuncionario, idUnidad);
+
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
 -- Insersion de datos para la tabla `modalidad`
 INSERT INTO `modalidad` (`idModalidad`, `nombreModalidad`) VALUES
 (1, 'CLASICO'),
 (2, 'ALTERNATIVO'),
-(3, 'OFICINA');
+(3, 'OFICINA'),
+(4, 'PMI'),
+(5, 'CECI');
 
 -- Insersion de datos para la tabla `estado_equipo`
 INSERT INTO `estado_equipo` (`idEstado_equipo`, `nombreEstado_equipo`) VALUES 
@@ -512,30 +539,14 @@ INSERT INTO `tipo_adquisicion` (`idTipo_adquisicion`, `nombre_tipo_adquisicion`)
 (2, 'ARRIENDO'),
 (3, 'PRÉSTAMO');
 
---
--- Ejecutar improtaciond de datos de Exel unidades 
---
-
-LOAD DATA INFILE '/Exel_import/UNUDADES_add.csv'
-INTO TABLE unidad
-FIELDS TERMINATED BY ',' 
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS
-(idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad);
 
 --
--- Ejecutar improtaciond de datos de Exel funcionarios  
+-- para cargar los CSV es necesario seguir los siguientes pasosç
 --
-
-LOAD DATA INFILE '/Exel_import/FUNCIONARIOS_add.csv'
-INTO TABLE funcionario
-FIELDS TERMINATED BY ',' 
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS
-(rutFuncionario, nombreFuncionario, cargoFuncionario, correoFuncionario, idUnidad);
-
+-- entrar en C:/ProgramData/MySQL/MySQL Server 8.0/Uploads y agregar los domumentos UNUDADES_add.csv y FUNCIONARIOS_add.csv 
+-- es nesesario dar los permisos temporales para la lectura de rutas es nesesario que se ejecute el sigiente comando 
+-- SHOW VARIABLES LIKE 'local_infile'; tiene que estar en on si esta en off ejecutar SET GLOBAL local_infile = 1;
+--
 
 COMMIT;
 
