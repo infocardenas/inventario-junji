@@ -503,6 +503,7 @@ LINES TERMINATED BY '\n'
 IGNORE 1 ROWS
 (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad);
 
+-- Cargar datos desde el archivo CSV a la tabla funcionario
 LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/FUNCIONARIOS_add.csv'
 INTO TABLE funcionario
 FIELDS TERMINATED BY ';' 

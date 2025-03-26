@@ -149,6 +149,7 @@ def crear_lista_modelo_tipo_marca():
 
     pass
 @equipo.route("/add_equipo", methods=["POST"])
+@administrador_requerido
 def add_equipo():
     if request.method == "POST":
         datos = {
