@@ -28,7 +28,7 @@ def UNIDAD(page=1):
         LIMIT %s OFFSET %s
 
     """, (perpage, offset))
-    data = cur.fetchall()
+    data = cur.fetchall() #SE GUARDATODO
     cur.execute('SELECT * FROM comuna')
     c_data = cur.fetchall()
     cur.execute("SELECT COUNT(*) FROM unidad")
@@ -40,7 +40,7 @@ def UNIDAD(page=1):
 
 
     cur.close()
-    return render_template('Unidad.html', Unidad = data, comuna = c_data,
+    return render_template('Organizacion/Unidad.html', Unidad = data, comuna = c_data,
                            page=page, lastpage= page < (total/perpage)+1, Modalidades=modalidades_data)
 
 #ruta y metodo para poder agregar una Unidad
@@ -48,17 +48,27 @@ def UNIDAD(page=1):
 @administrador_requerido
 def add_Unidad():
     if request.method == 'POST':
+                # Imprimir datos recibidos para depuración
+        print("Formulario recibido:", request.form)
+
+        # Recoger datos del formulario
+        id_modalidad = request.form.get('idModalidad', '').strip()
+
+        # Verificar si el campo está vacío antes de convertir a entero
+        if not id_modalidad.isdigit():
+            flash("Error: Modalidad no válida")
+            return redirect(url_for('Unidad.UNIDAD'))
 
         # Recoger datos del formulario
         data = {
-            'codigoUnidad': request.form['codigo_unidad'],
+            'codigoUnidad': request.form['codigo_unidad'], #DEBE SER IGUAL AL NAME DEL HTML
             'nombreUnidad': request.form['nombreUnidad'],
             'contactoUnidad': request.form['contactoUnidad'],
             'direccionUnidad': request.form['direccionUnidad'],
             'idComuna': int(request.form['idComuna']),
             'idModalidad': int(request.form['idModalidad'])
         }
-        add_Unidad_schema = {
+        add_Unidad_schema = { #VALIDACION CADA DATO
             'codigoUnidad': {
                 'type': 'string',
                 'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
@@ -93,6 +103,8 @@ def add_Unidad():
                 'required': True
             }
         }
+        #print("Formulario recibido:", data.form)
+
 
         # Validar datos
         v = Validator(add_Unidad_schema)
@@ -106,10 +118,10 @@ def add_Unidad():
             cur.execute('INSERT INTO unidad (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad) VALUES (%s, %s, %s, %s, %s, %s)',
                        (data['codigoUnidad'], data['nombreUnidad'], data['contactoUnidad'], data['direccionUnidad'], data['idComuna'], data['idModalidad']))
             mysql.connection.commit()
-            flash('Unidad agregada correctamente')
+            flash('Unidad agregada correctamente', 'success')
             return redirect(url_for('Unidad.UNIDAD'))
         except Exception as e:
-            flash("Error al crear")
+            flash("Error al crear", 'danger')
             return redirect(url_for('Unidad.UNIDAD'))
 
 #ruta para poder enviar los datos a la vista de edicion segun el id correspondiente
@@ -139,7 +151,7 @@ def edit_Unidad(id):
         cur.execute("SELECT * FROM modalidad")
         modalidades_data = cur.fetchall()
         curs.close()
-        return render_template('editUnidad.html', Unidad = data[0],
+        return render_template('Organizacion/editUnidad.html', Unidad = data[0],
                 comuna = c_data, Modalidades=modalidades_data)
     except Exception as e:
         #flash(e.args[1])
@@ -257,5 +269,5 @@ def buscar_unidad(id):
                 """)
     modalidades_data = cur.fetchall()
 
-    return render_template('Unidad.html', Unidad = data, comuna = c_data,
+    return render_template('Organizacion/Unidad.html', Unidad = data, comuna = c_data,
         page=1, lastpage= True, Modalidades=modalidades_data)

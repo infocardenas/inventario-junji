@@ -13,13 +13,24 @@
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTipoEquipoModal">Agregar</button>
                 </div>
                 <div class="toolbar-2">
-                    <input name="palabra" type="text" class="search-box" placeholder="Buscar tipo de equipo..." id="buscador" onkeyup="busqueda('myTableBody')" />
+                    <input name="palabra" type="text" class="search-box" placeholder="Buscar marcas asociadas" id="buscador" onkeyup="busqueda('myTableBody')" />
                 </div>
                 <div class="toolbar-3">
                     <button type="button" class="btn btn-warning edit-button" data-bs-toggle="tooltip" data-bs-title="Editar" disabled><i class="bi bi-pencil-square"></i></button>
                     <button type="button" class="btn btn-danger delete-button" data-title="Eliminar tipo(s) de equipo" data-message="¿Estás seguro de que deseas eliminar los tipos seleccionados? Esto afectará las relaciones asociadas." data-url="" data-bs-toggle="tooltip" data-bs-title="Eliminar" disabled><i class="bi bi-trash-fill"></i></button>
                 </div>
             </div>
+            <script src="../../static/js/funciones.js"></script>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        // Define los placeholders dinámicos
+                        const placeholders = [
+                            "Buscar por tipo de equipo",
+                            "Buscar marcas asociadas",
+                        ];
+                        enableDynamicPlaceholder("buscador", placeholders, 2000)
+                    });
+                </script>
 
             <!-- Tabla de tipos de equipos -->
             <div class="table-responsive">

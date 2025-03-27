@@ -271,6 +271,7 @@ CREATE TABLE `incidencia` (
   `fechaIncidencia` date DEFAULT NULL,
   `idEquipo` int(11) NOT NULL,
   `numDocumentos` int(11) DEFAULT NULL,
+  `estadoIncidencia` ENUM('pendiente', 'cerrado', 'abierta', 'servicio tecnico', 'equipo reparado', 'equipo cambiado') DEFAULT 'pendiente',
   PRIMARY KEY (`idIncidencia`),
   CONSTRAINT `incidencia_ibfk_1` FOREIGN KEY (`idEquipo`) REFERENCES `equipo` (`idEquipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -370,50 +371,6 @@ SELECT
     `oc`.`nombreOrden_compra` AS `nombreOrden_compra`, 
     `moe`.`idModelo_Equipo` AS `idModelo_equipo`, 
     `moe`.`nombreModeloequipo` AS `nombreModeloequipo`, 
-    '' AS `nombreFuncionario`, 
-    '' AS `rutFuncionario`
-FROM 
-    `equipo` `e`
-    JOIN `modelo_equipo` `moe` 
-        ON (`moe`.`idModelo_Equipo` = `e`.`idModelo_equipo`)
-    JOIN `marca_tipo_equipo` `mte`
-        ON (`moe`.`idMarca_Tipo_Equipo` = `mte`.`idMarcaTipo`)
-    JOIN `marca_equipo` `ma`
-        ON (`ma`.`idMarca_Equipo` = `mte`.`idMarca_Equipo`)
-    JOIN `tipo_equipo` `te`
-        ON (`mte`.`idTipo_equipo` = `te`.`idTipo_equipo`)
-    JOIN `estado_equipo` `ee` 
-        ON (`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)
-    JOIN `unidad` `u` 
-        ON (`u`.`idUnidad` = `e`.`idUnidad`)
-    JOIN `orden_compra` `oc` 
-        ON (`oc`.`idOrden_compra` = `e`.`idOrden_compra`)
-WHERE 
-    `ee`.`nombreEstado_equipo` NOT LIKE 'EN USO'
-
-UNION 
-
-SELECT 
-    `e`.`idEquipo` AS `idEquipo`, 
-    `e`.`Cod_inventarioEquipo` AS `Cod_inventarioEquipo`,
-    `e`.`Num_serieEquipo` AS `Num_serieEquipo`, 
-    `e`.`ObservacionEquipo` AS `ObservacionEquipo`, 
-    `e`.`codigoproveedor_equipo` AS `codigoproveedor_equipo`, 
-    `e`.`macEquipo` AS `macEquipo`, 
-    `e`.`imeiEquipo` AS `imeiEquipo`, 
-    `e`.`numerotelefonicoEquipo` AS `numerotelefonicoEquipo`, 
-    `te`.`idTipo_equipo` AS `idTipo_equipo`, 
-    `te`.`nombreTipo_equipo` AS `nombreTipo_equipo`,
-    `ma`.`idMarca_Equipo` AS `idMarca_Equipo`,
-    `ma`.`nombreMarcaEquipo` AS `nombreMarcaEquipo`,
-    `ee`.`idEstado_equipo` AS `idEstado_equipo`, 
-    `ee`.`nombreEstado_equipo` AS `nombreEstado_equipo`, 
-    `u`.`idUnidad` AS `idUnidad`, 
-    `u`.`nombreUnidad` AS `nombreUnidad`, 
-    `oc`.`idOrden_compra` AS `idOrden_compra`, 
-    `oc`.`nombreOrden_compra` AS `nombreOrden_compra`, 
-    `moe`.`idModelo_Equipo` AS `idModelo_equipo`, 
-    `moe`.`nombreModeloequipo` AS `nombreModeloequipo`, 
     `f`.`nombreFuncionario` AS `nombreFuncionario`, 
     `f`.`rutFuncionario` AS `rutFuncionario`
 FROM 
@@ -426,21 +383,24 @@ FROM
         ON (`ma`.`idMarca_Equipo` = `mte`.`idMarca_Equipo`)
     JOIN `tipo_equipo` `te`
         ON (`mte`.`idTipo_equipo` = `te`.`idTipo_equipo`)
+    JOIN `estado_equipo` `ee` 
+        ON (`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)
     JOIN `unidad` `u` 
         ON (`u`.`idUnidad` = `e`.`idUnidad`)
     JOIN `orden_compra` `oc` 
         ON (`oc`.`idOrden_compra` = `e`.`idOrden_compra`)
-    JOIN `equipo_asignacion` `ea` 
-        ON (`ea`.`idEquipo` = `e`.`idEquipo`)
-    JOIN `estado_equipo` `ee` 
-        ON (`ee`.`idEstado_equipo` = `e`.`idEstado_equipo`)
-    JOIN `asignacion` `a` 
-        ON (`a`.`idAsignacion` = `ea`.`idAsignacion`)
-    JOIN `funcionario` `f` 
-        ON (`f`.`rutFuncionario` = `a`.`rutFuncionario`)
-WHERE 
-    `ee`.`nombreEstado_equipo` LIKE 'EN USO'
-    AND `a`.`ActivoAsignacion` = 1;
+    LEFT JOIN `equipo_asignacion` `ea` 
+        ON (`ea`.`idEquipo` = `e`.`idEquipo` AND `ea`.`idAsignacion` = (
+            SELECT `idAsignacion` 
+            FROM `equipo_asignacion` 
+            WHERE `idEquipo` = `e`.`idEquipo` 
+            ORDER BY `idAsignacion` DESC 
+            LIMIT 1
+        ))
+    LEFT JOIN `asignacion` `a` 
+        ON (`a`.`idAsignacion` = `ea`.`idAsignacion` AND `a`.`ActivoAsignacion` = 1)
+    LEFT JOIN `funcionario` `f` 
+        ON (`f`.`rutFuncionario` = `a`.`rutFuncionario`);
 
 
 

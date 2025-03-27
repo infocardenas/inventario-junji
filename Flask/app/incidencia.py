@@ -27,7 +27,7 @@ def Incidencia(page = 1):
             i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
             e.cod_inventarioEquipo, e.Num_serieEquipo, 
             te.nombreTipo_equipo, me.nombreModeloequipo,
-            i.numDocumentos
+            i.numDocumentos, i.estadoIncidencia
         FROM incidencia i
         INNER JOIN equipo e ON i.idEquipo = e.idEquipo
         INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
@@ -67,11 +67,12 @@ def incidencia_form(idEquipo):
         equipo=equipo
         )
 
+# Ruta para agregar una incidencia
 @incidencia.route("/incidencia/add_incidencia", methods=['POST'])
 @administrador_requerido
 def add_incidencia():
     if request.method == "POST":
-        # 1. Recepción de datos
+        # 1. Recepción de datos del formulario
         datos = {
             'nombreIncidencia': request.form['nombreIncidencia'],
             'observacionIncidencia': request.form['observacionIncidencia'],
@@ -79,7 +80,7 @@ def add_incidencia():
             'idEquipo': request.form['idEquipo']
         }
 
-        # 2. Validar si el ID del equipo está vacío o es inválido
+        # 2. Validar que el ID del equipo sea válido
         if not datos['idEquipo']:
             flash("Error: No se seleccionó un equipo.", "warning")
             return redirect(url_for("equipo.Equipo"))
@@ -99,25 +100,28 @@ def add_incidencia():
             flash("Error: El equipo no existe.", "warning")
             cur.close()
             return redirect(url_for("equipo.Equipo"))
+        
 
-        # 4. Verificar si ya existe una incidencia activa para el equipo
+        #!CAMBIAR LOGICA PARA COMENZAR A TRABAJAR CON LOS ESTADOS DE LA INCIDENCIA
+        # 5. Verificar si existe una incidencia activa para el equipo
         cur.execute("""
-            SELECT COUNT(*) AS count 
-            FROM incidencia 
+            SELECT idIncidencia
+            FROM incidencia
             WHERE idEquipo = %s
+            AND estadoIncidencia = 'pendiente'
         """, (datos['idEquipo'],))
-        incidencia_existente = cur.fetchone()
-
-        if incidencia_existente and incidencia_existente['count'] > 0:
-            flash("Este equipo ya tiene una incidencia registrada.", "warning")
+        incidencia_activa = cur.fetchone()
+        if incidencia_activa:
+            flash("Error: Ya existe una incidencia pendiente para este equipo.", "warning")
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
-
-        # 5. Asignar el estado del equipo según la incidencia
+        
+        #!------------------------------------------------------------------------
+        # 6. Determinar el nuevo estado del equipo
         estados_incidencia = {
-            'Robo': 3,              # Siniestro
-            'Perdido': 4,           # Baja
-            'Dañado/Averiado': 5    # Mantención
+            'Robo': 3,             # Siniestro
+            'Perdido': 4,          # Baja
+            'Dañado/Averiado': 5   # Dañado
         }
         nuevo_estado = estados_incidencia.get(datos['nombreIncidencia'])
 
@@ -126,7 +130,7 @@ def add_incidencia():
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
 
-        # 6. Actualizar el estado del equipo
+        # 7. Actualizar el estado del equipo
         try:
             cur.execute("""
                 UPDATE equipo
@@ -139,7 +143,7 @@ def add_incidencia():
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
 
-        # 7. Insertar la incidencia en la base de datos
+        # 8. Insertar la incidencia en la base de datos
         try:
             cur.execute("""
                 INSERT INTO incidencia (
@@ -160,7 +164,7 @@ def add_incidencia():
             ))
             mysql.connection.commit()
 
-            # Obtener el ID generado
+            # Obtener el ID de la incidencia recién creada
             cur.execute("SELECT LAST_INSERT_ID() as idIncidencia")
             idIncidencia = cur.fetchone()['idIncidencia']
             datos['idIncidencia'] = idIncidencia
@@ -168,7 +172,7 @@ def add_incidencia():
             # Crear el PDF y obtener la ruta
             ruta_pdf = create_pdf(datos)
 
-            # Actualizar la base de datos con la ruta del PDF
+            # Actualizar la incidencia con la ruta del PDF
             cur.execute("""
                 UPDATE incidencia
                 SET rutaactaIncidencia = %s
@@ -192,10 +196,6 @@ def add_incidencia():
 
         return redirect(url_for("incidencia.Incidencia"))
 
-
-
-
-        
         
 @incidencia.route("/incidencia/delete_incidencia/<id>",  methods=["GET", "POST"])
 @administrador_requerido
@@ -253,7 +253,10 @@ def update_incidencia(id):
     estados_incidencia = {
         'Robo': 3,              # Siniestro
         'Perdido': 4,           # Baja
-        'Dañado/Averiado': 5    # Mantención
+        'Siniestro': 5,
+        'Reparado': 6,
+        'Cambiado': 7,
+        'Dañado/Averiado': 8      
     }
 
     nuevo_estado = estados_incidencia.get(nombreIncidencia)
@@ -379,9 +382,6 @@ def mostrar_pdf(id):
         flash("No se encontró el archivo PDF.", "warning")
         return redirect(url_for("incidencia.Incidencia"))
 
-
-from fpdf import FPDF
-import os
 
 def create_pdf(incidencia):
     from flask import current_app

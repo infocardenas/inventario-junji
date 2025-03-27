@@ -114,19 +114,19 @@
 
                     <td>
                         {% if evento.evento == "Incidencia" %}
-                        <a href="/incidencia/listar_pdf/{{evento.id}}" class="info-button" style="width: 90%;">Actas
+                        <a href="/incidencia/listar_pdf/{{evento.id}}" class="info-button" target="_blank" style="width: 90%;">Actas
                             Incidencia</a>
                         {% endif %}
                         {% if evento.evento == "Traslado" %}
-                        <a href="/traslado/mostrar_pdf/{{evento.id}}" class="info-button" style="width: 90%;">Acta
+                        <a href="/traslado/mostrar_pdf/{{evento.id}}/" class="info-button" target="_blank" style="width: 90%;">Acta
                             Traslado</a>
                         {% endif %}
                         {% if evento.evento == "Asignacion" %}
-                        <a href="/asignacion/mostrar_pdf/{{evento.id}}" class="info-button" style="width: 90%;">Acta
+                        <a href="/asignacion/mostrar_pdf/{{evento.id}}" class="info-button" target="_blank" style="width: 90%;">Acta
                             Asignacion</a>
                         {% endif %}
                         {% if evento.evento == "Devolucion" %}
-                        <a href="/asignacion/mostrar_pdf_devolucion/{{evento.id}}" class="info-button"
+                        <a href="/asignacion/mostrar_pdf_devolucion/{{evento.id}}" class="info-button" target="_blank"
                             style="width: 90%;">Acta
                             Devolucion</a>
                         {% endif %}

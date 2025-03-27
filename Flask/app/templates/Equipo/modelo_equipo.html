@@ -19,6 +19,19 @@
             </div>
         </div>
 
+        <script src="../../static/js/funciones.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                // Define los placeholders dinámicos
+                const placeholders = [
+                    "Buscar por modelo",
+                    "Buscar por Tipo de equipo",
+                    "Buscar por Marca de equipo",
+                ];
+                enableDynamicPlaceholder("buscador", placeholders, 2000)
+            });
+        </script>
+
         <!-- Tabla de modelo equipos -->
         <div>
             <div class="table-responsive">

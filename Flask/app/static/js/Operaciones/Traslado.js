@@ -1,7 +1,14 @@
 document.getElementById("Origen").addEventListener("change", function () {
     fetch(`/traslado/equipos_unidad/${this.value}`)
-        .then(response => response.json())
+    
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
+            console.log(data); // Verificar los datos en la consola
             let equiposLista = document.getElementById("equiposLista");
             equiposLista.innerHTML = "";
             data.forEach(equipo => {
@@ -20,6 +27,14 @@ document.getElementById("Origen").addEventListener("change", function () {
                     <td colspan="4" class="text-center">No hay equipos disponibles</td>
                 </tr>`;
             }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+            let equiposLista = document.getElementById("equiposLista");
+            equiposLista.innerHTML = `
+            <tr>
+                <td colspan="6" class="text-center">Seleccione una unidad para trasladar</td>
+            </tr>`;
         });
 });
 
@@ -39,11 +54,6 @@ document.getElementById("trasladoForm").addEventListener("submit", function (eve
                 // Cerrar modal y resetear formulario
                 $('#trasladoModal').modal('hide');
                 this.reset();
-
-                // ✅ Esperar 1.5s antes de recargar la página para evitar cortes visuales
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
             } else {
                 mostrarAlerta(`${data.message}`, "danger");
             }
@@ -126,10 +136,6 @@ function mostrarAlerta(mensaje, tipo = "success") {
     }, 5000);
 }
 
-<<<<<<< HEAD
-// Eliminar traslados seleccionados con alertas de Bootstrap
-=======
->>>>>>> isaac
 document.addEventListener("DOMContentLoaded", function () {
     // Seleccionar/Deseleccionar todos los checkboxes
     document.getElementById("selectAll").addEventListener("change", function () {
@@ -260,4 +266,15 @@ function mostrarAlerta(mensaje, tipo = "success") {
         alertContainer.classList.add("d-none");
         alertContainer.innerHTML = "";
     }, 5000);
+}
+
+
+function cargarEditarTraslado(idTraslado, fechaTraslado) {
+    // Asignar la fecha al campo correspondiente
+    document.getElementById("editarFechaTraslado").value = fechaTraslado;
+
+    // Actualizar dinámicamente la acción del formulario con el ID del traslado
+    document.getElementById("editarTrasladoForm").action = `/traslado/edit_traslado/${idTraslado}`;
+
+    console.log("Cargando traslado:", idTraslado, fechaTraslado); // Depuración
 }

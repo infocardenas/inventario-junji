@@ -18,16 +18,18 @@
             </div>
             {% endif %}
 
-            <!-- Botón agregar traslado -->
+            <!-- Botón agregar traslado y firmar traslado -->
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#trasladoModal">
                     <i class="bi bi-plus-lg"></i> Agregar Traslado
+                </button>
+                <button class="btn btn-success shadow-sm" id="firmarTraslado">
+                    <i class="bi bi-pencil"></i> Firmar Traslado
                 </button>
                 <button class="btn btn-danger shadow-sm" id="eliminarSeleccionados">
                     <i class="bi bi-trash"></i> Eliminar Seleccionados
                 </button>
             </div>
-
             <!-- Tabla de traslados -->
             <div class="table-responsive">
                 <table id="posts" class="table table-striped table-hover align-middle">
@@ -36,9 +38,9 @@
                             <th>
                                 <input type="checkbox" id="selectAll">
                             </th>
-                            <th>Fecha Traslado</th>
                             <th>Origen</th>
                             <th>Destino</th>
+                            <th>Fecha Traslado</th>
                             <th>Detalles</th>
                             <th>Acta</th>
                         </tr>
@@ -49,19 +51,29 @@
                             <td>
                                 <input type="checkbox" class="row-checkbox" value="{{ tras.idTraslado }}">
                             </td>
-                            <td>{{ tras.fechatraslado }}</td>
                             <td>{{ tras.nombreOrigen }}</td>
                             <td>{{ tras.nombreDestino }}</td>
+                            <td>{{ tras.fechatraslado }}
+                                <!-- Botón Editar -->
+                                <button class="btn btn-warning btn-sm ms-2" data-bs-toggle="modal"
+                                    data-bs-target="#editarTrasladoModal"
+                                    onclick="cargarEditarTraslado('{{ tras.idTraslado }}', '{{ tras.fechatraslado }}')">
+                                    <i class="bi bi-pencil"></i> <!--Editar-->
+                                </button>
+                            </td>
+                            
                             <td>
-                                <button class="btn btn-secondary btn-sm"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#detalleTrasladoModal"
-                                        onclick="cargarDetallesTraslado('{{ tras.idTraslado }}')">
+                                <!-- Botón Ver Detalles -->
+                                <button class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#detalleTrasladoModal"
+                                    onclick="cargarDetallesTraslado('{{ tras.idTraslado }}')">
                                     <i class="bi bi-eye"></i> Ver Detalles
-                                </button>   
+                                </button>
+
                             </td>
                             <td>
-                                <a href="/traslado/mostrar_pdf/{{ tras.idTraslado }}" class="btn btn-info btn-sm">
+                                <a href="/traslado/mostrar_pdf/{{ tras.idTraslado }}" class="btn btn-info btn-sm"
+                                    target="_blank">
                                     <i class="bi bi-file-earmark-pdf"></i> Acta
                                 </a>
                             </td>
@@ -82,4 +94,25 @@
 
 <script src="{{ url_for('static', filename='js/Operaciones/Traslado.js') }}"></script>
 
+
+
+
+<script>
+document.getElementById("firmarTraslado").addEventListener("click", function() {
+    let seleccionados = document.querySelectorAll(".row-checkbox:checked");
+    let ids = Array.from(seleccionados).map(cb => cb.value);
+    
+    if (ids.length === 0) {
+        alert("Selecciona al menos un traslado para firmar.");
+        return;
+    }
+    
+    // Redirigir a la página de firma con los IDs de los traslados seleccionados asignacion/listar_pdf/19
+    let url = `/traslado/listar_pdf/${ids}`;
+    window.location.href = url;
+});
+
+</script>º
+
 {% endblock %}
+

@@ -177,57 +177,56 @@ def add_traslado():
 @administrador_requerido
 def edit_traslado(id):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("Se necesita ingresar para acceder a esa ruta")
         return redirect("/ingresar")
+    
+    if request.method == "POST":
+        # Obtener la nueva fecha del formulario
+        nueva_fecha = request.form.get("fechaTraslado")
+        if not nueva_fecha:
+            flash("La fecha de traslado es requerida")
+            return redirect(url_for("traslado.Traslado"))
+        
+        try:
+            # Actualizar la fecha del traslado en la base de datos
+            cur = mysql.connection.cursor()
+            cur.execute(
+                """
+                UPDATE traslado
+                SET fechatraslado = %s
+                WHERE idTraslado = %s
+                """,
+                (nueva_fecha, id),
+            )
+            mysql.connection.commit()
+            flash("Fecha de traslado actualizada correctamente")
+        except Exception as e:
+            print("Error al actualizar la fecha del traslado:", e)
+            flash("Ocurrió un error al actualizar la fecha del traslado")
+        finally:
+            cur.close()
+        
+        return redirect(url_for("traslado.Traslado"))
+    
+    # Si el método es GET, cargar los datos del traslado para renderizar el modal
     try:
         cur = mysql.connection.cursor()
         cur.execute(
             """
-                SELECT t.idTraslado, origen.idUnidad as idUnidadOrigen, destino.idUnidad as idUnidadDestino,
-                    t.fechatraslado, t.rutadocumentoTraslado,
-                    origen.nombreUnidad as nombreOrigen, destino.nombreUnidad as nombreDestino
-                FROM traslado t 
-                INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
-                INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
-                WHERE t.idTraslado = %s
-        """,
+            SELECT t.idTraslado, t.fechatraslado
+            FROM traslado t
+            WHERE t.idTraslado = %s
+            """,
             (id,),
         )
-        data = cur.fetchall()
-        cur.execute(
-            """
-            SELECT * 
-            FROM unidad u
-            ORDER BY u.nombreUnidad
-            """
-        )
-        unidades = cur.fetchall()
-        cur.execute(
-            """
-            SELECT e.*, 
-                me.nombreModeloequipo, 
-                te.nombreTipo_equipo, 
-                mae.nombreMarcaEquipo
-            FROM equipo e
-            INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-            INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-            INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-            INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
-            ORDER BY e.idEquipo
-                    """
-        )
-        equipos = cur.fetchall()
+        traslado = cur.fetchone()
         return render_template(
             'Operaciones/editTraslado.html',
-            traslado=data[0],
-            agregar=True,
-            unidades=unidades,
-            equipo=equipos,
+            traslado=traslado,
         )
-
     except Exception as e:
-        #flash(e.args[1])
-        flash("Error al crear")
+        print("Error al cargar los datos del traslado:", e)
+        flash("Ocurrió un error al cargar los datos del traslado")
         return redirect(url_for("traslado.Traslado"))
 
 
@@ -589,9 +588,9 @@ def mostrar_pdf(id, firmado="0"):
 
     if not os.path.exists(dir_pdf):
         flash(f"El archivo PDF {nombrePdf} no se encuentra disponible.")
-        return redirect("/traslado")  # Redirige a la página principal en vez de caer en error
+        return redirect("/traslado")  # Redirige a la página principal en vez de caer en error 
 
-    return send_file(dir_pdf, as_attachment=True)
+    return send_file(dir_pdf, as_attachment=False)
 
 @traslado.route("/traslado/buscar/<idTraslado>")
 @loguear_requerido
@@ -635,43 +634,107 @@ def buscar(idTraslado):
 
 
 @traslado.route("/traslado/listar_pdf/<idTraslado>")
+@traslado.route("/traslado/listar_pdf/<idTraslado>/<devolver>")
 @loguear_requerido
-def listar_pdf(idTraslado):
+def listar_pdf(idTraslado, devolver="None"):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("Se necesita ingresar para acceder a esa ruta")
         return redirect("/ingresar")
-    dir = "pdf"
-    nombreFirmado = "traslado_" + str(idTraslado) + "_" + "firmado.pdf"
-    # revisa si el archivo esta firmado
-    if not os.path.exists(os.path.join(dir, nombreFirmado)):
-        # mostrar
-        print("#####NombreFirmado = None #######")
-        nombreFirmado = "None"
-    print("exists")
+
+    dir = "pdf"   
+
+    if devolver == "None":
+        nombreFirmado = "traslado_" + str(idTraslado) + "_" + "firmado.pdf"
+        location = "traslado"
+    else:
+        nombreFirmado = "devolucion_" + str(idTraslado) + "_" + "firmado.pdf"
+        location = "devolucion"
+
+    # Revisa si el archivo está firmado
+    if not os.path.exists(os.path.join(dir, "firmas_traslados", nombreFirmado)) and not os.path.exists(os.path.join(dir, "firmas_devoluciones", nombreFirmado)):
+        # Si no existe el archivo firmado
+        nombreFirmado = "No existen firmas para este documento"
+    
     return render_template(
-        "GestionR.H/firma.html", 
-        nombreFirmado=nombreFirmado, 
-        id=idTraslado, 
-        location="traslado"
+        'GestionR.H/firma.html',
+        nombreFirmado=nombreFirmado,
+        id=idTraslado,
+        location=location
     )
 
 
+
+@traslado.route("/traslado/mostrar_pdf/<id>/")
+@loguear_requerido
+def mostrar_pdf_traslado_firmado(id):
+    if "user" not in session:
+        flash("Se necesita ingresar para acceder a esta ruta")
+        return redirect("/ingresar")
+    
+    try:
+        # Definir el nombre del archivo PDF basado en el ID
+        nombrePDF = "traslado_" + str(id) + "_firmado.pdf"
+        file_path = os.path.join("pdf/firmas_traslados", nombrePDF)
+
+        # Verificar si el archivo existe antes de enviarlo
+        if not os.path.exists(file_path):
+            flash("No se encontró el archivo PDF solicitado.")
+            return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige a la página de traslados
+
+        # Si el archivo existe, enviarlo para su visualización
+        return send_file(file_path, as_attachment=False)
+
+    except FileNotFoundError:
+        flash("El archivo PDF no se encuentra en el servidor.")
+        return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige en caso de error con el archivo
+
+    except Exception as e:
+        # Captura cualquier otra excepción y muestra un mensaje genérico
+        flash(f"Error al intentar mostrar el archivo: {str(e)}")
+        return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige en caso de cualquier otro error
+
+    
+
+# Ruta para subir un archivo PDF relacionado con el traslado
 @traslado.route("/traslado/adjuntar_pdf/<idTraslado>", methods=["POST"])
 @administrador_requerido
-def adjuntar_firmado(idTraslado):
+def adjuntar_pdf_traslado(idTraslado):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("You are NOT authorized")
         return redirect("/ingresar")
-    # TODO: revisar que sea pdf
+    # Definir la carpeta donde se guardará el archivo
+    dir = "pdf/firmas_traslados"
+
+    # Crear la carpeta si no existe
+    os.makedirs(dir, exist_ok=True)
+
+    # Nombre del archivo que debe eliminarse si ya existe
+    filenameToDelete = f"traslado_{idTraslado}_firmado.pdf"
+    file_path = os.path.join(dir, filenameToDelete)
+
+    # Verificar si el archivo ya existe y eliminarlo
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+    # Obtener el archivo desde la solicitud
     file = request.files["file"]
-    # subir archivo
-    dir = "pdf"
-    # renombrar archivo
-    filename = file.filename
-    sfilename = secure_filename(filename)
-    file.save(os.path.join(dir, secure_filename(sfilename)))
-    os.rename(
-        os.path.join(dir, sfilename),
-        os.path.join(dir, "traslado_" + str(idTraslado) + "_firmado.pdf"),
-    )
-    return redirect("/traslado/listar_pdf/" + str(idTraslado))
+
+    # Guardar el archivo con un nombre seguro
+    sfilename = secure_filename(file.filename)
+    temp_file_path = os.path.join(dir, sfilename)
+    file.save(temp_file_path)
+
+    # Renombrar el archivo al formato correcto
+    new_file_path = os.path.join(dir, f"traslado_{idTraslado}_firmado.pdf")
+    
+    # Eliminar el archivo si ya existe antes de renombrar
+    if os.path.exists(new_file_path):
+        os.remove(new_file_path)
+
+    os.rename(temp_file_path, new_file_path)
+
+
+    # Redirigir a la lista de PDFs del traslado
+    return redirect(f"/traslado/listar_pdf/{idTraslado}")
+
+
