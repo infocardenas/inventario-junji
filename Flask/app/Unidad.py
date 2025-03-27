@@ -76,21 +76,21 @@ def add_Unidad():
             'nombreUnidad': {
                 'type': 'string',
                 'minlength': 1,
-                'maxlength': 100,
+                'maxlength': 255,
                 'required': True,
                 'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
             },
             'contactoUnidad': {
                 'type': 'string',
                 'minlength': 1,
-                'maxlength': 50,
+                'maxlength': 255,
                 'required': True,
                 'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
             },
             'direccionUnidad': {
                 'type': 'string',
                 'minlength': 1,
-                'maxlength': 200,
+                'maxlength': 255,
                 'required': True,
                 'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir alfanuméricos, espacios, comas, puntos y guiones
             },
@@ -241,6 +241,7 @@ def delete_Unidad(id):
         #flash(e.args[1])
         flash("Error al crear")
         return redirect(url_for('Unidad.UNIDAD'))
+    
 @Unidad.route("/unidad/buscar_unidad/<id>")
 @loguear_requerido
 def buscar_unidad(id):
