@@ -153,7 +153,7 @@ CREATE TABLE `modelo_equipo` (
 
 CREATE TABLE `tipo_adquisicion` (
   `idTipo_adquisicion` INT NOT NULL AUTO_INCREMENT,
-  `nombre_tipo_adquisicion` ENUM('COMPRA', 'ARRIENDO', 'PRÉSTAMO') NOT NULL,
+  `nombre_tipo_adquisicion` ENUM('COMPRA', 'ARRIENDO', 'PRÉSTAMO', 'COMODATTO') NOT NULL, 
   PRIMARY KEY (`idTipo_adquisicion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -538,7 +538,111 @@ INSERT INTO `estado_equipo` (`idEstado_equipo`, `nombreEstado_equipo`) VALUES
 INSERT INTO `tipo_adquisicion` (`idTipo_adquisicion`, `nombre_tipo_adquisicion`) VALUES
 (1, 'COMPRA'),
 (2, 'ARRIENDO'),
-(3, 'PRÉSTAMO');
+(3, 'PRÉSTAMO'),
+(4, 'COMODATTO');
+
+INSERT INTO `marca_equipo` (`idMarca_Equipo`, `nombreMarcaEquipo`) VALUES
+(1, 'LG'),
+(2, 'Samsung'),
+(3, 'VIEWSONIC'),
+(4, 'EPSON'),
+(5, 'CANON'),
+(6, 'HP'),
+(7, 'TOSHIBA'),
+(8, 'LENOVO'),
+(9, 'PHILCO');
+
+INSERT INTO `tipo_equipo` (`idTipo_equipo`, `nombreTipo_equipo`) VALUES
+(1, 'COMPUTADORES DE ESCRITORIO Y AIO'),
+(2, 'NOTEBOOK'),
+(3, 'IMPRESORA'),
+(4, 'ESCANER'),
+(5, 'PLOTTER'),
+(6, 'PROYECTOR'),
+(7, 'MONITOR');
+
+INSERT INTO `marca_tipo_equipo` (`idMarca_Equipo`, `idTipo_equipo`) VALUES
+(8, 1),
+(8, 2),
+(6, 2),
+(7, 2),
+(4, 3),
+(6, 3),
+(5, 3),
+(6, 4),
+(6, 5),
+(5, 5),
+(4, 6),
+(1, 6),
+(3, 6),
+(9, 6),
+(2, 7),
+(1, 7);
+
+INSERT INTO `modelo_equipo` (`nombreModeloequipo`, `idMarca_Tipo_Equipo`) VALUES
+('Thinkcentre M700z', 1),
+('Thinkcentre E73z', 1),
+('V510z', 1),
+('Thinkcentre E71z', 1),
+('V530', 1),
+('V330', 2),
+('Thinkpad P51', 2),
+('Thinkpad X250', 2),
+('V110', 2),
+('Thinkpad E431', 2),
+('Lenovo L470', 2),
+('V310', 2),
+('B40-80', 2),
+('Thinkpad E440', 2),
+('Thinkpad X260', 2),
+('Thinkpad X270', 2),
+('Thinkpad P50', 2),
+('Thinkpad L460', 2),
+('K14', 2),
+('440 G1', 3),
+('240 G5', 3),
+('340 G1', 3),
+('340 G2', 3),
+('C55 C5213K', 4),
+('DFX 9000', 5),
+('L375', 5),
+('L380', 5),
+('L395', 5),
+('L3110', 5),
+('L3250', 5),
+('L6191', 5),
+('L5190', 5),
+('L365', 5),
+('P1100w', 6),
+('Smart Tank 515', 6),
+('PIXMA G2160', 7),
+('700 S2 Flow', 8),
+('T520', 9),
+('Ipf785', 10),
+('H552A', 11),
+('H436A', 11),
+('EMP S5', 11),
+('H430', 11),
+('H553A', 11),
+('719A', 11),
+('723A', 11),
+('H839A', 11),
+('PH550G', 12),
+('PJD5123', 13),
+('PJD7383', 13),
+('VS13868', 13),
+('VS17337', 13),
+('PJD5134', 13),
+('3113N', 14),
+('29UB55', 12),
+('S22A33ANHL', 15),
+('20M35A', 16);
+
+INSERT INTO `proveedor` (`nombreProveedor`) VALUES
+('JUNJI'),
+('SONDA'),
+('Technosystems');
+
 
 
 --
