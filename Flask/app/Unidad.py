@@ -8,13 +8,10 @@ Unidad = Blueprint('Unidad', __name__, template_folder = 'app/templates')
 
 #ruta para poder enviar datos a la pagina principal de Unidad
 @Unidad.route('/Unidad')
-@Unidad.route('/Unidad/<page>')
 @loguear_requerido
-def UNIDAD(page=1):
-    page = int(page)
-    perpage = getPerPage()
-    offset = (page-1) * perpage
+def UNIDAD():
     cur = mysql.connection.cursor()
+    
     cur.execute("""
         SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad,
                u.direccionUnidad, u.idComuna, co.nombreComuna,
@@ -24,24 +21,22 @@ def UNIDAD(page=1):
         INNER JOIN comuna co on u.idComuna = co.idComuna
         LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
         LEFT JOIN equipo e on u.idUnidad = e.idUnidad
-        GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, u.idComuna, co.nombreComuna, co.idComuna
-        LIMIT %s OFFSET %s
-
-    """, (perpage, offset))
-    data = cur.fetchall() #SE GUARDATODO
+        GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, 
+                 u.idComuna, co.nombreComuna, co.idComuna, mo.nombreModalidad
+    """)
+    
+    data = cur.fetchall()  # Obtiene todas las unidades
+    
     cur.execute('SELECT * FROM comuna')
     c_data = cur.fetchall()
-    cur.execute("SELECT COUNT(*) FROM unidad")
-    total = cur.fetchone()
-    total = int(str(total).split(':')[1].split('}')[0])
-
+    
     cur.execute("SELECT * FROM modalidad")
     modalidades_data = cur.fetchall()
-
-
+    
     cur.close()
-    return render_template('Organizacion/Unidad.html', Unidad = data, comuna = c_data,
-                           page=page, lastpage= page < (total/perpage)+1, Modalidades=modalidades_data)
+    
+    return render_template('Organizacion/Unidad.html', Unidad=data, comuna=c_data, Modalidades=modalidades_data)
+
 
 #ruta y metodo para poder agregar una Unidad
 @Unidad.route('/add_Unidad', methods = ['POST'])
