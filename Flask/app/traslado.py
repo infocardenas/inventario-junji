@@ -177,57 +177,56 @@ def add_traslado():
 @administrador_requerido
 def edit_traslado(id):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("Se necesita ingresar para acceder a esa ruta")
         return redirect("/ingresar")
+    
+    if request.method == "POST":
+        # Obtener la nueva fecha del formulario
+        nueva_fecha = request.form.get("fechaTraslado")
+        if not nueva_fecha:
+            flash("La fecha de traslado es requerida")
+            return redirect(url_for("traslado.Traslado"))
+        
+        try:
+            # Actualizar la fecha del traslado en la base de datos
+            cur = mysql.connection.cursor()
+            cur.execute(
+                """
+                UPDATE traslado
+                SET fechatraslado = %s
+                WHERE idTraslado = %s
+                """,
+                (nueva_fecha, id),
+            )
+            mysql.connection.commit()
+            flash("Fecha de traslado actualizada correctamente")
+        except Exception as e:
+            print("Error al actualizar la fecha del traslado:", e)
+            flash("Ocurrió un error al actualizar la fecha del traslado")
+        finally:
+            cur.close()
+        
+        return redirect(url_for("traslado.Traslado"))
+    
+    # Si el método es GET, cargar los datos del traslado para renderizar el modal
     try:
         cur = mysql.connection.cursor()
         cur.execute(
             """
-                SELECT t.idTraslado, origen.idUnidad as idUnidadOrigen, destino.idUnidad as idUnidadDestino,
-                    t.fechatraslado, t.rutadocumentoTraslado,
-                    origen.nombreUnidad as nombreOrigen, destino.nombreUnidad as nombreDestino
-                FROM traslado t 
-                INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
-                INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
-                WHERE t.idTraslado = %s
-        """,
+            SELECT t.idTraslado, t.fechatraslado
+            FROM traslado t
+            WHERE t.idTraslado = %s
+            """,
             (id,),
         )
-        data = cur.fetchall()
-        cur.execute(
-            """
-            SELECT * 
-            FROM unidad u
-            ORDER BY u.nombreUnidad
-            """
-        )
-        unidades = cur.fetchall()
-        cur.execute(
-            """
-            SELECT e.*, 
-                me.nombreModeloequipo, 
-                te.nombreTipo_equipo, 
-                mae.nombreMarcaEquipo
-            FROM equipo e
-            INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
-            INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-            INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-            INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
-            ORDER BY e.idEquipo
-                    """
-        )
-        equipos = cur.fetchall()
+        traslado = cur.fetchone()
         return render_template(
             'Operaciones/editTraslado.html',
-            traslado=data[0],
-            agregar=True,
-            unidades=unidades,
-            equipo=equipos,
+            traslado=traslado,
         )
-
     except Exception as e:
-        #flash(e.args[1])
-        flash("Error al crear")
+        print("Error al cargar los datos del traslado:", e)
+        flash("Ocurrió un error al cargar los datos del traslado")
         return redirect(url_for("traslado.Traslado"))
 
 

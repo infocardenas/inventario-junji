@@ -54,11 +54,6 @@ document.getElementById("trasladoForm").addEventListener("submit", function (eve
                 // Cerrar modal y resetear formulario
                 $('#trasladoModal').modal('hide');
                 this.reset();
-
-                // ✅ Esperar 1.5s antes de recargar la página para evitar cortes visuales
-                setTimeout(() => {
-                    window.location.reload();
-                }, 1000);
             } else {
                 mostrarAlerta(`${data.message}`, "danger");
             }
@@ -271,4 +266,15 @@ function mostrarAlerta(mensaje, tipo = "success") {
         alertContainer.classList.add("d-none");
         alertContainer.innerHTML = "";
     }, 5000);
+}
+
+
+function cargarEditarTraslado(idTraslado, fechaTraslado) {
+    // Asignar la fecha al campo correspondiente
+    document.getElementById("editarFechaTraslado").value = fechaTraslado;
+
+    // Actualizar dinámicamente la acción del formulario con el ID del traslado
+    document.getElementById("editarTrasladoForm").action = `/traslado/edit_traslado/${idTraslado}`;
+
+    console.log("Cargando traslado:", idTraslado, fechaTraslado); // Depuración
 }

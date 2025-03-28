@@ -27,7 +27,7 @@ def Incidencia(page = 1):
             i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
             e.cod_inventarioEquipo, e.Num_serieEquipo, 
             te.nombreTipo_equipo, me.nombreModeloequipo,
-            i.numDocumentos
+            i.numDocumentos, i.estadoIncidencia
         FROM incidencia i
         INNER JOIN equipo e ON i.idEquipo = e.idEquipo
         INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
@@ -100,33 +100,23 @@ def add_incidencia():
             flash("Error: El equipo no existe.", "warning")
             cur.close()
             return redirect(url_for("equipo.Equipo"))
+        
 
-        # 4. Verificar si hay un funcionario asignado al equipo
+        #!CAMBIAR LOGICA PARA COMENZAR A TRABAJAR CON LOS ESTADOS DE LA INCIDENCIA
+        # 5. Verificar si existe una incidencia activa para el equipo
         cur.execute("""
-            SELECT f.rutFuncionario, f.nombreFuncionario, ea.idEquipo
-            FROM equipo_asignacion ea
-            JOIN asignacion a ON ea.idAsignacion = a.idAsignacion
-            JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
-            WHERE ea.idEquipo = %s AND a.ActivoAsignacion = 1
+            SELECT idIncidencia
+            FROM incidencia
+            WHERE idEquipo = %s
+            AND estadoIncidencia = 'pendiente'
         """, (datos['idEquipo'],))
-
-        funcionario_asignado = cur.fetchone()
-        print("Funcionario asignado:", funcionario_asignado)
-
-        if not funcionario_asignado:
-            flash("Error: No hay un funcionario asignado a este equipo.", "warning")
+        incidencia_activa = cur.fetchone()
+        if incidencia_activa:
+            flash("Error: Ya existe una incidencia pendiente para este equipo.", "warning")
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
-
-        # 5. Verificar si ya existe una incidencia activa para el equipo
-        cur.execute("SELECT COUNT(*) AS count FROM incidencia WHERE idEquipo = %s", (datos['idEquipo'],))
-        incidencia_existente = cur.fetchone()
-
-        if incidencia_existente and incidencia_existente['count'] > 0:
-            flash("Este equipo ya tiene una incidencia registrada.", "warning")
-            cur.close()
-            return redirect(url_for("incidencia.Incidencia"))
-
+        
+        #!------------------------------------------------------------------------
         # 6. Determinar el nuevo estado del equipo
         estados_incidencia = {
             'Robo': 3,             # Siniestro
@@ -246,47 +236,89 @@ def update_incidencia(id):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
-    print("AQUI COMIENZA EL UPDATE")
+
+    # Obtener datos del formulario
+    estadoIncidencia = request.form.get('estadoIncidencia', '').strip()
     nombreIncidencia = request.form.get('nombreIncidencia', '').strip()
     ObservacionIncidencia = request.form.get('observacionIncidencia', '').strip()
     fechaIncidencia = request.form.get('fechaIncidencia', '').strip()
-    
-    print("ESTE ES EL ID ",id)
-    print("ESTE ES EL NOMBRE ",nombreIncidencia)
-    print("ESTA ES LA OBSERVACION ",ObservacionIncidencia)
-    print("ESTA ES LA FECHA ",fechaIncidencia)
+
     # Si ObservacionIncidencia está vacío, asignar None (para almacenar NULL en la BD)
     if not ObservacionIncidencia:
         ObservacionIncidencia = None
 
-    # Asignar el estado del equipo según la incidencia
-    estados_incidencia = {
-        'Robo': 3,              # Siniestro
-        'Perdido': 4,           # Baja
-        'Siniestro': 5,
-        'Reparado': 6,
-        'Cambiado': 7,
-        'Dañado/Averiado': 8      
+    # Mapear estados de incidencia a estados de equipo
+    estados_equipo = {
+        'pendiente': {
+            'Robo': 3,              # Siniestro
+            'Perdido': 4,           # Baja
+            'Dañado/Averiado': 5    # Mantención
+        },
+        'abierta': {
+            'Robo': 3,
+            'Perdido': 4,
+            'Dañado/Averiado': 5
+        },
+        'servicio tecnico': 5,       # Mantención
+        'equipo reparado': None,     # Depende de si está asignado
+        'equipo cambiado': 2,        # En Uso
+        'cerrado': None              # Depende de si está asignado
     }
 
-    nuevo_estado = estados_incidencia.get(nombreIncidencia)
-    if nuevo_estado is None:
-        flash("Tipo de incidencia inválido.", "warning")
-        return redirect(url_for("incidencia.Incidencia"))
-
     cur = mysql.connection.cursor()
+
+    # Actualizar la incidencia
     cur.execute("""
         UPDATE incidencia
-        SET nombreIncidencia = %s,
+        SET estadoIncidencia = %s,
+            nombreIncidencia = %s,
             observacionIncidencia = %s,
             fechaIncidencia = %s
         WHERE idIncidencia = %s
-    """, (nombreIncidencia, ObservacionIncidencia, fechaIncidencia, id)) 
-
+    """, (estadoIncidencia, nombreIncidencia, ObservacionIncidencia, fechaIncidencia, id))
     mysql.connection.commit()
-    flash("Incidencia actualizada correctamente")
-    return redirect(url_for("incidencia.Incidencia"))
 
+    # Obtener el ID del equipo relacionado con la incidencia
+    cur.execute("SELECT idEquipo FROM incidencia WHERE idIncidencia = %s", (id,))
+    equipo = cur.fetchone()
+    if not equipo:
+        flash("No se encontró el equipo relacionado con la incidencia.", "danger")
+        return redirect(url_for("incidencia.Incidencia"))
+
+    idEquipo = equipo['idEquipo']
+
+    # Determinar el nuevo estado del equipo
+    nuevo_estado_equipo = None
+    if estadoIncidencia in ['pendiente', 'abierta']:
+        nuevo_estado_equipo = estados_equipo[estadoIncidencia].get(nombreIncidencia)
+    elif estadoIncidencia == 'servicio tecnico':
+        nuevo_estado_equipo = estados_equipo['servicio tecnico']
+    elif estadoIncidencia in ['equipo reparado', 'cerrado']:
+        # Verificar si el equipo está asignado a un funcionario
+        cur.execute("""
+            SELECT nombreFuncionario
+            FROM super_equipo
+            WHERE idEquipo = %s
+        """, (idEquipo,))
+        asignacion = cur.fetchone()
+        if asignacion and asignacion['nombreFuncionario']:
+            nuevo_estado_equipo = 2  # En Uso
+        else:
+            nuevo_estado_equipo = 1  # Sin Asignar
+    elif estadoIncidencia == 'equipo cambiado':
+        nuevo_estado_equipo = estados_equipo['equipo cambiado']
+
+    # Actualizar el estado del equipo si se determinó un nuevo estado
+    if nuevo_estado_equipo is not None:
+        cur.execute("""
+            UPDATE equipo
+            SET idEstado_equipo = %s
+            WHERE idEquipo = %s
+        """, (nuevo_estado_equipo, idEquipo))
+        mysql.connection.commit()
+
+    flash("Incidencia y estado del equipo actualizados correctamente.", "success")
+    return redirect(url_for("incidencia.Incidencia"))
 
 ALLOWED_EXTENSIONS = {'pdf'}
 
