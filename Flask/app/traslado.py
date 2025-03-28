@@ -107,7 +107,6 @@ def obtener_equipos_unidad(unidad_id):
     WHERE e.idUnidad = %s 
     AND e.idEstado_equipo IN (
         SELECT idEstado_equipo FROM estado_equipo 
-        WHERE nombreEstado_equipo IN ('SIN ASIGNAR', 'EN USO')
     )
     """, (unidad_id,))
 
@@ -142,8 +141,6 @@ def add_traslado():
                 INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
                 INNER JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
                 WHERE e.idUnidad = %s
-                AND (ee.nombreEstado_equipo = "SIN ASIGNAR"
-                OR ee.nombreEstado_equipo = "EN USO")
 
                         """,
                 (Origen,),
