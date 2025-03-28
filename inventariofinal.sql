@@ -55,9 +55,9 @@ CREATE TABLE `modalidad` (
 
 CREATE TABLE `unidad` (
   `idUnidad` int(11) NOT NULL AUTO_INCREMENT,
-  `nombreUnidad` varchar(45) DEFAULT NULL,
-  `contactoUnidad` varchar(45) DEFAULT NULL,
-  `direccionUnidad` varchar(45) CHARACTER SET armscii8 COLLATE armscii8_general_ci DEFAULT NULL,
+  `nombreUnidad` varchar(255) DEFAULT NULL,
+  `contactoUnidad` varchar(255) DEFAULT NULL,
+  `direccionUnidad` varchar(255) CHARACTER SET armscii8 COLLATE armscii8_general_ci DEFAULT NULL,
   `idComuna` int(11) NOT NULL,
   `idModalidad` int(11) DEFAULT NULL,
   PRIMARY KEY (`idUnidad`),
@@ -73,7 +73,7 @@ CREATE TABLE `unidad` (
 CREATE TABLE `funcionario` (
   `rutFuncionario` VARCHAR(10) PRIMARY KEY NOT NULL,
   `nombreFuncionario` VARCHAR(45) NOT NULL,
-  `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL') NOT NULL,
+  `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL','JARDIN') NOT NULL,
   `correoFuncionario` VARCHAR(45) NOT NULL,
   `idUnidad` INT NOT NULL,
   UNIQUE KEY `unique_correoFuncionario` (`correoFuncionario`),
@@ -153,7 +153,7 @@ CREATE TABLE `modelo_equipo` (
 
 CREATE TABLE `tipo_adquisicion` (
   `idTipo_adquisicion` INT NOT NULL AUTO_INCREMENT,
-  `nombre_tipo_adquisicion` ENUM('COMPRA', 'ARRIENDO', 'PRÉSTAMO') NOT NULL,
+  `nombre_tipo_adquisicion` ENUM('COMPRA', 'ARRIENDO', 'PRÉSTAMO', 'COMODATTO') NOT NULL, 
   PRIMARY KEY (`idTipo_adquisicion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -338,7 +338,8 @@ CREATE TABLE IF NOT EXISTS `super_equipo` (
   `idModelo_equipo` INT(11),
   `nombreModeloequipo` VARCHAR(45),
   `nombreFuncionario` VARCHAR(45),
-  `rutFuncionario` VARCHAR(20)
+  `rutFuncionario` VARCHAR(20),
+  `nombreIncidencia` VARCHAR(45)
 );
 --
 -- Estructura para la vista `super_equipo`
@@ -426,7 +427,11 @@ INSERT INTO `provincia` (`idProvincia`, `nombreProvincia`) VALUES
 --
 -- Volcado de datos para la tabla `comuna`
 --
+SET GLOBAL local_infile = 1;
 
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Insertar datos en comuna
 INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 (1, 'Concepcion', 1),
 (2, 'Coronel', 1),
@@ -462,11 +467,35 @@ INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 (32, 'Quilaco', 3),
 (33, 'Yumbel', 3);
 
+-- Cargar datos desde el archivo CSV a la tabla unidad
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/UNUDADES_add.csv'
+INTO TABLE unidad
+FIELDS TERMINATED BY ';'  
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad);
+
+-- Cargar datos desde el archivo CSV a la tabla funcionario
+LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/FUNCIONARIOS_add.csv'
+INTO TABLE funcionario
+FIELDS TERMINATED BY ';' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS
+(rutFuncionario, nombreFuncionario, cargoFuncionario, correoFuncionario, idUnidad);
+
+
+SET FOREIGN_KEY_CHECKS = 1;
+
+
 -- Insersion de datos para la tabla `modalidad`
 INSERT INTO `modalidad` (`idModalidad`, `nombreModalidad`) VALUES
 (1, 'CLASICO'),
 (2, 'ALTERNATIVO'),
-(3, 'OFICINA');
+(3, 'OFICINA'),
+(4, 'PMI'),
+(5, 'CECI');
 
 -- Insersion de datos para la tabla `estado_equipo`
 INSERT INTO `estado_equipo` (`idEstado_equipo`, `nombreEstado_equipo`) VALUES 
@@ -482,7 +511,120 @@ INSERT INTO `estado_equipo` (`idEstado_equipo`, `nombreEstado_equipo`) VALUES
 INSERT INTO `tipo_adquisicion` (`idTipo_adquisicion`, `nombre_tipo_adquisicion`) VALUES
 (1, 'COMPRA'),
 (2, 'ARRIENDO'),
-(3, 'PRÉSTAMO');
+(3, 'PRÉSTAMO'),
+(4, 'COMODATTO');
+
+INSERT INTO `marca_equipo` (`idMarca_Equipo`, `nombreMarcaEquipo`) VALUES
+(1, 'LG'),
+(2, 'Samsung'),
+(3, 'VIEWSONIC'),
+(4, 'EPSON'),
+(5, 'CANON'),
+(6, 'HP'),
+(7, 'TOSHIBA'),
+(8, 'LENOVO'),
+(9, 'PHILCO');
+
+INSERT INTO `tipo_equipo` (`idTipo_equipo`, `nombreTipo_equipo`) VALUES
+(1, 'COMPUTADORES DE ESCRITORIO Y AIO'),
+(2, 'NOTEBOOK'),
+(3, 'IMPRESORA'),
+(4, 'ESCANER'),
+(5, 'PLOTTER'),
+(6, 'PROYECTOR'),
+(7, 'MONITOR');
+
+INSERT INTO `marca_tipo_equipo` (`idMarca_Equipo`, `idTipo_equipo`) VALUES
+(8, 1),
+(8, 2),
+(6, 2),
+(7, 2),
+(4, 3),
+(6, 3),
+(5, 3),
+(6, 4),
+(6, 5),
+(5, 5),
+(4, 6),
+(1, 6),
+(3, 6),
+(9, 6),
+(2, 7),
+(1, 7);
+
+INSERT INTO `modelo_equipo` (`nombreModeloequipo`, `idMarca_Tipo_Equipo`) VALUES
+('Thinkcentre M700z', 1),
+('Thinkcentre E73z', 1),
+('V510z', 1),
+('Thinkcentre E71z', 1),
+('V530', 1),
+('V330', 2),
+('Thinkpad P51', 2),
+('Thinkpad X250', 2),
+('V110', 2),
+('Thinkpad E431', 2),
+('Lenovo L470', 2),
+('V310', 2),
+('B40-80', 2),
+('Thinkpad E440', 2),
+('Thinkpad X260', 2),
+('Thinkpad X270', 2),
+('Thinkpad P50', 2),
+('Thinkpad L460', 2),
+('K14', 2),
+('440 G1', 3),
+('240 G5', 3),
+('340 G1', 3),
+('340 G2', 3),
+('C55 C5213K', 4),
+('DFX 9000', 5),
+('L375', 5),
+('L380', 5),
+('L395', 5),
+('L3110', 5),
+('L3250', 5),
+('L6191', 5),
+('L5190', 5),
+('L365', 5),
+('P1100w', 6),
+('Smart Tank 515', 6),
+('PIXMA G2160', 7),
+('700 S2 Flow', 8),
+('T520', 9),
+('Ipf785', 10),
+('H552A', 11),
+('H436A', 11),
+('EMP S5', 11),
+('H430', 11),
+('H553A', 11),
+('719A', 11),
+('723A', 11),
+('H839A', 11),
+('PH550G', 12),
+('PJD5123', 13),
+('PJD7383', 13),
+('VS13868', 13),
+('VS17337', 13),
+('PJD5134', 13),
+('3113N', 14),
+('29UB55', 12),
+('S22A33ANHL', 15),
+('20M35A', 16);
+
+INSERT INTO `proveedor` (`nombreProveedor`) VALUES
+('JUNJI'),
+('SONDA'),
+('Technosystems');
+
+
+
+--
+-- para cargar los CSV es necesario seguir los siguientes pasosç
+--
+-- entrar en C:/ProgramData/MySQL/MySQL Server 8.0/Uploads y agregar los domumentos UNUDADES_add.csv y FUNCIONARIOS_add.csv 
+-- es nesesario dar los permisos temporales para la lectura de rutas es nesesario que se ejecute el sigiente comando 
+-- SHOW VARIABLES LIKE 'local_infile'; tiene que estar en on si esta en off ejecutar SET GLOBAL local_infile = 1;
+--
 
 COMMIT;
 

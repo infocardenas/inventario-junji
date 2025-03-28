@@ -12,11 +12,11 @@
             <div class="modal-body">
                 <form class="funcionarios" id="form_addFuncionarioModal" action="/add_funcionario" method="POST">
                     <!-- RUT del funcionario -->
-                    <div class="mb-3">
+                    <div class="mb-3" id="rutDiv">
                         <label for="rut_funcionario" class="form-label">RUT del funcionario<span style="color: red; margin-left: 5px">*</span></label>
                         <div style="display: flex; align-items: center;">
-                            <input type="text" class="form-control campo-obligatorio rut-input" id="rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guión" maxlength="8" style="width: 70%;">
-                            <span style="width: 10%; display: flex; justify-content: center;">-</span>
+                            <input type="text" class="form-control campo-obligatorio rut-input" id="rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese el RUT sin puntos ni guión" maxlength="8" style="width: 70%;" oninput="updateRutCompleto()">
+                            <span id="rutGuion" style="width: 10%; display: flex; justify-content: center;">-</span>
                             <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
                         </div>
                         <div class="text-error-message"></div>
@@ -43,7 +43,7 @@
                                 <option value="@junjired.cl">@junjired.cl</option>
                             </select>
                         </div>
-                        <div class="text-error-message""></div>
+                        <div class="text-error-message"></div>
                         <input type="hidden" class="correo-oculto" id="add_correo_oculto" name="correo_funcionario">
                     </div>
 
@@ -57,6 +57,7 @@
                             <option value="PROFESIONAL">PROFESIONAL</option>
                             <option value="TÉCNICO">TÉCNICO</option>
                             <option value="DIRECTOR REGIONAL">DIRECTOR REGIONAL</option>
+                            <option value="JARDIN">JARDIN</option>
                         </select>
                         <div class="text-error-message"></div>
                     </div>
@@ -83,6 +84,45 @@
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById("cargo_funcionario").addEventListener("change", function() {
+        var rutLabel = document.querySelector("label[for='rut_funcionario']");
+        var rutInput = document.getElementById("rut_funcionario");
+        var rutGuion = document.getElementById("rutGuion");
+        var rutVerificador = document.getElementById("rut_verificador");
+        
+        // Si el cargo es "JARDIN", cambia el formato del RUT
+        if (this.value === "JARDIN") {
+            rutLabel.innerHTML = "Escriba el código de unidad<span style='color: red; margin-left: 5px'>*</span>";
+            rutInput.removeAttribute("maxlength"); // Permite escribir sin restricción
+            rutInput.placeholder = "Ingrese el código de unidad"; 
+            rutGuion.style.display = "none"; // Oculta el guion
+            rutVerificador.style.display = "none"; // Oculta el campo del DV
+            rutInput.value = ""; // Limpia el valor actual
+        } else {
+            rutLabel.innerHTML = "RUT del funcionario<span style='color: red; margin-left: 5px'>*</span>";
+            rutInput.setAttribute("maxlength", "8"); // Restaura el límite original
+            rutInput.placeholder = "Ingrese el RUT sin puntos ni guión";
+            rutGuion.style.display = "flex"; // Muestra el guion
+            rutVerificador.style.display = "block"; // Muestra el campo del DV nuevamente
+        }
+    });
+
+    // Función para actualizar el valor del RUT completo
+    function updateRutCompleto() {
+        var rutInput = document.getElementById("rut_funcionario");
+        var rutCompletoInput = document.getElementById("rut_completo");
+
+        // Extrae solo la parte principal del RUT (sin el DV)
+        var rutPrincipal = rutInput.value.split('-')[0].trim();
+
+        rutCompletoInput.value = rutPrincipal; // Almacena solo el RUT principal
+    }
+</script>
+
+
+
 
 <!-- Modal para editar funcionario -->
 <div class="modal fade" id="editFuncionarioModal" tabindex="-1" aria-labelledby="editFuncionarioModalLabel" aria-hidden="true">

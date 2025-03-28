@@ -149,6 +149,7 @@ def crear_lista_modelo_tipo_marca():
 
     pass
 @equipo.route("/add_equipo", methods=["POST"])
+@administrador_requerido
 def add_equipo():
     if request.method == "POST":
         datos = {
@@ -437,8 +438,6 @@ def update_equipo(id):
         mysql.connection.rollback()
         flash(f"Error al actualizar el equipo: {str(error)}", 'danger')
         return redirect(url_for("equipo.Equipo"))
-
-
 
 
 

@@ -1,16 +1,13 @@
 {% extends "layout.html" %}
 {% block body %}
-<!-- todo esto es Jinja2 -->
 
 <div class="row">
   <div class="col-md-5">
-    <!-- ----- -->
     <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modal-add-unidad">
       <i class="bi bi-plus-lg"></i> Agregar
     </button>
-    <!--<button class="nav-button" onclick="showDiv()">Agregar</button>  #SE BORRA BOTON ANTERIOR-->
     <div id="error-message" style="display: none" class="error-message"></div>
-    <div class="card card-body" id="formulario" , style="display: none">
+    <div class="card card-body" id="formulario" style="display: none">
       <form action="/add_Unidad" method="POST" class="mi-formulario">
         <div class="form-group">
           <label for="codigo_unidad">Código de la Unidad: </label>
@@ -29,18 +26,14 @@
           <select class="form-select" aria-label="nombreComuna" name="idComuna">
             <option selected>Elija su Comuna</option>
             {% for comuna in comuna %}
-            <option value="{{ comuna.idComuna }}">
-              {{ comuna.nombreComuna }}
-            </option>
+            <option value="{{ comuna.idComuna }}">{{ comuna.nombreComuna }}</option>
             {% endfor %}
           </select>
           <label>Modalidad: </label>
           <select class="form-select" aria-label="nombreModalidad" name="idModalidad">
             <option selected>Elija la Modalidad</option>
             {% for modalidad in Modalidades %}
-            <option value="{{ modalidad.idModalidad }}">
-              {{ modalidad.nombreModalidad }}
-            </option>
+            <option value="{{ modalidad.idModalidad }}">{{ modalidad.nombreModalidad }}</option>
             {% endfor %}
           </select>
         </div>
@@ -49,53 +42,36 @@
     </div>
   </div>
   <h2>Unidad</h2>
-  <div style="
-      margin: auto;
-      padding: 0px;
-      width: 0px;
-      background: black;
-      text-align: center;
-    ">
-    <div style="display: flex">
-      <form action="/buscar_unidad" method="POST">
-        <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..." id="buscador"
-          onkeyup="busqueda('myTableBody')" />
-      </form>
-    </div>
-  </div>
   <div style="overflow-x: auto">
-    <table id="posts">
+    <table id="posts" class="display table table-bordered table-striped">
       <thead>
         <tr>
-          <td onclick="sortTable(0)">Código Unidad</td>
-          <td onclick="sortTable(1)">Nombre Unidad</td>
-          <td onclick="sortTable(2)">Contacto</td>
-          <td onclick="sortTable(3)">Dirección</td>
-          <td onclick="sortTable(4)">Comuna</td>
-          <td onclick="sortTable(5)">N° Equipos</td>
-          <td onclick="sortTable(5)">Modalidad</td>
-          <td>Acciones</td>
+          <th>Código Unidad</th>
+          <th>Nombre Unidad</th>
+          <th>Contacto</th>
+          <th>Dirección</th>
+          <th>Comuna</th>
+          <th>N° Equipos</th>
+          <th>Modalidad</th>
+          <th>Acciones</th>
         </tr>
       </thead>
-      <tbody id="myTableBody">
-        <!-- Se inicia iteracion for para mostrar todos los proveedores -->
+      <tbody>
         {% for ubi in Unidad %}
         <tr>
-          <td class="toCheck">{{ubi.idUnidad}}</td>
-          <td class="toCheck">{{ubi.nombreUnidad}}</td>
-          <td class="toCheck">{{ubi.contactoUnidad}}</td>
-          <td class="toCheck">{{ubi.direccionUnidad}}</td>
-          {% if Unidad.idComuna == comuna.idComuna %}
-          <td class="toCheck">{{ubi.nombreComuna}}</td>
-          {% endif %}
-          <td class="toCheck">{{ubi.num_equipos}}</td>
-          <td class="toCheck">{{ubi.nombreModalidad}}</td>
+          <td>{{ubi.idUnidad}}</td>
+          <td>{{ubi.nombreUnidad}}</td>
+          <td>{{ubi.contactoUnidad}}</td>
+          <td>{{ubi.direccionUnidad}}</td>
+          <td>{{ubi.nombreComuna}}</td>
+          <td>{{ubi.num_equipos}}</td>
+          <td>{{ubi.nombreModalidad}}</td>
           <td>
             <div class="dropdown">
               <button class="options-button">Opciones</button>
               <div class="dropdown-options">
-                <a href="/edit_Unidad/{{ubi.idUnidad}}" class="success-button" style="width: 95px">Editar</a>
-                <a href="/delete_Unidad/{{ubi.idUnidad}}" class="btn btn-danger delete-button">Eliminar</a>
+                <a href="/edit_Unidad/{{ubi.idUnidad}}" class="success-button">Editar</a>
+                <a href="/delete_Unidad/{{ubi.idUnidad}}" class="btn btn-danger">Eliminar</a>
                 <a href="/mostrar_asociados_unidad/{{ubi.idUnidad}}" class="info-button">Equipos</a>
               </div>
             </div>
@@ -104,10 +80,28 @@
         {% endfor %}
       </tbody>
     </table>
-
-    <script src="../static/js/main.js"></script>
-    <script src="../static/js/Equipo/equipo.js"></script>
-    {% include 'Organizacion/unidad.modal.html'%}
-    {% endblock %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+    <script>
+      $(document).ready(function() {
+        let table = $('#posts').DataTable({
+          "paging": true,
+          "searching": true,
+          "ordering": true,
+          "info": true,
+          "lengthChange": false,
+          "pageLength": 10,
+          "language": {
+            "search": "<div style='text-align: center; width: 100%;'>Buscar Unidad:</div>"
+          }
+        });
+        
+        // Centrar el campo de búsqueda
+        $("#posts_filter").css({"text-align": "center", "width": "100%"});
+      });
+    </script>
+  
+    {% include 'Organizacion/unidad.modal.html' %}
+  {% endblock %}
   </div>
-</div>
+

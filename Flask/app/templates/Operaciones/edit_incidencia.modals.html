@@ -18,14 +18,23 @@
                     <input class="no-delete-value" type="hidden" id="edit_idEquipo" name="idEquipo" value="">
 
                     <div class="mb-3">
+                        <label for="edit_estadoIncidencia" class="form-label">Estado de la Incidencia</label>
+                        <select class="form-control" id="edit_estadoIncidencia" name="estadoIncidencia" required>
+                            <option value="" disabled selected>Seleccione estado de la incidencia</option> <!-- Placeholder -->
+                            <option value="pendiente">Pendiente</option>
+                            <option value="cerrado">Cerrado</option>
+                            <option value="abierta">Abierta</option>
+                            <option value="servicio tecnico">Servicio Tecnico</option>
+                            <option value="equipo reparado">Equipo Reparado</option>
+                            <option value="equipo cambiado">Equipo Cambiado</option>
+                        </select>
+
+                    <div class="mb-3">
                         <label for="edit_nombreIncidencia" class="form-label">Tipo de Incidencia</label>
                         <select class="form-control" id="edit_nombreIncidencia" name="nombreIncidencia" required>
                             <option value="" disabled selected>Seleccione tipo de incidencia</option> <!-- Placeholder -->
                             <option value="Robo">Robo</option>
                             <option value="Perdido">Perdido</option>
-                            <option value="Siniestro">Siniestro</option> 
-                            <option value="Reparado">Reparado</option>
-                            <option value="Cambiado">Cambiado</option> 
                             <option value="Dañado/Averiado">Dañado/Averiado</option>   
                         </select>
                     </div>
