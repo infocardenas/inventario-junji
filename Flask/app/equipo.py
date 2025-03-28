@@ -443,8 +443,6 @@ def update_equipo(id):
 
 
 
-
-
 @equipo.route("/delete_equipo/<id>", methods=["POST", "GET"])
 @administrador_requerido
 def delete_equipo(id):
