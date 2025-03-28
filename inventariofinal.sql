@@ -469,7 +469,7 @@ INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 
 -- Cargar datos desde el archivo CSV a la tabla unidad
 -- LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/UNUDADES_add.csv'
-LOAD DATA INFILE 'var/lib/mysql-files/UNIDADES_add.csv'
+LOAD DATA INFILE 'var/lib/mysql-files/UNUDADES_add.csv'
 INTO TABLE unidad
 FIELDS TERMINATED BY ';'  
 ENCLOSED BY '"'
