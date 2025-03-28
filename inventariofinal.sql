@@ -468,7 +468,8 @@ INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 (33, 'Yumbel', 3);
 
 -- Cargar datos desde el archivo CSV a la tabla unidad
-LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/UNUDADES_add.csv'
+-- LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/UNUDADES_add.csv'
+LOAD DATA INFILE 'var/lib/mysql-files/UNIDADES_add.csv'
 INTO TABLE unidad
 FIELDS TERMINATED BY ';'  
 ENCLOSED BY '"'
@@ -477,7 +478,8 @@ IGNORE 1 ROWS
 (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad);
 
 -- Cargar datos desde el archivo CSV a la tabla funcionario
-LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/FUNCIONARIOS_add.csv'
+-- LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/FUNCIONARIOS_add.csv'
+LOAD DATA INFILE 'var/lib/mysql-files/FUNCIONARIOS_add.csv'
 INTO TABLE funcionario
 FIELDS TERMINATED BY ';' 
 ENCLOSED BY '"'
