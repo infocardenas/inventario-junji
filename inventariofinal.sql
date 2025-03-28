@@ -73,7 +73,7 @@ CREATE TABLE `unidad` (
 CREATE TABLE `funcionario` (
   `rutFuncionario` VARCHAR(10) PRIMARY KEY NOT NULL,
   `nombreFuncionario` VARCHAR(45) NOT NULL,
-  `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL','JARDIN') NOT NULL,
+  `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL') NOT NULL,
   `correoFuncionario` VARCHAR(45) NOT NULL,
   `idUnidad` INT NOT NULL,
   UNIQUE KEY `unique_correoFuncionario` (`correoFuncionario`),
