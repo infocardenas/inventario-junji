@@ -13,7 +13,7 @@ schema_agregar_funcionario = {
         'type': 'string',
         'minlength': 9,
         'maxlength': 10,
-        'regex': r'^\d{7,8}(-[0-9kK]{1})?$'  # Aceptar formato 1234567-K o 12345678-9
+        'regex': r'^\d{7,8}-[0-9kK]$'  # Aceptar formato 1234567-K o 12345678-9
     },
     'nombre_funcionario': {
         'type': 'string',
@@ -23,7 +23,7 @@ schema_agregar_funcionario = {
     },
     'cargo_funcionario': {
         'type': 'string',
-        'allowed': ['ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL','JARDIN'],  # Valores permitidos
+        'allowed': ['ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL'],  # Valores permitidos
     },
     'codigo_Unidad': {
         'type': 'string',
@@ -116,6 +116,8 @@ def Funcionario(page = 1):
         page=page, lastpage= page < (total/perpage)+1
         )
 
+
+#agregar funcionario
 @funcionario.route('/add_funcionario', methods=['POST'])
 @administrador_requerido
 def add_funcionario():
@@ -124,43 +126,26 @@ def add_funcionario():
         return redirect("/ingresar")
     
     if request.method == 'POST':
-        # Obtener los datos del formulario
-        rut_funcionario = request.form.get('rut_funcionario', '').strip()
-        nombre_funcionario = request.form.get('nombre_funcionario', '').strip()
-        cargo_funcionario = request.form.get('cargo_funcionario', '').strip()
-        codigo_Unidad = request.form.get('codigo_Unidad', '').strip()
-        correo_funcionario = request.form.get('correo_funcionario', '').strip()
-
-        # Eliminar puntos y guiones del RUT
-        rut_funcionario = rut_funcionario.replace('.', '').replace('-', '')
-
-        # Validación de longitud del RUT
-        if len(rut_funcionario) < 7 or len(rut_funcionario) > 8:
-            flash("Error: El RUT debe contener entre 7 y 8 dígitos", 'warning')
-            return redirect(url_for('funcionario.Funcionario'))
-
-        # Si el cargo es "JARDIN", no requerimos el guion ni el DV
-        if cargo_funcionario == "JARDIN":
-            rut_funcionario = rut_funcionario.split('-')[0]  # Eliminar el DV si es jardín
-
-        # Validar los datos con el esquema
         data = {
-            'rut_funcionario': rut_funcionario,
-            'nombre_funcionario': nombre_funcionario,
-            'cargo_funcionario': cargo_funcionario,
-            'codigo_Unidad': codigo_Unidad,
-            'correo_funcionario': correo_funcionario
+            'rut_funcionario': request.form.get('rut_funcionario', '').strip(),
+            'nombre_funcionario': request.form.get('nombre_funcionario', '').strip(),
+            'cargo_funcionario': request.form.get('cargo_funcionario', '').strip(),
+            'codigo_Unidad': request.form.get('codigo_Unidad', '').strip(),
+            'correo_funcionario': request.form.get('correo_funcionario', '').strip()
         }
 
         v = Validator(schema_agregar_funcionario)
         if not v.validate(data):
-            errores = v.errors
+            errores = v.errors  # Diccionario con los errores específicos por campo
             for campo, mensaje in errores.items():
-                flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
+                if "min length is 9" in mensaje:
+                    flash("Error: El RUT debe contener 7 u 8 dígitos", 'warning')
+                else:
+                    flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
             return redirect(url_for('funcionario.Funcionario'))
         
         try:
-            # Insertar los datos en la base de datos
+            # Insertar datos en la base de datos
             cur = mysql.connection.cursor()
             cur.execute("""
                         INSERT INTO funcionario 
@@ -168,9 +153,9 @@ def add_funcionario():
                         cargoFuncionario, idUnidad, correoFuncionario) 
                         VALUES (%s, %s, %s, %s, %s)
                         """, 
-                        (rut_funcionario, nombre_funcionario, 
-                         cargo_funcionario, codigo_Unidad, 
-                         correo_funcionario))
+                        (data['rut_funcionario'], data['nombre_funcionario'], 
+                         data['cargo_funcionario'], data['codigo_Unidad'], 
+                         data['correo_funcionario']))
             mysql.connection.commit()
             flash('Funcionario agregado correctamente', "success")
             return redirect(url_for('funcionario.Funcionario'))
@@ -191,7 +176,7 @@ def add_funcionario():
         except Exception as e:
             flash(f"Error al crear el funcionario: {str(e)}", 'danger')
             return redirect(url_for('funcionario.Funcionario'))
-        
+
 # Editar funcionario
 @funcionario.route('/edit_funcionario', methods=['POST'])
 @administrador_requerido
@@ -287,4 +272,3 @@ def buscar_funcionario(id):
         Unidad = unidades, 
         page=1, lastpage=True
         )
-
