@@ -427,9 +427,9 @@ INSERT INTO `provincia` (`idProvincia`, `nombreProvincia`) VALUES
 --
 -- Volcado de datos para la tabla `comuna`
 --
-SET GLOBAL local_infile = 1;
+-- SET GLOBAL local_infile = 1;
 
-SET FOREIGN_KEY_CHECKS = 0;
+-- SET FOREIGN_KEY_CHECKS = 0;
 
 -- Insertar datos en comuna
 INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
@@ -469,26 +469,26 @@ INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 
 -- Cargar datos desde el archivo CSV a la tabla unidad
 -- LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/UNUDADES_add.csv'
-LOAD DATA INFILE 'var/lib/mysql-files/UNUDADES_add.csv'
-INTO TABLE unidad
-FIELDS TERMINATED BY ';'  
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS
-(idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad);
+-- LOAD DATA INFILE 'var/lib/mysql-files/UNUDADES_add.csv'
+-- INTO TABLE unidad
+-- FIELDS TERMINATED BY ';'  
+-- ENCLOSED BY '"'
+-- LINES TERMINATED BY '\n'
+-- IGNORE 1 ROWS
+-- (idUnidad, nombreUnidad, contactoUnidad, direccionUnidad, idComuna, idModalidad);
 
 -- Cargar datos desde el archivo CSV a la tabla funcionario
 -- LOAD DATA INFILE 'C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/FUNCIONARIOS_add.csv'
-LOAD DATA INFILE 'var/lib/mysql-files/FUNCIONARIOS_add.csv'
-INTO TABLE funcionario
-FIELDS TERMINATED BY ';' 
-ENCLOSED BY '"'
-LINES TERMINATED BY '\n'
-IGNORE 1 ROWS
-(rutFuncionario, nombreFuncionario, cargoFuncionario, correoFuncionario, idUnidad);
+-- LOAD DATA INFILE 'var/lib/mysql-files/FUNCIONARIOS_add.csv'
+-- INTO TABLE funcionario
+-- FIELDS TERMINATED BY ';' 
+-- ENCLOSED BY '"'
+-- LINES TERMINATED BY '\n'
+-- IGNORE 1 ROWS
+-- (rutFuncionario, nombreFuncionario, cargoFuncionario, correoFuncionario, idUnidad);
 
 
-SET FOREIGN_KEY_CHECKS = 1;
+--  SET FOREIGN_KEY_CHECKS = 1;
 
 
 -- Insersion de datos para la tabla `modalidad`
@@ -616,17 +616,151 @@ INSERT INTO `modelo_equipo` (`nombreModeloequipo`, `idMarca_Tipo_Equipo`) VALUES
 INSERT INTO `proveedor` (`nombreProveedor`) VALUES
 ('JUNJI'),
 ('SONDA'),
-('Technosystems');
+('Technosystems'); 
 
 
 
---
--- para cargar los CSV es necesario seguir los siguientes pasosç
---
--- entrar en C:/ProgramData/MySQL/MySQL Server 8.0/Uploads y agregar los domumentos UNUDADES_add.csv y FUNCIONARIOS_add.csv 
--- es nesesario dar los permisos temporales para la lectura de rutas es nesesario que se ejecute el sigiente comando 
--- SHOW VARIABLES LIKE 'local_infile'; tiene que estar en on si esta en off ejecutar SET GLOBAL local_infile = 1;
---
+INSERT INTO `unidad` (`idUnidad`, `nombreUnidad`, `contactoUnidad`, `direccionUnidad`, `idComuna`, `idModalidad`) VALUES
+(8101098, 'Direccion Regional', '412125510', 'ohiggins poniente 77', 1, 3),
+(8101001, 'PEQUENA PEWEN', '44921213', 'PJE C 74 POBL TENIENTE MERINO I BARRIO NORTE', 1, 1),
+(8101002, 'CARACOLITO','443671761' , 'PASAJE 11 N 289 POBLACION TENIENTE MERINO II CONCEPCION', 1, 1),
+(8101003, 'NINOS EN ACCION', '443671764', 'AV LAGUNA REDONDA 2320', 1, 1),
+(8101005, 'PETER PAN', 'sin contacto', 'CAMILO HENRIQUEZ 2505 CONCEPCION', 1, 1),
+(8101006, 'COSTANERA SUR', '443670124', 'RANCAGUA 219 PEDRO DE VALDIVIA BAJO CONCEPCION', 1, 1),
+(8101031, 'VILLA CAP', '443671776', 'AVENIDA PRINCIPAL 364 VILLA CAP CONCEPCION', 1, 1),
+(8101032, 'UBB COLLAO ENTRE VALLES', '443670117', 'CAMINO A NONGUEN 430 CONCEPCION', 1, 1),
+(8101033, 'MAGALLANES', '443671778', 'MAGALLANES 1470 TERRAZAS LAS LOMAS CONCEPCION', 1, 1),
+(8101041, 'LOS CISNES', '443671781', 'LOS PIBES 40 POBL LAS LAGUNAS BARRIO NORTE', 1, 1),
+(8101042, 'LO GALINDO', '443670115', 'AV ANDALIEN 1359 BARRIO MODELO SECTOR SANTA SABINA', 1, 1),
+(8101044, 'HIJOS DE LA TIERRA', '443671783', 'GALVARINO 1080 CONCEPCION', 1, 1),
+(8102001, 'BERTA', '443671503', 'Millabu 543 Poblacion Berta', 2, 1),
+(8102046, 'PEUMAYEN', '443671505', 'ANDALIEN 3475 VILLA ESCUADRON CORONEL', 2, 1),
+(8102050, 'LIHUEN', '443671506', 'Juan Leal Silva 1213 La Pena', 2, 1),
+(8102051, 'SUENOS DE ESPERANZA DE GABRIELA MISTRAL', '443671507', 'Avenida Las Torres Ex El Maite N 3357', 2, 1),
+(8103001, 'CHIGUAY', '443670127', 'La Marina 519', 3, 1),
+(8103002, 'LA LEONERA', '443671787', 'Los Andes Esquina Escocia s n La Leonera', 3, 1),
+(8103003, 'HEROES DEL SOL', '443671790', 'La Marina s n', 3, 1),
+(8103009, 'FUTURA ESPERANZA', '443671791', 'Italia 600 Villa La Leonera', 3, 1),
+(8106001, 'CALERO SUR', '443671508', 'Arturo Perez Canto s n Pob Calero Sur', 6, 1),
+(8106002, 'BALDOMERO LILLO', '443671509', 'Evaristo Azocar 62 Fundicion Lota', 6, 1),
+(8106003, 'MATIAS COUSINO', '443671510', 'Juan Manuel del Valle 498 Lota Alto', 6, 1),
+(8106004, 'LAS ABEJITAS', '443671511', 'Poblacion libertad calle miramar s n Lota', 6, 1),
+(8107001, 'LORD COCHRANE', '443671473', 'Yerrbas Buenas 30 Penco', 7, 1),
+(8107002, 'MI MUNDO DE DULZURA', '443671474', 'Las Heras 75', 7, 1),
+(8107021, 'PEQUENOS CONQUISTADORES', '443671480', 'Esteban de Soza 440 lomas del Conquistador Penco', 7, 1),
+(8107022, 'TESOROS DEL MAR', '443671481', 'Camino viejo n 141 Pob Mejoreros', 7, 1),
+(8108001, 'NUESTRA SENORA DE LAS NIEVES', '443671513', 'Avda 05 de octubre 375 boca sur', 8, 1),
+(8108015, 'ESPUMA DE MAR', '443671517', 'Calle Diguillin n 956 Pob Cardenal Raul Silva Henriquez', 8, 1),
+(8108025, 'NINOS DEL MAR', '443671520', 'Calle Piedra de Francia n 300 Sector Valle La Piedra Boca Sur', 8, 1),
+(8110005, 'LA GLORIA', '443671482 - 443671483 - 443671484', 'AURELIO COVENA 495 HIGUERAS THNO', 10, 1),
+(8110006, 'PATRICIO LYNCH', '443671485 - 443671486 - 443671487', 'SAN MIGUEL 526 POBLACION PATRICIO LYNCH TALCAHUANO', 10, 1),
+(8110032, 'CRUZ DEL SUR', '443671492', 'VOLCAN HUDSON 315 POBLACION CRUZ DEL SUR TALCAHUANO', 10, 1),
+(8111001, 'BRISAS DEL MAR', '443671497', 'Esperanza 640 Poblacion 18 de septiembre Tome', 11, 1),
+(8111028, 'RAFAEL', '443671502', 'Ohiggins 460 Rafael', 11, 1),
+(8111029, 'LOS BLOQUES', 'sin contacto', 'Calle Bio Bio 2730 Loma Larga Tome', 11, 1),
+(8112001, 'ALONDRA', '443671462', 'QUINCHAO S N POB PRESIDENTE BULNES', 12, 1),
+(8112002, 'CABO AROCA', '443671463', 'SUIZA 2310 POBLACION CABO AROCA HUALPEN', 12, 1),
+(8112003, 'MIYALI', '443671464', 'GRAN BRETANA ESQ YUGOESLAVIA S N POBLACION 18 DE SEPTIEMBRE HUALPEN', 12, 1),
+(8112004, 'WALT DISNEY', '443671465', 'BELGICA ESQUINA SUIZA ARMANDO ALARCON DEL CANTO HUALPEN', 12, 1),
+(8112005, 'BARQUITO DE ILUSIONES', '443671467', 'QUEMCHI 8375 POBLACION LAN C HUALPEN', 12, 1),
+(8112006, 'PASO A PASITO', '443671468', 'RUMANIA 2455', 12, 1),
+(8112007, 'RENE SCHNEIDER', '443671799', 'MULCHEN 171 POB RENE SCHNEIDER', 12, 1),
+(8112008, 'BOTECITO DE LENGA', '443671471', 'EL FARO 348 CALETA LENGA HUALPEN', 12, 1),
+(8112016, 'SONRISAS DE COLORES RECONQUISTA', '443671472', 'LA RECONQUISTA 4185 POBLACION CRISPULO GANDARA HUALPEN', 12, 1),
+(8201001, 'BOCA LEBU', '443671802', 'POBLACION DIEGO PORTALES LUIS SAGARDIA S N', 13, 1),
+(8201002, 'EL PUENTE', '443671803', 'Diego Duble Urrutia S N Pobl Cornelio Saavedra Lebu', 13, 1),
+(8201018, 'PESCADORES DE SUENOS', '443671808', 'Ignacio Carrera Pinto N 1301', 13, 1),
+(8201019, 'MAR DE ESPERANZA', '443671809', 'Calle Esperanza N 1133 poblacion 27 de febrero', 13, 1),
+(8202012, 'FLORECER DEL BOSQUE', '443671811', 'ConTuLmo Alto S N Carampangue', 14, 1),
+(8202021, 'TIERRA DE NINOS FELICES', '443671812', 'Volcan Llaima N 178 Pobl Villa Don Carlos Arauco', 14, 1),
+(8202033, 'GIRASOLES DE CARAMPANGUE', '443671815' , 'Manuel Luengo N 40 Carampangue Arauco Calle Caupolican N 340 Local 3 5 Arauco Corr', 14, 1),
+(8202044, 'TRAWUN ANTU', '443671817', 'Villa El Mirador Calle Los Alelies N 19 Arauco', 14, 1),
+(8203006, 'ENCANTOS DE SAYEN', '443671832' , 'San Martin N 60 Interior Esc Homero Vigueras Canete', 15, 1),
+(8203029, 'SOL NACIENTE', '443671838', 'Camino Publico Ruta P 60 N 780 Huillinco Alto Canete', 15, 1),
+(8203030, 'ANTU RAYEN', '443671839', 'Bella Hortensia N 426 Villa Tucapel Canete', 15, 1),
+(8205001, 'GOTITAS DE AMOR', '443670112', 'Luis Cruz Martinez S N Pobl Eleuterio Ramirez Curanilahue', 17, 1),
+(8205002, 'GABRIELA MISTRAL', '443671819', 'Psj 5 S N Pobl Eleuterio Ramirez Curanilahue', 17, 1),
+(8205026, 'PINTANDO SONRISAS', 'sin contacto', 'Calle Arturo Prat N 591 Curanilahue', 17, 1),
+(8206038, 'LIWEN PU PICHIKECHE AYINCO', 'sin contacto', 'Calle La Virgen N 66 Cerro Alto Los Alamos', 18, 1),
+(8206040, 'GOLONDRINAS', 'sin contacto', 'Av Diego Portales S N Cerro Alto Norte Los Alamos', 18, 1),
+(8301001, 'KENNEDY', '443671716', 'Los Canelos 161 Pobl Keneddy', 20, 1),
+(8301002, 'SALA CUNA RENACER', '443671717', 'Colo Colo 1245', 20, 1),
+(8301003, '21 DE MAYO', 'sin contacto', 'Cholguague 1290 Pobl Paillihue', 20, 1),
+(8301004, 'PRINCIPITO', '443671719', 'Volcan Calbuco 393 Pobl Dgo Contreras G', 20, 1),
+(8301029, 'P HISTORIADORES', '443671727', 'Avda Oriente N 1891 Villa Los Historiadores', 20, 1),
+(8301032, 'ISLA DE LOS TESOROS', '443671728', 'Calle Costanera Quilque 1510 Avda Padre Hurtado', 20, 1),
+(8301048, 'HUELLAS DE AMOR', 'sin contacto', 'Marina del Rey N 1257', 20, 1),
+(8301052, 'KETRAWE', '443671733', 'Avda Oriente N 2200 Parque Lauquen', 20, 1),
+(8301053, 'TREN DE MIS SUENOS', 'sin contacto', 'Rio Huaqui N 275 Pobl 21 de Mayo', 20, 1),
+(8301059, 'BROTES DE CHACAY', '443671740', 'Km 18 camino Antuco sector Chacayal Norte', 20, 1),
+(8304010, 'MI PEQUENO MUNDO', '443671751', 'Violeta Parra N 2402 Altos del Laja', 23, 1),
+(8304011, 'RENACER DE CAPPONI', '443671752', 'Roma N 16 Villa Capponi', 23, 1),
+(8305022, 'LELIANTU', '443671743', 'Unzueta N 0250', 24, 1),
+(8306011, 'ELUNEY', '443671753', 'Juan Paredes Pasmino N 1904 pobl Nahuelbuta', 25, 1),
+(8307001, 'TRENCITO DE COIGUE', '443671754', 'Joaquin Diaz Garces S N Coigue', 26, 1),
+(8311001, 'ABEJITAS', '443671744', 'Carrera S N', 27, 1),
+(8312008, 'HERENCIA DE HUEPIL', 'sin contacto', 'Arturo Prat 375 Huepil', 28, 1),
+(8101010, 'LOS DUENDECITOS TRAVIESOS', '443671771', 'MANUEL GUTIERREZ 1745 BARRIO NORTE CONCEPCION', 1, 2),
+(8101016, 'RAYITO DE SOL KM 10', '443671775', 'LOS ALAMOS 327 VILLA JUAN RIQUELME LARAY KM10', 1, 2),
+(8106011, 'PELUSITA', '443671512', 'Pob 9 de Agosto Calle Chacabuco s n', 6, 2),
+(8107003, 'LAS CUNCUNITAS', '443671475', 'Uno Sur s n La Greda', 7, 2),
+(8107004, 'MANITOS PINTADAS', '443671476', 'Independencia s n Pob Jaime Lea Plaza', 7, 2),
+(8107005, 'CAMINITO DE COLORES', '443671478', 'Pasaje San Francisco C Calle Victoria N 35 Sector la Ermita Penco', 7, 2),
+(8107006, 'FLORCITA SILVESTRE', '443671479', 'Venecia n 130 Villa Italia Lirquen Penco', 7, 2),
+(8108003, 'LAS MANITOS', 'sin contacto', 'Pasaje las Torres s n Candelaria', 8, 2),
+(8108004, 'PEDACITO DE CIELO', 'sin contacto', 'Pasaje 1 n 431 Sector Los Bloques de Michaihue', 8, 2),
+(8108005, 'LOS CARINOSITOS', '443671516', 'Avda Daniel Belmar n 680 Boca Sur', 8, 2),
+(8110014, 'LUCERITO', '443671488', 'TARAPACA 830 POB DIEGO PORTALES THNO', 10, 2),
+(8110017, 'SANSANITO', '443671489', 'PUNTA LILEMO 660', 10, 2),
+(8110023, 'ARCOIRIS DE AMOR', '443671491', 'PLAYA EL GALGO 1283 VILLA BADARAN THNO', 10, 2),
+(8111007, 'MI PEQUENO MUNDO', '443671498', 'Avda Bellavista Central 0890 Bellavista Interior Escuela E 420', 11, 2),
+(8111010, 'HOJITAS DE PARRA', '443671499', 'Av Cardenal Samorey s n Punta de Parra', 11, 2),
+(8111013, 'GOTITAS DE AMOR', '443671500', 'Los Almendros 683', 11, 2),
+(8202003, 'ESTRELLITA DE MAR', 'sin contacto', 'ALONSO DE ERCILLA S N LARAQUETE', 14, 2),
+(8204001, 'LOS CARINOSITOS', '443671840', 'Esmeralda S N sector Villa Rivas', 16, 2),
+(8205007, 'LAS ARDILLITAS', '443671822', 'Mina Peumo S N Poblacion Pioneros del Carbon', 17, 2),
+(8205025, 'LA FAMILIA', '443671825', 'Santa Elena S N', 17, 2),
+(8207001, 'CAU CURA', '443671841', 'Ohiggins S N Quidico', 19, 2),
+(8301007, 'CARINOSITOS', 'sin contacto', 'Otawa 880 Pobl Montreal', 20, 2),
+(8301010, 'CASITA DE MIS SUENOS', '443671725', 'Lago Todos los Santos 1484 Villa Departamental', 20, 2),
+(8301012, 'EL HORIZONTE', '443671726', 'Av Estanislao Anguita con Bombero Rioseco', 20, 2),
+(8303001, 'NUBELUZ', '443671741', 'Escuela E 1104 Charrua', 22, 2),
+(8311008, 'LAS CAMPANITAS RINCONADA', '443671745', 'Rinconada Estacion Medico Rural', 27, 2),
+(8314003, 'RALCO LEPOY', '443671747', 'Villa Ralco S N', 29, 2),
+(8102043, 'GOTITA DE FE', '443671504', 'Avenida Escuadron N 3300 Lagunillas 3', 2, 4),
+(8104012, 'GRANERILLOS RAYITO DE LUZ', '443671794', 'GRANERILLOS S N EX ESCUELA BASICA G 455 GRANERILLOS', 4, 4),
+(8104017, 'SEMBRADORES DE LUZ', '443671797', 'ESCUELA CANCHA LOS MONTEROS FLORIDA', 4, 4),
+(8105007, 'CONSTRUYENDO FUTURO', 'sin contacto', 'CALLE RIO BIOBIO 298 POBLACION ENTRE RIOS', 5, 4),
+(8108018, 'MIS PRIMEROS PASOS', '443671518', 'Avda Las Torres 3468 Primera Etapa San Pedro de La Costa', 8, 4),
+(8110040, 'ESTRELLITAS DE MAR', '443671493', 'PRINCIPAL 80 CALETA TUMBES', 10, 4),
+(8110043, 'SONRISAS DE NINOS I', '443671494', 'BENAVENTE 1125 COLEGIO SIMONS TALCAHUANO', 10, 4),
+(8110045, 'LUZ DE ESPERANZA', '443671495', 'CATEMU 7132 DIEGO PORTALES II TALCAHUANO', 10, 4),
+(8110049, 'SONRISAS DE NINOS II', '443671496', 'BENAVENTE 1525 COLEGIO SIMONS TALCAHUANO', 10, 4),
+(8301047, 'PASITO SEGURO', '443671731', 'Bombero Francisco Rioseco 2212', 20, 4),
+(8301050, 'PATA DE GALLINA', '443671732', 'Sector Pata de Gallina Km 2 4', 20, 4),
+(8301057, 'LA PERLITA', '443671739', 'Escuela G 923 Teniente Merino La Perla S N', 20, 4),
+(8314029, 'KUPULWE', '443671749', 'Comunidad Trapa Trapa S N', 29, 4),
+(8314040, 'EL BARCO', 'sin contacto', 'Sector El Barco', 29, 4),
+(8203007, 'JUGANDO CANTANDO', '443671833' , 'Escuela Garcia Hurtado de Mendoza sector rural Ponotro s n comuna Canete', 15, 4),
+(8203020, 'RELMU RAYEN', '443671836', 'Escuela Paicavi Sector paicavi grande Canete', 15, 4),
+(8203022, 'SEMILLITAS TRANGUILBORO', 'sin contacto', 'Tranguilboro sin numero Canete', 15, 4),
+(8205014, 'LOS NINOS SON FELICES', '443671823', 'Ismael Jara n s Cerro la Perdiz', 17, 4),
+(8206032, 'LOS PITUFOS LOS RIOS', '443671827', 'sala de escuela los Gualles', 18, 4),
+(8206033, 'LOS CARINOSITOS', '443671828', 'Tres Pinos Canete', 18, 4),
+(8207024, 'PEHUMAHUE TIRUA', '443671842', 'pasaje el bosque sin numero Tirua', 19, 4),
+(8207028, 'PEWMA PICHIKECHE', '443671843', 'Tranaquepe sin numero sector escuela comuna de Tirua', 19, 4),
+(8207029, 'WEFACHANTU PICHICHE', '443671845', 'ponotro s n Al frente de la copec', 19, 4),
+(8105014, 'TALCAMAVIDA RAYENCURA', '443671798', 'LOS CARRERAS 323 TALCAMAVIDA HUALQUI', 5, 5),
+(8111025, 'LOS PECESITOS', '443671501', 'Camino Principal Coliumo Aldea Esperanza s n', 11, 5),
+(8301045, 'FUERTECITO', '443671729', 'ANDRES MATERNE S N SAN CARLOS PUREN', 20, 5),
+(8301046, 'PEQUENOS SONADORES', '443671730', 'San Gabriel 1804 pobl Basilio Munoz', 20, 5),
+(8307007, 'SEMILLITA DE RIHUE', '443671759', 'Sector Rihue S N frente a Escuela', 26, 5),
+(8202031, 'FELIPE CUBILLOS SIGALL', '443671813', 'Arauco Lebu Ruta P 40 km50', 14, 5),
+(8202032, 'MELIRUPO', '443671814', 'sector Merilupo camino las puentes S N', 14, 5),
+(8203012, 'LELBUN ALIWEN', '443671834', 'Sector Pocuno Canete', 15, 5),
+(8203013, 'LELUNEY', '443671835', 'Tres sauces camino cayucupil S N Canete', 15, 5),
+(8205019, 'RAYITO DE SOL', '443671824', 'Camilo Henriquez s n cerro verde', 17, 5);
+	
 
 COMMIT;
 
