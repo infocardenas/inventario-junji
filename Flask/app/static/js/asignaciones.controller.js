@@ -400,6 +400,16 @@ $(document).ready(function () {
         }
     });
 
+    $("#toggleDV").on("change", function () {
+        const rutInput = $("#rut_funcionario");
+        if ($(this).is(":checked")) {
+            rutInput.removeClass("desactivar-dv");
+        } else {
+            rutInput.addClass("desactivar-dv");
+            $("#rut_verificador").val(""); // Limpiar DV si se desactiva
+        }
+    });
+
     // Seleccionar un funcionario desde las sugerencias
     $(document).on("click", ".sugerencia-item", function () {
         let nombre = $(this).data("nombre");
@@ -422,7 +432,6 @@ $(document).ready(function () {
         limpiarError($("#nombre_funcionario"));
     });
     
-
     // Ocultar sugerencias si se hace clic fuera
     $(document).click(function (event) {
         if (!$(event.target).closest("#nombre_funcionario, #sugerencias_funcionarios").length) {
@@ -459,5 +468,4 @@ $(document).ready(function () {
         }
     });
 });
-
  // MAIN.JS 750 LINIA 

@@ -798,8 +798,9 @@ $(document).ready(function () {
 
   function actualizarRutVerificador(rutInput) {
     const inputRut = $(rutInput);
-    const inputVerificador = inputRut.siblings(".rut-verificador");
+    if (inputRut.hasClass("desactivar-dv")) return; // No actualizar si está desactivado
 
+    const inputVerificador = inputRut.siblings(".rut-verificador");
     const rutSinFormato = inputRut.val().replace(/[^0-9]/g, "");
     inputRut.val(rutSinFormato);
 
@@ -833,7 +834,7 @@ $(document).ready(function () {
       return;
     }
 
-    if (/^\d{7,8}$/.test(rutSinFormato) && /^[0-9Kk]$/.test(digitoVerificador)) {
+    if (/^\d{3,8}$/.test(rutSinFormato) && /^[0-9Kk]$/.test(digitoVerificador)) {
       hiddenInput.val(`${rutSinFormato}-${digitoVerificador}`);
     } else {
       hiddenInput.val("");
@@ -843,7 +844,6 @@ $(document).ready(function () {
 
   $("form.funcionarios, form.asignaciones").on("submit", function (event) {
     prepararRutCompleto(this);
-
     const rutCompleto = $(this).find(".rut_completo").val();
 
     if (!rutCompleto) {
