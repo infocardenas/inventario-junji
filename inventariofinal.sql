@@ -22,7 +22,7 @@ SET time_zone = "+00:00";
 --
 CREATE TABLE `provincia` (
   `idProvincia` int(11) NOT NULL,
-  `nombreProvincia` varchar(45) NOT NULL,
+  `nombreProvincia` varchar(250) NOT NULL,
   PRIMARY KEY (`idProvincia`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -33,7 +33,7 @@ CREATE TABLE `provincia` (
 
 CREATE TABLE `comuna` (
   `idComuna` int(11) NOT NULL,
-  `nombreComuna` varchar(45) DEFAULT NULL,
+  `nombreComuna` varchar(250) DEFAULT NULL,
   `idProvincia` int(11) NOT NULL,
   PRIMARY KEY (`idComuna`),
   CONSTRAINT `comuna_ibfk_1` FOREIGN KEY (`idProvincia`) REFERENCES `provincia` (`idProvincia`)
@@ -44,7 +44,7 @@ CREATE TABLE `comuna` (
 
 CREATE TABLE `modalidad` (
   `idModalidad` int(11) NOT NULL,
-  `nombreModalidad` varchar(20) DEFAULT NULL,
+  `nombreModalidad` varchar(250) DEFAULT NULL,
   PRIMARY KEY (`idModalidad`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -72,9 +72,9 @@ CREATE TABLE `unidad` (
 
 CREATE TABLE `funcionario` (
   `rutFuncionario` VARCHAR(10) PRIMARY KEY NOT NULL,
-  `nombreFuncionario` VARCHAR(45) NOT NULL,
+  `nombreFuncionario` VARCHAR(250) NOT NULL,
   `cargoFuncionario` ENUM('ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL','ENCARGADA/O') NOT NULL,
-  `correoFuncionario` VARCHAR(45) NOT NULL,
+  `correoFuncionario` VARCHAR(250) NOT NULL,
   `idUnidad` INT NOT NULL,
   UNIQUE KEY `unique_correoFuncionario` (`correoFuncionario`),
   CONSTRAINT `fk_funcionario_idUnidad` FOREIGN KEY (`idUnidad`) REFERENCES `unidad` (`idUnidad`)
@@ -89,7 +89,7 @@ CREATE TABLE `funcionario` (
 CREATE TABLE `asignacion` (
   `idAsignacion` INT PRIMARY KEY AUTO_INCREMENT,
   `fecha_inicioAsignacion` DATE NOT NULL,
-  `ObservacionAsignacion` VARCHAR(250) DEFAULT NULL,
+  `ObservacionAsignacion` VARCHAR(500) DEFAULT NULL,
   `ActivoAsignacion` TINYINT DEFAULT 1,
   `rutFuncionario` VARCHAR(10) NOT NULL,
   CONSTRAINT `fk_asignacion_funcionario` FOREIGN KEY (`rutFuncionario`) 
@@ -103,7 +103,7 @@ CREATE TABLE `asignacion` (
 
 CREATE TABLE `marca_equipo` (
   `idMarca_Equipo` int(11) NOT NULL AUTO_INCREMENT,
-  `nombreMarcaEquipo` varchar(45) NOT NULL UNIQUE,
+  `nombreMarcaEquipo` varchar(250) NOT NULL UNIQUE,
   PRIMARY KEY (`idMarca_Equipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -114,7 +114,7 @@ CREATE TABLE `marca_equipo` (
 
 CREATE TABLE `tipo_equipo` (
   `idTipo_equipo` int(11) NOT NULL AUTO_INCREMENT,
-  `nombreTipo_equipo` varchar(45) UNIQUE,
+  `nombreTipo_equipo` varchar(250) UNIQUE,
   PRIMARY KEY (`idTipo_equipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -140,7 +140,7 @@ CREATE TABLE `marca_tipo_equipo` (
 
 CREATE TABLE `modelo_equipo` (
   `idModelo_Equipo` int(11) NOT NULL AUTO_INCREMENT,
-  `nombreModeloequipo` varchar(45) UNIQUE,
+  `nombreModeloequipo` varchar(250) UNIQUE,
   `idMarca_Tipo_Equipo` int(11) NOT NULL, 
   PRIMARY KEY (`idModelo_Equipo`),
   CONSTRAINT `modelo_equipo_FK_1` FOREIGN KEY (`idMarca_Tipo_Equipo`) REFERENCES `marca_tipo_equipo` (`idMarcaTipo`) ON DELETE RESTRICT
@@ -163,7 +163,7 @@ CREATE TABLE `tipo_adquisicion` (
 
 CREATE TABLE `proveedor` (
   `idProveedor` int(11) NOT NULL AUTO_INCREMENT,
-  `nombreProveedor` varchar(45) NOT NULL,
+  `nombreProveedor` varchar(250) NOT NULL,
   PRIMARY KEY (`idProveedor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
@@ -173,10 +173,10 @@ CREATE TABLE `proveedor` (
 
 CREATE TABLE `orden_compra` (
   `idOrden_compra` varchar(45) NOT NULL,
-  `nombreOrden_compra` varchar(45) DEFAULT NULL,
+  `nombreOrden_compra` varchar(250) DEFAULT NULL,
   `fechacompraOrden_compra` date DEFAULT NULL,
   `fechafin_ORDEN_COMPRA` date DEFAULT NULL,
-  `rutadocumentoOrden_compra` varchar(45) DEFAULT NULL,
+  `rutadocumentoOrden_compra` varchar(250) DEFAULT NULL,
   `idTipo_adquisicion` int(11) NOT NULL,
   `idProveedor` int(11) NOT NULL,
   PRIMARY KEY (`idOrden_compra`),
@@ -190,7 +190,7 @@ CREATE TABLE `orden_compra` (
 
 CREATE TABLE `estado_equipo` (
   `idEstado_equipo` int(11) NOT NULL AUTO_INCREMENT,
-  `nombreEstado_equipo` varchar(45) DEFAULT NULL,
+  `nombreEstado_equipo` varchar(250) DEFAULT NULL,
   `FechaEstado_equipo` date DEFAULT NULL,
   PRIMARY KEY (`idEstado_equipo`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -203,7 +203,7 @@ CREATE TABLE `equipo` (
   `idEquipo` int(11) NOT NULL AUTO_INCREMENT,
   `Cod_inventarioEquipo` varchar(20) DEFAULT NULL,
   `Num_serieEquipo` varchar(20) UNIQUE,
-  `ObservacionEquipo` varchar(250) DEFAULT NULL,
+  `ObservacionEquipo` varchar(500) DEFAULT NULL,
   `codigoproveedor_equipo` varchar(45) DEFAULT NULL,
   `macEquipo` varchar(45) DEFAULT NULL,
   `imeiEquipo` varchar(45) DEFAULT NULL,
@@ -266,7 +266,7 @@ CREATE TABLE `detalle_traslado` (
 CREATE TABLE `incidencia` (
   `idIncidencia` int(11) NOT NULL AUTO_INCREMENT,
   `nombreIncidencia` varchar(45) DEFAULT NULL,
-  `observacionIncidencia` varchar(45) DEFAULT NULL,
+  `observacionIncidencia` varchar(500) DEFAULT NULL,
   `rutaactaIncidencia` varchar(45) DEFAULT NULL,
   `fechaIncidencia` date DEFAULT NULL,
   `idEquipo` int(11) NOT NULL,
@@ -295,7 +295,7 @@ CREATE TABLE `equipo_asignacion` (
 CREATE TABLE `devolucion` (
   `idDevolucion` INT PRIMARY KEY AUTO_INCREMENT,
   `fechaDevolucion` DATE DEFAULT NULL,
-  `observacionDevolucion` VARCHAR(250) DEFAULT NULL,
+  `observacionDevolucion` VARCHAR(500) DEFAULT NULL,
   `idEquipoAsignacion` INT NOT NULL,
   CONSTRAINT `fk_devolucion_idAsignacion` FOREIGN KEY (`idEquipoAsignacion`) REFERENCES `equipo_asignacion` (`idEquipoAsignacion`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -305,7 +305,7 @@ CREATE TABLE `devolucion` (
 --
 
 CREATE TABLE `usuario` (
-  `nombreUsuario` varchar(30) NOT NULL,
+  `nombreUsuario` varchar(250) NOT NULL,
   `contrasennaUsuario` varchar(80) DEFAULT NULL,
   `privilegiosAdministrador` tinyint(4) DEFAULT NULL,
   PRIMARY KEY (`nombreUsuario`)
@@ -320,26 +320,26 @@ CREATE TABLE IF NOT EXISTS `super_equipo` (
   `idEquipo` INT(11),
   `Cod_inventarioEquipo` VARCHAR(20),
   `Num_serieEquipo` VARCHAR(20),
-  `ObservacionEquipo` VARCHAR(250),
+  `ObservacionEquipo` VARCHAR(500),
   `codigoproveedor_equipo` VARCHAR(45),
-  `macEquipo` VARCHAR(45),
+  `macEquipo` VARCHAR(250),
   `imeiEquipo` VARCHAR(45),
   `numerotelefonicoEquipo` VARCHAR(12),
   `idTipo_equipo` INT(11),
-  `nombreTipo_equipo` VARCHAR(45),
+  `nombreTipo_equipo` VARCHAR(250),
   `idMarca_Equipo` INT(11), 
-  `nombreMarcaEquipo` VARCHAR(45),
+  `nombreMarcaEquipo` VARCHAR(250),
   `idEstado_equipo` INT(11),
-  `nombreEstado_equipo` VARCHAR(45),
+  `nombreEstado_equipo` VARCHAR(250),
   `idUnidad` INT(11),
-  `nombreUnidad` VARCHAR(45),
+  `nombreUnidad` VARCHAR(250),
   `idOrden_compra` VARCHAR(45),
-  `nombreOrden_compra` VARCHAR(45),
+  `nombreOrden_compra` VARCHAR(250),
   `idModelo_equipo` INT(11),
-  `nombreModeloequipo` VARCHAR(45),
-  `nombreFuncionario` VARCHAR(45),
+  `nombreModeloequipo` VARCHAR(250),
+  `nombreFuncionario` VARCHAR(250),
   `rutFuncionario` VARCHAR(20),
-  `nombreIncidencia` VARCHAR(45)
+  `nombreIncidencia` VARCHAR(250)
 );
 --
 -- Estructura para la vista `super_equipo`
