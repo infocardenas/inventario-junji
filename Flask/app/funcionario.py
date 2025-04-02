@@ -11,9 +11,9 @@ funcionario = Blueprint('funcionario', __name__, template_folder='app/templates'
 schema_agregar_funcionario = {
     'rut_funcionario': {
         'type': 'string',
-        'minlength': 9,
+        'minlength': 7,
         'maxlength': 10,
-        'regex': r'^\d{7,8}-[0-9kK]$'  # Aceptar formato 1234567-K o 12345678-9
+        'regex': r'^\d{7,8}(-[0-9kK])?$'  # Aceptar formato 1234567-K o 12345678-9 
     },
     'nombre_funcionario': {
         'type': 'string',
@@ -41,9 +41,9 @@ schema_agregar_funcionario = {
 schema_editar_funcionario = schema_agregar_funcionario.copy()
 schema_editar_funcionario['rut_actual'] = {
     'type': 'string',
-    'minlength': 9,
+    'minlength': 7,
     'maxlength': 10,
-    'regex': r'^\d{7,8}-[0-9kK]$'
+    'regex': r'^\d{7,8}(-[0-9kK])?$'
 }
 
 # Vista principal de funcionario
@@ -138,7 +138,7 @@ def add_funcionario():
         if not v.validate(data):
             errores = v.errors  # Diccionario con los errores específicos por campo
             for campo, mensaje in errores.items():
-                if "min length is 9" in mensaje:
+                if "min length is 7" in mensaje:
                     flash("Error: El RUT debe contener 7 u 8 dígitos", 'warning')
                 else:
                     flash(f"Error en '{campo}': {mensaje[0]}", 'warning')

@@ -353,30 +353,29 @@ $(document).ready(function () {
     let contenedorRut = $("#contenedorRut");
     let nombreInput = $("#nombre_funcionario");
     let rutInput = $("#rut_funcionario");
+    let rutVerificador = $("#rut_verificador");
     let sugerenciasDiv = $("#sugerencias_funcionarios");
     let toggleBtn = $("#toggleFuncionario");
 
-    // 1. Alternar entre Nombre y RUT
+    // Alternar entre Nombre y RUT
     toggleBtn.on("click", function () {
         if (contenedorNombre.is(":visible")) {
             contenedorNombre.hide();
-            sugerenciasDiv.hide(); // Cerrar autocompletado si estaba abierto
+            sugerenciasDiv.hide();
             contenedorRut.show();
             rutInput.focus();
             limpiarError(rutInput);
-            setTooltipText(this, "Buscar por nombre");
             label.html('RUT del funcionario<span style="color: red; margin-left: 5px">*</span>');
         } else {
             contenedorRut.hide();
             contenedorNombre.show();
             nombreInput.focus();
             limpiarError(nombreInput);
-            setTooltipText(this, "Buscar por RUT");
             label.html('Nombre del funcionario<span style="color: red; margin-left: 5px">*</span>');
         }
     });
 
-    // 2. Autocompletado en el input de nombre
+    // Autocompletado en el input de nombre
     nombreInput.on("input", function () {
         let input = $(this).val().trim().toLowerCase();
 
@@ -385,7 +384,6 @@ $(document).ready(function () {
             return;
         }
 
-        // Filtrar funcionarios
         let coincidencias = listaFuncionarios.filter(f => f.nombre.toLowerCase().includes(input));
 
         if (coincidencias.length > 0) {
@@ -402,39 +400,42 @@ $(document).ready(function () {
         }
     });
 
-    // 3. Seleccionar un funcionario desde las sugerencias
+    // Seleccionar un funcionario desde las sugerencias
     $(document).on("click", ".sugerencia-item", function () {
         let nombre = $(this).data("nombre");
         let rutCompleto = $(this).data("rut");
         let [rutSinDV, dv] = rutCompleto.split("-");
-
+    
         $("#nombre_funcionario").val(nombre);
-
-        // Llenar el input de RUT sin guion ni DV
-        $("#rut_funcionario").val(rutSinDV);
-
-        // Llenar el campo DV
-        $("#rut_verificador").val(dv);
-
-        // Si usas el hidden "rut_completo"
-        $("#rut_completo").val(rutCompleto);
-
+        $("#rut_funcionario").val(rutSinDV); // Siempre asignamos el RUT sin el DV
+    
+        // Si existe un DV, asignarlo, de lo contrario, dejamos el campo de DV vacío
+        if (dv) {
+            $("#rut_verificador").val(dv);
+        } else {
+            $("#rut_verificador").val(""); // Dejar vacío si no tiene DV
+        }
+    
+        $("#rut_completo").val(rutCompleto); // Guardamos el RUT completo en el campo oculto
+    
         $("#sugerencias_funcionarios").hide();
         limpiarError($("#nombre_funcionario"));
     });
+    
 
-    // 4. Ocultar sugerencias si se hace clic fuera
+    // Ocultar sugerencias si se hace clic fuera
     $(document).click(function (event) {
         if (!$(event.target).closest("#nombre_funcionario, #sugerencias_funcionarios").length) {
             sugerenciasDiv.hide();
         }
     });
 
-    // 5. Validación antes de enviar el formulario
-    $(document).on("submit", "#form-asignacion-modal", function (event) {
+    // Validación antes de enviar el formulario
+    $("#form-asignacion-modal").on("submit", function (event) {
         let esValido = true;
+        let rutSinDV = rutInput.val().trim();
+        let dv = rutVerificador.val().trim();
 
-        // Si el contenedor de Nombre está visible, validamos el nombre
         if (contenedorNombre.is(":visible")) {
             let nombreIngresado = nombreInput.val().trim().toLowerCase();
             let nombreValido = listaFuncionarios.some(f => f.nombre.toLowerCase() === nombreIngresado);
@@ -445,6 +446,12 @@ $(document).ready(function () {
             } else {
                 limpiarError(nombreInput);
             }
+        }
+
+        if (!dv) {
+            $("#rut_completo").val(rutSinDV);
+        } else {
+            $("#rut_completo").val(rutSinDV + "-" + dv);
         }
 
         if (!esValido) {

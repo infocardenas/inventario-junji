@@ -26,9 +26,9 @@ schema_asignacion = {
     },
     'rut_funcionario': {
         'type': 'string',
-        'minlength': 9,
+        'minlength': 7,
         'maxlength': 10,
-        'regex': r'^\d{7,8}-[0-9kK]$',
+        'regex': r'^\d{7,8}(-[0-9kK])?$'
     },
     'observacion': {
         'type': 'string',
@@ -153,7 +153,7 @@ def create_asignacion():
     v = Validator(schema_asignacion)
     if not v.validate(data):
         for campo, mensaje in v.errors.items():
-            flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
+            flash(f"Error  en '{campo}' '{data}': {mensaje[0]}" , 'warning')
             break
         return redirect(url_for("asignacion.Asignacion"))
 
