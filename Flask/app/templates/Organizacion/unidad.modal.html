@@ -21,7 +21,7 @@
                         <label for="nombreUnidad" class="form-label">Nombre de la unidad<span
                                 style="color: red; margin-left: 5px">*</span></label>
                         <input type="text" class="form-control campo-obligatorio validar-letras" name="nombreUnidad"
-                            placeholder="Nombre unidad">
+                            placeholder="Nombre unidad" pattern="^[a-zA-Z0-9 ]+$" title="Solo se permiten letras, números y espacios" >
                         <div class="text-error-message"></div>
                     </div>
                     <div class="mb-3">
@@ -35,7 +35,7 @@
                         <label for="direccionUnidad" class="form-label">Dirección<span
                                 style="color: red; margin-left: 5px">*</span></label>
                         <input type="text" class="form-control campo-obligatorio" name="direccionUnidad"
-                            placeholder="Dirección">
+                            placeholder="Dirección" pattern="^[a-zA-Z0-9 ]+$" title="Solo se permiten letras, números y espacios">
                         <div class="text-error-message"></div>
                     </div>
                     <div class="mb-3">

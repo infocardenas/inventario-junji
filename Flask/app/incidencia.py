@@ -412,7 +412,7 @@ def listar_pdf(idIncidencia):
         location='incidencia'
     )
             
-@incidencia.route("/incidencia/mostrar_pdf/<id>")
+@incidencia.route("/incidencia/mostrar_pdf/<id>/")
 def mostrar_pdf(id):
     cur = mysql.connection.cursor()
     cur.execute("SELECT rutaactaIncidencia FROM incidencia WHERE idIncidencia = %s", (id,))
