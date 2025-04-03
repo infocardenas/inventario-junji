@@ -54,6 +54,7 @@ document.getElementById("trasladoForm").addEventListener("submit", function (eve
                 // Cerrar modal y resetear formulario
                 $('#trasladoModal').modal('hide');
                 this.reset();
+                window.location.reload(); // Recargar la página para ver el nuevo traslado
             } else {
                 mostrarAlerta(`${data.message}`, "danger");
             }
