@@ -90,15 +90,15 @@
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <!-- Botón de eliminación para incidencia con tooltip -->
-                                <button class="btn btn-danger" id="delete-incidencia-button" data-bs-toggle="tooltip"
-                                    data-bs-title="Eliminar" data-id="{{ inc.idIncidencia }}">
+                                <!--  Formulario oculto para eliminar una incidencia-->
+                                <button class="btn btn-danger delete-button"
+                                    data-id="{{ inc.idIncidencia }}" 
+                                    data-url="/incidencia/delete_incidencia/{{ inc.idIncidencia }}"
+                                    data-title="Confirmar eliminación de incidencia"
+                                    data-message="¿Estás seguro de que deseas eliminar esta incidencia? Eliminar la incidencia podría significar perder parte del historial."
+                                    data-bs-title="Eliminar">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
-
-                                <!--  Formulario oculto para eliminar una incidencia-->
-                                <form id="deleteForm" method="POST" style="display: none;"></form>
-
                             </td>
                         </tr>
                         {% endfor %}
