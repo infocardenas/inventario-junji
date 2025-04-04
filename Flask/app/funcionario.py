@@ -4,6 +4,7 @@ from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 from MySQLdb import IntegrityError
+import math
 
 funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
 
@@ -45,6 +46,9 @@ schema_editar_funcionario['rut_actual'] = {
     'maxlength': 10,
     'regex': r'^\d{7,8}(-[0-9kK])?$',
 }
+
+def getPerPage():
+    return 15  # o el número que quieras mostrar por página
 
 # Vista principal de funcionario
 @funcionario.route('/funcionario')
@@ -105,15 +109,17 @@ def Funcionario(page = 1):
     cur.execute('SELECT * FROM unidad')
     ubi_data = cur.fetchall()
 
-    cur.execute('SELECT COUNT(*) FROM funcionario')
-    total = cur.fetchone()
-    total = int(str(total).split(':')[1].split('}')[0])
+    cur.execute('SELECT COUNT(*) AS total FROM funcionario')
+    total = cur.fetchone()["total"]
+    # Cerrar el cursor
+    total_pages = math.ceil(total / perpage)
 
     return render_template(
         'GestionR.H/funcionario.html', 
         funcionario = data, 
         Unidad = ubi_data, 
-        page=page, lastpage= page < (total/perpage)+1
+        page=page, 
+        total_pages = total_pages
         )
 
 
