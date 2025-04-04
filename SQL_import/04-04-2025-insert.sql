@@ -5,10 +5,6 @@
 
 SET FOREIGN_KEY_CHECKS=0;
 
-
-INSERT INTO `funcionario` (`rutFuncionario`, `nombreFuncionario`, `cargoFuncionario`, `correoFuncionario`, `idUnidad`) VALUES
-('8101098-6', 'Direccion Regional', 'ENCARGADA/O', 'junji8101098@junji.cl', 8101098),
-
 INSERT INTO `funcionario` (`rutFuncionario`, `nombreFuncionario`, `cargoFuncionario`, `correoFuncionario`, `idUnidad`) VALUES
 
 ('10299816-2', 'MARIELA YOLANDA ORTEGA', 'PROFESIONAL', 'MORTEGA@JUNJI.CL', 8101098),
@@ -247,7 +243,5 @@ INSERT INTO `funcionario` (`rutFuncionario`, `nombreFuncionario`, `cargoFunciona
 ('13137520-4', 'PAMELA DEL ROSA RAMIREZ', 'TÉCNICO', 'pamela.ramirez@junji.cl', 8101098),
 ('14391241-8', 'BETZABETH ALEJA AREVALO', 'ADMINISTRATIVO', 'BETZABETH.AREVALO@JUNJI.CL', 8101098),
 ('10649750-8', 'CARLA CALZADILLA', 'PROFESIONAL', 'CARLA.CALZADILLA@JUNJI.CL', 8101098);
-
-
 
 SET FOREIGN_KEY_CHECKS=1;
