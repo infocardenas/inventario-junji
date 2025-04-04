@@ -5,7 +5,6 @@
 
 
 INSERT INTO `funcionario` (`rutFuncionario`, `nombreFuncionario`, `cargoFuncionario`, `correoFuncionario`, `idUnidad`) VALUES
-
 ('10299816-2', 'MARIELA YOLANDA ORTEGA', 'PROFESIONAL', 'MORTEGA@JUNJI.CL', 8101098),
 ('17170031-0', 'CYNTHIA DEL CAR ARAYA', 'PROFESIONAL', 'CARAYA@JUNJI.CL', 8101098),
 ('9180661-4', 'HECTOR ALEJANDR PEREZ', 'PROFESIONAL', 'HPEREZ@JUNJI.CL', 8101098),
