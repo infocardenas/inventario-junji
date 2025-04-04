@@ -3,7 +3,6 @@
 -- 
 --
 
-SET FOREIGN_KEY_CHECKS=0;
 
 INSERT INTO `funcionario` (`rutFuncionario`, `nombreFuncionario`, `cargoFuncionario`, `correoFuncionario`, `idUnidad`) VALUES
 
@@ -244,4 +243,3 @@ INSERT INTO `funcionario` (`rutFuncionario`, `nombreFuncionario`, `cargoFunciona
 ('17607902-9', 'MATIAS ANTONIO INOSTROZA', 'PROFESIONAL', 'MATIAS.INOSTROZA@JUNJI.CL', 8101098),
 ('13310548-4', 'ROBERTO EDUARDO MEDINA', 'PROFESIONAL', 'ROBERTO.MEDINA@JUNJI.CL', 8101098);
 
-SET FOREIGN_KEY_CHECKS=1;
