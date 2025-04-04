@@ -173,7 +173,7 @@ CREATE TABLE `proveedor` (
 
 CREATE TABLE `orden_compra` (
   `idOrden_compra` varchar(45) NOT NULL,
-  `nombreOrden_compra` varchar(500) DEFAULT NULL,
+  `nombreOrden_compra` varchar(250) DEFAULT NULL,
   `fechacompraOrden_compra` date DEFAULT NULL,
   `fechafin_ORDEN_COMPRA` date DEFAULT NULL,
   `rutadocumentoOrden_compra` varchar(250) DEFAULT NULL,
@@ -909,7 +909,6 @@ INSERT INTO `funcionario` (`rutFuncionario`, `nombreFuncionario`, `cargoFunciona
 	
 
 SET FOREIGN_KEY_CHECKS=1;
-
 
 COMMIT;
 
