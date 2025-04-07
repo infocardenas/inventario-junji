@@ -586,10 +586,10 @@ def devolver_equipos():
 
     id_estado_sin_asignar = estado_sin_asignar["idEstado_equipo"]
 
-    # Verificar que todos los equipos seleccionados tengan el estado "EN USO"
+    # Verificar que todos los equipos seleccionados tengan el estado "EN USO" y un PDF firmado
     for id_equipo_asignacion in ids_equipos_asignacion:
         cur.execute("""
-            SELECT e.idEstado_equipo, ee.nombreEstado_equipo
+            SELECT e.idEstado_equipo, ee.nombreEstado_equipo, ea.idAsignacion
             FROM equipo_asignacion ea
             JOIN equipo e ON ea.idEquipo = e.idEquipo
             JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
@@ -603,7 +603,15 @@ def devolver_equipos():
             return redirect(url_for("asignacion.Asignacion"))
 
         if equipo_estado["nombreEstado_equipo"] != "En Uso":
-            flash(f"Error: El equipo con ID {id_equipo_asignacion} Tiene una incidencia sin resolver y no puede ser devuelto.", "danger")
+            flash(f"Error: El equipo con ID {id_equipo_asignacion} tiene una incidencia sin resolver y no puede ser devuelto.", "danger")
+            cur.execute("ROLLBACK")  # Cancelar todo el proceso
+            return redirect(url_for("asignacion.Asignacion"))
+
+        # Verificar la existencia del PDF firmado
+        id_asignacion = equipo_estado["idAsignacion"]
+        pdf_path = os.path.join("pdf/firmas_asignaciones", f"asignacion_{id_asignacion}_firmado.pdf")
+        if not os.path.exists(pdf_path):
+            flash(f"Error: No se encontró el PDF firmado para la asignación {id_asignacion}.", "danger")
             cur.execute("ROLLBACK")  # Cancelar todo el proceso
             return redirect(url_for("asignacion.Asignacion"))
 
