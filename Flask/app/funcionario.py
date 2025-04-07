@@ -52,18 +52,15 @@ def getPerPage():
 
 # Vista principal de funcionario
 @funcionario.route('/funcionario')
-@funcionario.route('/funcionario/<page>')
 @loguear_requerido
-def Funcionario(page = 1):
+def Funcionario():
     if "user" not in session:
         flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
-    page = int(page)
-    perpage = getPerPage()
-    offset = (page -1) * perpage 
+
     cur = mysql.connection.cursor()
 
-    # Consulta que obtiene funcionarios y cuenta las asignaciones activas
+    # Consulta que obtiene todos los funcionarios y cuenta las asignaciones activas
     cur.execute("""
     SELECT 
         f.rutFuncionario,
@@ -80,47 +77,19 @@ def Funcionario(page = 1):
                     AND a.ActivoAsignacion = 1), 0) AS equipos_asignados
     FROM funcionario f
     JOIN unidad u ON f.idUnidad = u.idUnidad
-    LIMIT %s OFFSET %s
-    """, (perpage, offset))
+    """)
     data = cur.fetchall()
-
-    # Consulta para ver que equipos asignados tiene cada funcionario
-    for funcionario in data:
-        cur.execute("""
-            SELECT 
-                te.nombreTipo_equipo,
-                mae.nombreMarcaEquipo,
-                me.nombreModeloequipo,
-                e.Cod_inventarioEquipo,
-                e.Num_serieEquipo
-            FROM asignacion a
-            JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
-            JOIN equipo e ON ea.idEquipo = e.idEquipo
-            JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
-            JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-            JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-            JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
-            WHERE a.rutFuncionario = %s AND a.ActivoAsignacion = 1
-        """, (funcionario["rutFuncionario"],))
-        
-        equipos_asignados = cur.fetchall()
-        funcionario["equipos_detalle"] = equipos_asignados
 
     cur.execute('SELECT * FROM unidad')
     ubi_data = cur.fetchall()
 
-    cur.execute('SELECT COUNT(*) AS total FROM funcionario')
-    total = cur.fetchone()["total"]
-    # Cerrar el cursor
-    total_pages = math.ceil(total / perpage)
+    cur.close()
 
     return render_template(
         'GestionR.H/funcionario.html', 
-        funcionario = data, 
-        Unidad = ubi_data, 
-        page=page, 
-        total_pages = total_pages
-        )
+        funcionario=data, 
+        Unidad=ubi_data
+    )
 
 
 #agregar funcionario
