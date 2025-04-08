@@ -12,42 +12,44 @@ from env_vars import paths, inLinux
 incidencia = Blueprint("incidencia", __name__, template_folder="app/templates")
 PDFS_INCIDENCIAS = paths['pdf_path']
 
-#pestaña principal de incidencias
 @incidencia.route("/incidencia")
-@incidencia.route("/incidencia/<page>")
+@incidencia.route("/incidencia/<int:page>")
 @loguear_requerido
-def Incidencia(page = 1):
+def Incidencia(page=1):
     page = int(page)
     perpage = getPerPage()
-    offset = (page -1) * perpage
+    offset = (page - 1) * perpage
+
     cur = mysql.connection.cursor()
-    cur.execute(
-    """
+    cur.execute("""
         SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
-            i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
-            e.cod_inventarioEquipo, e.Num_serieEquipo, 
-            te.nombreTipo_equipo, me.nombreModeloequipo,
-            i.numDocumentos, i.estadoIncidencia
+               i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
+               e.cod_inventarioEquipo, e.Num_serieEquipo, 
+               te.nombreTipo_equipo, me.nombreModeloequipo,
+               i.numDocumentos, i.estadoIncidencia
         FROM incidencia i
         INNER JOIN equipo e ON i.idEquipo = e.idEquipo
         INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
         INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
         INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
         LIMIT %s OFFSET %s
-        """, (perpage, offset)
-    )
+    """, (perpage, offset))
     data = cur.fetchall()
-    print("Informaicion de incidencias")
-    print(data)
+
     cur.execute('SELECT COUNT(*) AS total FROM incidencia')
     total = cur.fetchone()['total']
+    cur.close()
 
-    return render_template(
-        'Operaciones/incidencia.html', 
+    lastpage = (total + perpage - 1) // perpage
+
+    return render_template("Operaciones/incidencia.html", 
         incidencia=data,
-        page=page, 
-        lastpage= page < (total/perpage)+1
-        )
+        page=page,
+        lastpage=lastpage
+    )
+def getPerPage():
+    return 10  # Cambia este número si quieres más o menos resultados por página
+
 
 #form que se accede desde equipo para crear incidencia
 @incidencia.route("/incidencia/form/<idEquipo>")
