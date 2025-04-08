@@ -1,5 +1,4 @@
 ---- Celulares_Biobio.csv 
 es necesario la columna de unidad para agregar los equipos corecta mente ✅
-es necesario crear la orde de compra por sql 
--- es necesario definir  ('599-527-SE24', 'falta definir nombre', 'falta definir fechacompra', 'falta definir fechafin', null, 2, 3);
-es necesario crear los equipos por sql  
+es necesario crear la orde de compra por sql ✅
+es necesario crear los equipos por sql  ✅
