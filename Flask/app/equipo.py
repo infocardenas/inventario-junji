@@ -13,75 +13,76 @@ import os
 equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 
 
-# envia datos al formulario y tabla de equipo CAMBIA FK_IDCODIGO_PROVEEDOR
-@equipo.route("/equipo")
+# envia datos al formulario y tabla de equipo CAMBIA FK_IDCODIGO_PROVEEDOR 
 @equipo.route("/equipo")
 @loguear_requerido
 def Equipo():
-
+    per_page = 10
+    page = request.args.get('page', default=1, type=int)
+    offset = (page - 1) * per_page
 
     cur = mysql.connection.cursor()
+
+    # Total de registros
     cur.execute("SELECT COUNT(*) AS total FROM equipo")
     total = cur.fetchone()['total']
+    total_pages = (total + per_page - 1) // per_page
 
     # Consulta paginada
     cur.execute("""
         SELECT *
         FROM super_equipo
-    """)
+        LIMIT %s OFFSET %s
+    """, (per_page, offset))
     equipos = cur.fetchall()
-    print(equipos)
 
-    # Obtener tipos de equipo
+    # Tipos de equipo
     cur.execute("SELECT * FROM tipo_equipo")
     tipo_equipo = cur.fetchall()
 
-    # Obtener unidades
+    # Unidades
     cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
     ubi_data = cur.fetchall()
 
-    # Obtener órdenes de compra
+    # Órdenes de compra
     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
     ordenc_data = cur.fetchall()
 
-    
-    # Obtener marcas
+    # Marcas
     cur.execute("SELECT * FROM marca_equipo")
     marcas = cur.fetchall()
-    
 
-    # Crear diccionario de modelos por tipo
+    # Modelos por tipo
     modelos_por_tipo = {}
     for tipo in tipo_equipo:
         cur.execute("""
-        SELECT me.*
-        FROM modelo_equipo me
-        INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
-        WHERE mte.idTipo_equipo = %s
+            SELECT me.*
+            FROM modelo_equipo me
+            INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
+            WHERE mte.idTipo_equipo = %s
         """, (tipo['idTipo_equipo'],))
         modelo_tipo = cur.fetchall()
         modelos_por_tipo[tipo['idTipo_equipo']] = modelo_tipo
 
-    # Obtener todos los modelos con información adicional
+    # Modelos con info adicional
     cur.execute("""
-    SELECT me.*, te.nombreTipo_equipo, mae.nombreMarcaEquipo
-    FROM modelo_equipo me
-    INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
-    INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
-    INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+        SELECT me.*, te.nombreTipo_equipo, mae.nombreMarcaEquipo
+        FROM modelo_equipo me
+        INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
+        INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
     """)
     modelo_equipo = cur.fetchall()
 
-    # Obtener los estados
+    # Estados
     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo;")
     estados = cur.fetchall()
-    print(estados)
-    # Obtener las provincias
+
+    # Provincias
     cur.execute("SELECT idProvincia, nombreProvincia FROM provincia")
     provincias = cur.fetchall()
     cur.close()
 
-    # Llenar marcas con tipos de equipo
     marcas_llenadas = crear_lista_modelo_tipo_marca()
 
     return render_template(
@@ -95,8 +96,13 @@ def Equipo():
         modelo_equipo=modelos_por_tipo,
         estado=estados,
         provincia=provincias,
-        session=session
+        session=session,
+        current_page=page,
+        total_pages=total_pages
     )
+
+def getPerPage():
+    return 10 
 
 def crear_lista_modelo_tipo_marca():
     cur = mysql.connection.cursor()

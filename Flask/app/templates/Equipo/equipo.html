@@ -167,17 +167,32 @@
                         {% endif %}
                     </tfoot>
                 </table>
-                <nav aria-label="Paginación">
-                    <ul id="pagination-container" class="pagination justify-content-center">
-                        <li class="page-item" id="prev-page-li">
-                            <a class="page-link" href="#" id="prev-page"><span>&laquo;</span></a>
-                        </li>
-                        <span id="page-numbers" class="d-flex"></span>
-                        <li class="page-item" id="next-page-li">
-                            <a class="page-link" href="#" id="next-page"><span>&raquo;</span></a>
-                        </li>
-                    </ul>
-                </nav>
+                <!-- Paginación -->
+<div class="pagination-container mt-4 d-flex justify-content-center">
+    <nav aria-label="Paginación">
+        <ul class="pagination">
+            {% if current_page > 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('equipo.Equipo', page=current_page-1) }}">Anterior</a>
+            </li>
+            {% endif %}
+
+            {% for p in range(1, total_pages + 1) %}
+            <li class="page-item {% if p == current_page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('equipo.Equipo', page=p) }}">{{ p }}</a>
+            </li>
+            {% endfor %}
+
+            {% if current_page < total_pages %}
+            <li class="page-item">
+                <a class="page-link" href="{{ url_for('equipo.Equipo', page=current_page+1) }}">Siguiente</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+
             </div>
         </div>
 
