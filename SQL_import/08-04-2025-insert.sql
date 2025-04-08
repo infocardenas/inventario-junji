@@ -14,4 +14,4 @@ INSERT INTO `modelo_equipo` (`nombreModeloequipo`, `idMarca_Tipo_Equipo`) VALUES
 
 INSERT INTO `orden_compra` (`idOrden_compra`,`nombreOrden_compra`,`fechacompraOrden_compra`,`fechafin_ORDEN_COMPRA`,`rutadocumentoOrden_compra`,`idTipo_adquisicion`,`idProveedor`
 ) VALUES
-('599-527-SE24', 'falta definir nombre  ', 'falta definir fechacompra', 'falta definir fechafin', null, 2, 3);
+('599-527-SE24', 'arriendo celulares Contrato 87', 'falta definir fechacompra 2025-04-08', 'falta definir fechafin', null, 2, 3);
