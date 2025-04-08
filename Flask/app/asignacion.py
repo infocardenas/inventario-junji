@@ -43,16 +43,17 @@ schema_asignacion = {
 }
 
 asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
-
-PDFS_DIR = paths['pdf_path']
 @asignacion.route("/asignacion")
-@asignacion.route("/asignacion/<page>")
+@asignacion.route("/asignacion/<int:page>")
 @loguear_requerido
-def Asignacion():
+def Asignacion(page=1):
+    perpage = getPerPage()
+    offset = (page - 1) * perpage
+
     cur = mysql.connection.cursor()
 
-    # Datos para mostrar en la tabla
-    cur.execute(""" 
+    # Paginación de asignaciones
+    cur.execute(f"""
     SELECT
         a.idAsignacion,
         a.fecha_inicioAsignacion,
@@ -81,49 +82,54 @@ def Asignacion():
     JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
     JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
     ORDER BY a.idAsignacion DESC
-    """)
+    LIMIT %s OFFSET %s
+    """, (perpage, offset))
     data = cur.fetchall()
 
+    # Formatear fechas
     for row in data:
         row['fecha_inicio'] = row['fecha_inicioAsignacion'].strftime('%d-%m-%Y') if row['fecha_inicioAsignacion'] else 'N/A'
         row['fecha_devolucion'] = row['fechaDevolucion'].strftime('%d-%m-%Y') if row['fechaDevolucion'] else 'Sin devolver'
 
-    cur.execute("""
-    SELECT 
-        f.rutFuncionario,
-        f.nombreFuncionario 
-    FROM funcionario f
-    ORDER BY f.nombreFuncionario
-    """)
+    # Total para paginación
+    cur.execute("SELECT COUNT(*) AS total FROM asignacion")
+    total = cur.fetchone()['total']
+    lastpage = (total + perpage - 1) // perpage
+
+    # Funcionarios
+    cur.execute("""SELECT rutFuncionario, nombreFuncionario FROM funcionario ORDER BY nombreFuncionario""")
     funcionarios = cur.fetchall()
 
+    # Equipos sin asignar
     cur.execute("""
-    SELECT 
-        e.idEquipo,
-        e.Cod_inventarioEquipo,
-        e.Num_serieEquipo,
-        e.codigoproveedor_equipo,
-        e.ObservacionEquipo,
-        me.nombreModeloequipo,
-        te.nombreTipo_equipo,
-        mae.nombreMarcaEquipo,
-        u.nombreUnidad
-    FROM equipo e
-    JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
-    JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-    JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-    JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
-    JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
-    JOIN unidad u ON e.idUnidad = u.idUnidad
-    WHERE ee.nombreEstado_equipo = 'SIN ASIGNAR';
-        """)
+        SELECT 
+            e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo,
+            e.codigoproveedor_equipo, e.ObservacionEquipo,
+            me.nombreModeloequipo, te.nombreTipo_equipo,
+            mae.nombreMarcaEquipo, u.nombreUnidad
+        FROM equipo e
+        JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+        JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+        JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
+        JOIN unidad u ON e.idUnidad = u.idUnidad
+        WHERE ee.nombreEstado_equipo = 'SIN ASIGNAR'
+    """)
     equipos_sin_asignar = cur.fetchall()
 
+    cur.close()
+
     return render_template(
-        'GestionR.H/asignacion.html', 
-        funcionarios=funcionarios, 
+        'GestionR.H/asignacion.html',
+        funcionarios=funcionarios,
         asignacion=data,
-        equipos_sin_asignar = equipos_sin_asignar)
+        equipos_sin_asignar=equipos_sin_asignar,
+        page=page,
+        lastpage=lastpage
+    )
+def getPerPage():
+    return 1 
 
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
