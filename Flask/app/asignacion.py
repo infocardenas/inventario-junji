@@ -129,7 +129,7 @@ def Asignacion(page=1):
         lastpage=lastpage
     )
 def getPerPage():
-    return 1 
+    return 10 
 
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido

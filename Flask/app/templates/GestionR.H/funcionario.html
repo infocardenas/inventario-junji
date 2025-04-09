@@ -120,27 +120,57 @@
                     {% endif %}
                 </tbody>
             </table>
-            <!-- PAGINADOR -->
-            <nav aria-label="Paginación de funcionarios">
-                <ul class="pagination justify-content-center">
-                    {% if page > 1 %}
-                    <li class="page-item">
-                        <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=page-1) }}">Anterior</a>
-                    </li>
-                    {% endif %}
+<!-- PAGINADOR -->
+<!-- PAGINADOR -->
+<nav aria-label="Paginación de funcionarios">
+    <ul class="pagination justify-content-center">
 
-                    {% for p in range(1, lastpage + 1) %}
-                    <li class="page-item {% if p == page %}active{% endif %}">
-                        <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=p) }}">{{ p }}</a>
-                    </li>
-                    {% endfor %}
+        {% if page > 1 %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=page-1) }}">Anterior</a>
+        </li>
+        {% endif %}
 
-                    {% if page < lastpage %} <li class="page-item">
-                        <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=page+1) }}">Siguiente</a>
-                        </li>
-                        {% endif %}
-                </ul>
-            </nav>
+        {# Siempre mostrar la primera página #}
+        <li class="page-item {% if page == 1 %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=1) }}">1</a>
+        </li>
+
+        {# Mostrar ... si hay salto entre página 1 y el primer bloque #}
+        {% if page > 4 %}
+        <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+
+        {# Mostrar páginas alrededor de la actual #}
+        {% for p in range(page-2, page+3) %}
+            {% if p > 1 and p < lastpage %}
+            <li class="page-item {% if p == page %}active{% endif %}">
+                <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=p) }}">{{ p }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {# Mostrar ... si hay salto entre el último bloque y la última página #}
+        {% if page < lastpage - 3 %}
+        <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+
+        {# Mostrar última página si no es la misma que ya se mostró #}
+        {% if lastpage > 1 %}
+        <li class="page-item {% if page == lastpage %}active{% endif %}">
+            <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=lastpage) }}">{{ lastpage }}</a>
+        </li>
+        {% endif %}
+
+        {% if page < lastpage %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=page+1) }}">Siguiente</a>
+        </li>
+        {% endif %}
+
+    </ul>
+</nav>
+
 
 
             {% include 'GestionR.H/funcionario.modals.html' %}

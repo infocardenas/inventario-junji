@@ -56,7 +56,7 @@
 
                 </div>
                 <div class="toolbar-2">
-                    <input id="buscador" name="palabra" type="text" class="search-box" placeholder="Buscar equipos" 
+                    <input id="buscador" name="palabra" type="text" class="search-box" placeholder="Buscar equipos"
                         onkeyup="busqueda('myTableBody')" />
                     <button class="btn btn-primary" data-bs-toggle="tooltip" title="Exportar Busqueda"
                         id="exportarBusqueda" onclick="exportarBusqueda()">
@@ -65,7 +65,7 @@
                         <span>Exportar </span><i class="bi bi-search"></i>
                     </button>
                 </div>
-                
+
                 <script src="../../static/js/funciones.js"></script>
                 <script>
                     document.addEventListener("DOMContentLoaded", function () {
@@ -83,7 +83,7 @@
                         enableDynamicPlaceholder("buscador", placeholders, 2000)
                     });
                 </script>
-                
+
                 <div class="toolbar-3">
                     <button class="btn btn-success" id="assign-button" data-bs-toggle="tooltip"
                         title="Asignar/Devolver">
@@ -120,7 +120,7 @@
                         {% for equi in equipo %}
                         <tr data-id="{{ equi.idEquipo }}">
                             <td class="checkbox-column">
-                                <input type="checkbox" class="checkbox-table row-checkbox no-delete-value" >
+                                <input type="checkbox" class="checkbox-table row-checkbox no-delete-value">
                             </td>
                             <td class="toCheck">{{equi.Cod_inventarioEquipo}}</td>
                             <td class="toCheck">{{equi.Num_serieEquipo}}</td>
@@ -168,29 +168,30 @@
                     </tfoot>
                 </table>
                 <!-- Paginación -->
-<div class="pagination-container mt-4 d-flex justify-content-center">
-    <nav aria-label="Paginación">
-        <ul class="pagination">
-            {% if current_page > 1 %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('equipo.Equipo', page=current_page-1) }}">Anterior</a>
-            </li>
-            {% endif %}
+                <div class="pagination-container mt-4 d-flex justify-content-center">
+                    <nav aria-label="Paginación">
+                        <ul class="pagination">
+                            {% if current_page > 1 %}
+                            <li class="page-item">
+                                <a class="page-link"
+                                    href="{{ url_for('equipo.Equipo', page=current_page-1) }}">Anterior</a>
+                            </li>
+                            {% endif %}
 
-            {% for p in range(1, total_pages + 1) %}
-            <li class="page-item {% if p == current_page %}active{% endif %}">
-                <a class="page-link" href="{{ url_for('equipo.Equipo', page=p) }}">{{ p }}</a>
-            </li>
-            {% endfor %}
+                            {% for p in range(1, total_pages + 1) %}
+                            <li class="page-item {% if p == current_page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('equipo.Equipo', page=p) }}">{{ p }}</a>
+                            </li>
+                            {% endfor %}
 
-            {% if current_page < total_pages %}
-            <li class="page-item">
-                <a class="page-link" href="{{ url_for('equipo.Equipo', page=current_page+1) }}">Siguiente</a>
-            </li>
-            {% endif %}
-        </ul>
-    </nav>
-</div>
+                            {% if current_page < total_pages %} <li class="page-item">
+                                <a class="page-link"
+                                    href="{{ url_for('equipo.Equipo', page=current_page+1) }}">Siguiente</a>
+                                </li>
+                                {% endif %}
+                        </ul>
+                    </nav>
+                </div>
 
 
             </div>
