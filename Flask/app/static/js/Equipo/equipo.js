@@ -415,6 +415,30 @@ $(document).ready(function () {
   });
 });
 
+// ==================== [Modal de crear Equipo] Buscar Unidades ====================
+document.getElementById("buscarUnidad").addEventListener("input", function () {
+  const filtro = this.value.toLowerCase(); // Texto ingresado en el campo de búsqueda
+  const opciones = document.querySelectorAll("#codigo_Unidad option"); // Opciones del select
+  let coincidenciaExacta = null;
+
+  opciones.forEach(opcion => {
+      const texto = opcion.textContent.toLowerCase(); // Texto de cada opción
+      if (texto.includes(filtro)) {
+          opcion.style.display = ""; // Mostrar opción si coincide
+          if (texto === filtro) {
+              coincidenciaExacta = opcion; // Guardar la coincidencia exacta
+          }
+      } else {
+          opcion.style.display = "none"; // Ocultar opción si no coincide
+      }
+  });
+
+  // Si hay una coincidencia exacta, seleccionarla automáticamente
+  if (coincidenciaExacta) {
+      coincidenciaExacta.selected = true;
+  }
+});
+
 
 // ==================== [EDITAR] Cargar Marcas ====================
 async function cargarMarcasEdit() {
