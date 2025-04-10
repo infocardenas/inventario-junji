@@ -491,7 +491,7 @@ INSERT INTO `comuna` (`idComuna`, `nombreComuna`, `idProvincia`) VALUES
 --  SET FOREIGN_KEY_CHECKS = 1;
 
 
--- Insersion de datos para la tabla `modalidad`
+-- Insersion de datos para la tabla `modalidad` a
 INSERT INTO `modalidad` (`idModalidad`, `nombreModalidad`) VALUES
 (1, 'CLASICO'),
 (2, 'ALTERNATIVO'),

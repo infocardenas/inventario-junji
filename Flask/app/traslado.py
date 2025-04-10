@@ -25,40 +25,38 @@ traslado = Blueprint("traslado", __name__, template_folder="app/templates")
 
 PDFS_DIR = paths["pdf_path"]
 
-
 @traslado.route("/traslado")
-@traslado.route("/traslado/<page>")
+@traslado.route("/traslado/<int:page>")
 @loguear_requerido
 def Traslado(page=1):
     if "user" not in session:
-        flash("Se nesesita ingresar para acceder a esa ruta")
+        flash("Se necesita ingresar para acceder a esa ruta")
         return redirect("/ingresar")
+
     page = int(page)
     perpage = getPerPage()
     offset = (page - 1) * perpage
+
     cur = mysql.connection.cursor()
-    cur.execute(
-        """
-                SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, 
-                    origen.nombreUnidad as nombreOrigen, 
-                    destino.nombreUnidad as nombreDestino,
-                    t.estaFirmadoTraslado
-                FROM traslado t
-                INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
-                INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
-                ORDER BY idTraslado DESC
-                LIMIT %s OFFSET %s
-        """,
-        (perpage, offset),
-    )
+    cur.execute("""
+        SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, 
+               origen.nombreUnidad as nombreOrigen, 
+               destino.nombreUnidad as nombreDestino,
+               t.estaFirmadoTraslado
+        FROM traslado t
+        INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
+        INNER JOIN unidad destino on destino.idUnidad = t.idUnidadDestino
+        ORDER BY idTraslado DESC
+        LIMIT %s OFFSET %s
+    """, (perpage, offset))
+    
     traslados = cur.fetchall()
 
-    #obtener equipos para cada traslado
+    # Obtener equipos para cada traslado
     for traslado in traslados:
-        cur.execute(
-            """
+        cur.execute("""
             SELECT e.idEquipo, me.nombreModeloequipo, te.nombreTipo_equipo, 
-                mae.nombreMarcaEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo
+                   mae.nombreMarcaEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo
             FROM traslacion tr
             INNER JOIN equipo e ON tr.idEquipo = e.idEquipo
             INNER JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_equipo
@@ -66,32 +64,28 @@ def Traslado(page=1):
             INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
             INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
             WHERE tr.idTraslado = %s
-            """,
-            (traslado["idTraslado"],),
-        )
+        """, (traslado["idTraslado"],))
         traslado["equipos"] = cur.fetchall()
 
+    # Obtener el total de traslados
+    cur.execute("SELECT COUNT(*) AS total FROM traslado")
+    total = cur.fetchone()['total']
     
-    data = cur.fetchall()
-    cur.execute("SELECT COUNT(*) FROM traslado")
-    total = cur.fetchone()
-    # estraer el numero del mensaje
-    total = int(str(total).split(":")[1].split("}")[0])
-    cur.execute(
-        """
-        SELECT * 
-        FROM unidad u
-        ORDER BY u.nombreUnidad
-                 """
-    )
+    # Calcular la última página
+    lastpage = (total + perpage - 1) // perpage
+
+    cur.execute("SELECT * FROM unidad ORDER BY nombreUnidad")
     unidades = cur.fetchall()
+
     return render_template(
         'Operaciones/traslado.html',
         traslado=traslados,
         unidades=unidades,
         page=page,
-        lastpage=page < (len(traslados) / perpage) + 1,
+        lastpage=lastpage
     )
+def getPerPage():
+    return 10  # Cambia este número si quieres más o menos resultados por página
 
 @traslado.route("/traslado/equipos_unidad/<int:unidad_id>")
 def obtener_equipos_unidad(unidad_id):

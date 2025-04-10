@@ -29,63 +29,61 @@ schema = {
 
 
 @modelo_equipo.route("/modelo_equipo")
-@modelo_equipo.route("/modelo_equipo/<page>")
+@modelo_equipo.route("/modelo_equipo/<int:page>")
 @loguear_requerido
 def modeloEquipo(page=1):
-    page = int(page)
-    perpage = getPerPage()
+    perpage = getPerPage()  # cantidad de registros por página
     offset = (page - 1) * perpage
 
     cur = mysql.connection.cursor()
-    cur.execute(""" 
-                SELECT me.*, te.nombreTipo_equipo, mae.nombreMarcaEquipo
-                FROM modelo_equipo me
-                INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
-                INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
-                INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo;
 
-                """)
+    # Traer solo los registros de la página actual
+    cur.execute("""
+        SELECT me.*, te.nombreTipo_equipo, mae.nombreMarcaEquipo
+        FROM modelo_equipo me
+        INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
+        INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+        LIMIT %s OFFSET %s
+    """, (perpage, offset))
     data = cur.fetchall()
+
+    # Contar total de registros
+    cur.execute("SELECT COUNT(*) AS total FROM modelo_equipo")
+    total = cur.fetchone()['total']
+    lastpage = (total + perpage - 1) // perpage  # redondeo entero hacia arriba
+
+    # Marcas y tipos
     cur.execute("SELECT * FROM marca_equipo")
     marca_data = cur.fetchall()
     marca_con_tipo = []
-    for i in range(0, len(marca_data)):
-        marca = marca_data[i]
+    for marca in marca_data:
         cur.execute("""
-        SELECT *
-        FROM marca_tipo_equipo mte
-        INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
-        WHERE mte.idMarca_Equipo = %s
-                    """, (marca['idMarca_Equipo'],))
+            SELECT * FROM marca_tipo_equipo mte
+            INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+            WHERE mte.idMarca_Equipo = %s
+        """, (marca['idMarca_Equipo'],))
         tipos_asociados = cur.fetchall()
+        marca.update({'tipo_equipo': tipos_asociados})
+        marca_con_tipo.append(marca)
 
-        nueva_marca = ingresar_elemento_a_tupla(marca, tipos_asociados, 'tipo_equipo')
-        marca_con_tipo.append(nueva_marca)
-
-    marca_con_tipo = tuple(marca_con_tipo)
-
-
-        
     cur.execute("SELECT * FROM tipo_equipo")
     tipo_data = cur.fetchall()
-    cur.execute("SELECT COUNT(*) FROM modelo_equipo")
-    total = cur.fetchone()
-    total = int(str(total).split(":")[1].split("}")[0])
 
+    cur.close()
 
     return render_template(
         "Equipo/modelo_equipo.html",
-        marca_equipo=marca_con_tipo,
         modelo_equipo=data,
+        marca_equipo=marca_con_tipo,
         tipo_equipo=tipo_data,
         page=page,
-        lastpage=page < (total / perpage) + 1,
+        lastpage=lastpage,
     )
 
+def getPerPage():
+    return 10  # o cualquier número que desees por página
 
-def ingresar_elemento_a_tupla(tupla_mayor, tupla_a_agregar, nombre_tupla_agregar):
-    tupla_mayor.update({nombre_tupla_agregar: tupla_a_agregar})
-    return tupla_mayor
 
 
 @modelo_equipo.route("/add_modelo_equipo", methods=["POST"])
