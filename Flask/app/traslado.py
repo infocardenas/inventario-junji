@@ -399,6 +399,8 @@ def crear_traslado_generico(fechatraslado, Destino, Origen, equipos):
     flash("traslado agregado correctamente")
     create_pdf(traslado, equipos_lista, UnidadOrigen, UnidadDestino)
 
+
+
 def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     print("create_pdf")
 
@@ -407,20 +409,14 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     class PDF(FPDF):
         def header(self):
             # logo
-            # imageUrl = url_for('static', filename='img/logo_junji.png')
-            # print(imageUrl)
             self.image("static/img/logo_junji.png", 10, 8, 32)
-            # font
             self.set_font("times", "B", 12)
             self.set_text_color(170, 170, 170)
-            # Title
             self.cell(0, 30, "", border=False, ln=1, align="L")
             self.cell(0, 5, "JUNTA NACIONAL", border=False, ln=1, align="L")
             self.cell(0, 5, "INFANTILES", border=False, ln=1, align="L")
             self.cell(0, 5, "Unidad de Inventarios", border=False, ln=1, align="L")
-            # line break
             self.ln(10)
-            pass
 
         def footer(self):
             self.set_y(-30)
@@ -428,17 +424,11 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             self.set_text_color(170, 170, 170)
             self.cell(0, 0, "", ln=1)
             self.cell(0, 0, "Junta Nacional de Jardines Infantiles-JUNJI", ln=1)
-            self.cell(
-                0, 12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1
-            )  # problema con el caracter ’
+            self.cell(0, 12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1)
             self.cell(0, 12, "www.junji.cl", ln=1)
-            # self.image('logo_inferior.jpg', 30, -30, 25) Las imagenes en el Footer no parecen funcionar correctamente
-            pass
 
-    # (Orientacion, unidades, formato)
-    # Orientacion P(portrait) o L(landscape)
+    # Crear el PDF
     pdf = PDF("P", "mm", "A4")
-
     pdf.add_page()
 
     titulo = "ACTA DE TRASLADO N°" + str(traslado["idTraslado"])
@@ -448,16 +438,9 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
         UnidadOrigen["nombreUnidad"],
         UnidadDestino["nombreUnidad"],
     )
-    # encabezado de la tabla
-    TABLE_DATA = [
-    ("N°", "Articulos", "Serie", "Código Inventario", "Estado", "Modelo"),
-    ]
-    
-    # print("$$$$$$$$$$$$$$$$$$$$$$$$$")
-    # print(equipos)
-    # contadores de estado
 
-    # ingresa los datos de la tabla como una tupla, donde la primera tupla es el encabezado
+    TABLE_DATA = [("N°", "Articulos", "Serie", "Código Inventario", "Estado", "Modelo")]
+
     for i, equipo in enumerate(equipos, start=1):
         TABLE_DATA.append((
             str(i),
@@ -465,105 +448,31 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             equipo["Num_serieEquipo"],
             str(equipo["Cod_inventarioEquipo"]),
             str(equipo["nombreEstado_equipo"]),
-            equipo ["nombreModeloequipo"],
+            equipo["nombreModeloequipo"],
         ))
 
-    # print("#$$$$$$#############")
-    # print(TABLE_DATA)
-
-    # TABLE_DATA2 = (('N°', 'Articulos', 'Serie', 'Código Inventario', 'Estado'),
-    # (str(3), 'AIO', str(0), str(8013913), 'EN USO'),)
-    # ("1", "EpsonI5190", "X5NS117668", "8042812", "MAL"),
-    # ("2", "EpsonI5190", "X5NS117668", "8042813", "MAL"),
-    # ("3", "EpsonI5190", "X5NS117668", "8042814", "MAL"),
-    # ("4", "EpsonI5190", "X5NS117668", "8042815", "MAL"),
     pdf.set_font("times", "", 20)
     pdf.cell(0, 10, titulo, ln=True, align="C")
     pdf.set_font("times", "", 12)
     pdf.cell(0, 10, creado_por, ln=True, align="L")
-
     pdf.multi_cell(0, 10, parrafo_1)
-    # crea una tabla en base a los datos anteriores
+
     with pdf.table() as table:
         for datarow in TABLE_DATA:
             row = table.row()
             for datum in datarow:
                 row.cell(datum)
-    # parrafo_2 = "Se ecuentran X en Bien, Y Regular y Z Mal"
 
-    # pdf.multi_cell(0,10,parrafo_2, ln=True)
-    pdf.ln(10)
-    nombreEncargado = "Nombre Encargado:"
-    rutEncargado = "Numero de RUT:"
-    firmaEncargado = "Firma:"
-    nombreMinistro = "Nombre Ministro de Fe:"
-    rutMinistro = "Numero de RUT:"
-    firma = "Firma"
-    nombreEncargadoUnidadTI = "Nombre Encargado TI " + session["user"]
-    rutMinistro = "Numero de RUT:"
-    firma = "Firma"
-    # crea dos columnas una para el espacio de firma y otra para los nombres
-    with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
-        cols.write(nombreEncargado)
-        cols.ln()
-        cols.ln()
-        cols.write(rutEncargado)
-        cols.ln()
-        cols.ln()
-        cols.write(firmaEncargado)
-        cols.ln()
-        cols.ln()
-        cols.ln()
-        cols.ln()
+    # Crear la carpeta "pdf/traslados" si no existe
+    traslados_dir = os.path.join("pdf", "traslados")
+    os.makedirs(traslados_dir, exist_ok=True)
 
-        cols.write(nombreMinistro)
-        cols.ln()
-        cols.ln()
-        cols.write(rutMinistro)
-        cols.ln()
-        cols.ln()
-        cols.write(firma)
-        cols.ln()
-        cols.ln()
-        cols.ln()
-        cols.ln()
+    # Guardar el PDF en la carpeta "pdf/traslados"
+    nombrePdf = f"traslado_{traslado['idTraslado']}.pdf"
+    pdf_path = os.path.join(traslados_dir, nombrePdf)
+    pdf.output(pdf_path)
 
-        cols.write(nombreEncargadoUnidadTI)
-        cols.ln()
-        cols.ln()
-        cols.write(rutMinistro)
-        cols.ln()
-        cols.ln()
-        cols.write(firma)
-        cols.ln()
-        cols.ln()
-        cols.new_column()
-        for i in range(0, 3):
-            cols.write(text="_________________________")
-            cols.ln()
-            cols.ln()
-        cols.ln()
-        cols.ln()
-        for i in range(0, 3):
-            cols.write(text="_________________________")
-            cols.ln()
-            cols.ln()
-        cols.ln()
-        cols.ln()
-        for i in range(0, 3):
-            cols.write(text="_________________________")
-            cols.ln()
-            cols.ln()
-    # crear pdf con la id para diferenciar pdfs
-
-    nombrePdf = "traslado" + "_" + str(traslado["idTraslado"]) + ".pdf"
-    pdf.output("traslado_{}.pdf".format(traslado["idTraslado"]))
-    # print("test")
-    # print(str(os.curdir))
-
-    # mover pdf a la carpeta
-    shutil.move(nombrePdf, "pdf")
-    return redirect(url_for("traslado.Traslado"))
+    print(f"PDF guardado en: {pdf_path}")
 
 
 @traslado.route("/traslado/mostrar_pdf/<id>")
@@ -575,7 +484,7 @@ def mostrar_pdf(id, firmado="0"):
         return redirect("/ingresar")
 
     nombrePdf = f"traslado_{id}.pdf" if firmado == "0" else f"traslado_{id}_firmado.pdf"
-    dir_pdf = os.path.join("pdf", nombrePdf)
+    dir_pdf = os.path.join("pdf/traslados", nombrePdf)
 
     if not os.path.exists(dir_pdf):
         flash(f"El archivo PDF {nombrePdf} no se encuentra disponible.")
