@@ -104,13 +104,12 @@ def add_incidencia():
             return redirect(url_for("equipo.Equipo"))
         
 
-        #!CAMBIAR LOGICA PARA COMENZAR A TRABAJAR CON LOS ESTADOS DE LA INCIDENCIA
-        # 5. Verificar si existe una incidencia activa para el equipo
+        # 4. Verificar si existe una incidencia activa para el equipo
         cur.execute("""
             SELECT idIncidencia
             FROM incidencia
             WHERE idEquipo = %s
-            AND estadoIncidencia = 'pendiente'
+            AND estadoIncidencia IN = ('pendiente', 'abierta', 'servicio tecnico')
         """, (datos['idEquipo'],))
         incidencia_activa = cur.fetchone()
         if incidencia_activa:
@@ -118,8 +117,7 @@ def add_incidencia():
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
         
-        #!------------------------------------------------------------------------
-        # 6. Determinar el nuevo estado del equipo
+        # 5. Determinar el nuevo estado del equipo
         estados_incidencia = {
             'Robo': 3,             # Siniestro
             'Perdido': 4,          # Baja
@@ -132,7 +130,7 @@ def add_incidencia():
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
 
-        # 7. Actualizar el estado del equipo
+        # 6. Actualizar el estado del equipo
         try:
             cur.execute("""
                 UPDATE equipo
@@ -145,7 +143,7 @@ def add_incidencia():
             cur.close()
             return redirect(url_for("incidencia.Incidencia"))
 
-        # 8. Insertar la incidencia en la base de datos
+        # 7. Insertar la incidencia en la base de datos
         try:
             cur.execute("""
                 INSERT INTO incidencia (
