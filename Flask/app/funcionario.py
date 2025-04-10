@@ -4,6 +4,7 @@ from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 from MySQLdb import IntegrityError
+import math
 
 funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
 
@@ -46,79 +47,49 @@ schema_editar_funcionario['rut_actual'] = {
     'regex': r'^\d{7,8}(-[0-9kK])?$',
 }
 
+def getPerPage():
+    return 15  # o el número que quieras mostrar por página
+
+# Vista principal de funcionario
 @funcionario.route('/funcionario')
-@funcionario.route('/funcionario/<int:page>')
 @loguear_requerido
-def Funcionario(page=1):
+def Funcionario():
     if "user" not in session:
         flash("No estás autorizado para ingresar a esta ruta", 'warning')
         return redirect("/ingresar")
 
-    perpage = getPerPage()
-    offset = (page - 1) * perpage
-
     cur = mysql.connection.cursor()
 
-    # Consulta con paginación
+    # Consulta que obtiene todos los funcionarios y cuenta las asignaciones activas
     cur.execute("""
-        SELECT 
-            f.rutFuncionario,
-            f.nombreFuncionario,
-            f.cargoFuncionario, 
-            f.idUnidad,
-            u.idUnidad,
-            u.nombreUnidad,
-            f.correoFuncionario,
-            COALESCE((
-                SELECT COUNT(*)
-                FROM asignacion a
-                JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
-                WHERE a.rutFuncionario = f.rutFuncionario AND a.ActivoAsignacion = 1
-            ), 0) AS equipos_asignados
-        FROM funcionario f
-        JOIN unidad u ON f.idUnidad = u.idUnidad
-        LIMIT %s OFFSET %s
-    """, (perpage, offset))
+    SELECT 
+        f.rutFuncionario,
+        f.nombreFuncionario,
+        f.cargoFuncionario, 
+        f.idUnidad,
+        u.idUnidad,
+        u.nombreUnidad,
+        f.correoFuncionario,
+        COALESCE((SELECT COUNT(*)
+                    FROM asignacion a
+                    JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+                    WHERE a.rutFuncionario = f.rutFuncionario
+                    AND a.ActivoAsignacion = 1), 0) AS equipos_asignados
+    FROM funcionario f
+    JOIN unidad u ON f.idUnidad = u.idUnidad
+    """)
     data = cur.fetchall()
 
-    # Obtener detalle de equipos asignados por funcionario
-    for funcionario_item in data:
-        cur.execute("""
-            SELECT 
-                te.nombreTipo_equipo,
-                mae.nombreMarcaEquipo,
-                me.nombreModeloequipo,
-                e.Cod_inventarioEquipo,
-                e.Num_serieEquipo
-            FROM asignacion a
-            JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
-            JOIN equipo e ON ea.idEquipo = e.idEquipo
-            JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
-            JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-            JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-            JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
-            WHERE a.rutFuncionario = %s AND a.ActivoAsignacion = 1
-        """, (funcionario_item["rutFuncionario"],))
-        funcionario_item["equipos_detalle"] = cur.fetchall()
-
-    # Cargar unidades
     cur.execute('SELECT * FROM unidad')
     ubi_data = cur.fetchall()
 
-    # Obtener el total de registros
-    cur.execute('SELECT COUNT(*) AS total FROM funcionario')
-    total = cur.fetchone()['total']
-    lastpage = (total + perpage - 1) // perpage
+    cur.close()
 
     return render_template(
-        'GestionR.H/funcionario.html',
-        funcionario=data,
-        Unidad=ubi_data,
-        page=page,
-        lastpage=lastpage
+        'GestionR.H/funcionario.html', 
+        funcionario=data, 
+        Unidad=ubi_data
     )
-def getPerPage():
-    return 10  # Puedes cambiar este valor según tu preferencia
 
 
 #agregar funcionario

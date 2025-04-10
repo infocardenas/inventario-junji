@@ -12,170 +12,92 @@
                         data-bs-target="#addFuncionarioModal">Agregar</button>
                 </div>
                 <div class="toolbar-2">
-                    <input name="palabra" type="text" class="search-box" placeholder="Buscar funcionario..."
-                        id="buscador" onkeyup="busqueda('myTableBody')" />
-                </div>
-                <div class="toolbar-3">
-                    <!-- Sin botones -->
+                    <!-- Campo de búsqueda proporcionado por DataTables -->
                 </div>
             </div>
         </div>
 
-        <script src="../../static/js/funciones.js"></script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function () {
-                // Define los placeholders dinámicos
-                const placeholders = [
-                    "Buscar por nombre",
-                    "Buscar por cargo",
-                    "Buscar por unidad",
-                    "Buscar por correo",
-                ];
-                enableDynamicPlaceholder("buscador", placeholders, 2000)
-            });
-        </script>
-
         <!-- Tabla de funcionarios -->
         <div style="overflow-x:auto;">
-            <table class="table table-striped table-bordered table-hover">
+            <table id="funcionariosTable" class="display table table-striped table-bordered table-hover">
                 <thead>
                     <tr>
-
-                        <th onclick="sortTable(1,this)" class="sortable-column">RUT</th>
-                        <th onclick="sortTable(2,this)" class="sortable-column">Nombre</th>
-                        <th onclick="sortTable(3,this)" class="sortable-column">Cargo</th>
-                        <th onclick="sortTable(4,this)" class="sortable-column">Unidad</th>
-                        <th onclick="sortTable(5,this)" class="sortable-column">Correo</th>
-                        <th>Acciones</td>
+                        <th>RUT</th>
+                        <th>Nombre</th>
+                        <th>Cargo</th>
+                        <th>Unidad</th>
+                        <th>Correo</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody id="myTableBody">
-                    <!-- Iterar sobre los funcionarios -->
-                    {% if funcionario %}
+                <tbody>
                     {% for fun in funcionario %}
                     <tr>
-
-                        <td class="toCheck">{{ fun.rutFuncionario }}</td>
-                        <td class="toCheck">{{ fun.nombreFuncionario }}</td>
-                        <td class="toCheck">{{ fun.cargoFuncionario }}</td>
-                        <td class="toCheck">{{ fun.nombreUnidad }}</td>
-                        <td class="toCheck">{{ fun.correoFuncionario }}</td>
-                        <td style="width:200px">
+                        <td>{{ fun.rutFuncionario }}</td>
+                        <td>{{ fun.nombreFuncionario }}</td>
+                        <td>{{ fun.cargoFuncionario }}</td>
+                        <td>{{ fun.nombreUnidad }}</td>
+                        <td>{{ fun.correoFuncionario }}</td>
+                        <td>
                             <div class="d-flex justify-content-center gap-2">
-
                                 <!-- Botón de editar -->
-                                <div data-bs-toggle="tooltip" data-bs-title="Editar">
-                                    <button class="btn btn-warning edit-button" data-bs-toggle="modal"
-                                        data-bs-target="#editFuncionarioModal" data-rut="{{ fun.rutFuncionario }}"
-                                        data-nombre="{{ fun.nombreFuncionario }}"
-                                        data-correo="{{ fun.correoFuncionario }}"
-                                        data-cargo="{{ fun.cargoFuncionario }}" data-unidad="{{ fun.idUnidad }}">
-                                        <i class="bi bi-pencil-square"></i>
-                                    </button>
-                                </div>
+                                <button class="btn btn-warning edit-button" data-bs-toggle="modal"
+                                    data-bs-target="#editFuncionarioModal" data-rut="{{ fun.rutFuncionario }}"
+                                    data-nombre="{{ fun.nombreFuncionario }}"
+                                    data-correo="{{ fun.correoFuncionario }}"
+                                    data-cargo="{{ fun.cargoFuncionario }}" data-unidad="{{ fun.idUnidad }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
 
                                 <!-- Botón de eliminar -->
                                 {% if fun.equipos_asignados == 0 %}
                                 <button type="button" class="btn btn-danger delete-button"
                                     data-title="Eliminar funcionario"
                                     data-message="¿Estás seguro de que deseas eliminar al funcionario {{ fun.nombreFuncionario }}?"
-                                    data-url="/delete_funcionario/{{ fun.rutFuncionario }}" data-bs-toggle="tooltip"
-                                    data-bs-title="Eliminar">
+                                    data-url="/delete_funcionario/{{ fun.rutFuncionario }}">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
                                 {% else %}
-                                <div data-bs-toggle="tooltip" data-bs-title="Eliminar">
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                        data-bs-target="#warningModal">
-                                        <i class="bi bi-trash-fill"></i>
-                                    </button>
-                                </div>
-                                {% endif %}
-
-                                <!-- Botón de equipos asignados -->
-                                {% if fun.equipos_asignados > 0 %}
-                                <div data-bs-toggle="tooltip" data-bs-title="Equipos asignados">
-                                    <button type="button" class="btn btn-secondary equipos-asignados"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#modal-ver-equipo-asignado-{{ fun.rutFuncionario }}">
-                                        <i class="bi bi-pc-display"></i>
-                                    </button>
-                                </div>
-                                {% else %}
-                                <div data-bs-toggle="tooltip" data-bs-title="Equipos asignados">
-                                    <button type="button" class="btn btn-secondary equipos-asignados"
-                                        data-bs-toggle="modal" data-bs-target="#modal-sin-equipos-asignados">
-                                        <i class="bi bi-pc-display"></i>
-                                    </button>
-                                </div>
+                                <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                    data-bs-target="#warningModal">
+                                    <i class="bi bi-trash-fill"></i>
+                                </button>
                                 {% endif %}
                             </div>
                         </td>
                     </tr>
                     {% endfor %}
-                    {% else %}
-                    <tr>
-                        <td colspan="6">No hay funcionarios registrados</td>
-                    </tr>
-                    {% endif %}
                 </tbody>
             </table>
-<!-- PAGINADOR -->
-<!-- PAGINADOR -->
-<nav aria-label="Paginación de funcionarios">
-    <ul class="pagination justify-content-center">
-
-        {% if page > 1 %}
-        <li class="page-item">
-            <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=page-1) }}">Anterior</a>
-        </li>
-        {% endif %}
-
-        {# Siempre mostrar la primera página #}
-        <li class="page-item {% if page == 1 %}active{% endif %}">
-            <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=1) }}">1</a>
-        </li>
-
-        {# Mostrar ... si hay salto entre página 1 y el primer bloque #}
-        {% if page > 4 %}
-        <li class="page-item disabled"><span class="page-link">...</span></li>
-        {% endif %}
-
-        {# Mostrar páginas alrededor de la actual #}
-        {% for p in range(page-2, page+3) %}
-            {% if p > 1 and p < lastpage %}
-            <li class="page-item {% if p == page %}active{% endif %}">
-                <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=p) }}">{{ p }}</a>
-            </li>
-            {% endif %}
-        {% endfor %}
-
-        {# Mostrar ... si hay salto entre el último bloque y la última página #}
-        {% if page < lastpage - 3 %}
-        <li class="page-item disabled"><span class="page-link">...</span></li>
-        {% endif %}
-
-        {# Mostrar última página si no es la misma que ya se mostró #}
-        {% if lastpage > 1 %}
-        <li class="page-item {% if page == lastpage %}active{% endif %}">
-            <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=lastpage) }}">{{ lastpage }}</a>
-        </li>
-        {% endif %}
-
-        {% if page < lastpage %}
-        <li class="page-item">
-            <a class="page-link" href="{{ url_for('funcionario.Funcionario', page=page+1) }}">Siguiente</a>
-        </li>
-        {% endif %}
-
-    </ul>
-</nav>
-
-
-
-            {% include 'GestionR.H/funcionario.modals.html' %}
-
         </div>
-        {% endblock %}
+
+        <!-- Incluir los modales -->
+        {% include 'GestionR.H/funcionario.modals.html' %}
     </div>
 </div>
+
+<!-- Scripts para DataTables -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
+<script>
+    $(document).ready(function() {
+    $('#funcionariosTable').DataTable({
+        "paging": true,
+        "searching": true,
+        "ordering": true,
+        "info": true,
+        "lengthChange": false,
+        "pageLength": 10,
+        "language": {
+            "search": "Buscar:",
+            "lengthMenu": "Mostrar _MENU_ registros por página",
+            "zeroRecords": "No se encontraron resultados",
+            "info": "Mostrando página _PAGE_ de _PAGES_",
+            "infoEmpty": "No hay registros disponibles",
+            "infoFiltered": "(filtrado de _MAX_ registros totales)"
+        }
+    });
+});
+</script>
+
+{% endblock %}
