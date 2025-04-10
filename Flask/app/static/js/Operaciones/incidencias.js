@@ -45,24 +45,30 @@ $(document).ready(function () {
   });
 
   // ✅ Evento para eliminar incidencia (elimina la incidencia correcta)
-  $(".btn-danger").on("click", function () {
-      let incidenciaId = $(this).data("id"); // Obtener ID correcto
-      console.log("Intentando eliminar incidencia ID:", incidenciaId);
+  $(document).on("click", ".delete-button", function () {
+    // Obtener el ID y la URL del botón
+    const incidenciaId = $(this).data("id");
+    const url = $(this).data("url");
 
-      if (confirm("¿Estás seguro de que deseas eliminar esta incidencia?")) {
-          // Crear formulario dinámico para enviar solicitud de eliminación
-          let form = $("<form>", {
-              method: "POST",
-              action: "/incidencia/delete_incidencia/" + incidenciaId
-          }).appendTo("body");
+    console.log("Intentando eliminar incidencia ID:", incidenciaId);
 
-          form.submit(); // Enviar el formulario
-      }
-  });
+    // Confirmar la eliminación (opcional, puedes eliminar esta parte si no quieres confirmación)
+    const confirmMessage = $(this).data("message") || "¿Estás seguro de que deseas eliminar esta incidencia?";
+    if (!confirm(confirmMessage)) {
+        return; // Si el usuario cancela, no hacer nada
+    }
+
+    // Crear un formulario dinámico para enviar la solicitud de eliminación
+    let form = $("<form>", {
+        method: "POST",
+        action: url
+    }).appendTo("body");
+
+    form.submit(); // Enviar el formulario
 });
 
 // ✅ Función para limpiar datos antes de usarlos
 function limpiarDato(dato) {
   return dato ? dato.toString().trim() : "";
 }
-
+});
