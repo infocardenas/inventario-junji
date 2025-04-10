@@ -48,6 +48,11 @@
 
                     <div class="col-md-6">
                         <label class="form-label" for="codigo_Unidad">Unidad <span style="color: red;">*</span></label>
+                        
+                        <!-- Campo de búsqueda -->
+                        <input type="text" id="buscarUnidad" class="form-control mb-2" placeholder="Buscar unidad...">
+                        
+                        <!-- Select de Unidad -->
                         <select class="form-select campo-obligatorio" name="codigo_Unidad" id="codigo_Unidad">
                             <option value="" selected>Seleccione la Unidad</option>
                             {% for unidad in Unidad %}
