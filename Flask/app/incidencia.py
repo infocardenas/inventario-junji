@@ -196,21 +196,42 @@ def add_incidencia():
 
         return redirect(url_for("incidencia.Incidencia"))
 
-        
-@incidencia.route("/incidencia/delete_incidencia/<id>",  methods=["GET", "POST"])
+@incidencia.route("/incidencia/delete_incidencia/<id>", methods=["GET", "POST"])
 @administrador_requerido
 def delete_incidencia(id):
     # Se asume que la validación de sesión se hace en el decorador @administrador_requerido.
     cur = mysql.connection.cursor()
     try:
+        # Verificar el estado de la incidencia
+        cur.execute("""
+            SELECT estadoIncidencia
+            FROM incidencia
+            WHERE idIncidencia = %s
+        """, (id,))
+        incidencia = cur.fetchone()
+
+        if not incidencia:
+            flash("Error: La incidencia no existe.", "danger")
+            return redirect(url_for("incidencia.Incidencia"))
+
+        estado = incidencia["estadoIncidencia"]
+
+        # Validar que el estado sea "cerrado", "equipo reparado" o "equipo cambiado"
+        if estado not in ["cerrado", "equipo reparado", "equipo cambiado"]:
+            flash(f"Error: Solo se pueden eliminar incidencias con estado 'cerrado', 'equipo reparado' o 'equipo cambiado'. Estado actual: {estado}.", "warning")
+            return redirect(url_for("incidencia.Incidencia"))
+
+        # Eliminar la incidencia si cumple con los criterios
         cur.execute("DELETE FROM incidencia WHERE idIncidencia = %s", (id,))
         mysql.connection.commit()
         flash("Incidencia eliminada correctamente", "success")
     except Exception as e:
         mysql.connection.rollback()
         flash("Error al eliminar la incidencia: " + str(e), "danger")
-    return redirect(url_for("incidencia.Incidencia"))
+    finally:
+        cur.close()
 
+    return redirect(url_for("incidencia.Incidencia"))
 
 @incidencia.route("/incidencia/edit_incidencia/<id>", methods=["GET", "POST"])
 @administrador_requerido

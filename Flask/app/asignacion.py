@@ -26,9 +26,9 @@ schema_asignacion = {
     },
     'rut_funcionario': {
         'type': 'string',
-        'minlength': 9,
+        'minlength': 7,
         'maxlength': 10,
-        'regex': r'^\d{7,8}-[0-9kK]$',
+        'regex': r'^\d{7,8}(-[0-9kK])?$'
     },
     'observacion': {
         'type': 'string',
@@ -124,7 +124,6 @@ def Asignacion():
         funcionarios=funcionarios, 
         asignacion=data,
         equipos_sin_asignar = equipos_sin_asignar)
-
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
 def create_asignacion():
@@ -159,6 +158,7 @@ def create_asignacion():
 
     cur = mysql.connection.cursor()
     try:
+        # Insertar la asignación en la base de datos
         cur.execute("""
             INSERT INTO asignacion (
                 fecha_inicioAsignacion,
@@ -167,51 +167,66 @@ def create_asignacion():
                 ActivoAsignacion
             )
             VALUES (%s, %s, %s, 1)
-            """, (fecha_asignacion, observacion, rut_funcionario))
-        id_asignacion = cur.lastrowid # Recupera el ID de la asignación recién insertada
+        """, (fecha_asignacion, observacion, rut_funcionario))
+        id_asignacion = cur.lastrowid  # Recupera el ID de la asignación recién insertada
 
         TuplaEquipos = ()
 
         # Recorre los equipos asignados
         for id_equipo in id_equipos:
+            # Verificar que el equipo esté en estado "SIN ASIGNAR"
+            cur.execute("""
+                SELECT ee.nombreEstado_equipo
+                FROM equipo e
+                JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
+                WHERE e.idEquipo = %s
+            """, (id_equipo,))
+            estado_actual = cur.fetchone()
+
+            if not estado_actual or estado_actual["nombreEstado_equipo"] != "SIN ASIGNAR":
+                flash(f"Error: El equipo con ID {id_equipo} no está en estado 'SIN ASIGNAR' y no puede ser asignado.", "danger")
+                mysql.connection.rollback()  # Revertir cualquier cambio
+                return redirect(url_for("asignacion.Asignacion"))
+
             # Inserta los datos en la tabla equipo_asignacion
             cur.execute("""
                 INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
                 VALUES (%s, %s)
-                """, (id_asignacion, id_equipo))
+            """, (id_asignacion, id_equipo))
 
             # Encuentra el ID del estado "EN USO"
             cur.execute("""
-                        SELECT *
-                        FROM estado_equipo
-                        WHERE nombreEstado_equipo = %s
-                        """, ("EN USO",))
-            id_estado_equipo = cur.fetchone()['idEstado_equipo']
-                
+                SELECT idEstado_equipo
+                FROM estado_equipo
+                WHERE nombreEstado_equipo = %s
+            """, ("EN USO",))
+            id_estado_equipo = cur.fetchone()["idEstado_equipo"]
+
             # Cambia el estado del equipo a "EN USO"
             cur.execute("""
-                        UPDATE equipo
-                        SET idEstado_equipo = %s
-                        WHERE idEquipo = %s
-                        """, (id_estado_equipo, id_equipo))
+                UPDATE equipo
+                SET idEstado_equipo = %s
+                WHERE idEquipo = %s
+            """, (id_estado_equipo, id_equipo))
 
-            #Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el excel
+            # Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el PDF
             cur.execute("""
-                        SELECT e.*, 
-                            me.nombreModeloequipo, 
-                            te.nombreTipo_equipo, 
-                            mae.nombreMarcaEquipo, 
-                            ee.nombreEstado_equipo
-                        FROM equipo e
-                        INNER JOIN modelo_equipo me ON me.idModelo_Equipo = e.idModelo_Equipo
-                        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-                        INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
-                        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
-                        INNER JOIN estado_equipo ee ON ee.idEstado_equipo = e.idEstado_equipo
-                        WHERE e.idEquipo = %s
-                        """, (id_equipo,))
+                SELECT e.*, 
+                    me.nombreModeloequipo, 
+                    te.nombreTipo_equipo, 
+                    mae.nombreMarcaEquipo, 
+                    ee.nombreEstado_equipo
+                FROM equipo e
+                INNER JOIN modelo_equipo me ON me.idModelo_Equipo = e.idModelo_Equipo
+                INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+                INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+                INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+                INNER JOIN estado_equipo ee ON ee.idEstado_equipo = e.idEstado_equipo
+                WHERE e.idEquipo = %s
+            """, (id_equipo,))
             equipoTupla = cur.fetchone()
             TuplaEquipos = TuplaEquipos + (equipoTupla,)
+
         mysql.connection.commit()
 
         # Obtiene información relevante del funcionario para añadir al PDF
@@ -252,7 +267,6 @@ def create_asignacion():
     pdf_asignacion = crear_pdf_asignacion(funcionario, TuplaEquipos)
     
     return redirect(url_for('asignacion.Asignacion'))
-
 # enviar datos a vista editar
 @asignacion.route("/asignacion/edit_asignacion/<id>", methods=["POST", "GET"])
 @administrador_requerido
@@ -572,18 +586,34 @@ def devolver_equipos():
 
     id_estado_sin_asignar = estado_sin_asignar["idEstado_equipo"]
 
+    # Verificar que todos los equipos seleccionados tengan el estado "EN USO" y un PDF firmado
     for id_equipo_asignacion in ids_equipos_asignacion:
-        # Verificar si ya fue devuelto
         cur.execute("""
-            SELECT idDevolucion 
-            FROM devolucion 
-            WHERE idEquipoAsignacion = %s
+            SELECT e.idEstado_equipo, ee.nombreEstado_equipo, ea.idAsignacion
+            FROM equipo_asignacion ea
+            JOIN equipo e ON ea.idEquipo = e.idEquipo
+            JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
+            WHERE ea.idEquipoAsignacion = %s
         """, (id_equipo_asignacion,))
-        if cur.fetchone():  # Si existe, detener todo el proceso
-            flash("Error: Uno o más equipos seleccionados ya fueron devueltos", "danger")
+        equipo_estado = cur.fetchone()
+
+        if not equipo_estado:
+            flash(f"No se encontró información para el equipo asignado {id_equipo_asignacion}.", "warning")
             cur.execute("ROLLBACK")  # Cancelar todo el proceso
             return redirect(url_for("asignacion.Asignacion"))
 
+        if equipo_estado["nombreEstado_equipo"] != "En Uso":
+            flash(f"Error: El equipo con ID {id_equipo_asignacion} tiene una incidencia sin resolver y no puede ser devuelto.", "danger")
+            cur.execute("ROLLBACK")  # Cancelar todo el proceso
+            return redirect(url_for("asignacion.Asignacion"))
+
+        # Verificar la existencia del PDF firmado
+        id_asignacion = equipo_estado["idAsignacion"]
+        pdf_path = os.path.join("pdf/firmas_asignaciones", f"asignacion_{id_asignacion}_firmado.pdf")
+        if not os.path.exists(pdf_path):
+            flash(f"Error: No se encontró el PDF firmado para la asignación {id_asignacion}.", "danger")
+            cur.execute("ROLLBACK")  # Cancelar todo el proceso
+            return redirect(url_for("asignacion.Asignacion"))
 
     # Si no hay errores, proceder con la devolución
     for id_equipo_asignacion in ids_equipos_asignacion:
@@ -608,7 +638,6 @@ def devolver_equipos():
             INSERT INTO devolucion (fechaDevolucion, idEquipoAsignacion)
             VALUES (%s, %s)
         """, (today, id_equipo_asignacion))
-        id_devolucion = str(cur.lastrowid) # Recupera el ID de la devolución recién insertada
 
         # Actualizar el estado del equipo a "SIN ASIGNAR"
         cur.execute("""
@@ -634,63 +663,10 @@ def devolver_equipos():
                 WHERE idAsignacion = %s
             """, (id_asignacion,))
 
-    # Obtiene información relevante del funcionario para añadir al PDF
-    cur.execute("""
-        SELECT 
-            f.nombreFuncionario,
-            a.idAsignacion,
-            a.fecha_inicioAsignacion,
-            u.nombreUnidad
-        FROM funcionario f
-        JOIN asignacion a ON f.rutFuncionario = a.rutFuncionario
-        JOIN unidad u ON f.idUnidad = u.idUnidad
-        WHERE a.idAsignacion = %s
-    """, (id_asignacion,))
-    query = cur.fetchone()
-
-    data_funcionario_PDF = {
-        "nombre": query["nombreFuncionario"],
-        "id_asignacion": str(query["idAsignacion"]),
-        "fecha_asignacion": str(query["fecha_inicioAsignacion"].strftime("%d-%m-%Y")),
-        "unidad": query["nombreUnidad"]
-    }
-
-    # Obtiene información relevante de los equipos seleccionados para devolver para añadir al PDF
-    placeholders = ', '.join(['%s'] * len(ids_equipos_asignacion))
-    cur.execute(f"""
-        SELECT
-            te.nombreTipo_equipo,
-            mae.nombreMarcaEquipo,
-            me.nombreModeloequipo,
-            e.Num_serieEquipo,
-            e.Cod_inventarioEquipo
-        FROM equipo e
-        JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
-        JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
-        JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
-        JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
-        JOIN equipo_asignacion ea ON e.idEquipo = ea.idEquipo
-        WHERE ea.idEquipoAsignacion IN ({placeholders})
-    """, tuple(ids_equipos_asignacion))
-    query = cur.fetchall()
-
-    data_equipos_PDF = [
-        {
-            "tipo": equipo["nombreTipo_equipo"],
-            "marca": equipo["nombreMarcaEquipo"],
-            "modelo": equipo["nombreModeloequipo"],
-            "num_serie": str(equipo["Num_serieEquipo"]),
-            "cod_inventario": str(equipo["Cod_inventarioEquipo"])
-        }
-        for equipo in query
-    ]
-
     # Si todo fue exitoso, confirmar cambios
     cur.execute("COMMIT")
-    crear_pdf_devolucion(data_funcionario_PDF, data_equipos_PDF, id_devolucion)
     flash("Devolución de equipos realizada exitosamente", "success")
     return redirect(url_for("asignacion.Asignacion"))
-
 
 def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
     class PDF(FPDF):
