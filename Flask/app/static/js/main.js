@@ -863,31 +863,22 @@ $(document).ready(function () {
 
 
 
-$(document).ready(function () {
-  $(".edit-button").on("click", function () {
-    // Obtiene valores del botón
-    const rutCompleto = $(this).data("rut");
-    const nombre = $(this).data("nombre");
-    const correo = $(this).data("correo");
-    const cargo = $(this).data("cargo");
-    const unidad = $(this).data("unidad");
+$(document).on('click', '.edit-button', function () {
+  // Obtener los datos del funcionario desde los atributos de la fila
+  const row = $(this).closest('tr');
+  const rut = row.data('rut');
+  const nombre = row.data('nombre');
+  const correo = row.data('correo');
+  const cargo = row.data('cargo');
+  const unidad = row.data('unidad');
 
-    // Separa el RUT en cuerpo y dígito verificador
-    const [rutSinFormato, digitoVerificador] = rutCompleto.split("-");
-
-    // Divide el correo en parte local y dominio
-    const [parteLocalCorreo, dominioCorreo] = correo.split("@");
-
-    // Asigna valores a los campos del formulario en el modal
-    $("#edit_rut_funcionario").val(rutSinFormato); // Rut sin el dígito verificador
-    $("#edit_rut_verificador").val(digitoVerificador); // Dígito verificador
-    $("#edit_rut_actual").val(rutCompleto); // Rut completo en el campo oculto
-    $("#edit_nombre_funcionario").val(nombre);
-    $("#edit_correo_funcionario").val(parteLocalCorreo); // Solo la parte local del correo
-    $("#edit_correo_dominio").val(`@${dominioCorreo}`); // Asigna el dominio al selector
-    $("#edit_cargo_funcionario").val(cargo);
-    $("#edit_codigo_Unidad").val(unidad);
-  });
+  // Llenar los campos del modal
+  $('#edit_rut_actual').val(rut);
+  $('#edit_nombre_funcionario').val(nombre);
+  $('#edit_correo_funcionario').val(correo.split('@')[0]); // Parte local del correo
+  $('#edit_correo_dominio').val('@' + correo.split('@')[1]); // Dominio del correo
+  $('#edit_cargo_funcionario').val(cargo);
+  $('#edit_codigo_Unidad').val(unidad);
 });
 
 $(document).ready(function () {

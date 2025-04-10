@@ -32,7 +32,13 @@
                 </thead>
                 <tbody>
                     {% for fun in funcionario %}
-                    <tr>
+                    <!-- Cargar los todos los datos de todas las paginas en el DOM -->
+                    <tr
+                        data-rut="{{ fun.rutFuncionario }}"
+                        data-nombre="{{ fun.nombreFuncionario }}"
+                        data-correo="{{ fun.correoFuncionario }}"
+                        data-cargo="{{ fun.cargoFuncionario }}"
+                        data-unidad="{{ fun.idUnidad }}">
                         <td>{{ fun.rutFuncionario }}</td>
                         <td>{{ fun.nombreFuncionario }}</td>
                         <td>{{ fun.cargoFuncionario }}</td>
