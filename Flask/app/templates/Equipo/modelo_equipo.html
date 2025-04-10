@@ -9,10 +9,12 @@
 
         <div class="toolbar">
             <div class="toolbar-1">
-                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addModeloModal"><i class="bi bi-plus-lg"></i> Agregar</button>
+                <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addModeloModal"><i
+                        class="bi bi-plus-lg"></i> Agregar</button>
             </div>
             <div class="toolbar-2">
-                <input name="palabra" type="text" class="search-box" placeholder="Buscar modelo..." id="buscador" onkeyup="busqueda('myTableBody')" />
+                <input name="palabra" type="text" class="search-box" placeholder="Buscar modelo..." id="buscador"
+                    onkeyup="busqueda('myTableBody')" />
             </div>
             <div class="toolbar-3">
                 <button class="btn btn-danger shadow-sm" id="eliminarSeleccionados"><i class="bi bi-trash"></i></button>
@@ -52,16 +54,16 @@
                             <td class="checkbox-column">
                                 <input type="checkbox" class="checkbox-table row-checkbox">
                             </td>
+                            <!-- <td>{{ modeloe.idModelo_Equipo }}</td>  -->
                             <td>{{ modeloe.nombreModeloequipo }}</td>
                             <td data-tipo-id="{{ modeloe.idTipo_equipo }}">{{ modeloe.nombreTipo_equipo }}</td>
-                            <td data-marca-id="{{ modeloe.idMarca_Equipo }}">{{ modeloe.nombreMarcaEquipo }}</td>                                
+                            <td data-marca-id="{{ modeloe.idMarca_Equipo }}">{{ modeloe.nombreMarcaEquipo }}</td>
                             <td>
-                                <button class="btn button-info btn-sm btn-editar-modelo"
-                                data-bs-toggle="modal" data-bs-target="#editModeloEquipoModal"
-                                data-id="{{ modeloe.idModelo_Equipo }}"
-                                data-nombre="{{ modeloe.nombreModeloequipo }}">
-                                <i class="bi bi-pencil-square"></i>
-                                </button>   
+                                <button class="btn button-info btn-sm btn-editar-modelo" data-bs-toggle="modal"
+                                    data-bs-target="#editModeloEquipoModal" data-id="{{ modeloe.idModelo_Equipo }}"
+                                    data-nombre="{{ modeloe.nombreModeloequipo }}">
+                                    <i class="bi bi-pencil-square"></i>
+                                </button>
                             </td>
                         </tr>
                         {% endfor %}
@@ -74,10 +76,64 @@
                 </table>
             </div>
         </div>
+        <!-- Paginación -->
+        {% if lastpage > 1 %}
+        <nav aria-label="Paginación de modelos" class="mt-3">
+            <ul class="pagination justify-content-center">
+        
+                {% if page > 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('modelo_equipo.modeloEquipo', page=page-1) }}">Anterior</a>
+                </li>
+                {% endif %}
+        
+                {# Siempre mostrar la primera página #}
+                <li class="page-item {% if page == 1 %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('modelo_equipo.modeloEquipo', page=1) }}">1</a>
+                </li>
+        
+                {# Mostrar ... si hay salto entre 1 y el bloque dinámico #}
+                {% if page > 4 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+        
+                {# Mostrar páginas cercanas a la actual #}
+                {% for p in range(page-2, page+3) %}
+                    {% if p > 1 and p < lastpage %}
+                    <li class="page-item {% if p == page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('modelo_equipo.modeloEquipo', page=p) }}">{{ p }}</a>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+        
+                {# Mostrar ... si hay salto antes de la última página #}
+                {% if page < lastpage - 3 %}
+                <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+        
+                {# Mostrar la última página si no es la misma que ya se mostró #}
+                {% if lastpage > 1 %}
+                <li class="page-item {% if page == lastpage %}active{% endif %}">
+                    <a class="page-link" href="{{ url_for('modelo_equipo.modeloEquipo', page=lastpage) }}">{{ lastpage }}</a>
+                </li>
+                {% endif %}
+        
+                {% if page < lastpage %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('modelo_equipo.modeloEquipo', page=page+1) }}">Siguiente</a>
+                </li>
+                {% endif %}
+        
+            </ul>
+        </nav>
+        {% endif %}
+        
 
         {% include 'Equipo/modelo_equipo.modals.html'%}
         <script src="{{ url_for('static', filename='js/Equipo/modeloEquipo.js') }}"></script>
 
         {% endblock %}
     </div>
+
+
 </div>

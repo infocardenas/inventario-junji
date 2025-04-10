@@ -38,9 +38,14 @@ document.getElementById("Origen").addEventListener("change", function () {
         });
 });
 
+
 document.getElementById("trasladoForm").addEventListener("submit", function (event) {
     event.preventDefault();
     let formData = new FormData(this);
+    let submitButton = this.querySelector('button[type="submit"]');
+
+    // Deshabilitar el botón para evitar múltiples envíos
+    submitButton.disabled = true;
 
     fetch(`/traslado/create_traslado/${document.getElementById("Origen").value}`, {
         method: "POST",
@@ -54,10 +59,15 @@ document.getElementById("trasladoForm").addEventListener("submit", function (eve
                 // Cerrar modal y resetear formulario
                 $('#trasladoModal').modal('hide');
                 this.reset();
+                window.location.reload(); // Recargar la página para ver el nuevo traslado
             } else {
                 mostrarAlerta(`${data.message}`, "danger");
             }
         })
+        .finally(() => {
+            // Rehabilitar el botón en caso de error
+            submitButton.disabled = false;
+        });
 });
 
 

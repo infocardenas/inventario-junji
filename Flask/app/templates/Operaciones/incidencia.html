@@ -24,21 +24,21 @@
             </div>
 
             <script src="../../static/js/funciones.js"></script>
-                <script>
-                    document.addEventListener("DOMContentLoaded", function () {
-                        // Define los placeholders dinámicos
-                        const placeholders = [
-                            "Buscar por tipo de incidencia",
-                            "Buscar por observación",
-                            "Buscar por fecha",
-                            "Buscar por código de inventario",
-                            "Buscar por número de serie",
-                            "Buscar por tipo de equipo",
-                            "Buscar por modelo",
-                        ];
-                        enableDynamicPlaceholder("buscador", placeholders, 2000)
-                    });
-                </script>
+            <script>
+                document.addEventListener("DOMContentLoaded", function () {
+                    // Define los placeholders dinámicos
+                    const placeholders = [
+                        "Buscar por tipo de incidencia",
+                        "Buscar por observación",
+                        "Buscar por fecha",
+                        "Buscar por código de inventario",
+                        "Buscar por número de serie",
+                        "Buscar por tipo de equipo",
+                        "Buscar por modelo",
+                    ];
+                    enableDynamicPlaceholder("buscador", placeholders, 2000)
+                });
+            </script>
 
             <!-- Tabla -->
             <div class="table-responsive">
@@ -54,7 +54,7 @@
                                 title="Codigo de Inventario" data-bs-custom-class="custom-tooltip">C. Inv</th>
                             <th onclick="sortTable(5,this)" class="sortable-column">N° Serie</th>
                             <th onclick="sortTable(7,this)" class="sortable-column">Modelo</th>
-                            
+
                             <th>Acciones</th>
                         </tr>
                     </thead>
@@ -71,7 +71,7 @@
                             <td class="toCheck">{{inc.fechaIncidencia.strftime("%d-%m-%Y")}}</td>
                             <td class="toCheck">{{inc.cod_inventarioEquipo}}</td>
                             <td class="toCheck">{{inc.Num_serieEquipo}}</td>
-                            
+
                             <td class="toCheck">{{inc.nombreModeloequipo}}</td>
                             <td>
                                 <!--! BOTON PARA VER ESPECIFICACIONES -->
@@ -81,24 +81,22 @@
                                 </a>
                                 <!--! BOTON PARA EDITAR -->
                                 <button class="btn btn-warning edit-equipo-btn" data-bs-toggle="modal"
-                                    data-bs-target="#edit_incidencia" 
-                                    data-id="{{ inc.idIncidencia }}"
-                                    data-estado="{{ inc.estadoIncidencia }}" 
-                                    data-nombre="{{ inc.nombreIncidencia }}" 
+                                    data-bs-target="#edit_incidencia" data-id="{{ inc.idIncidencia }}"
+                                    data-estado="{{ inc.estadoIncidencia }}" data-nombre="{{ inc.nombreIncidencia }}"
                                     data-fecha="{{ inc.fechaIncidencia }}"
                                     data-observacion="{{ inc.observacionIncidencia }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <!-- Botón de eliminación para incidencia con tooltip -->
-                                <button class="btn btn-danger" id="delete-incidencia-button" data-bs-toggle="tooltip"
-                                    data-bs-title="Eliminar" data-id="{{ inc.idIncidencia }}">
+                                <!--  Formulario oculto para eliminar una incidencia-->
+                                <button class="btn btn-danger delete-button"
+                                    data-id="{{ inc.idIncidencia }}" 
+                                    data-url="/incidencia/delete_incidencia/{{ inc.idIncidencia }}"
+                                    data-title="Confirmar eliminación de incidencia"
+                                    data-message="¿Estás seguro de que deseas eliminar esta incidencia? Eliminar la incidencia podría significar perder parte del historial."
+                                    data-bs-title="Eliminar">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
-
-                                <!--  Formulario oculto para eliminar una incidencia-->
-                                <form id="deleteForm" method="POST" style="display: none;"></form>
-
                             </td>
                         </tr>
                         {% endfor %}
@@ -112,6 +110,30 @@
                     </tfoot>
                 </table>
             </div>
+            <!-- PAGINADOR -->
+            <nav aria-label="Paginación de incidencias" class="mt-4">
+                <ul class="pagination justify-content-center">
+
+                    {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('incidencia.Incidencia', page=page-1) }}">Anterior</a>
+                    </li>
+                    {% endif %}
+
+                    {% for p in range(1, lastpage + 1) %}
+                    <li class="page-item {% if p == page %}active{% endif %}">
+                        <a class="page-link" href="{{ url_for('incidencia.Incidencia', page=p) }}">{{ p }}</a>
+                    </li>
+                    {% endfor %}
+
+                    {% if page < lastpage %} <li class="page-item">
+                        <a class="page-link" href="{{ url_for('incidencia.Incidencia', page=page+1) }}">Siguiente</a>
+                        </li>
+                        {% endif %}
+
+                </ul>
+            </nav>
+
         </div>
 
         <style>
@@ -129,6 +151,18 @@
                 /* Flecha blanca */
             }
         </style>
+        <style>
+            .pagination .page-item.active .page-link {
+                background-color: #007bff;
+                color: white;
+                border-color: #007bff;
+            }
+        
+            .pagination .page-link {
+                color: #007bff;
+            }
+        </style>
+        
 
 
         <script src="https://code.jquery.com/jquery-3.7.1.min.js"

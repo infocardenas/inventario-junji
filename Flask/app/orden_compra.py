@@ -10,45 +10,66 @@ from cerberus import Validator
 
 orden_compra = Blueprint('orden_compra', __name__, template_folder='app/templates')
 
-#vista principal orden_compra
 @orden_compra.route('/orden_compra')
-@orden_compra.route('/orden_compra/<page>')
+@orden_compra.route('/orden_compra/<int:page>')
 @loguear_requerido
-def ordenCompra(page = 1):
+def ordenCompra(page=1):
     if "user" not in session:
-        flash("you are NOT authorized")
+        flash("You are NOT authorized")
         return redirect("/ingresar")
-    page = int(page)
-    perpage = getPerPage()
-    offset = (page-1) * perpage
-    cur = mysql.connection.cursor()
-    cur.execute(''' SELECT oc.idOrden_compra, oc.nombreOrden_compra, oc.fechacompraOrden_compra,oc.fechafin_ORDEN_COMPRA,oc.rutadocumentoOrden_compra,
-                p.nombreProveedor, p.idProveedor, ta.idTipo_adquisicion, ta.nombre_tipo_adquisicion, oc.idProveedor, oc.idTipo_adquisicion
-                from orden_compra oc
-                inner join proveedor p on p.idProveedor = oc.idProveedor
-                inner join tipo_adquisicion ta on ta.idTipo_adquisicion = oc.idTipo_adquisicion
-                LIMIT %s OFFSET %s
-    ''',(perpage, offset))
-    data = cur.fetchall() 
 
-    cur.execute('SELECT COUNT(*) FROM orden_compra')
-    total = cur.fetchone()
-    total = int(str(total).split(':')[1].split('}')[0])
-    #Se generan mas consultas para rellenar los campos select en la vista.html 
+    perpage = getPerPage()
+    offset = (page - 1) * perpage
+
+    cur = mysql.connection.cursor()
+
+    # Consulta principal con paginación
+    cur.execute('''
+        SELECT 
+            oc.idOrden_compra, 
+            oc.nombreOrden_compra, 
+            oc.fechacompraOrden_compra,
+            oc.fechafin_ORDEN_COMPRA,
+            oc.rutadocumentoOrden_compra,
+            p.nombreProveedor, 
+            p.idProveedor, 
+            ta.idTipo_adquisicion, 
+            ta.nombre_tipo_adquisicion, 
+            oc.idProveedor, 
+            oc.idTipo_adquisicion
+        FROM orden_compra oc
+        INNER JOIN proveedor p ON p.idProveedor = oc.idProveedor
+        INNER JOIN tipo_adquisicion ta ON ta.idTipo_adquisicion = oc.idTipo_adquisicion
+        LIMIT %s OFFSET %s
+    ''', (perpage, offset))
+    data = cur.fetchall()
+
+    # Total de registros
+    cur.execute('SELECT COUNT(*) AS total FROM orden_compra')
+    total = cur.fetchone()['total']
+    lastpage = (total + perpage - 1) // perpage
+
+    # Datos para los select en el modal
     cur.execute('SELECT * FROM proveedor')
-    #la variable puede llamarse de cualquier forma pero la llamamos data por lo general, si tenemos mas de una consulta generar otra variable con un nombre distinto
     datas = cur.fetchall()
+
     cur.execute('SELECT * FROM tipo_adquisicion')
     ta_data = cur.fetchall()
-    print(ta_data)
+
     cur.close()
+
     return render_template(
-        'GestionP/orden_compra.html', 
-        orden_compra = data, 
-        proveedor = datas,
-        tipo_adquisicion = ta_data,
-        page=page, lastpage= page < (total/perpage)+1
-        )
+        'GestionP/orden_compra.html',
+        orden_compra=data,
+        proveedor=datas,
+        tipo_adquisicion=ta_data,
+        page=page,
+        lastpage=lastpage
+    )
+def getPerPage():
+    return 10  # Cambia este número si quieres más o menos resultados por página
+
+
 
 #agrega un registro para orden de compra
 @orden_compra.route('/add_ordenc', methods = ['POST'])
