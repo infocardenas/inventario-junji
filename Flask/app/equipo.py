@@ -102,7 +102,7 @@ def Equipo():
     )
 
 def getPerPage():
-    return 10 
+    return 7 
 
 def crear_lista_modelo_tipo_marca():
     cur = mysql.connection.cursor()
