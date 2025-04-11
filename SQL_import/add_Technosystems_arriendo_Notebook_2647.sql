@@ -1,5 +1,5 @@
 --
--- Estructura para agregar equipos  es CANVIAR idModelo_equipo asdas
+-- Estructura para agregar equipos  es CANVIAR idModelo_equipo 
 -- 
 --
 INSERT INTO equipo (
