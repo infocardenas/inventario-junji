@@ -1,4 +1,4 @@
----- Celulares_Biobio.csv ✅
+---- Celulares_Biobio.csv ✅ Isaac
 es necesario la columna de unidad para agregar los equipos corecta mente ✅
 es necesario crear la orde de compra por sql ✅
 es necesario crear los equipos por sql  ✅
@@ -7,6 +7,6 @@ es necesario crear los equipos por sql  ✅
 
 ---- SONDA_arriendo_notebook_508.csv ⏳
 
----- SONDA_arriendo_Notebook_1592.csv ✅
+---- SONDA_arriendo_Notebook_1592.csv ✅ Isaac
 
----- Technosystems_arriendo_Notebook_2647.csv ✅
+---- Technosystems_arriendo_Notebook_2647.csv ✅ Isaac

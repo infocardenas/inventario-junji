@@ -1,5 +1,5 @@
 UPDATE equipo
-SET ObservacionEquipo = 'Contrato 2645 arriendo'
+SET idOrden_compra = '599-405-CC22'
 WHERE Cod_inventarioEquipo IN (
 '17014460',
 '17014387',
