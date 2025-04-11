@@ -13,7 +13,7 @@ import os
 equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 
 
-# envia datos al formulario y tabla de equipo CAMBIA FK_IDCODIGO_PROVEEDOR sd
+# envia datos al formulario y tabla de equipo CAMBIA FK_IDCODIGO_PROVEEDOR recumerar 
 @equipo.route("/equipo")
 @loguear_requerido
 def Equipo():
