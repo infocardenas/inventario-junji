@@ -17,7 +17,7 @@ equipo = Blueprint("equipo", __name__, template_folder="app/templates")
 @equipo.route("/equipo")
 @loguear_requerido
 def Equipo():
-    per_page = 10
+    per_page = 7
     page = request.args.get('page', default=1, type=int)
     offset = (page - 1) * per_page
 
@@ -102,7 +102,7 @@ def Equipo():
     )
 
 def getPerPage():
-    return 10 
+    return 7 
 
 def crear_lista_modelo_tipo_marca():
     cur = mysql.connection.cursor()
