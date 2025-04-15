@@ -1,3 +1,8 @@
+--
+-- Estructura para agregar equipos  es CANVIAR idModelo_equipo  Contrato 508;599-134-SE22;
+-- 
+--
+
 INSERT INTO equipo (
   Cod_inventarioEquipo,
   Num_serieEquipo,
