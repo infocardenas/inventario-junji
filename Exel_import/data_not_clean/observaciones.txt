@@ -5,7 +5,7 @@ es necesario crear los equipos por sql  ✅
 
 ---- Monitores_Compra_319.csv ⏳ Bastian 
 
----- SONDA_arriendo_notebook_508.csv ⏳
+---- SONDA_arriendo_notebook_508.csv ✅ Isaac
 
 ---- SONDA_arriendo_Notebook_1592.csv ✅ Isaac
 
