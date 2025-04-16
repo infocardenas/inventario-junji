@@ -1,9 +1,11 @@
 🔐 Configuración segura del acceso a MySQL (una sola vez)
+
 Crea el archivo de configuración:
 
 bash
     nano ~/.my.cnf
-    Coloca tus credenciales:
+
+Coloca tus credenciales:
 
 ini
     [client]
