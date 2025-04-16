@@ -18,6 +18,9 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/table.css')}}">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
+
+<body>
+
 <!-- Carga y muestra los errores de flash de manera global -->
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
@@ -31,144 +34,142 @@
 {% endif %}
 {% endwith %}
 
-<div class="container-home">
-    <div class="flex-shrink-0 p-3 bg-light sidebar" style="width: 260px;">
-        <a href="/" class="d-flex align-items-center pb-3 mb-4 link-dark text-decoration-none border-bottom">
-            <span class="fs-5 fw-semibold">Gestor de Inventario</span>
-        </a>
-        <ul class="list-unstyled ps-0">
-            <li class="mb-4"> <!-- Espacio entre categorías -->
-                <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
-                    data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
-                    <i class="bi bi-tools me-2"></i> <strong>Equipos</strong>
-                </button>
-                <div class="collapse mt-2" id="home-collapse"> <!-- Separación con margen superior -->
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                        <li class="mb-2 ps-3"><a href="/equipo" class="link-dark rounded">Equipos</a></li>
-                        <li class="mb-2 ps-3"><a href="/modelo_equipo" class="link-dark rounded">Modelos de Equipos</a></li>
-                        <li class="mb-2 ps-3"><a href="/tipo_equipo" class="link-dark rounded">Tipos de Equipos</a></li>
-                        <li class="mb-2 ps-3"><a href="/marca_equipo" class="link-dark rounded">Marcas de Equipos</a></li>
-                        <li class="mb-2 ps-3"><a href="/estado_equipo" class="link-dark rounded">Estado de Equipos</a></li>
-                    </ul>
-                </div>
-            </li>
+<div class="container-fluid">
+    <div class="d-flex flex-column flex-md-row">
+        <!-- Sidebar -->
+        <div class="sidebar bg-light p-1 col-md-2 col-12">
+            <a href="/" class="d-flex align-items-center pb-3 mb-4 link-dark text-decoration-none border-bottom">
+                <span class="fs-5 fw-semibold">Gestor de Inventario</span>
+            </a>
+            <ul class="list-unstyled ps-0">
+                <li class="mb-4">
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                        data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
+                        <i class="bi bi-tools me-2"></i> <strong>Equipos</strong>
+                    </button>
+                    <div class="collapse mt-2" id="home-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2 ps-3"><a href="/equipo" class="link-dark rounded">Equipos</a></li>
+                            <li class="mb-2 ps-3"><a href="/modelo_equipo" class="link-dark rounded">Modelos de Equipos</a></li>
+                            <li class="mb-2 ps-3"><a href="/tipo_equipo" class="link-dark rounded">Tipos de Equipos</a></li>
+                            <li class="mb-2 ps-3"><a href="/marca_equipo" class="link-dark rounded">Marcas de Equipos</a></li>
+                            <li class="mb-2 ps-3"><a href="/estado_equipo" class="link-dark rounded">Estado de Equipos</a></li>
+                        </ul>
+                    </div>
+                </li>
 
-            <li class="mb-4">
-                <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
-                    data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
-                    <i class="bi bi-person-lines-fill me-2"></i> <strong>Gestión de RR.HH</strong>
-                </button>
-                <div class="collapse mt-2" id="dashboard-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                        <li class="mb-2 ps-3"><a href="/funcionario" class="link-dark rounded">Funcionarios</a></li>
-                        <li class="mb-2 ps-3"><a href="/asignacion" class="link-dark rounded">Asignaciones</a></li>
-                    </ul>
-                </div>
-            </li>
+                <li class="mb-4">
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                        data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
+                        <i class="bi bi-person-lines-fill me-2"></i> <strong>Gestión de RR.HH</strong>
+                    </button>
+                    <div class="collapse mt-2" id="dashboard-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2 ps-3"><a href="/funcionario" class="link-dark rounded">Funcionarios</a></li>
+                            <li class="mb-2 ps-3"><a href="/asignacion" class="link-dark rounded">Asignaciones</a></li>
+                        </ul>
+                    </div>
+                </li>
 
-            <li class="mb-4">
-                <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
-                    data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
-                    <i class="bi bi-truck me-2"></i> <strong>Gestión de Proveedores</strong>
-                </button>
-                <div class="collapse mt-2" id="orders-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                        <li class="mb-2 ps-3"><a href="/proveedor" class="link-dark rounded">Proveedores</a></li>
-                        <li class="mb-2 ps-3"><a href="/orden_compra" class="link-dark rounded">Orden de Compra</a></li>
-                    </ul>
-                </div>
-            </li>
+                <li class="mb-4">
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                        data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false">
+                        <i class="bi bi-truck me-2"></i> <strong>Gestión de Proveedores</strong>
+                    </button>
+                    <div class="collapse mt-2" id="orders-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2 ps-3"><a href="/proveedor" class="link-dark rounded">Proveedores</a></li>
+                            <li class="mb-2 ps-3"><a href="/orden_compra" class="link-dark rounded">Orden de Compra</a></li>
+                        </ul>
+                    </div>
+                </li>
 
-            <li class="mb-4">
-                <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
-                    data-bs-toggle="collapse" data-bs-target="#operations-collapse" aria-expanded="false">
-                    <i class="bi bi-gear-fill me-2"></i> <strong>Operaciones</strong>
-                </button>
-                <div class="collapse mt-2" id="operations-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                        <li class="mb-2 ps-3"><a href="/traslado" class="link-dark rounded">Traslados</a></li>
-                        <li class="mb-2 ps-3"><a href="/incidencia" class="link-dark rounded">Incidencias</a></li>
-                    </ul>
-                </div>
-            </li>
+                <li class="mb-4">
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                        data-bs-toggle="collapse" data-bs-target="#operations-collapse" aria-expanded="false">
+                        <i class="bi bi-gear-fill me-2"></i> <strong>Operaciones</strong>
+                    </button>
+                    <div class="collapse mt-2" id="operations-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2 ps-3"><a href="/traslado" class="link-dark rounded">Traslados</a></li>
+                            <li class="mb-2 ps-3"><a href="/incidencia" class="link-dark rounded">Incidencias</a></li>
+                        </ul>
+                    </div>
+                </li>
 
-            <li class="mb-4">
-                <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
-                    data-bs-toggle="collapse" data-bs-target="#organization-collapse" aria-expanded="false">
-                    <i class="bi bi-buildings-fill me-2"></i> <strong>Organización</strong>
-                </button>
-                <div class="collapse mt-2" id="organization-collapse">
-                    <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
-                        <li class="mb-2 ps-3"><a href="/Unidad" class="link-dark rounded">Unidades</a></li>
-                    </ul>
-                </div>
-            </li>
-        </ul>
-    </div>
-
-
-
-    <div class="main">
-        <div class="dashboard-navbar">
-            <form action="/buscar" method="GET" style="position: absolute; top: 20px; left: 38%;">
-                <div class="nav-search">
-                    <input id="search-input" name="busqueda" type="text" class="search-query"
-                        placeholder="Buscar Funcionarios">
-                    <button class="btn" type="submit">Search</button>
-                </div>
-                <script>
-                    // Array de ejemplos
-                    const placeholders = [
-                        "Buscar N° de serie",
-                        "Buscar Codigos de inventario",
-                        "Buscar Equipos",
-                        "Buscar unidades",
-                        "Buscar incidencias"
-                    ];
-
-                    // Referencia al input
-                    const searchInput = document.getElementById("search-input");
-
-                    // Índice inicial
-                    let index = 0;
-
-                    // Función para rotar el placeholder
-                    function rotatePlaceholder() {
-                        searchInput.placeholder = placeholders[index];
-                        index = (index + 1) % placeholders.length; // Mover al siguiente, reiniciar si llega al final
-                    }
-
-                    // Intervalo de 1 segundo
-                    setInterval(rotatePlaceholder, 2000);
-                </script>
-            </form>
-            <div class="navbar-content">
-                <ul class="main-nav">
-                    <li class="user-link">
-                        <a href="#">
-                            <img src="static/img/account.png" alt="Profile" class="avatar">
-                        </a>
-                        <div class="user-link-dropdown">
-                            <span class="user-name">👤 {{ session['user'] }}</span> <!-- Muestra el nombre del usuario -->
-                        
-                            {% if privilegio == 1 %}
-                                <a href="/registrar" class="card">Administrar Usuarios</a> <!-- Solo visible para admin -->
-                            {% endif %}
-                        
-                            <a href="/desloguear" class="card">Salir</a> <!-- Cambiado de "Desloguear" a "Salir" -->
-                        </div>
-                        
-                    </li>
-                </ul>
-            </div>
+                <li class="mb-4">
+                    <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                        data-bs-toggle="collapse" data-bs-target="#organization-collapse" aria-expanded="false">
+                        <i class="bi bi-buildings-fill me-2"></i> <strong>Organización</strong>
+                    </button>
+                    <div class="collapse mt-2" id="organization-collapse">
+                        <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                            <li class="mb-2 ps-3"><a href="/Unidad" class="link-dark rounded">Unidades</a></li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
         </div>
-        <div class="content">
-            {% block body %}
-            {% endblock %}
+
+        <!-- Main Content -->
+        <div class="main col">
+            <div class="dashboard-navbar">
+                <form action="/buscar" method="GET" style="position: absolute; top: 20px; left: 38%;">
+                    <div class="nav-search">
+                        <input id="search-input" name="busqueda" type="text" class="search-query"
+                            placeholder="Buscar Funcionarios">
+                        <button class="btn" type="submit">Search</button>
+                    </div>
+                    <script>
+                        // Array de ejemplos
+                        const placeholders = [
+                            "Buscar N° de serie",
+                            "Buscar Codigos de inventario",
+                            "Buscar Equipos",
+                            "Buscar unidades",
+                            "Buscar incidencias"
+                        ];
+
+                        // Referencia al input
+                        const searchInput = document.getElementById("search-input");
+
+                        // Índice inicial
+                        let index = 0;
+
+                        // Función para rotar el placeholder
+                        function rotatePlaceholder() {
+                            searchInput.placeholder = placeholders[index];
+                            index = (index + 1) % placeholders.length; // Mover al siguiente, reiniciar si llega al final
+                        }
+
+                        // Intervalo de 1 segundo
+                        setInterval(rotatePlaceholder, 2000);
+                    </script>
+                </form>
+                <div class="navbar-content">
+                    <ul class="main-nav">
+                        <li class="user-link">
+                            <a href="#">
+                                <img src="static/img/account.png" alt="Profile" class="avatar img-fluid">
+                            </a>
+                            <div class="user-link-dropdown">
+                                <span class="user-name">👤 {{ session['user'] }}</span>
+                                {% if privilegio == 1 %}
+                                    <a href="/registrar" class="card">Administrar Usuarios</a>
+                                {% endif %}
+                                <a href="/desloguear" class="card">Salir</a>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="content">
+                {% block body %}
+                {% endblock %}
+            </div>
         </div>
     </div>
 </div>
-
 
 <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/2.2.1/js/dataTables.bootstrap5.min.js"></script>
@@ -176,6 +177,7 @@
 {% include 'advertencia_eliminar.html' %}
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tabla.js') }}"></script>
+
 </body>
 
 <footer>
