@@ -26,9 +26,9 @@ schema_asignacion = {
     },
     'rut_funcionario': {
         'type': 'string',
-        'minlength': 9,
+        'minlength': 6,
         'maxlength': 10,
-        'regex': r'^\d{7,8}-[0-9kK]$',
+        'regex': r'^\d{7,8}(-[0-9Kk])?$',
     },
     'observacion': {
         'type': 'string',

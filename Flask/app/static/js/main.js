@@ -799,25 +799,25 @@ $(document).ready(function () {
   function actualizarRutVerificador(rutInput) {
     const inputRut = $(rutInput);
     const inputVerificador = inputRut.siblings(".rut-verificador");
-
     const rutSinFormato = inputRut.val().replace(/[^0-9]/g, "");
+
     inputRut.val(rutSinFormato);
 
     if (!rutSinFormato) {
-      inputVerificador.val(""); // Limpia el dígito verificador
-      limpiarError(inputRut); // Limpia cualquier error
+      inputVerificador.val("");
+      limpiarError(inputRut);
       return;
     }
 
     if (!/^\d{7,8}$/.test(rutSinFormato)) {
-      inputVerificador.val(""); // Limpia el dígito verificador
+      inputVerificador.val("");
       mostrarError(inputRut, "El RUT debe contener 7 u 8 números");
       return;
     }
 
     const digitoVerificador = calcularDigitoVerificador(rutSinFormato);
     inputVerificador.val(digitoVerificador);
-    limpiarError(inputRut); // Limpia cualquier error si el RUT es válido
+    limpiarError(inputRut);
   }
 
   function prepararRutCompleto(form) {
@@ -825,7 +825,7 @@ $(document).ready(function () {
     const inputVerificador = $(form).find(".rut-verificador");
     const hiddenInput = $(form).find(".rut_completo");
     const rutSinFormato = inputRut.val();
-    const digitoVerificador = inputVerificador.val();
+    const desactivarDV = $("#desactivar_dv").is(":checked");
 
     if (!rutSinFormato) {
       hiddenInput.val("");
@@ -833,8 +833,11 @@ $(document).ready(function () {
       return;
     }
 
-    if (/^\d{7,8}$/.test(rutSinFormato) && /^[0-9Kk]$/.test(digitoVerificador)) {
-      hiddenInput.val(`${rutSinFormato}-${digitoVerificador}`);
+    if (/^\d{7,8}$/.test(rutSinFormato)) {
+      const digitoVerificador = inputVerificador.val();
+      const rutFinal = desactivarDV ? rutSinFormato : `${rutSinFormato}-${digitoVerificador}`;
+      hiddenInput.val(rutFinal);
+      limpiarError(inputRut);
     } else {
       hiddenInput.val("");
       mostrarError(inputRut, "El RUT debe contener 7 u 8 números");
@@ -843,22 +846,49 @@ $(document).ready(function () {
 
   $("form.funcionarios, form.asignaciones").on("submit", function (event) {
     prepararRutCompleto(this);
-
     const rutCompleto = $(this).find(".rut_completo").val();
-
     if (!rutCompleto) {
-      event.preventDefault(); // Detener el envío del formulario si el RUT no es válido
+      event.preventDefault(); // Detener envío si el RUT es inválido
     }
   });
 
   $(".rut-input").on("input", function () {
-    actualizarRutVerificador(this);
+    const desactivarDV = $("#desactivar_dv").is(":checked");
+    if (!desactivarDV) {
+      actualizarRutVerificador(this);
+    } else {
+      $(this).siblings(".rut-verificador").val(""); // Limpia el DV si está desactivado
+    }
   });
 
-  // Limpiar mensajes de error en tiempo real
+  // Activar/desactivar manualmente el campo DV
+  $("#desactivar_dv").on("change", function () {
+    const desactivado = $(this).is(":checked");
+    const inputVerificador = $("#rut_verificador");
+    if (desactivado) {
+      inputVerificador.val("").prop("disabled", true);
+    } else {
+      const rutVal = $("#rut_funcionario").val();
+      if (/^\d{7,8}$/.test(rutVal)) {
+        inputVerificador.val(calcularDigitoVerificador(rutVal));
+      }
+      inputVerificador.prop("disabled", true); // Se mantiene automático
+    }
+  });
+
   $(".rut-input").on("input change", function () {
     limpiarError($(this));
   });
+
+  function mostrarError(input, mensaje) {
+    input.addClass("is-invalid");
+    input.closest(".mb-3").find(".text-error-message").text(mensaje);
+  }
+
+  function limpiarError(input) {
+    input.removeClass("is-invalid");
+    input.closest(".mb-3").find(".text-error-message").text("");
+  }
 });
 
 
@@ -894,7 +924,7 @@ $(document).ready(function () {
 
   // Actualiza el correo completo en tiempo real para el modal actual (agregar o editar)
   $(".correo-input-funcionario, .correo-dominio-funcionario").on("input change", function () {
-    const modal = $(this).closest(".modal"); // Identifica el modal actual (agregar o editar)
+    const modal = $(this).closest(".modal"); // Identifica el modal actual (agregar o editar) 
     combinarCorreoCompleto(modal);
   });
 

@@ -1,4 +1,3 @@
-<!-- Modal para agregar una asignación de equipo -->
 <div class="modal fade" id="addAsignacionModal" tabindex="-1" aria-labelledby="">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -16,7 +15,7 @@
                             <div class="mb-3 fecha-asignacion">
                                 <label for="fecha-asignacion">Fecha asignación<span style="color: red; margin-left: 5px">*</span></label>
                                 <input type="date" name="fecha-asignacion" class="form-control campo-obligatorio fecha-input validar-fecha-30-0">
-                                <div class="text-error-message"></div> 
+                                <div class="text-error-message"></div>
                             </div>
                         </div>
 
@@ -35,10 +34,17 @@
                                     <!-- Contenedor del RUT (por defecto oculto) -->
                                     <div id="contenedorRut" style="display: none; width: 100%;">
                                         <div class="d-flex">
-                                            <input type="text" class="form-control rut-input" id="rut_funcionario" name="rut_funcionario_parcial"
-                                                placeholder="Ingrese RUT sin puntos ni guión" maxlength="8" style="width: 70%;">
+                                            <input type="text" class="form-control rut-input" id="rut_funcionario" name="rut_funcionario_parcial" placeholder="Ingrese RUT sin puntos ni guión" maxlength="9" style="width: 70%;">
+
                                             <span style="width: 10%; display: flex; justify-content: center; align-items: center">-</span>
                                             <input type="text" class="form-control rut-verificador" id="rut_verificador" disabled style="width: 20%; text-align: center;" placeholder="DV">
+                                        </div>
+                                        <!-- Checkbox para desactivar el RUT y permitir ingresar usuario por unidad -->
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" value="" id="desactivar_dv">
+                                            <label class="form-check-label" for="desactivar_dv">
+                                                Ingresar usuario unidad
+                                            </label>
                                         </div>
                                     </div>
 
@@ -53,12 +59,7 @@
                             </div>
 
                             <!-- Div para almacenar la lista de funcionarios en JSON -->
-                            <div id="listaFuncionarios" data-funcionarios='[
-                                {% for funcionario in funcionarios %}
-                                    {"nombre": "{{ funcionario.nombreFuncionario }}", "rut": "{{ funcionario.rutFuncionario }}"}{% if not loop.last %},{% endif %}
-                                {% endfor %}
-                            ]'>
-                            </div>
+                            <div id="listaFuncionarios" data-funcionarios='[ {% for funcionario in funcionarios %} {"nombre": "{{ funcionario.nombreFuncionario }}", "rut": "{{ funcionario.rutFuncionario }}"}{% if not loop.last %},{% endif %} {% endfor %} ]'></div>
                         </div>
                     </div>
 
@@ -83,31 +84,31 @@
                                 </thead>
                                 <tbody id="equiposTable">
                                     {% if equipos_sin_asignar %}
-                                        {% for equipo in equipos_sin_asignar %}
-                                        <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
-                                            data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
-                                            <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
-                                            <td>{{ equipo.nombreTipo_equipo }}</td>
-                                            <td>{{ equipo.nombreMarcaEquipo }}</td>
-                                            <td>{{ equipo.nombreModeloequipo }}</td>
-                                            <td>{{ equipo.Cod_inventarioEquipo }}</td>
-                                            <td>{{ equipo.Num_serieEquipo }}</td>
-                                            <td>{{ equipo.nombreUnidad }}</td>
-                                        </tr>
-                                        {% endfor %}
+                                    {% for equipo in equipos_sin_asignar %}
+                                    <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}" data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
+                                        <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
+                                        <td>{{ equipo.nombreTipo_equipo }}</td>
+                                        <td>{{ equipo.nombreMarcaEquipo }}</td>
+                                        <td>{{ equipo.nombreModeloequipo }}</td>
+                                        <td>{{ equipo.Cod_inventarioEquipo }}</td>
+                                        <td>{{ equipo.Num_serieEquipo }}</td>
+                                        <td>{{ equipo.nombreUnidad }}</td>
+                                    </tr>
+                                    {% endfor %}
                                     {% else %}
-                                        <tr>
-                                            <td colspan="7" style="text-align: center">No hay equipos disponibles</td>
-                                        </tr>
+                                    <tr>
+                                        <td colspan="7" style="text-align: center">No hay equipos disponibles</td>
+                                    </tr>
                                     {% endif %}
                                 </tbody>
                             </table>
                         </div>
                         <div class="text-error-message"></div>
                     </div>
+
                     <!-- Input oculto para almacenar equipos seleccionados -->
                     <div id="selectedEquipos"></div>
-                    
+
                     <div class="row">
                         <!-- Sección para observaciones -->
                         <div>
@@ -116,7 +117,7 @@
                                 <textarea name="observacion" id="observaciones" rows="4" class="form-control"></textarea>
                             </div>
                         </div>
-                    
+
                     </div>
                 </form>
             </div>
@@ -126,9 +127,10 @@
             </div>
         </div>
     </div>
-</div>
+</div> 
 
-<!-- Modal para ver detalles de equipo dentro del modal de agregar equipo --> <!--! Modal obsoleto, se mantiene por posbile uso futuro-->
+<!-- Modal para ver detalles de equipo dentro del modal de agregar equipo -->
+<!--! Modal obsoleto, se mantiene por posbile uso futuro-->
 <div class="modal fade" id="modalViewDetails" tabindex="-1" aria-labelledby="modalViewDetailsLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -173,7 +175,8 @@
                 </table>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-primary" data-bs-target="#addAsignacionModal" data-bs-toggle="modal" data-bs-dismiss="modal">Volver</button>
+                <button class="btn btn-primary" data-bs-target="#addAsignacionModal" data-bs-toggle="modal"
+                    data-bs-dismiss="modal">Volver</button>
             </div>
         </div>
     </div>
@@ -181,7 +184,8 @@
 
 {% for asig in asignacion %}
 <!-- Modal para ver detalles de la asignación -->
-<div class="modal fade" id="modal-view-{{ asig.idEquipoAsignacion }}" tabindex="-1" aria-labelledby="modal-view-title-{{ asig.idAsignacion }}" aria-hidden="true">
+<div class="modal fade" id="modal-view-{{ asig.idEquipoAsignacion }}" tabindex="-1"
+    aria-labelledby="modal-view-title-{{ asig.idAsignacion }}" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -191,31 +195,72 @@
             <div class="modal-body">
                 <h5>Datos del Funcionario</h5>
                 <table class="table table-bordered" style="table-layout: fixed">
-                    <tr><td><strong>RUT</strong></td><td>{{ asig.rutFuncionario }}</td></tr>
-                    <tr><td><strong>Nombre</strong></td><td>{{ asig.nombreFuncionario }}</td></tr>
-                    <tr><td><strong>Cargo</strong></td><td>{{ asig.cargoFuncionario }}</td></tr>
+                    <tr>
+                        <td><strong>RUT</strong></td>
+                        <td>{{ asig.rutFuncionario }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Nombre</strong></td>
+                        <td>{{ asig.nombreFuncionario }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cargo</strong></td>
+                        <td>{{ asig.cargoFuncionario }}</td>
+                    </tr>
                 </table>
 
                 <br>
 
                 <h5>Datos de la Asignación</h5>
                 <table class="table table-bordered" style="table-layout: fixed">
-                    <tr><td><strong>Fecha de asignación</strong></td><td>{{ asig.fecha_inicioAsignacion.strftime("%d-%m-%Y") if asig.fecha_inicioAsignacion else "N/A" }}</td></tr>
-                    <tr><td><strong>Fecha de devolución</strong></td><td>{{ asig.fechaDevolucion.strftime("%d-%m-%Y") if asig.fechaDevolucion else "Sin devolver" }}</td></tr>
-                    <tr><td><strong>Observaciones</strong></td><td>{{ asig.ObservacionAsignacion if asig.ObservacionAsignacion else "" }}</td></tr>
+                    <tr>
+                        <td><strong>Fecha de asignación</strong></td>
+                        <td>{{ asig.fecha_inicioAsignacion.strftime("%d-%m-%Y") if asig.fecha_inicioAsignacion else
+                            "N/A" }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Fecha de devolución</strong></td>
+                        <td>{{ asig.fechaDevolucion.strftime("%d-%m-%Y") if asig.fechaDevolucion else "Sin devolver" }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Observaciones</strong></td>
+                        <td>{{ asig.ObservacionAsignacion if asig.ObservacionAsignacion else "" }}</td>
+                    </tr>
                 </table>
 
                 <br>
 
                 <h5>Datos del Equipo</h5>
                 <table class="table table-bordered" style="table-layout: fixed">
-                    <tr><td><strong>Tipo</strong></td><td>{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else "No asignado" }}</td></tr>
-                    <tr><td><strong>Marca</strong></td><td>{{ asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado" }}</td></tr>
-                    <tr><td><strong>Modelo</strong></td><td>{{ asig.nombreModeloequipo if asig.nombreModeloequipo else "No asignado" }}</td></tr>
-                    <tr><td><strong>Cód. inventario</strong></td><td>{{ asig.Cod_inventarioEquipo if asig.Cod_inventarioEquipo else "" }}</td></tr>
-                    <tr><td><strong>N° serie</strong></td><td>{{ asig.Num_serieEquipo if asig.Num_serieEquipo else "" }}</td></tr>
-                    <tr><td><strong>Cód. proveedor</strong></td><td>{{ asig.codigoproveedor_equipo if codigoproveedor_equipo else "No informado" }}</td></tr>
-                    <tr><td><strong>Observaciones</strong></td><td>{{ asig.ObservacionEquipo if asig.ObservacionEquipo else "" }}</td></tr>
+                    <tr>
+                        <td><strong>Tipo</strong></td>
+                        <td>{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else "No asignado" }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Marca</strong></td>
+                        <td>{{ asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado" }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Modelo</strong></td>
+                        <td>{{ asig.nombreModeloequipo if asig.nombreModeloequipo else "No asignado" }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cód. inventario</strong></td>
+                        <td>{{ asig.Cod_inventarioEquipo if asig.Cod_inventarioEquipo else "" }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>N° serie</strong></td>
+                        <td>{{ asig.Num_serieEquipo if asig.Num_serieEquipo else "" }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cód. proveedor</strong></td>
+                        <td>{{ asig.codigoproveedor_equipo if codigoproveedor_equipo else "No informado" }}</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Observaciones</strong></td>
+                        <td>{{ asig.ObservacionEquipo if asig.ObservacionEquipo else "" }}</td>
+                    </tr>
                 </table>
             </div>
             <div class="modal-footer">
@@ -262,7 +307,9 @@
                                     <td>{{ asig.Cod_inventarioEquipo }}</td>
                                 </tr>
                                 <!-- Input oculto para enviar si el row se activa -->
-                                <input type="hidden" name="equiposSeleccionados" id="modal-input-{{ asig.idEquipoAsignacion }}" value="{{ asig.idEquipoAsignacion }}" style="display: none;">
+                                <input type="hidden" name="equiposSeleccionados"
+                                    id="modal-input-{{ asig.idEquipoAsignacion }}" value="{{ asig.idEquipoAsignacion }}"
+                                    style="display: none;">
                                 {% endfor %}
                             </tbody>
                         </table>

@@ -365,7 +365,7 @@ $(document).ready(function () {
             rutInput.focus();
             limpiarError(rutInput);
             setTooltipText(this, "Buscar por nombre");
-            label.html('RUT del funcionario<span style="color: red; margin-left: 5px">*</span>');
+            label.html('RUT del funcionario o Codigo Unidad<span style="color: red; margin-left: 5px">*</span>');
         } else {
             contenedorRut.hide();
             contenedorNombre.show();
