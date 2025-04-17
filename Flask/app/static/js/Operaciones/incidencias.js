@@ -14,6 +14,20 @@ $(document).ready(function () {
       $("#edit_nombreIncidencia").val(nombreInc);
       $("#edit_fechaIncidencia").val(fechaInc);
       $("#edit_observacionIncidencia").val(observacionInc);
+
+    // Bloquear el campo "Estado Incidencia" si el estado actual es Cerrado, Equipo cambiado o Equipo reparado
+    const estadosBloqueados = ["cerrado", "equipo cambiado", "equipo reparado"];
+    if (estadosBloqueados.includes(estadoInc.toLowerCase())) {
+        $("#edit_estadoIncidencia").prop("disabled", true);
+        $("#edit_nombreIncidencia").prop("disabled", true);
+        $("#edit_fechaIncidencia").prop("disabled", true);
+        $("#edit_observacionIncidencia").prop("disabled", true);
+    } else {
+        $("#edit_estadoIncidencia").prop("disabled", false);
+        $("#edit_nombreIncidencia").prop("disabled", false);
+        $("#edit_fechaIncidencia").prop("disabled", false);
+        $("#edit_observacionIncidencia").prop("disabled", false);
+    }
       
       console.log("Editando incidencia ID:", idEquipoInc);
   });
@@ -22,6 +36,7 @@ $(document).ready(function () {
   $("#edit_estadoIncidencia").on("change", function () {
       const nuevoEstado = $(this).val(); // Obtener el nuevo estado seleccionado
       const idEquipo = $("#edit_idEquipo").val(); // Obtener el ID del equipo relacionado
+      const estadosConfirmacion = ["cerrado", "equipo cambiado", "equipo reparado"];
 
       console.log("Nuevo estado de incidencia:", nuevoEstado);
       console.log("ID del equipo relacionado:", idEquipo);
@@ -42,6 +57,18 @@ $(document).ready(function () {
               }
           });
       }
+
+      if(estadosConfirmacion.includes(nuevoEstado.toLowerCase())) {
+          if (confirm("¿Estás seguro de que deseas cambiar el estado a " + nuevoEstado + "? Luego no podrás modificarlo.")) {
+              // Aquí puedes realizar la acción adicional que necesites
+              console.log("Estado cambiado a:", nuevoEstado);
+          } else {
+              // Si el usuario cancela, revertir el cambio en el select
+              $(this).val($(this).data("estado-anterior"));
+          }
+      }
+        // Guardar el estado anterior para revertir si es necesario
+      $(this).data("estado-anterior", nuevoEstado);
   });
 
   // ✅ Evento para eliminar incidencia (elimina la incidencia correcta)

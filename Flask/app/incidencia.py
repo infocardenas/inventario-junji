@@ -293,6 +293,14 @@ def update_incidencia(id):
     ObservacionIncidencia = request.form.get('observacionIncidencia', '').strip()
     fechaIncidencia = request.form.get('fechaIncidencia', '').strip()
 
+     # Validar si el estado actual permite cambios, para descartar que no sea Cerrado, Equipo cambiado o Equipo reparad
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT estadoIncidencia FROM incidencia WHERE idIncidencia = %s", (id,))
+    estado_actual = cur.fetchone()['estadoIncidencia']
+
+    if estado_actual.lower() in ["cerrado", "equipo cambiado", "equipo reparado"]:
+        return redirect(url_for("incidencia.Incidencia"))
+
     # Si ObservacionIncidencia está vacío, asignar None (para almacenar NULL en la BD)
     if not ObservacionIncidencia:
         ObservacionIncidencia = None
