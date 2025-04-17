@@ -736,6 +736,16 @@ svg.bi {
     transform: scale(1.05);
 }
 
+#confirmStateChangeModal .modal-header {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+#confirmStateChangeModal .modal-footer .btn-primary {
+    background-color: #007bff;
+    border-color: #007bff;
+}
+
 /* Estilos para que el mensaje de error no provoque que el modal o contenido se agrande verticalmente */
 .mb-3 {
   position: relative;
@@ -812,3 +822,4 @@ svg.bi {
     max-width: 100%; /* Asegura que no exceda el contenedor */
     padding: 5px 10px; /* Espaciado interno */
 }
+
