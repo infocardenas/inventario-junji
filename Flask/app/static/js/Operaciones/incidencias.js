@@ -73,7 +73,7 @@ $(document).on("click", ".delete-button", function () {
 function limpiarDato(dato) {
   return dato ? dato.toString().trim() : "";
 }
-});
+
 
 document.getElementById("form_add_incidencia").addEventListener("submit", function (event) {
     const selectedCheckbox = document.querySelector(".equipo-checkbox:checked");
@@ -84,4 +84,6 @@ document.getElementById("form_add_incidencia").addEventListener("submit", functi
         // Asigna el valor del checkbox seleccionado al campo oculto
         document.getElementById("idEquipo").value = selectedCheckbox.value;
     }
+});
+
 });
