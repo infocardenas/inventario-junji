@@ -21,6 +21,8 @@ def Incidencia(page=1):
     offset = (page - 1) * perpage
 
     cur = mysql.connection.cursor()
+
+    # Consulta para obtener las incidencias (lógica existente)
     cur.execute("""
         SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
                i.rutaactaIncidencia, i.fechaIncidencia, i.idEquipo,
@@ -36,19 +38,40 @@ def Incidencia(page=1):
     """, (perpage, offset))
     data = cur.fetchall()
 
+    # Consulta para contar el total de incidencias (lógica existente)
     cur.execute('SELECT COUNT(*) AS total FROM incidencia')
     total = cur.fetchone()['total']
+
+    # Nueva consulta para obtener equipos con estado "SIN ASIGNAR" o "EN USO"
+    cur.execute("""
+        SELECT e.idEquipo, te.nombreTipo_equipo, m.nombreMarcaEquipo, me.nombreModeloequipo,
+               e.Cod_inventarioEquipo, e.Num_serieEquipo, u.nombreUnidad, e.ObservacionEquipo
+        FROM equipo e
+        INNER JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        INNER JOIN marca_equipo m ON mte.idMarca_Equipo = m.idMarca_Equipo
+        
+        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        INNER JOIN unidad u ON e.idUnidad = u.idUnidad
+        INNER JOIN estado_equipo ee ON e.idEstado_equipo = ee.idEstado_equipo
+        WHERE ee.nombreEstado_equipo IN ('SIN ASIGNAR', 'EN USO')
+    """)
+    equipos_sin_asignar = cur.fetchall()
+
     cur.close()
 
+    # Calcular la última página para la paginación
     lastpage = (total + perpage - 1) // perpage
 
-    return render_template("Operaciones/incidencia.html", 
+    # Renderizar la plantilla con las incidencias y los equipos disponibles
+    return render_template(
+        "Operaciones/incidencia.html",
         incidencia=data,
+        equipos_sin_asignar=equipos_sin_asignar,  # Nueva variable para los equipos
         page=page,
         lastpage=lastpage
     )
-def getPerPage():
-    return 10  # Cambia este número si quieres más o menos resultados por página
+
 
 
 #form que se accede desde equipo para crear incidencia
@@ -73,130 +96,137 @@ def incidencia_form(idEquipo):
 @incidencia.route("/incidencia/add_incidencia", methods=['POST'])
 @administrador_requerido
 def add_incidencia():
-    if request.method == "POST":
-        # 1. Recepción de datos del formulario
-        datos = {
-            'nombreIncidencia': request.form['nombreIncidencia'],
-            'observacionIncidencia': request.form['observacionIncidencia'],
-            'fechaIncidencia': request.form['fechaIncidencia'],
-            'idEquipo': request.form['idEquipo']
-        }
 
-        # 2. Validar que el ID del equipo sea válido
-        if not datos['idEquipo']:
-            flash("Error: No se seleccionó un equipo.", "warning")
-            return redirect(url_for("equipo.Equipo"))
+    if "user" not in session:
+        flash("No estás autorizado para ingresar a esta ruta", 'warning')
+        return redirect("/ingresar")
 
-        try:
-            datos['idEquipo'] = int(datos['idEquipo'])
-        except ValueError:
-            flash("Error: ID de equipo inválido.", "warning")
-            return redirect(url_for("equipo.Equipo"))
 
-        cur = mysql.connection.cursor()
-
-        # 3. Verificar si el equipo existe
-        cur.execute("SELECT idEquipo FROM equipo WHERE idEquipo = %s", (datos['idEquipo'],))
-        equipo_existente = cur.fetchone()
-        if not equipo_existente:
-            flash("Error: El equipo no existe.", "warning")
-            cur.close()
-            return redirect(url_for("equipo.Equipo"))
-        
-
-        #!CAMBIAR LOGICA PARA COMENZAR A TRABAJAR CON LOS ESTADOS DE LA INCIDENCIA
-        # 5. Verificar si existe una incidencia activa para el equipo
-        cur.execute("""
-            SELECT idIncidencia
-            FROM incidencia
-            WHERE idEquipo = %s
-            AND estadoIncidencia = 'pendiente'
-        """, (datos['idEquipo'],))
-        incidencia_activa = cur.fetchone()
-        if incidencia_activa:
-            flash("Error: Ya existe una incidencia pendiente para este equipo.", "warning")
-            cur.close()
-            return redirect(url_for("incidencia.Incidencia"))
-        
-        #!------------------------------------------------------------------------
-        # 6. Determinar el nuevo estado del equipo
-        estados_incidencia = {
-            'Robo': 3,             # Siniestro
-            'Perdido': 4,          # Baja
-            'Dañado/Averiado': 5   # Dañado
-        }
-        nuevo_estado = estados_incidencia.get(datos['nombreIncidencia'])
-
-        if nuevo_estado is None:
-            flash("Tipo de incidencia inválido.", "warning")
-            cur.close()
-            return redirect(url_for("incidencia.Incidencia"))
-
-        # 7. Actualizar el estado del equipo
-        try:
-            cur.execute("""
-                UPDATE equipo
-                SET idEstado_equipo = %s
-                WHERE idEquipo = %s
-            """, (nuevo_estado, datos['idEquipo']))
-            mysql.connection.commit()
-        except Exception as e:
-            flash("Error al actualizar el estado del equipo: " + str(e), "danger")
-            cur.close()
-            return redirect(url_for("incidencia.Incidencia"))
-
-        # 8. Insertar la incidencia en la base de datos
-        try:
-            cur.execute("""
-                INSERT INTO incidencia (
-                    nombreIncidencia,
-                    observacionIncidencia,
-                    rutaactaIncidencia,
-                    fechaIncidencia,
-                    idEquipo,
-                    numDocumentos
-                ) VALUES (%s, %s, %s, %s, %s, %s)
-            """, (
-                datos['nombreIncidencia'],
-                datos['observacionIncidencia'],
-                None,  # Ruta del archivo (se actualizará después)
-                datos['fechaIncidencia'],
-                datos['idEquipo'],
-                0
-            ))
-            mysql.connection.commit()
-
-            # Obtener el ID de la incidencia recién creada
-            cur.execute("SELECT LAST_INSERT_ID() as idIncidencia")
-            idIncidencia = cur.fetchone()['idIncidencia']
-            datos['idIncidencia'] = idIncidencia
-
-            # Crear el PDF y obtener la ruta
-            ruta_pdf = create_pdf(datos)
-
-            # Actualizar la incidencia con la ruta del PDF
-            cur.execute("""
-                UPDATE incidencia
-                SET rutaactaIncidencia = %s
-                WHERE idIncidencia = %s
-            """, (ruta_pdf, idIncidencia))
-            mysql.connection.commit()
-
-            flash("Incidencia registrada y PDF generado correctamente.", "success")
-
-        except IntegrityError as e:
-            mensaje_error = str(e)
-            if "Duplicate entry" in mensaje_error:
-                flash("Error: La incidencia ya existe.", "warning")
-            else:
-                flash("Error de integridad en la base de datos: " + mensaje_error, "danger")
-        except Exception as e:
-            flash("Error al crear la incidencia: " + str(e), "danger")
-
-        finally:
-            cur.close()
-
+    if request.method != "POST":
+        flash("Método no permitido", "danger")
         return redirect(url_for("incidencia.Incidencia"))
+    
+
+    # 1. Recepción de datos del formulario
+    datos = {
+        'nombreIncidencia': request.form['nombreIncidencia'],
+        'observacionIncidencia': request.form['observacionIncidencia'],
+        'fechaIncidencia': request.form['fechaIncidencia'],
+        'idEquipo': request.form['idEquipo']
+    }
+
+    # 2. Validar que el ID del equipo sea válido
+    if not datos['idEquipo']:
+        flash("Error: No se seleccionó un equipo.", "warning")
+        return redirect(url_for("equipo.Equipo"))
+
+    try:
+        datos['idEquipo'] = int(datos['idEquipo'])
+    except ValueError:
+        flash("Error: ID de equipo inválido.", "warning")
+        return redirect(url_for("equipo.Equipo"))
+
+    cur = mysql.connection.cursor()
+
+    # 3. Verificar si el equipo existe
+    cur.execute("SELECT idEquipo FROM equipo WHERE idEquipo = %s", (datos['idEquipo'],))
+    equipo_existente = cur.fetchone()
+    if not equipo_existente:
+        flash("Error: El equipo no existe.", "warning")
+        cur.close()
+        return redirect(url_for("equipo.Equipo"))
+    
+    # 4. Verificar si existe una incidencia activa para el equipo
+    cur.execute("""
+        SELECT idIncidencia
+        FROM incidencia
+        WHERE idEquipo = %s
+        AND estadoIncidencia IN ('pendiente', 'abierta', 'servicio tecnico') 
+    """, (datos['idEquipo'],))
+    incidencia_activa = cur.fetchone()
+    if incidencia_activa:
+        flash("Error: Ya existe una incidencia pendiente para este equipo.", "warning")
+        cur.close()
+        return redirect(url_for("incidencia.Incidencia"))
+    
+    # 5. Determinar el nuevo estado del equipo
+    estados_incidencia = {
+        'Robo': 3,             # Siniestro
+        'Perdido': 4,          # Baja
+        'Dañado/Averiado': 5   # Dañado
+    }
+    nuevo_estado = estados_incidencia.get(datos['nombreIncidencia'])
+
+    if nuevo_estado is None:
+        flash("Tipo de incidencia inválido.", "warning")
+        cur.close()
+        return redirect(url_for("incidencia.Incidencia"))
+
+    # 6. Actualizar el estado del equipo
+    try:
+        cur.execute("""
+            UPDATE equipo
+            SET idEstado_equipo = %s
+            WHERE idEquipo = %s
+        """, (nuevo_estado, datos['idEquipo']))
+        mysql.connection.commit()
+    except Exception as e:
+        flash("Error al actualizar el estado del equipo: " + str(e), "danger")
+        cur.close()
+        return redirect(url_for("incidencia.Incidencia"))
+
+    # 7. Insertar la incidencia en la base de datos
+    try:
+        cur.execute("""
+            INSERT INTO incidencia (
+                nombreIncidencia,
+                observacionIncidencia,
+                rutaactaIncidencia,
+                fechaIncidencia,
+                idEquipo,
+                numDocumentos
+            ) VALUES (%s, %s, %s, %s, %s, %s)
+        """, (
+            datos['nombreIncidencia'],
+            datos['observacionIncidencia'],
+            None,  # Ruta del archivo (se actualizará después)
+            datos['fechaIncidencia'],
+            datos['idEquipo'],
+            0
+        ))
+        mysql.connection.commit()
+
+        # Obtener el ID de la incidencia recién creada
+        cur.execute("SELECT LAST_INSERT_ID() as idIncidencia")
+        idIncidencia = cur.fetchone()['idIncidencia']
+        datos['idIncidencia'] = idIncidencia
+
+        # Crear el PDF y obtener la ruta
+        ruta_pdf = create_pdf(datos)
+
+        # Actualizar la incidencia con la ruta del PDF
+        cur.execute("""
+            UPDATE incidencia
+            SET rutaactaIncidencia = %s
+            WHERE idIncidencia = %s
+        """, (ruta_pdf, idIncidencia))
+        mysql.connection.commit()
+
+        flash("Incidencia registrada y PDF generado correctamente.", "success")
+
+    except IntegrityError as e:
+        mensaje_error = str(e)
+        if "Duplicate entry" in mensaje_error:
+            flash("Error: La incidencia ya existe.", "warning")
+        else:
+            flash("Error de integridad en la base de datos: " + mensaje_error, "danger")
+    except Exception as e:
+        flash("Error al crear la incidencia: " + str(e), "danger")
+
+    finally:
+        cur.close()
+
+    return redirect(url_for("incidencia.Incidencia"))
 
 @incidencia.route("/incidencia/delete_incidencia/<id>", methods=["GET", "POST"])
 @administrador_requerido

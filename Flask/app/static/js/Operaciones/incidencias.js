@@ -45,30 +45,43 @@ $(document).ready(function () {
   });
 
   // ✅ Evento para eliminar incidencia (elimina la incidencia correcta)
-  $(document).on("click", ".delete-button", function () {
-    // Obtener el ID y la URL del botón
-    const incidenciaId = $(this).data("id");
-    const url = $(this).data("url");
+let incidenciaIdToDelete = null;
+let deleteUrl = null;
 
-    console.log("Intentando eliminar incidencia ID:", incidenciaId);
-
-    // Confirmar la eliminación (opcional, puedes eliminar esta parte si no quieres confirmación)
-    const confirmMessage = $(this).data("message") || "¿Estás seguro de que deseas eliminar esta incidencia?";
-    if (!confirm(confirmMessage)) {
-        return; // Si el usuario cancela, no hacer nada
-    }
-
-    // Crear un formulario dinámico para enviar la solicitud de eliminación
-    let form = $("<form>", {
-        method: "POST",
-        action: url
-    }).appendTo("body");
-
-    form.submit(); // Enviar el formulario
-});
+  // Capturar el ID de la incidencia al abrir el modal
+$(document).on("click", ".delete-button", function () {
+      incidenciaIdToDelete = $(this).data("id");
+      deleteUrl = $(this).data("url");
+  
+      console.log("Incidencia seleccionada para eliminar:", incidenciaIdToDelete);
+  });
+  
+  // Manejar la confirmación de eliminación
+  $(document).on("click", "#confirmDeleteButton", function () {
+      if (deleteUrl) {
+          // Crear un formulario dinámico para enviar la solicitud de eliminación
+          let form = $("<form>", {
+              method: "POST",
+              action: deleteUrl
+          }).appendTo("body");
+  
+          form.submit(); // Enviar el formulario
+      }
+  });
 
 // ✅ Función para limpiar datos antes de usarlos
 function limpiarDato(dato) {
   return dato ? dato.toString().trim() : "";
 }
+});
+
+document.getElementById("form_add_incidencia").addEventListener("submit", function (event) {
+    const selectedCheckbox = document.querySelector(".equipo-checkbox:checked");
+    if (!selectedCheckbox) {
+        event.preventDefault(); // Evita el envío del formulario
+        alert("Por favor, selecciona un equipo.");
+    } else {
+        // Asigna el valor del checkbox seleccionado al campo oculto
+        document.getElementById("idEquipo").value = selectedCheckbox.value;
+    }
 });

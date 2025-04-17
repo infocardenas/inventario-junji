@@ -13,7 +13,11 @@
             </div>
 
             <div class="orden-compra-toolbar">
-
+                <div class="toolbar-1">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addIncidenciaModal">Incidencia</button>
+                    
+                </div>
                 <!-- Buscador -->
                 <div class="orden-compra-toolbar-2">
                     <form action="/consulta_equipo" method="POST">
@@ -88,15 +92,16 @@
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
 
-                                <!--  Formulario oculto para eliminar una incidencia-->
-                                <button class="btn btn-danger delete-button"
-                                    data-id="{{ inc.idIncidencia }}" 
-                                    data-url="/incidencia/delete_incidencia/{{ inc.idIncidencia }}"
-                                    data-title="Confirmar eliminación de incidencia"
-                                    data-message="¿Estás seguro de que deseas eliminar esta incidencia? Eliminar la incidencia podría significar perder parte del historial."
-                                    data-bs-title="Eliminar">
+                                <!-- Botón de eliminación para incidencia con tooltip -->
+                                <!-- Botón de eliminación para incidencia con tooltip -->
+                                <button class="btn btn-danger delete-button" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                    data-id="{{ inc.idIncidencia }}" data-url="/incidencia/delete_incidencia/{{ inc.idIncidencia }}">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
+
+                                <!--  Formulario oculto para eliminar una incidencia-->
+                                <form id="deleteForm" method="POST" style="display: none;"></form>
+
                             </td>
                         </tr>
                         {% endfor %}
@@ -133,6 +138,9 @@
 
                 </ul>
             </nav>
+
+            {% include 'Operaciones/incidencia.modals.html' %}
+            {% include 'Operaciones/edit_incidencia.modals.html' %}
 
         </div>
 
@@ -172,8 +180,9 @@
         <script src="../static/js/main.js"></script>
 
         <script src="{{ url_for('static', filename='js/Operaciones/incidencias.js') }}"></script>
-
+        
 
 
         {% include 'Operaciones/edit_incidencia.modals.html' %}
+        {% include 'Operaciones/incidencia.modals.html' %}
         {% endblock %}
