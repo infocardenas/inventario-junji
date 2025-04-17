@@ -251,7 +251,6 @@ def update_incidencia(id):
     estado_actual = cur.fetchone()['estadoIncidencia']
 
     if estado_actual.lower() in ["cerrado", "equipo cambiado", "equipo reparado"]:
-        flash("No se puede modificar una incidencia con estado 'Cerrado', 'Equipo cambiado' o 'Equipo reparado'.", "danger")
         return redirect(url_for("incidencia.Incidencia"))
 
     # Si ObservacionIncidencia está vacío, asignar None (para almacenar NULL en la BD)

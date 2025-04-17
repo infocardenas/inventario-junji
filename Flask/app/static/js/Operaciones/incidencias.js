@@ -19,8 +19,14 @@ $(document).ready(function () {
     const estadosBloqueados = ["cerrado", "equipo cambiado", "equipo reparado"];
     if (estadosBloqueados.includes(estadoInc.toLowerCase())) {
         $("#edit_estadoIncidencia").prop("disabled", true);
+        $("#edit_nombreIncidencia").prop("disabled", true);
+        $("#edit_fechaIncidencia").prop("disabled", true);
+        $("#edit_observacionIncidencia").prop("disabled", true);
     } else {
         $("#edit_estadoIncidencia").prop("disabled", false);
+        $("#edit_nombreIncidencia").prop("disabled", false);
+        $("#edit_fechaIncidencia").prop("disabled", false);
+        $("#edit_observacionIncidencia").prop("disabled", false);
     }
       
       console.log("Editando incidencia ID:", idEquipoInc);
