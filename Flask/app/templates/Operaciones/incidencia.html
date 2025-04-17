@@ -13,7 +13,11 @@
             </div>
 
             <div class="orden-compra-toolbar">
-
+                <div class="toolbar-1">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#addIncidenciaModal">Incidencia</button>
+                    
+                </div>
                 <!-- Buscador -->
                 <div class="orden-compra-toolbar-2">
                     <form action="/consulta_equipo" method="POST">
@@ -89,8 +93,9 @@
                                 </button>
 
                                 <!-- Botón de eliminación para incidencia con tooltip -->
-                                <button class="btn btn-danger" id="delete-incidencia-button" data-bs-toggle="tooltip"
-                                    data-bs-title="Eliminar" data-id="{{ inc.idIncidencia }}">
+                                <!-- Botón de eliminación para incidencia con tooltip -->
+                                <button class="btn btn-danger delete-button" data-bs-toggle="modal" data-bs-target="#deleteModal"
+                                    data-id="{{ inc.idIncidencia }}" data-url="/incidencia/delete_incidencia/{{ inc.idIncidencia }}">
                                     <i class="bi bi-trash-fill"></i>
                                 </button>
 
@@ -134,6 +139,9 @@
                 </ul>
             </nav>
 
+            {% include 'Operaciones/incidencia.modals.html' %}
+            {% include 'Operaciones/edit_incidencia.modals.html' %}
+
         </div>
 
         <style>
@@ -172,8 +180,9 @@
         <script src="../static/js/main.js"></script>
 
         <script src="{{ url_for('static', filename='js/Operaciones/incidencias.js') }}"></script>
-
+        
 
 
         {% include 'Operaciones/edit_incidencia.modals.html' %}
+        {% include 'Operaciones/incidencia.modals.html' %}
         {% endblock %}

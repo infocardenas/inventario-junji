@@ -1,0 +1,94 @@
+<!-- Modal para agregar incidencia -->
+<div class="modal fade" id="addIncidenciaModal" tabindex="-1">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <!-- Encabezado -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAsignacionModalLabel">Registrar Nueva Incidencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <!-- Contenido -->
+            <div class="modal-body">
+                <form action="/incidencia/add_incidencia" method="POST" id="form_add_incidencia"
+                    enctype="multipart/form-data">
+                    <input class="no-delete-value" type="hidden" id="idEquipo" name="idEquipo" value="">
+
+                    <!-- Fecha de incidencia -->
+                    <div class="col-md-5">
+                        <div class="mb-3 fechaIncidencia">
+                            <label for="fechaIncidencia">Fecha Incidencia<span style="color: red; margin-left: 5px">*</span></label>
+                            <input type="date" name="fechaIncidencia" class="form-control campo-obligatorio fecha-input validar-fecha-30-0">
+                            <div class="text-error-message"></div> 
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="nombreIncidencia" class="form-label">Tipo de Incidencia</label>
+                        <select class="form-control" id="nombreIncidencia" name="nombreIncidencia" required>
+                            <option value="" disabled selected>Seleccione tipo de incidencia</option> <!-- Placeholder -->
+                            <option value="Robo">Robo</option>
+                            <option value="Perdido">Perdido</option>
+                            <option value="Dañado/Averiado">Dañado/Averiado</option>
+                        </select>
+                    </div>
+                    
+
+
+                    <!-- Todos los equipos sin asignar -->
+                    <div class="mb-3">
+                        <label class="text-center">Equipos disponibles</label>
+                        <div class="mb-1">
+                            <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar">
+                        </div>
+                        <div class="highlight-container" id="equiposContainer" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px">
+                            <table class="table table-sm table-hover table-bordered m-0" style="table-layout: fixed;">
+                                <thead>
+                                    <tr>
+                                        <td style="width: 30px; border-radius: 5px 0 0 0">#</td>
+                                        <td>Tipo</td>
+                                        <td>Marca</td>
+                                        <td>Modelo</td>
+                                        <td>Cód. inventario</td>
+                                        <td>N° serie</td>
+                                        <td style="border-radius: 0 5px 0 0">Unidad</td>
+                                    </tr>
+                                </thead>
+                                <tbody id="equiposTable">
+                                    {% if equipos_sin_asignar %}
+                                        {% for equipo in equipos_sin_asignar %}
+                                        <tr data-codigo-inventario="{{ equipo.Cod_inventarioEquipo }}" data-numero-serie="{{ equipo.Num_serieEquipo }}"
+                                            data-codigo-proveedor="{{ equipo.codigoproveedor_equipo }}" data-unidad="{{ equipo.nombreUnidad }}" data-observacion="{{ equipo.ObservacionEquipo }}" style="cursor: pointer">
+                                            <td><input class="no-delete-value equipo-checkbox" type="checkbox" name="equipoSeleccionado" value="{{ equipo.idEquipo }}"></td>
+                                            <td>{{ equipo.nombreTipo_equipo }}</td>
+                                            <td>{{ equipo.nombreMarcaEquipo }}</td>
+                                            <td>{{ equipo.nombreModeloequipo }}</td>
+                                            <td>{{ equipo.Cod_inventarioEquipo }}</td>
+                                            <td>{{ equipo.Num_serieEquipo }}</td>
+                                            <td>{{ equipo.nombreUnidad }}</td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7" style="text-align: center">No hay equipos disponibles</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="observacionIncidencia" class="form-label">Observaciones</label>
+                        <textarea class="form-control" id="observacionIncidencia" name="observacionIncidencia"
+                            rows="3"></textarea>
+                    </div>
+                    <!-- Footer de botones -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-success">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

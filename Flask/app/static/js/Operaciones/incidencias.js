@@ -45,24 +45,43 @@ $(document).ready(function () {
   });
 
   // ✅ Evento para eliminar incidencia (elimina la incidencia correcta)
-  $(".btn-danger").on("click", function () {
-      let incidenciaId = $(this).data("id"); // Obtener ID correcto
-      console.log("Intentando eliminar incidencia ID:", incidenciaId);
+let incidenciaIdToDelete = null;
+let deleteUrl = null;
 
-      if (confirm("¿Estás seguro de que deseas eliminar esta incidencia?")) {
-          // Crear formulario dinámico para enviar solicitud de eliminación
+  // Capturar el ID de la incidencia al abrir el modal
+$(document).on("click", ".delete-button", function () {
+      incidenciaIdToDelete = $(this).data("id");
+      deleteUrl = $(this).data("url");
+  
+      console.log("Incidencia seleccionada para eliminar:", incidenciaIdToDelete);
+  });
+  
+  // Manejar la confirmación de eliminación
+  $(document).on("click", "#confirmDeleteButton", function () {
+      if (deleteUrl) {
+          // Crear un formulario dinámico para enviar la solicitud de eliminación
           let form = $("<form>", {
               method: "POST",
-              action: "/incidencia/delete_incidencia/" + incidenciaId
+              action: deleteUrl
           }).appendTo("body");
-
+  
           form.submit(); // Enviar el formulario
       }
   });
-});
 
 // ✅ Función para limpiar datos antes de usarlos
 function limpiarDato(dato) {
   return dato ? dato.toString().trim() : "";
 }
+});
 
+document.getElementById("form_add_incidencia").addEventListener("submit", function (event) {
+    const selectedCheckbox = document.querySelector(".equipo-checkbox:checked");
+    if (!selectedCheckbox) {
+        event.preventDefault(); // Evita el envío del formulario
+        alert("Por favor, selecciona un equipo.");
+    } else {
+        // Asigna el valor del checkbox seleccionado al campo oculto
+        document.getElementById("idEquipo").value = selectedCheckbox.value;
+    }
+});
