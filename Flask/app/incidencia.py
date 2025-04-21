@@ -34,6 +34,14 @@ def Incidencia(page=1):
         INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
         INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
         INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        ORDER BY 
+            CASE 
+                WHEN i.estadoIncidencia IN ('pendiente', 'abierta', 'servicio tecnico') THEN 1
+                WHEN i.estadoIncidencia IN ('cerrado', 'equipo reparado') THEN 2
+                WHEN i.estadoIncidencia = 'equipo cambiado' THEN 3
+                ELSE 4
+            END,
+            i.fechaIncidencia DESC
         LIMIT %s OFFSET %s
     """, (perpage, offset))
     data = cur.fetchall()
@@ -203,15 +211,6 @@ def add_incidencia():
 
         # Crear el PDF y obtener la ruta
         ruta_pdf = create_pdf(datos)
-
-        # Actualizar la incidencia con la ruta del PDF
-        cur.execute("""
-            UPDATE incidencia
-            SET rutaactaIncidencia = %s
-            WHERE idIncidencia = %s
-        """, (ruta_pdf, idIncidencia))
-        mysql.connection.commit()
-
         flash("Incidencia registrada y PDF generado correctamente.", "success")
 
     except IntegrityError as e:
@@ -390,42 +389,50 @@ def adjuntar_pdf(id):
     if "user" not in session:
         flash("you are NOT authorized")
         return redirect("/ingresar")
-    #guardar pdf
-    file = request.files["file"]
-    print("adjuntar incidencia")
-    print("inLinux" + str(inLinux()))
-    #if inLinux():
-    dir ="pdf"
-    #else:
-        #dir = 'app/pdf' 
-    carpeta_incidencias = os.path.join(dir, "incidencia_" + str(id))
-    print(carpeta_incidencias)
-    #podria dar error pero mejor que tire error y ver cual es
-    print(carpeta_incidencias)
-    if not os.path.isdir(carpeta_incidencias):
-        os.mkdir(carpeta_incidencias)
-        print("se creo la carpeta de la incidencia")
-    fileName = file.filename
-    file.save(os.path.join(
-        carpeta_incidencias,
-        secure_filename(fileName)
-    ))
 
-    
-    #obtener incidencia
+    # Obtener el archivo subido
+    file = request.files.get("file")
+    if not file or file.filename == '':
+        flash("No se seleccionó ningún archivo.", "warning")
+        return redirect(url_for("incidencia.Incidencia"))
 
+    # Verificar si el archivo tiene una extensión permitida
+    if not allowed_file(file.filename):
+        flash("Solo se permiten archivos PDF.", "warning")
+        return redirect(url_for("incidencia.Incidencia"))
+
+    # Construir la ruta de la carpeta donde se guardará el archivo
+    pdf_directory = "pdf"
+    carpeta_incidencias = os.path.join(pdf_directory, f"incidencia_{id}")
+    print(f"Ruta de la carpeta de la incidencia: {carpeta_incidencias}")
+
+    # Crear la carpeta si no existe
+    if not os.path.exists(carpeta_incidencias):
+        os.makedirs(carpeta_incidencias)
+        print(f"Se creó la carpeta: {carpeta_incidencias}")
+
+    # Guardar el archivo en la carpeta
+    file_name = secure_filename(file.filename)
+    file_path = os.path.join(carpeta_incidencias, file_name)
+    file.save(file_path)
+    print(f"Archivo guardado en: {file_path}")
+
+    # Obtener la incidencia desde la base de datos
     cur = mysql.connection.cursor()
     cur.execute("""
-                    SELECT *
-                     FROM incidencia i
-                     WHERE i.idIncidencia = %s
-                """, (id,))
+        SELECT *
+        FROM incidencia
+        WHERE idIncidencia = %s
+    """, (id,))
     obj_incidencia = cur.fetchone()
-    print(obj_incidencia)
-    #redirigir a si add_pdf_incidencia
-    flash("se subio correctamente")
-    return redirect("/incidencia/listar_pdf/" + str(obj_incidencia['idIncidencia']))
 
+    if not obj_incidencia:
+        flash("No se encontró la incidencia.", "danger")
+        return redirect(url_for("incidencia.Incidencia"))
+
+    # Redirigir al listado de PDFs de la incidencia
+    flash("El archivo se subió correctamente.", "success")
+    return redirect("/incidencia/listar_pdf/" + str(obj_incidencia['idIncidencia']))
 
 @incidencia.route("/incidencia/listar_pdf/<idIncidencia>")
 @loguear_requerido
@@ -471,14 +478,18 @@ def listar_pdf(idIncidencia):
     )
             
 @incidencia.route("/incidencia/mostrar_pdf/<id>/")
+@loguear_requerido
 def mostrar_pdf(id):
-    cur = mysql.connection.cursor()
-    cur.execute("SELECT rutaactaIncidencia FROM incidencia WHERE idIncidencia = %s", (id,))
-    resultado = cur.fetchone()
-    
-    if resultado and resultado['rutaactaIncidencia']:
-        return send_file(resultado['rutaactaIncidencia'], as_attachment=False)
-    else:
+    if "user" not in session:
+        flash("you are NOT authorized")
+        return redirect("/ingresar")
+    try:
+        nombrecarpetaPDF = "incidencia_" + str(id)
+        nombrePDF = "incidencia_" + str(id) + ".pdf"
+        file = os.path.join("pdf/Incidencias/",nombrecarpetaPDF, nombrePDF)
+        print("Ruta completa del archivo PDF:", file)
+        return send_file(file, as_attachment=False)
+    except:
         flash("No se encontró el archivo PDF.", "warning")
         return redirect(url_for("incidencia.Incidencia"))
 

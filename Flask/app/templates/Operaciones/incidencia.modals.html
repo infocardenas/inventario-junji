@@ -1,6 +1,6 @@
 <!-- Modal para agregar incidencia -->
 <div class="modal fade" id="addIncidenciaModal" tabindex="-1">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-l">
         <div class="modal-content">
             <!-- Encabezado -->
             <div class="modal-header">
@@ -14,7 +14,7 @@
                     <input class="no-delete-value" type="hidden" id="idEquipo" name="idEquipo" value="">
 
                     <!-- Fecha de incidencia -->
-                    <div class="col-md-5">
+                    <div class="col-md-15">
                         <div class="mb-3 fechaIncidencia">
                             <label for="fechaIncidencia">Fecha Incidencia<span style="color: red; margin-left: 5px">*</span></label>
                             <input type="date" name="fechaIncidencia" class="form-control campo-obligatorio fecha-input validar-fecha-30-0">
@@ -24,7 +24,7 @@
 
                     <div class="mb-3">
                         <label for="nombreIncidencia" class="form-label">Tipo de Incidencia</label>
-                        <select class="form-control" id="nombreIncidencia" name="nombreIncidencia" required>
+                        <select class="form-control" id="nombreIncidencia" name="nombreIncidencia" required aria-placeholder="Seleccione tipo de incidencia">
                             <option value="" disabled selected>Seleccione tipo de incidencia</option> <!-- Placeholder -->
                             <option value="Robo">Robo</option>
                             <option value="Perdido">Perdido</option>
@@ -36,19 +36,19 @@
 
                     <!-- Todos los equipos sin asignar -->
                     <div class="mb-3">
-                        <label class="text-center">Equipos disponibles</label>
+                        <label class="form-label">Equipos</label>
                         <div class="mb-1">
                             <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar">
                         </div>
-                        <div class="highlight-container" id="equiposContainer" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px">
-                            <table class="table table-sm table-hover table-bordered m-0" style="table-layout: fixed;">
+                        <div class="highlight-container" id="equiposContainer" style="height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px">
+                            <table class="table table-sm table-hover table-bordered m-0" style="table-layout: auto;">
                                 <thead>
                                     <tr>
-                                        <td style="width: 30px; border-radius: 5px 0 0 0">#</td>
+                                        <td style="width: 30px; border-radius: 5px 0 0 0"></td>
                                         <td>Tipo</td>
                                         <td>Marca</td>
                                         <td>Modelo</td>
-                                        <td>Cód. inventario</td>
+                                        <td>C.I.</td>
                                         <td>N° serie</td>
                                         <td style="border-radius: 0 5px 0 0">Unidad</td>
                                     </tr>

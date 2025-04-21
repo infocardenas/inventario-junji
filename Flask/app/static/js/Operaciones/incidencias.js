@@ -94,14 +94,14 @@ $(document).on("click", ".delete-button", function () {
   
           form.submit(); // Enviar el formulario
       }
-  });
+});
 
 // ✅ Función para limpiar datos antes de usarlos
 function limpiarDato(dato) {
-  return dato ? dato.toString().trim() : "";
+    return dato ? dato.toString().trim() : "";
 }
 
-
+// ✅ Evento para abrir el modal de añadir incidencia
 document.getElementById("form_add_incidencia").addEventListener("submit", function (event) {
     const selectedCheckbox = document.querySelector(".equipo-checkbox:checked");
     if (!selectedCheckbox) {
@@ -111,6 +111,17 @@ document.getElementById("form_add_incidencia").addEventListener("submit", functi
         // Asigna el valor del checkbox seleccionado al campo oculto
         document.getElementById("idEquipo").value = selectedCheckbox.value;
     }
+});
+
+// Búsqueda dinámica
+document.getElementById('searchEquipo').addEventListener('input', function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#equiposTable tr');
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
 });
 
 });
