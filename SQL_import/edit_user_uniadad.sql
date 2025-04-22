@@ -144,7 +144,7 @@ WHERE rutFuncionario IN (
 '8205019-1'
 );
 
-UPDATE asignaciones
+UPDATE asignacion
 SET rutFuncionario = LEFT(rutFuncionario, LENGTH(rutFuncionario) - 2)
 WHERE rutFuncionario IN (
 '8101098-6',
