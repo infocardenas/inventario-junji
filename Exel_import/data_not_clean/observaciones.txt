@@ -3,7 +3,7 @@ es necesario la columna de unidad para agregar los equipos corecta mente ✅
 es necesario crear la orde de compra por sql ✅
 es necesario crear los equipos por sql  ✅
 
----- Monitores_Compra_319.csv ⏳ Bastian 
+---- Monitores_Compra_319.csv ✅ Isaac 
 
 ---- SONDA_arriendo_notebook_508.csv ✅ Isaac
 
