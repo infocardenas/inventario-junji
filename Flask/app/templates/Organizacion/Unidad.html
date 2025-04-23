@@ -67,17 +67,27 @@
           <td>{{ubi.num_equipos}}</td>
           <td>{{ubi.nombreModalidad}}</td>
           <td>
-            <div class="dropdown">
-              <button class="options-button">Opciones</button>
-              <div class="dropdown-options">
-                <a href="/edit_Unidad/{{ubi.idUnidad}}" class="success-button">Editar</a>
-                <a href="/delete_Unidad/{{ubi.idUnidad}}" class="btn btn-danger">Eliminar</a>
-                <a href="/mostrar_asociados_unidad/{{ubi.idUnidad}}" class="info-button">Equipos</a>
-              </div>
+            <div class="d-flex gap-1">
+              <!-- Botón de Editar -->
+              <button class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="Editar" onclick="window.location.href='/edit_Unidad/{{ubi.idUnidad}}'">
+                <i class="bi bi-pencil"></i>
+              </button>
+        
+              <!-- Botón de Mostrar Equipos -->
+              <button class="btn btn-info btn-sm" data-bs-toggle="tooltip" title="Equipos" onclick="window.location.href='/mostrar_asociados_unidad/{{ubi.idUnidad}}'">
+                <i class="bi bi-person-fill"></i>
+              </button>
+        
+              <!-- Botón de Eliminar -->
+              <button class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Eliminar" onclick="window.location.href='/delete_Unidad/{{ubi.idUnidad}}'">
+                <i class="bi bi-trash-fill"></i>
+              </button>
             </div>
           </td>
         </tr>
         {% endfor %}
+        
+        
       </tbody>
     </table>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
