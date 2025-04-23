@@ -86,32 +86,14 @@
           </td>
         </tr>
         {% endfor %}
-        
-        
       </tbody>
     </table>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
-    <script>
-      $(document).ready(function() {
-        let table = $('#posts').DataTable({
-          "paging": true,
-          "searching": true,
-          "ordering": true,
-          "info": true,
-          "lengthChange": false,
-          "pageLength": 8,
-          "language": {
-            "search": "<div style='text-align: center; width: 100%;'>Buscar Unidad:</div>"
-          }
-        });
-        
-        // Centrar el campo de búsqueda
-        $("#posts_filter").css({"text-align": "center", "width": "100%"});
-      });
-    </script>
   </div>
 </div>
-    {% include 'Organizacion/unidad.modal.html' %}
-  {% endblock %}
 
+{% include 'Organizacion/unidad.modal.html' %}
+
+<!-- Vinculamos el archivo JavaScript -->
+<script src="{{ url_for('static', filename='js/Operaciones/Unidad.js') }}"></script>
+
+{% endblock %}
