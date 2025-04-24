@@ -19,7 +19,7 @@
 
 {% macro subirArchivo(location, id) %}
 
-<button class="nav-button" onclick="showDiv()">Agregar PDF</button>
+<button class="btn btn-primary" onclick="showDiv()">Agregar PDF</button>
 <div class="card card-body" id="formulario" style="display: none;">
     <form action="/{{location}}/adjuntar_pdf/{{id}}" method="POST" class="mi-formulario" enctype="multipart/form-data">
         <div class="form-group">
