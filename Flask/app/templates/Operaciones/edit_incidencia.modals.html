@@ -1,22 +1,18 @@
-<!-- Modal para agregar incidencia -->
-<div class="modal fade" id="edit_incidencia" tabindex="-1">
+<div class="modal fade" id="edit_incidencia" tabindex="-1" aria-labelledby="editIncidenciaLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
-            <!-- Encabezado -->
             <div class="modal-header">
-                <h5 class="modal-title">Editar Incidencia</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <h5 class="modal-title" id="editIncidenciaLabel">Editar Incidencia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
-            <!-- Contenido -->
             <div class="modal-body">
-                <form action="" method="POST" id="form_edit_incidencia"
-                    enctype="multipart/form-data">
+                <form action="" method="POST" id="form_edit_incidencia" enctype="multipart/form-data">
                     <input class="no-delete-value" type="hidden" id="edit_idEquipo" name="idEquipo" value="">
 
                     <div class="mb-3">
                         <label for="edit_estadoIncidencia" class="form-label">Estado de la Incidencia</label>
-                        <select class="form-control" id="edit_estadoIncidencia" name="estadoIncidencia" data-estado-anterior="" required>
-                            <option value="" disabled selected>Seleccione estado de la incidencia</option> <!-- Placeholder -->
+                        <select class="form-select" id="edit_estadoIncidencia" name="estadoIncidencia" data-estado-anterior="" required>
+                            <option value="" disabled selected>Seleccione estado...</option>
                             <option value="pendiente">Pendiente</option>
                             <option value="cerrado">Cerrado</option>
                             <option value="abierta">Abierta</option>
@@ -24,43 +20,36 @@
                             <option value="equipo reparado">Equipo Reparado</option>
                             <option value="equipo cambiado">Equipo Cambiado</option>
                         </select>
-
-                    <div class="mb-3">
+                    </div> <div class="mb-3">
                         <label for="edit_nombreIncidencia" class="form-label">Tipo de Incidencia</label>
-                        <select class="form-control" id="edit_nombreIncidencia" name="nombreIncidencia" required>
-                            <option value="" disabled selected>Seleccione tipo de incidencia</option> <!-- Placeholder -->
+                        <select class="form-select" id="edit_nombreIncidencia" name="nombreIncidencia" required>
+                            <option value="" disabled selected>Seleccione tipo...</option>
                             <option value="Robo">Robo</option>
                             <option value="Perdido">Perdido</option>
-                            <option value="Dañado/Averiado">Dañado/Averiado</option>   
+                            <option value="Dañado/Averiado">Dañado/Averiado</option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="edit_fechaIncidencia" class="form-label">Fecha de la incidencia</label>
-                        <input type="date" class="form-control validar-fecha-30-0" id="edit_fechaIncidencia"
-                            name="fechaIncidencia" required>
+                        <input type="date" class="form-control validar-fecha-30-0" id="edit_fechaIncidencia" name="fechaIncidencia" required>
                     </div>
+
                     <div class="mb-3">
                         <label for="edit_observacionIncidencia" class="form-label">Observaciones</label>
-                        <textarea class="form-control" id="edit_observacionIncidencia" name="observacionIncidencia"
-                            rows="3"></textarea>
+                        <textarea class="form-control" id="edit_observacionIncidencia" name="observacionIncidencia" rows="3"></textarea>
                     </div>
-                    <!-- Footer de botones -->
+
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                        <button type="submit" class="btn btn-success">Guardar</button>
+                        <button type="submit" class="btn btn-success">Guardar Cambios</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade" id="edit_incidencia" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-           </div>
-    </div>
-</div> <div class="modal fade" id="confirmStateChangeModal" tabindex="-1" aria-labelledby="confirmStateChangeModalLabel" aria-hidden="true">
+<div class="modal fade" id="confirmStateChangeModal" tabindex="-1" aria-labelledby="confirmStateChangeModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -68,8 +57,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
-                <p id="confirmStateMessage">¿Estás seguro?</p>
-            </div>
+                <p id="confirmStateMessage">¿Estás seguro?</p> </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" id="confirmStateBtn" class="btn btn-primary">Confirmar</button>
