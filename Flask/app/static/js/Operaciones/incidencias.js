@@ -176,25 +176,27 @@ $(document).ready(function () {
         return dato ? dato.toString().trim() : "";
     }
 
-    // ✅ Evento submit para el formulario de AÑADIR incidencia (parece correcto para su propósito)
-    const formAddIncidencia = document.getElementById("form_add_incidencia");
-    if (formAddIncidencia) {
-        formAddIncidencia.addEventListener("submit", function (event) {
-            const selectedCheckbox = document.querySelector(".equipo-checkbox:checked");
-            if (!selectedCheckbox) {
-                event.preventDefault();
-                alert("Por favor, selecciona un equipo.");
-            } else {
-                // Asegúrate de que el ID 'idEquipo' exista en el formulario de AÑADIR.
-                const hiddenInput = document.getElementById("idEquipo");
-                if (hiddenInput) {
-                     hiddenInput.value = selectedCheckbox.value;
-                } else {
-                     console.error("No se encontró el campo oculto 'idEquipo' en form_add_incidencia.");
-                     event.preventDefault(); // Prevenir envío si falta el input
-                }
-            }
-        });
+// ✅ Evento para abrir el modal de añadir incidencia
+document.getElementById("form_add_incidencia").addEventListener("submit", function (event) {
+    const selectedCheckbox = document.querySelector(".equipo-checkbox:checked");
+    if (!selectedCheckbox) {
+        event.preventDefault(); // Evita el envío del formulario
+        alert("Por favor, selecciona un equipo.");
+    } else {
+        // Asigna el valor del checkbox seleccionado al campo oculto
+        document.getElementById("idEquipo").value = selectedCheckbox.value;
     }
+});
+
+// Búsqueda dinámica
+document.getElementById('searchEquipo').addEventListener('input', function () {
+    const filter = this.value.toLowerCase();
+    const rows = document.querySelectorAll('#equiposTable tr');
+
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(filter) ? '' : 'none';
+    });
+});
 
 });
