@@ -402,7 +402,7 @@ def adjuntar_pdf(id):
         return redirect(url_for("incidencia.Incidencia"))
 
     # Construir la ruta de la carpeta donde se guardará el archivo
-    pdf_directory = "pdf"
+    pdf_directory = "pdf/Incidencias"
     carpeta_incidencias = os.path.join(pdf_directory, f"incidencia_{id}")
     print(f"Ruta de la carpeta de la incidencia: {carpeta_incidencias}")
 
