@@ -32,11 +32,8 @@
                 </thead>
                 <tbody>
                     {% for fun in funcionario %}
-                    <tr
-                        data-rut="{{ fun.rutFuncionario }}"
-                        data-nombre="{{ fun.nombreFuncionario }}"
-                        data-correo="{{ fun.correoFuncionario }}"
-                        data-cargo="{{ fun.cargoFuncionario }}"
+                    <tr data-rut="{{ fun.rutFuncionario }}" data-nombre="{{ fun.nombreFuncionario }}"
+                        data-correo="{{ fun.correoFuncionario }}" data-cargo="{{ fun.cargoFuncionario }}"
                         data-unidad="{{ fun.idUnidad }}">
                         <td>{{ fun.rutFuncionario }}</td>
                         <td>{{ fun.nombreFuncionario }}</td>
@@ -48,8 +45,7 @@
                                 <!-- Botón de editar -->
                                 <button class="btn btn-warning edit-button" data-bs-toggle="modal"
                                     data-bs-target="#editFuncionarioModal" data-rut="{{ fun.rutFuncionario }}"
-                                    data-nombre="{{ fun.nombreFuncionario }}"
-                                    data-correo="{{ fun.correoFuncionario }}"
+                                    data-nombre="{{ fun.nombreFuncionario }}" data-correo="{{ fun.correoFuncionario }}"
                                     data-cargo="{{ fun.cargoFuncionario }}" data-unidad="{{ fun.idUnidad }}">
                                     <i class="bi bi-pencil-square"></i>
                                 </button>
@@ -85,24 +81,135 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script>
-    $(document).ready(function() {
-    $('#funcionariosTable').DataTable({
-        "paging": true,
-        "searching": true,
-        "ordering": true,
-        "info": true,
-        "lengthChange": false,
-        "pageLength": 10,
-        "language": {
-            "search": "Buscar:",
-            "lengthMenu": "Mostrar _MENU_ registros por página",
-            "zeroRecords": "No se encontraron resultados",
-            "info": "Mostrando página _PAGE_ de _PAGES_",
-            "infoEmpty": "No hay registros disponibles",
-            "infoFiltered": "(filtrado de _MAX_ registros totales)"
-        }
+    $(document).ready(function () {
+        $('#funcionariosTable').DataTable({
+            "paging": true,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "lengthChange": false,
+            "pageLength": 10,
+            "language": {
+                "search": "Buscar:",
+                "lengthMenu": "Mostrar _MENU_ registros por página",
+                "zeroRecords": "No se encontraron resultados",
+                "info": "Mostrando página _PAGE_ de _PAGES_",
+                "infoEmpty": "No hay registros disponibles",
+                "infoFiltered": "(filtrado de _MAX_ registros totales)"
+            }
+        });
+        // --- CÓDIGO NUEVO PARA POBLAR EL MODAL DE EDICIÓN (CON DEBUG) ---
+        $('#editFuncionarioModal').on('shown.bs.modal', function (event) {
+            console.log("Edit modal 'show.bs.modal' event fired!"); // Check if event runs
+
+            var button = $(event.relatedTarget); // Botón que activó el modal
+            console.log("Button that triggered modal:", button);
+
+            // Extraer datos de los atributos data-* del botón
+            var rutCompleto = button.data('rut') ? String(button.data('rut')) : '';
+            var nombre = button.data('nombre');
+            var correoCompleto = button.data('correo');
+            var cargo = button.data('cargo');
+            var unidadId = button.data('unidad');
+
+            console.log("Data extracted:", { rutCompleto, nombre, correoCompleto, cargo, unidadId });
+
+            // --- Lógica para separar el RUT ---
+            var rutNumero = '';
+            var rutDv = '';
+            if (rutCompleto && rutCompleto.includes('-')) {
+                var partesRut = rutCompleto.split('-');
+                rutNumero = partesRut[0];
+                rutDv = partesRut[1];
+            } else {
+                rutNumero = rutCompleto;
+            }
+            console.log("RUT parts:", { rutNumero, rutDv });
+
+            // --- Lógica para separar el Correo ---
+            var correoLocal = '';
+            var correoDominio = '';
+            if (correoCompleto && correoCompleto.includes('@')) {
+                var partesCorreo = correoCompleto.split('@');
+                correoLocal = partesCorreo[0];
+                // Construct the domain WITH the '@' and convert to lowercase
+                correoDominio = ('@' + partesCorreo[1]).toLowerCase(); // <--- LÍNEA MODIFICADA
+            } else {
+                correoLocal = correoCompleto;
+            }
+            // Opcional: puedes cambiar el mensaje de log para reflejar el cambio
+            console.log("Correo parts (lowercase domain):", { correoLocal, correoDominio });
+
+
+            // Obtener la referencia al modal
+            var modal = $(this);
+            console.log("Modal element:", modal);
+
+            // Intenta encontrar los campos y loguear si existen
+            var campoRutNum = modal.find('#edit_rut_funcionario');
+            var campoRutDv = modal.find('#edit_rut_verificador');
+            var campoNombre = modal.find('#edit_nombre_funcionario');
+            var campoCorreoLocal = modal.find('#edit_correo_funcionario');
+            var campoCorreoDominio = modal.find('#edit_correo_dominio');
+            var campoCargo = modal.find('#edit_cargo_funcionario');
+            var campoUnidad = modal.find('#edit_codigo_Unidad');
+            var campoRutActual = modal.find('#edit_rut_actual');
+            var campoRutCompletoOculto = modal.find('#rut_completo');
+            var campoCorreoOculto = modal.find('#edit_correo_oculto');
+
+            console.log("Input Elements Found:", {
+                campoRutNum: campoRutNum.length > 0 ? campoRutNum : "NOT FOUND",
+                campoRutDv: campoRutDv.length > 0 ? campoRutDv : "NOT FOUND",
+                campoNombre: campoNombre.length > 0 ? campoNombre : "NOT FOUND",
+                campoCorreoLocal: campoCorreoLocal.length > 0 ? campoCorreoLocal : "NOT FOUND",
+                campoCorreoDominio: campoCorreoDominio.length > 0 ? campoCorreoDominio : "NOT FOUND",
+                campoCargo: campoCargo.length > 0 ? campoCargo : "NOT FOUND",
+                campoUnidad: campoUnidad.length > 0 ? campoUnidad : "NOT FOUND",
+                campoRutActual: campoRutActual.length > 0 ? campoRutActual : "NOT FOUND",
+                campoRutCompletoOculto: campoRutCompletoOculto.length > 0 ? campoRutCompletoOculto : "NOT FOUND",
+                campoCorreoOculto: campoCorreoOculto.length > 0 ? campoCorreoOculto : "NOT FOUND"
+            });
+
+
+            // Poblar los campos del formulario en el modal
+            campoCorreoDominio.val(correoDominio);
+            campoRutActual.val(rutCompleto);
+            campoRutCompletoOculto.val(rutCompleto);
+            campoRutNum.val(rutNumero);
+            campoRutDv.val(rutDv);
+            campoNombre.val(nombre);
+            campoCorreoLocal.val(correoLocal);
+            campoCorreoOculto.val(correoCompleto);
+            campoCargo.val(cargo);
+            campoUnidad.val(unidadId);
+
+            console.log("Finished populating fields.");
+        });
+        // --- FIN CÓDIGO NUEVO PARA POBLAR MODAL ---
+
+
+        // --- CÓDIGO PARA ACTUALIZAR CAMPOS OCULTOS (ASEGÚRATE DE QUE ESTÉ FUERA DEL $('#editFuncionarioModal').on(...) ) ---
+        $('#edit_rut_funcionario, #edit_rut_verificador').on('input', function () {
+            var numero = $('#edit_rut_funcionario').val();
+            var dv = $('#edit_rut_verificador').val();
+            if (numero || dv) {
+                $('#editFuncionarioModal').find('#rut_completo').val(numero + '-' + dv);
+            } else {
+                $('#editFuncionarioModal').find('#rut_completo').val('');
+            }
+        });
+
+        $('#edit_correo_funcionario, #edit_correo_dominio').on('input change', function () {
+            var local = $('#edit_correo_funcionario').val();
+            var dominio = $('#edit_correo_dominio').val();
+            if (local || dominio) {
+                $('#editFuncionarioModal').find('#edit_correo_oculto').val(local + dominio);
+            } else {
+                $('#editFuncionarioModal').find('#edit_correo_oculto').val('');
+            }
+        });
+        // --- FIN CÓDIGO PARA ACTUALIZAR CAMPOS OCULTOS ---
     });
-});
 </script>
 
 {% endblock %}
