@@ -25,11 +25,13 @@
         <!-- Fin de la sección de errores -->
         
         {% if location == 'devolucion' %}
-            <a class="nav-button" href="/asignacion">Volver</a>
+            <a class="btn btn-primary" href="/asignacion">Volver</a>
         {% elif location == 'traslado' %}
-            <a class="nav-button" href="/traslado">Volver</a>
+            <a class="btn btn-primary" href="/traslado">Volver</a>
+        {% elif location == 'incidencia' %}
+            <a class="btn btn-primary" href="/incidencia">Volver</a>
         {% else %}
-            <a class="nav-button" href="/{{ location }}">Volver</a>
+            <a class="btn btn-primary" href="/{{ location }}">Volver</a>
         {% endif %}
         <!-- ----- -->
         {{ subirArchivo(location, id) }}
