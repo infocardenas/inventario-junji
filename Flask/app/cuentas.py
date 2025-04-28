@@ -14,7 +14,7 @@ def loguear_requerido(f):
     def decorated_function(*args, **kargs):
         #print("DECORATOR 1")
         if "user" not in session:
-            flash("Nesesita estar logueado para usar esta ruta")
+            flash("Necesita estar logueado para acceder a esta ruta")
             return redirect("/ingresar")
         return f(*args, **kargs)
     return decorated_function
@@ -28,7 +28,7 @@ def administrador_requerido(f):
         #print(session)
         #print(session['privilegio'])
         if "user" not in session:
-            flash("Nesesita estar logueado para usar esta ruta")
+            flash("Necesita estar logueado para acceder a esta ruta")
             return redirect("/ingresar")
         
         if session['privilegio'] == 1:
@@ -102,7 +102,7 @@ def crear_cuenta():
         'nombreUsuario': {
             'required': True,
             'type': 'string',
-            'regex': '^[a-zA-Z0-9@.]+$'
+            'regex': '^[a-zA-Z0-9@.\s]+$'
         },
         'contrasenna': {
             'required': True,
