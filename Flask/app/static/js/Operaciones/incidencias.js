@@ -43,8 +43,6 @@ $(document).ready(function () {
             $("#edit_nombreIncidencia").prop("disabled", true);
             $("#edit_fechaIncidencia").prop("disabled", true);
             $("#edit_observacionIncidencia").prop("disabled", true);
-            // Deshabilitar el botón de guardar también en este caso
-             $('#form_edit_incidencia button[type="submit"]').prop('disabled', true);
         }
 
         console.log("Editando incidencia ID:", idEquipoInc, "Estado inicial:", estadoInc);
@@ -111,8 +109,6 @@ $(document).ready(function () {
             $("#edit_nombreIncidencia").prop("disabled", true);
             $("#edit_fechaIncidencia").prop("disabled", true);
             $("#edit_observacionIncidencia").prop("disabled", true);
-            // Deshabilitar también el botón de guardar
-             $('#form_edit_incidencia button[type="submit"]').prop('disabled', true);
         }
 
         // No necesitamos cambiar el valor del select aquí, porque el usuario ya lo cambió
