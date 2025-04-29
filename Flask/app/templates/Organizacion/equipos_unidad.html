@@ -1,0 +1,38 @@
+{% extends "layout.html" %}
+
+{% block body %}
+
+<h2>Equipos Asociados a la Unidad: {{ equipos[0].nombreUnidad if equipos else 'Sin nombre' }}</h2>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>C. Inv</th>
+      <th>N° Serie</th>
+      <th>Estado equipo</th>
+      <th>Funcionario</th>
+      <th>C. Prov</th>
+      <th>Unidad</th>
+      <th>Tipo equipo</th>
+      <th>Modelo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for eq in equipos %}
+    <tr>
+      <td>{{ eq.Cod_inventarioEquipo }}</td>
+      <td>{{ eq.Num_serieEquipo }}</td>
+      <td>{{ eq.estadoEquipo }}</td>
+      <td>{{ eq.nombreFuncionario }}</td>
+      <td>{{ eq.codigoproveedor_equipo }}</td>
+      <td>{{ eq.nombreUnidad }}</td>
+      <td>{{ eq.tipoEquipo }}</td>  <!-- Cambié 'nombreTipoEquipo' a 'tipoEquipo' -->
+      <td>{{ eq.modeloEquipo }}</td> <!-- Cambié 'nombreModelo' a 'modeloEquipo' -->
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('Unidad.UNIDAD') }}" class="btn btn-secondary">Volver</a>
+
+{% endblock %}
