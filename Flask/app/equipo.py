@@ -167,7 +167,7 @@ def add_equipo():
         }
 
         # Convertir cadenas vacías a None para los campos opcionales Error en los siguientes campos: - codigo_inventario: null value not allowed
-        for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo', 'codigoproveedor','codigo_inventario']:
+        for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo', 'codigoproveedor']:
             if datos[key] == "":
                 datos[key] = None
 
@@ -177,7 +177,7 @@ def add_equipo():
 
         # Definir el esquema de validación
         schema = {
-            'codigo_inventario': {'type': 'string','regex': '^[a-zA-Z0-9]+$', 'nullable': True},
+            'codigo_inventario': {'type': 'string','regex': '^[a-zA-Z0-9]+$'},
             'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
             'observacion_equipo': {'type': 'string', 'nullable': True},
             'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$', 'nullable': True},
