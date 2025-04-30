@@ -149,11 +149,6 @@ def crear_lista_modelo_tipo_marca():
     # Convertir la lista final en una tupla (opcional)
     return tuple(marcas_llenadas)
 
-
-
-
-
-    pass
 @equipo.route("/add_equipo", methods=["POST"])
 @administrador_requerido
 def add_equipo():
@@ -171,8 +166,8 @@ def add_equipo():
             'idModelo_equipo': request.form["modelo_equipo"].strip(),
         }
 
-        # Convertir cadenas vacías a None para los campos opcionales
-        for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo', 'codigoproveedor']:
+        # Convertir cadenas vacías a None para los campos opcionales Error en los siguientes campos: - codigo_inventario: null value not allowed
+        for key in ['mac', 'imei', 'numero', 'codigo_Unidad', 'nombre_orden_compra', 'idModelo_equipo', 'codigoproveedor','codigo_inventario']:
             if datos[key] == "":
                 datos[key] = None
 
@@ -182,7 +177,7 @@ def add_equipo():
 
         # Definir el esquema de validación
         schema = {
-            'codigo_inventario': {'type': 'string','regex': '^[a-zA-Z0-9]+$'},
+            'codigo_inventario': {'type': 'string','regex': '^[a-zA-Z0-9]+$', 'nullable': True},
             'numero_serie': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$'},
             'observacion_equipo': {'type': 'string', 'nullable': True},
             'codigoproveedor': {'type': 'string', 'regex': '^[a-zA-Z0-9]+$', 'nullable': True},
