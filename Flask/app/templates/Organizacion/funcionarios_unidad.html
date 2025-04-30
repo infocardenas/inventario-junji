@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h2>Funcionarios de la Unidad: {{ unidad.nombreUnidad }}</h2>
+
+<table class="table table-bordered table-striped">
+  <thead>
+    <tr>
+      <th>RUT</th>
+      <th>Nombre</th>
+      <th>Cargo</th>
+      <th>Correo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for f in funcionarios %}
+    <tr>
+      <td>{{ f.rutFuncionario }}</td>
+      <td>{{ f.nombreFuncionario }}</td>
+      <td>{{ f.cargoFuncionario }}</td>
+      <td>{{ f.correoFuncionario }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<a href="{{ url_for('Unidad.UNIDAD') }}" class="btn btn-secondary">Volver</a>
+
+{% endblock %}

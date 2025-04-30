@@ -267,3 +267,71 @@ def buscar_unidad(id):
 
     return render_template('Organizacion/Unidad.html', Unidad = data, comuna = c_data,
         page=1, lastpage= True, Modalidades=modalidades_data)
+
+@Unidad.route('/mostrar_funcionarios_unidad/<int:idUnidad>')
+@loguear_requerido
+def mostrar_funcionarios_unidad(idUnidad):
+    try:
+        cur = mysql.connection.cursor()
+        
+        # Obtener funcionarios de la unidad
+        cur.execute("""
+            SELECT rutFuncionario, nombreFuncionario, cargoFuncionario, correoFuncionario
+            FROM funcionario
+            WHERE idUnidad = %s
+        """, (idUnidad,))
+        funcionarios = cur.fetchall()
+        
+        # Obtener nombre de la unidad
+        cur.execute("SELECT nombreUnidad FROM unidad WHERE idUnidad = %s", (idUnidad,))
+        unidad = cur.fetchone()
+        
+        cur.close()
+        
+        return render_template('Organizacion/funcionarios_unidad.html', funcionarios=funcionarios, unidad=unidad)
+    
+    except Exception as e:
+        flash(f"Error al obtener funcionarios: {str(e)}", 'danger')
+        return redirect(url_for('Unidad.UNIDAD'))
+
+@Unidad.route('/mostrar_equipos_unidad/<int:idUnidad>')
+@loguear_requerido  # Asegúrate de tener esta función de autenticación
+def mostrar_equipos_unidad(idUnidad):
+    try:
+        # Abre el cursor de la conexión a la base de datos
+        cur = mysql.connection.cursor()
+
+        # Realiza la consulta SQL para obtener los equipos de una unidad
+        cur.execute("""
+            SELECT 
+                e.Cod_inventarioEquipo,
+                e.Num_serieEquipo,
+                est.nombreEstado_equipo AS estadoEquipo,
+                f.nombreFuncionario,
+                e.codigoproveedor_equipo,
+                u.nombreUnidad,
+                te.nombreTipo_equipo AS tipoEquipo,  
+                mo.nombreModeloequipo AS modeloEquipo  -- Usamos el nombre correcto de la columna
+            FROM equipo e
+            LEFT JOIN estado_equipo est ON e.idEstado_equipo = est.idEstado_equipo
+            LEFT JOIN funcionario f ON f.idUnidad = e.idUnidad
+            LEFT JOIN unidad u ON e.idUnidad = u.idUnidad
+            LEFT JOIN modelo_equipo mo ON e.idModelo_equipo = mo.idModelo_Equipo
+            LEFT JOIN marca_tipo_equipo mte ON mo.idMarca_Tipo_Equipo = mte.idMarcaTipo  -- Correcto JOIN entre modelo_equipo y marca_tipo_equipo
+            LEFT JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo  -- JOIN entre marca_tipo_equipo y tipo_equipo
+            WHERE e.idUnidad = %s
+        """, (idUnidad,))
+
+        # Obtiene todos los resultados de la consulta
+        equipos = cur.fetchall()
+
+        # Cierra el cursor después de obtener los datos
+        cur.close()
+
+        # Renderiza la plantilla HTML con los datos obtenidos
+        return render_template('Organizacion/equipos_unidad.html', equipos=equipos)
+
+    except Exception as e:
+        # En caso de error, muestra un mensaje de flash y redirige a la página de unidades
+        flash(f"Error al obtener equipos: {str(e)}", 'danger')
+        return redirect(url_for('Unidad.UNIDAD'))

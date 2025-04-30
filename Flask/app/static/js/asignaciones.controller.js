@@ -342,12 +342,9 @@ function actualizarEstadoBotonFirmar() {
         btnDevolucionFirmar.removeAttribute("href");
     }
 }
-
-
 $(document).ready(function () {
     let listaFuncionarios = JSON.parse($("#listaFuncionarios").attr("data-funcionarios"));
-
-    // Referencias a elementos
+  
     let label = $("#label-funcionario");
     let contenedorNombre = $("#contenedorNombre");
     let contenedorRut = $("#contenedorRut");
@@ -355,100 +352,155 @@ $(document).ready(function () {
     let rutInput = $("#rut_funcionario");
     let sugerenciasDiv = $("#sugerencias_funcionarios");
     let toggleBtn = $("#toggleFuncionario");
-
-    // 1. Alternar entre Nombre y RUT
+  
     toggleBtn.on("click", function () {
-        if (contenedorNombre.is(":visible")) {
-            contenedorNombre.hide();
-            sugerenciasDiv.hide(); // Cerrar autocompletado si estaba abierto
-            contenedorRut.show();
-            rutInput.focus();
-            limpiarError(rutInput);
-            setTooltipText(this, "Buscar por nombre");
-            label.html('RUT del funcionario o Codigo Unidad<span style="color: red; margin-left: 5px">*</span>');
-        } else {
-            contenedorRut.hide();
-            contenedorNombre.show();
-            nombreInput.focus();
-            limpiarError(nombreInput);
-            setTooltipText(this, "Buscar por RUT");
-            label.html('Nombre del funcionario<span style="color: red; margin-left: 5px">*</span>');
-        }
+      if (contenedorNombre.is(":visible")) {
+        contenedorNombre.hide();
+        sugerenciasDiv.hide();
+        contenedorRut.show();
+        rutInput.focus();
+        limpiarError(rutInput);
+        setTooltipText(this, "Buscar por nombre");
+        label.html('RUT del funcionario o Código Unidad<span style="color: red; margin-left: 5px">*</span>');
+      } else {
+        contenedorRut.hide();
+        contenedorNombre.show();
+        nombreInput.focus();
+        limpiarError(nombreInput);
+        setTooltipText(this, "Buscar por RUT");
+        label.html('Nombre del funcionario<span style="color: red; margin-left: 5px">*</span>');
+      }
     });
-
-    // 2. Autocompletado en el input de nombre
+  
     nombreInput.on("input", function () {
-        let input = $(this).val().trim().toLowerCase();
-
-        if (input.length === 0) {
-            sugerenciasDiv.hide();
-            return;
-        }
-
-        // Filtrar funcionarios
-        let coincidencias = listaFuncionarios.filter(f => f.nombre.toLowerCase().includes(input));
-
-        if (coincidencias.length > 0) {
-            let listaHTML = coincidencias.map(funcionario =>
-                `<button type="button" class="list-group-item list-group-item-action sugerencia-item"
-                         data-nombre="${funcionario.nombre}" data-rut="${funcionario.rut}">
-                    ${funcionario.nombre}
-                </button>`
-            ).join("");
-
-            sugerenciasDiv.html(listaHTML).show();
-        } else {
-            sugerenciasDiv.html("<p class='list-group-item text-danger'>No encontrado</p>").show();
-        }
+      let input = $(this).val().trim().toLowerCase();
+  
+      if (input.length === 0) {
+        sugerenciasDiv.hide();
+        return;
+      }
+  
+      let coincidencias = listaFuncionarios.filter(f => f.nombre.toLowerCase().includes(input));
+  
+      if (coincidencias.length > 0) {
+        let listaHTML = coincidencias.map(funcionario =>
+          `<button type="button" class="list-group-item list-group-item-action sugerencia-item"
+                   data-nombre="${funcionario.nombre}" data-rut="${String(funcionario.rut)}">
+              ${funcionario.nombre}
+          </button>`
+        ).join("");
+  
+        sugerenciasDiv.html(listaHTML).show();
+      } else {
+        sugerenciasDiv.html("<p class='list-group-item text-danger'>No encontrado</p>").show();
+      }
     });
-
-    // 3. Seleccionar un funcionario desde las sugerencias
+  
+    rutInput.on("input", function () {
+      let input = $(this).val().trim();
+  
+      if (input.length === 0) {
+        sugerenciasDiv.hide();
+        return;
+      }
+  
+      let coincidencias = listaFuncionarios.filter(f => {
+        let [rutSinDV] = String(f.rut).split("-");
+        return rutSinDV.startsWith(input);
+      });
+  
+      if (coincidencias.length > 0) {
+        let listaHTML = coincidencias.map(funcionario =>
+          `<button type="button" class="list-group-item list-group-item-action sugerencia-item"
+                   data-nombre="${funcionario.nombre}" data-rut="${String(funcionario.rut)}">
+              ${funcionario.rut} - ${funcionario.nombre}
+          </button>`
+        ).join("");
+  
+        sugerenciasDiv.html(listaHTML).show();
+      } else {
+        sugerenciasDiv.html("<p class='list-group-item text-danger'>No encontrado</p>").show();
+      }
+    });
+  
     $(document).on("click", ".sugerencia-item", function () {
-        let nombre = $(this).data("nombre");
-        let rutCompleto = $(this).data("rut");
-        let [rutSinDV, dv] = rutCompleto.split("-");
-
-        $("#nombre_funcionario").val(nombre);
-
-        // Llenar el input de RUT sin guion ni DV
-        $("#rut_funcionario").val(rutSinDV);
-
-        // Llenar el campo DV
-        $("#rut_verificador").val(dv);
-
-        // Si usas el hidden "rut_completo"
-        $("#rut_completo").val(rutCompleto);
-
-        $("#sugerencias_funcionarios").hide();
-        limpiarError($("#nombre_funcionario"));
+      let nombre = $(this).data("nombre");
+      let rutCompleto = String($(this).data("rut"));
+      let [rutSinDV, dv] = rutCompleto.split("-");
+  
+      $("#nombre_funcionario").val(nombre);
+      $("#rut_funcionario").val(rutSinDV);
+      $("#rut_verificador").val(dv);
+      $("#rut_completo").val(rutCompleto);
+  
+      sugerenciasDiv.hide();
+      limpiarError($("#nombre_funcionario"));
+      limpiarError($("#rut_funcionario"));
     });
-
-    // 4. Ocultar sugerencias si se hace clic fuera
+  
     $(document).click(function (event) {
-        if (!$(event.target).closest("#nombre_funcionario, #sugerencias_funcionarios").length) {
-            sugerenciasDiv.hide();
-        }
+      if (!$(event.target).closest("#nombre_funcionario, #rut_funcionario, #sugerencias_funcionarios").length) {
+        sugerenciasDiv.hide();
+      }
     });
-
-    // 5. Validación antes de enviar el formulario
+  
     $(document).on("submit", "#form-asignacion-modal", function (event) {
-        let esValido = true;
-
-        // Si el contenedor de Nombre está visible, validamos el nombre
-        if (contenedorNombre.is(":visible")) {
-            let nombreIngresado = nombreInput.val().trim().toLowerCase();
-            let nombreValido = listaFuncionarios.some(f => f.nombre.toLowerCase() === nombreIngresado);
-
-            if (!nombreValido) {
-                mostrarError(nombreInput, "No se ha encontrado el funcionario");
-                esValido = false;
-            } else {
-                limpiarError(nombreInput);
-            }
+      let esValido = true;
+      const desactivarDV = $("#desactivar_dv").is(":checked");
+  
+      if (contenedorNombre.is(":visible")) {
+        let nombreIngresado = nombreInput.val().trim();
+        if (!desactivarDV) {
+          let nombreValido = listaFuncionarios.some(f => f.nombre.toLowerCase() === nombreIngresado.toLowerCase());
+          if (!nombreValido) {
+            mostrarError(nombreInput, "No se ha encontrado el funcionario");
+            esValido = false;
+          } else {
+            limpiarError(nombreInput);
+          }
+        } else {
+          if (nombreIngresado.length === 0) {
+            mostrarError(nombreInput, "Debe ingresar un nombre");
+            esValido = false;
+          } else {
+            limpiarError(nombreInput);
+          }
         }
-
-        if (!esValido) {
-            event.preventDefault();
+      }
+  
+      if (contenedorRut.is(":visible") && !desactivarDV) {
+        let rutIngresado = rutInput.val().trim();
+        let rutValido = listaFuncionarios.some(f => {
+          let [rutSinDV] = String(f.rut).split("-");
+          return rutSinDV === rutIngresado;
+        });
+  
+        if (!rutValido) {
+          mostrarError(rutInput, "No se ha encontrado el RUT ingresado");
+          esValido = false;
+        } else {
+          limpiarError(rutInput);
         }
+      }
+  
+      if (!esValido) {
+        event.preventDefault();
+      }
     });
-});
+  
+    function mostrarError(input, mensaje) {
+      input.addClass("is-invalid");
+      input.next(".invalid-feedback").text(mensaje).show();
+    }
+  
+    function limpiarError(input) {
+      input.removeClass("is-invalid");
+      input.next(".invalid-feedback").hide();
+    }
+  
+    function setTooltipText(button, text) {
+      $(button).attr("title", text).tooltip("dispose").tooltip();
+    }
+  });
+  
+

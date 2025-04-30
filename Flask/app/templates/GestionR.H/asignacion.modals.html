@@ -29,6 +29,12 @@
                                         <input type="text" class="form-control" id="nombre_funcionario" name="nombre_funcionario" placeholder="Ingrese el nombre del funcionario" autocomplete="off">
                                         <!-- Lista de sugerencias de autocompletado -->
                                         <div id="sugerencias_funcionarios" class="list-group position-absolute w-50" style="z-index: 1000; display: none;"></div>
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" type="checkbox" value="" id="desactivar_dv">
+                                            <label class="form-check-label" for="desactivar_dv">
+                                                Ingresar usuario unidad
+                                            </label>
+                                        </div>
                                     </div>
 
                                     <!-- Contenedor del RUT (por defecto oculto) -->
@@ -70,7 +76,7 @@
                             <input type="text" class="form-control" id="searchEquipo" placeholder="Buscar">
                         </div>
                         <div class="highlight-container" id="equiposContainer" style="height: 150px; overflow-y: auto; border: 1px solid #ddd; border-radius: 5px">
-                            <table class="table table-sm table-hover table-bordered m-0" style="table-layout: fixed;">
+                            <table class="table table-sm table-hover table-bordered m-0" style="table-layout: auto;">
                                 <thead>
                                     <tr>
                                         <td style="width: 30px; border-radius: 5px 0 0 0">#</td>
