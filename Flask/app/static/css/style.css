@@ -71,6 +71,15 @@ label {
 }
 
 /* Dashboard Navbar */
+.btn-menu {
+    width: auto; /* Ajusta el ancho automáticamente al contenido */
+    padding: 0.5rem 1rem; /* Ajusta el relleno interno */
+    position: absolute; /* Asegura que no interfiera con otros elementos */
+    top: 30px; /* Ajusta la distancia desde la parte superior */
+    left: 20px; /* Ajusta la distancia desde la parte izquierda */
+    z-index: 1; /* Asegura que no se superponga con otros elementos */
+}
+
 
 .dashboard-navbar {
     position: relative;
