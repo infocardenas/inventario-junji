@@ -51,15 +51,13 @@
       
               <!-- Buscador y Exportar búsqueda -->
               <div class="d-flex gap-2 flex-grow-1" style="max-width: 650px;">
-                <input id="buscador" name="palabra" type="text" class="form-control"
-                  placeholder="Buscar equipos" onkeyup="busqueda('myTableBody')" />
-      
+                <input id="buscador" type="text" class="form-control" placeholder="Buscar equipos" oninput="buscarEquipos(1)" />
+
                 <button class="btn btn-primary d-flex align-items-center flex-shrink-0"
                   id="exportarBusqueda" onclick="exportarBusqueda()">
                   <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}"
                     alt="Exportar Excel" width="20" height="20" class="me-2">
                   <span class="text-nowrap">Exportar</span>
-                  <i class="bi bi-search ms-2"></i>
                 </button>
               </div>
       
