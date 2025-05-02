@@ -69,17 +69,27 @@
           <td>
             <div class="d-flex gap-1">
               <!-- Botón de Editar -->
-              <button class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="Editar" onclick="window.location.href='/edit_Unidad/{{ubi.idUnidad}}'">
+              <button class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="Editar"
+                onclick="window.location.href='/edit_Unidad/{{ubi.idUnidad}}'">
                 <i class="bi bi-pencil"></i>
               </button>
-        
+
               <!-- Botón de Mostrar Equipos -->
-              <button class="btn btn-info btn-sm" data-bs-toggle="tooltip" title="Equipos" onclick="window.location.href='/mostrar_asociados_unidad/{{ubi.idUnidad}}'">
-                <i class="bi bi-person-fill"></i>
+              <button class="btn btn-info btn-sm" data-bs-toggle="tooltip" title="Funcionarios"
+                onclick="window.location.href='/mostrar_funcionarios_unidad/{{ubi.idUnidad}}'">
+                <i class="bi bi-people-fill"></i>
               </button>
-        
+              
+              <!-- Botón de Mostrar Equipos -->
+              <button class="btn btn-warning btn-sm" title="Ver Equipos"
+                onclick="window.location.href='/mostrar_equipos_unidad/{{ubi.idUnidad}}'">
+                <i class="bi bi-hdd-network-fill"></i>
+              </button>
+
+
               <!-- Botón de Eliminar -->
-              <button class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Eliminar" onclick="window.location.href='/delete_Unidad/{{ubi.idUnidad}}'">
+              <button class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Eliminar"
+                onclick="window.location.href='/delete_Unidad/{{ubi.idUnidad}}'">
                 <i class="bi bi-trash-fill"></i>
               </button>
             </div>
