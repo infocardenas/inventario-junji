@@ -1258,7 +1258,7 @@ def buscar_equipos():
         "visible_pages": visible_pages  # Enviar las páginas visibles al frontend
     })
 
-# exportar a pdf
+# exportar a excel
 @equipo.route("/crear_excel")
 @loguear_requerido
 def crear_excel():
