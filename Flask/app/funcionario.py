@@ -24,7 +24,7 @@ schema_agregar_funcionario = {
     },
     'cargo_funcionario': {
         'type': 'string',
-        'allowed': ['ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL'],  # Valores permitidos
+        'allowed': ['ADMINISTRATIVO', 'AUXILIAR', 'PROFESIONAL', 'TÉCNICO', 'DIRECTOR REGIONAL','ENCARGADA/O'],  # Valores permitidos
     },
     'codigo_Unidad': {
         'type': 'string',
