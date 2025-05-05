@@ -159,7 +159,7 @@ function buscarEquipos(page = 1) {
     .then(response => response.json())
     .then(data => {
       actualizarTabla(data.equipos);
-      actualizarPaginacion(data.total_pages, data.current_page, query);
+      actualizarPaginacion(data.total_pages, data.current_page, query, data.visible_pages);
       guardarIdsVisibles(data.equipos); // Guardar los IDs visibles
     })
     .catch(error => console.error("Error al buscar equipos:", error));
@@ -221,17 +221,42 @@ function actualizarTabla(equipos) {
   });
 }
 
-function actualizarPaginacion(totalPages, currentPage, query) {
+function actualizarPaginacion(totalPages, currentPage, query, visiblePages) {
   const paginationContainer = document.querySelector(".pagination-container ul");
   paginationContainer.innerHTML = ""; // Limpiar la paginación
 
-  for (let page = 1; page <= totalPages; page++) {
+  visiblePages.forEach(page => {
     const li = document.createElement("li");
-    li.className = `page-item ${page === currentPage ? "active" : ""}`;
-    li.innerHTML = `
-      <a class="page-link" href="#" onclick="buscarEquipos(${page})">${page}</a>
-    `;
+    if (page === "...") {
+      li.className = "page-item disabled";
+      li.innerHTML = `<span class="page-link">...</span>`;
+    } else {
+      li.className = `page-item ${page === currentPage ? "active" : ""}`;
+      li.innerHTML = `
+        <a class="page-link" href="#" onclick="buscarEquipos(${page})">${page}</a>
+      `;
+    }
     paginationContainer.appendChild(li);
+  });
+
+  // Botón "Anterior"
+  if (currentPage > 1) {
+    const prevLi = document.createElement("li");
+    prevLi.className = "page-item";
+    prevLi.innerHTML = `
+      <a class="page-link" href="#" onclick="buscarEquipos(${currentPage - 1})">Anterior</a>
+    `;
+    paginationContainer.insertBefore(prevLi, paginationContainer.firstChild);
+  }
+
+  // Botón "Siguiente"
+  if (currentPage < totalPages) {
+    const nextLi = document.createElement("li");
+    nextLi.className = "page-item";
+    nextLi.innerHTML = `
+      <a class="page-link" href="#" onclick="buscarEquipos(${currentPage + 1})">Siguiente</a>
+    `;
+    paginationContainer.appendChild(nextLi);
   }
 }
 
