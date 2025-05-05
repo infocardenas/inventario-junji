@@ -304,6 +304,8 @@ def update_incidencia(id):
     if not ObservacionIncidencia:
         ObservacionIncidencia = None
 
+    print(f"DEBUG: Valor recibido para estadoIncidencia: {repr(estadoIncidencia)}")
+
     # Mapear estados de incidencia a estados de equipo
     estados_equipo = {
         'pendiente': {
