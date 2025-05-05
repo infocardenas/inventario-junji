@@ -152,37 +152,115 @@ function showDivHideOthers(id = "formulario") {
   }
 }
 
+function buscarEquipos(page = 1) {
+  const query = document.getElementById("buscador").value.toLowerCase();
 
+  fetch(`/buscar_equipos?q=${encodeURIComponent(query)}&page=${page}`)
+    .then(response => response.json())
+    .then(data => {
+      actualizarTabla(data.equipos);
+      actualizarPaginacion(data.total_pages, data.current_page, query, data.visible_pages);
+      guardarIdsVisibles(data.equipos); // Guardar los IDs visibles
+    })
+    .catch(error => console.error("Error al buscar equipos:", error));
+}
 
-function busqueda(tableBodyId = "myTBody") {
-  var input, filter, tbody, tr, visibleIds = [];
-  input = document.getElementById("buscador");
-  filter = input.value.toLowerCase();
-  tbody = document.getElementById(tableBodyId);
-  tr = tbody.getElementsByTagName("tr");
+function guardarIdsVisibles(equipos) {
+  const visibleIds = equipos.map(equipo => equipo.idEquipo); // Extraer los IDs de los equipos visibles
 
-  for (let i = 0; i < tr.length; i++) {
-    let td = tr[i].querySelectorAll(".toCheck");
-    let found = false;
-    for (let j = 0; j < td.length; j++) {
-      let texto = td[j].textContent.toLowerCase();
-      if (texto.indexOf(filter) > -1) {
-        tr[i].style.display = "";
-        found = true;
-      } 
-    }
-    if (!found) {
-      tr[i].style.display = "none";
-    } else {
-      // Obtener el ID del equipo (asumiendo que está en un atributo data-id)
-      let equipoId = tr[i].getAttribute("data-id");
-      if (equipoId) visibleIds.push(equipoId);
-    }
+  // Guardar los IDs visibles en un atributo del botón de exportar búsqueda
+  const exportButton = document.getElementById("exportarBusqueda");
+  if (exportButton) {
+    exportButton.setAttribute("data-ids", visibleIds.join(","));
   }
 
-  // Guardar los IDs en un atributo del botón de exportar búsqueda
-  document.getElementById("exportarBusqueda").setAttribute("data-ids", visibleIds.join(","));
+  console.log("IDs visibles:", visibleIds); // Depuración
 }
+
+function exportarBusqueda() {
+  const exportButton = document.getElementById("exportarBusqueda");
+  const ids = exportButton.getAttribute("data-ids");
+
+  if (!ids) {
+    alert("No hay resultados para exportar.");
+    return;
+  }
+
+  // Redirigir al endpoint de exportar con los IDs visibles
+  window.location.href = `/crear_excel?ids=${encodeURIComponent(ids)}`;
+}
+
+function actualizarTabla(equipos) {
+  const tbody = document.getElementById("myTableBody");
+  tbody.innerHTML = ""; // Limpiar la tabla
+
+  equipos.forEach(equipo => {
+    const row = document.createElement("tr");
+    row.setAttribute("data-id", equipo.idEquipo);
+    row.innerHTML = `
+      <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value"></td>
+      <td>${equipo.Cod_inventarioEquipo}</td>
+      <td>${equipo.Num_serieEquipo}</td>
+      <td>${equipo.nombreEstado_equipo}</td>
+      <td>${equipo.nombreFuncionario || '-'}</td>
+      <td>${equipo.codigoproveedor_equipo || '-'}</td>
+      <td>${equipo.nombreUnidad}</td>
+      <td>${equipo.nombreTipo_equipo}</td>
+      <td>${equipo.nombreModeloequipo}</td>
+      <td>
+        <a href="/equipo_detalles/${equipo.idEquipo}" class="btn button-info">
+          <i class="bi bi-eye-fill"></i>
+        </a>
+        <button class="btn btn-warning edit-equipo-btn" data-bs-toggle="modal"
+          data-bs-target="#editEquipoModal" data-id="${equipo.idEquipo}">
+          <i class="bi bi-pencil-square"></i>
+        </button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+function actualizarPaginacion(totalPages, currentPage, query, visiblePages) {
+  const paginationContainer = document.querySelector(".pagination-container ul");
+  paginationContainer.innerHTML = ""; // Limpiar la paginación
+
+  visiblePages.forEach(page => {
+    const li = document.createElement("li");
+    if (page === "...") {
+      li.className = "page-item disabled";
+      li.innerHTML = `<span class="page-link">...</span>`;
+    } else {
+      li.className = `page-item ${page === currentPage ? "active" : ""}`;
+      li.innerHTML = `
+        <a class="page-link" href="#" onclick="buscarEquipos(${page})">${page}</a>
+      `;
+    }
+    paginationContainer.appendChild(li);
+  });
+
+  // Botón "Anterior"
+  if (currentPage > 1) {
+    const prevLi = document.createElement("li");
+    prevLi.className = "page-item";
+    prevLi.innerHTML = `
+      <a class="page-link" href="#" onclick="buscarEquipos(${currentPage - 1})">Anterior</a>
+    `;
+    paginationContainer.insertBefore(prevLi, paginationContainer.firstChild);
+  }
+
+  // Botón "Siguiente"
+  if (currentPage < totalPages) {
+    const nextLi = document.createElement("li");
+    nextLi.className = "page-item";
+    nextLi.innerHTML = `
+      <a class="page-link" href="#" onclick="buscarEquipos(${currentPage + 1})">Siguiente</a>
+    `;
+    paginationContainer.appendChild(nextLi);
+  }
+}
+
+
 
 //al tocar el boton radio todo se destickea todo lo demas
 function todoCheck() {

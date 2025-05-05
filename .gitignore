@@ -7,5 +7,7 @@ venv
 #ignorar archivos pdf
 *.pdf
 
+*.xlsx
+
 **/__pycache__/
 

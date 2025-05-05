@@ -1191,139 +1191,73 @@ def listar_equipos():
 
 
 # #buscar un equipo singular por id
-@equipo.route("/equipo/buscar_equipo/<id>")
+@equipo.route("/buscar_equipos", methods=["GET"])
 @loguear_requerido
-def buscar_equipo(id):
+def buscar_equipos():
+    query = request.args.get("q", "").lower()  # Obtener el término de búsqueda
+    page = request.args.get("page", default=1, type=int)  # Obtener la página actual
+    per_page = 7  # Número de resultados por página
+    offset = (page - 1) * per_page
+
     cur = mysql.connection.cursor()
-    cur.execute("""
-            SELECT *
-                FROM
-                (
-                SELECT e.idEquipo, e.Cod_inventarioEquipo, 
-                    e.Num_serieEquipo, e.ObservacionEquipo,
-                    e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
-                    e.numerotelefonicoEquipo,
-                    te.idTipo_equipo, 
-                    te.nombreTipo_Equipo, ee.idEstado_equipo, ee.nombreEstado_equipo, 
-                    u.idUnidad, u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-                moe.idModelo_equipo, moe.nombreModeloequipo, "" as nombreFuncionario
-                FROM equipo e
-                INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-                INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
-                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-                INNER JOIN unidad u on u.idUnidad = e.idUnidad
-                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
 
-                WHERE ee.nombreEstado_equipo NOT LIKE "EN USO"
-                UNION 
-                SELECT  e.idEquipo, e.Cod_inventarioEquipo, 
-                        e.Num_serieEquipo, e.ObservacionEquipo, 
-                        e.codigoproveedor_equipo, e.macEquipo, 
-                        e.imeiEquipo, e.numerotelefonicoEquipo,
-                        te.idTipo_equipo, te.nombreTipo_Equipo,
-                        ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad,
-                        u.nombreUnidad, oc.idOrden_compra, oc.nombreOrden_compra,
-                        moe.idModelo_equipo, moe.nombreModeloequipo, f.nombreFuncionario
-                FROM equipo e
-                INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-                INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
-                INNER JOIN unidad u on u.idUnidad = e.idUnidad
-                INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
+    # Consulta para buscar equipos
+    cur.execute(f"""
+        SELECT *
+        FROM super_equipo
+        WHERE LOWER(Cod_inventarioEquipo) LIKE %s
+           OR LOWER(Num_serieEquipo) LIKE %s
+           OR LOWER(nombreEstado_equipo) LIKE %s
+           OR LOWER(nombreFuncionario) LIKE %s
+           OR LOWER(codigoproveedor_equipo) LIKE %s
+           OR LOWER(nombreUnidad) LIKE %s
+           OR LOWER(nombreTipo_equipo) LIKE %s
+           OR LOWER(nombreModeloequipo) LIKE %s
+        LIMIT %s OFFSET %s
+    """, (f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%",
+          f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%", per_page, offset))
+    equipos = cur.fetchall()
 
-                INNER JOIN equipo_asignacion ea on ea.idEquipo = e.idEquipo
-                INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-                INNER JOIN asignacion a on a.idAsignacion = ea.idAsignacion
-                INNER JOIN funcionario f on f.rutFuncionario = a.rutFuncionario
-                WHERE ee.nombreEstado_equipo LIKE "EN USO" 
-                ) as subquery
-                WHERE idEquipo = %s
+    # Total de resultados para la búsqueda
+    cur.execute(f"""
+        SELECT COUNT(*) AS total
+        FROM super_equipo
+        WHERE LOWER(Cod_inventarioEquipo) LIKE %s
+           OR LOWER(Num_serieEquipo) LIKE %s
+           OR LOWER(nombreEstado_equipo) LIKE %s
+           OR LOWER(nombreFuncionario) LIKE %s
+           OR LOWER(codigoproveedor_equipo) LIKE %s
+           OR LOWER(nombreUnidad) LIKE %s
+           OR LOWER(nombreTipo_equipo) LIKE %s
+           OR LOWER(nombreModeloequipo) LIKE %s
+    """, (f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%",
+          f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%"))
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
 
-    """, (id,))
-    Equipos = cur.fetchall()
-    cur.execute("SELECT * FROM tipo_equipo")
-    tipoe_data = cur.fetchall()
-    cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
-    estadoe_data = cur.fetchall()
-    cur.execute("SELECT idUnidad, nombreUnidad FROM unidad")
-    ubi_data = cur.fetchall()
-    cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
-    ordenc_data = cur.fetchall()
-    cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
-    modeloe_data = cur.fetchall()
+    # Calcular las páginas visibles
+    visible_pages = []
+    if total_pages <= 7:  # Mostrar todas las páginas si son pocas
+        visible_pages = list(range(1, total_pages + 1))
+    else:
+        if page > 4:
+            visible_pages.append(1)
+            if page > 5:
+                visible_pages.append("...")
+        visible_pages.extend(range(max(1, page - 2), min(total_pages + 1, page + 3)))
+        if page < total_pages - 3:
+            if page < total_pages - 4:
+                visible_pages.append("...")
+            visible_pages.append(total_pages)
 
-    return render_template(
-        "Equipo/equipo.html",
-        equipo=Equipos,
-        tipo_equipo=tipoe_data,
-        estado_equipo=estadoe_data,
-        orden_compra=ordenc_data,
-        Unidad=ubi_data,
-        modelo_equipo=modeloe_data,
-        page=1,
-        lastpage=True,
-    )
+    return jsonify({
+        "equipos": equipos,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page,
+        "visible_pages": visible_pages  # Enviar las páginas visibles al frontend
+    })
 
-#buscar todos los equipos en base a una palabra de busqueda
-# @equipo.route("/consulta_equipo", methods =["POST"])
-# @equipo.route("/consulta_equipo/<page>", methods =["POST"])
-# @loguear_requerido
-# def consulta_equipo(page = 1):
-#     palabra = request.form["palabra"]
-#     if palabra == "":
-#         print("error_redirect")
-#     page = int(page)
-#     perpage = getPerPage()
-#     offset = (int(page) - 1) * perpage
-#     cur = mysql.connection.cursor()
-#     cur.execute("SELECT COUNT(*) FROM equipo")
-#     total = cur.fetchone()
-#     total = int(str(total).split(":")[1].split("}")[0])
-#     cur = mysql.connection.cursor()
-#     query = f"""
-#     set palabra = CONVERT('%{palabra}%' USING utf8)
-#     SELECT *
-#     FROM superequipo se
-#     WHERE se.Cod_inventarioEquipo LIKE palabra OR
-#     se.Num_serieEquipo LIKE '%{palabra}%' OR
-#     se.codigoproveedor_equipo LIKE '%{palabra}%' OR
-#     se.nombreidTipoequipo LIKE '%{palabra}%' OR
-#     se.nombreEstado_equipo LIKE '%{palabra}%' OR
-#     se.idUnidad LIKE '%{palabra}%' OR
-#     se.nombreUnidad LIKE '%{palabra}%' OR
-#     se.nombreOrden_compra LIKE '%{palabra}%' OR
-#     se.nombreModeloequipo LIKE '%{palabra}%' OR
-#     se.nombreFuncionario LIKE '%{palabra}%'
-#     LIMIT {perpage} OFFSET {offset}
-#     """
-#     print(query)
-#     cur.execute(query)
-#     equipos = cur.fetchall()
-
-#     cur.execute("SELECT * FROM tipo_equipo")
-#     tipoe_data = cur.fetchall()
-#     cur.execute("SELECT idEstado_equipo, nombreEstado_equipo FROM estado_equipo")
-#     estadoe_data = cur.fetchall()
-#     cur.execute("SELECT idUnidad, nombreUnidad FROM Unidad")
-#     ubi_data = cur.fetchall()
-#     cur.execute("SELECT idOrden_compra, nombreOrden_compra FROM orden_compra")
-#     ordenc_data = cur.fetchall()
-#     cur.execute("SELECT idModelo_Equipo, nombreModeloequipo FROM modelo_equipo")
-#     modeloe_data = cur.fetchall()
-
-#     return render_template(
-#         "equipo.html",
-#         equipo=equipos,
-#         tipo_equipo=tipoe_data,
-#         estado_equipo=estadoe_data,
-#         orden_compra=ordenc_data,
-#         Unidad=ubi_data,
-#         modelo_equipo=modeloe_data,
-#         page=page,
-#         lastpage=page < (total / perpage) + 1,
-#     )
-    
-    
-    
 # exportar a pdf
 @equipo.route("/crear_excel")
 @loguear_requerido

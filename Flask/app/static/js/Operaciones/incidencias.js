@@ -43,8 +43,6 @@ $(document).ready(function () {
             $("#edit_nombreIncidencia").prop("disabled", true);
             $("#edit_fechaIncidencia").prop("disabled", true);
             $("#edit_observacionIncidencia").prop("disabled", true);
-            // Deshabilitar el botón de guardar también en este caso
-             $('#form_edit_incidencia button[type="submit"]').prop('disabled', true);
         }
 
         console.log("Editando incidencia ID:", idEquipoInc, "Estado inicial:", estadoInc);
@@ -103,20 +101,6 @@ $(document).ready(function () {
         // Cerrar el modal de confirmación
         $("#confirmStateChangeModal").modal("hide");
 
-        // Deshabilitar los campos AHORA que el estado final está confirmado
-        const estadosBloqueados = ["cerrado", "equipo cambiado", "equipo reparado"];
-        if (estadosBloqueados.includes(estadoAntesDelCambio.toLowerCase())) { // Usar estadoAntesDelCambio que ya tiene el valor confirmado
-             console.log("Campos deshabilitados tras confirmar estado final.");
-            $("#edit_estadoIncidencia").prop("disabled", true);
-            $("#edit_nombreIncidencia").prop("disabled", true);
-            $("#edit_fechaIncidencia").prop("disabled", true);
-            $("#edit_observacionIncidencia").prop("disabled", true);
-            // Deshabilitar también el botón de guardar
-             $('#form_edit_incidencia button[type="submit"]').prop('disabled', true);
-        }
-
-        // No necesitamos cambiar el valor del select aquí, porque el usuario ya lo cambió
-        // y la acción de confirmar simplemente acepta ese cambio.
     });
 
     // ✅ Gestionar cancelación/cierre del modal de confirmación (cuando se OCULTA)

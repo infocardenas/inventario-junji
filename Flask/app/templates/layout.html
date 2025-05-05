@@ -35,13 +35,13 @@
 {% endwith %}
 
 <div class="container-fluid">
-    <div class="d-flex flex-column flex-md-row">
+    <div class="d-flex flex-column flex-md-row" >
         <!-- Sidebar -->
-        <div class="sidebar bg-light p-1 col-md-2 col-12">
+        <div class="sidebar bg-light p-1 col-md-2 col-12 d-none d-md-block">
             <a href="/" class="d-flex align-items-center pb-3 mb-4 link-dark text-decoration-none border-bottom">
                 <span class="fs-5 fw-semibold">Gestor de Inventario</span>
             </a>
-            <ul class="list-unstyled ps-0">
+            <ul class="list-unstyled ps-0" >
                 <li class="mb-4">
                     <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
                         data-bs-toggle="collapse" data-bs-target="#home-collapse" aria-expanded="false">
@@ -111,9 +111,95 @@
             </ul>
         </div>
 
+        <!-- Sidebar para móviles -->
+        <div class="sidebar bg-light p-1 col-md-2 col-12 d-block d-md-none" >
+            <div class="col-auto">
+                <button class="btn btn-primary btn-menu" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu">
+                    Menú
+                </button>
+            </div>
+            <div class="offcanvas offcanvas-start" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+                <div class="offcanvas-header">
+                    <h5 class="offcanvas-title" id="mobileMenuLabel">Gestor de Inventario</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+                </div>
+                <div class="offcanvas-body">
+                    <ul class="list-unstyled ps-0" id="accordionSidebar">
+                        <li class="mb-4">
+                            <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                                data-bs-toggle="collapse" data-bs-target="#mobile-home-collapse" aria-expanded="false" aria-controls="mobile-home-collapse">
+                                <i class="bi bi-tools me-2"></i> <strong>Equipos</strong>
+                            </button>
+                            <div class="collapse mt-2" id="mobile-home-collapse" data-bs-parent="#accordionSidebar">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                                    <li class="mb-2 ps-3"><a href="/equipo" class="link-dark rounded">Equipos</a></li>
+                                    <li class="mb-2 ps-3"><a href="/modelo_equipo" class="link-dark rounded">Modelos de Equipos</a></li>
+                                    <li class="mb-2 ps-3"><a href="/tipo_equipo" class="link-dark rounded">Tipos de Equipos</a></li>
+                                    <li class="mb-2 ps-3"><a href="/marca_equipo" class="link-dark rounded">Marcas de Equipos</a></li>
+                                    <li class="mb-2 ps-3"><a href="/estado_equipo" class="link-dark rounded">Estado de Equipos</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    
+                        <li class="mb-4">
+                            <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                                data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false" aria-controls="dashboard-collapse">
+                                <i class="bi bi-person-lines-fill me-2"></i> <strong>Gestión de RR.HH</strong>
+                            </button>
+                            <div class="collapse mt-2" id="dashboard-collapse" data-bs-parent="#accordionSidebar">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                                    <li class="mb-2 ps-3"><a href="/funcionario" class="link-dark rounded">Funcionarios</a></li>
+                                    <li class="mb-2 ps-3"><a href="/asignacion" class="link-dark rounded">Asignaciones</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    
+                        <li class="mb-4">
+                            <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                                data-bs-toggle="collapse" data-bs-target="#orders-collapse" aria-expanded="false"  aria-controls="orders-collapse">
+                                <i class="bi bi-truck me-2"></i> <strong>Gestión de Proveedores</strong>
+                            </button>
+                            <div class="collapse mt-2" id="orders-collapse" data-bs-parent="#accordionSidebar">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                                    <li class="mb-2 ps-3"><a href="/proveedor" class="link-dark rounded">Proveedores</a></li>
+                                    <li class="mb-2 ps-3"><a href="/orden_compra" class="link-dark rounded">Orden de Compra</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    
+                        <li class="mb-4">
+                            <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                                data-bs-toggle="collapse" data-bs-target="#operations-collapse" aria-expanded="false" aria-controls="operations-collapse">
+                                <i class="bi bi-gear-fill me-2"></i> <strong>Operaciones</strong>
+                            </button>
+                            <div class="collapse mt-2" id="operations-collapse" data-bs-parent="#accordionSidebar">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium">
+                                    <li class="mb-2 ps-3"><a href="/traslado" class="link-dark rounded">Traslados</a></li>
+                                    <li class="mb-2 ps-3"><a href="/incidencia" class="link-dark rounded">Incidencias</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    
+                        <li class="mb-4">
+                            <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
+                                data-bs-toggle="collapse" data-bs-target="#organization-collapse" aria-expanded="false" aria-controls="organization-collapse">
+                                <i class="bi bi-buildings-fill me-2"></i> <strong>Organización</strong>
+                            </button>
+                            <div class="collapse mt-2" id="organization-collapse" data-bs-parent="#accordionSidebar">
+                                <ul class="btn-toggle-nav list-unstyled fw-normal pb-2 medium" >
+                                    <li class="mb-2 ps-3"><a href="/Unidad" class="link-dark rounded">Unidades</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         <!-- Main Content -->
         <div class="main col">
             <div class="dashboard-navbar">
+                
                 <form action="/buscar" method="GET" style="position: absolute; top: 20px; left: 38%;">
                     <div class="nav-search">
                         <input id="search-input" name="busqueda" type="text" class="search-query"
@@ -169,6 +255,7 @@
             </div>
         </div>
     </div>
+
 </div>
 
 <script src="https://cdn.datatables.net/2.2.1/js/dataTables.min.js"></script>
