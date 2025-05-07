@@ -21,7 +21,8 @@
                         <label for="nombreUnidad" class="form-label">Nombre de la unidad<span
                                 style="color: red; margin-left: 5px">*</span></label>
                         <input type="text" class="form-control campo-obligatorio validar-letras" name="nombreUnidad"
-                            placeholder="Nombre unidad" pattern="^[a-zA-Z0-9 ]+$" title="Solo se permiten letras, números y espacios" >
+                            placeholder="Nombre unidad" pattern="^[a-zA-Z0-9 ]+$"
+                            title="Solo se permiten letras, números y espacios">
                         <div class="text-error-message"></div>
                     </div>
                     <div class="mb-3">
@@ -35,7 +36,8 @@
                         <label for="direccionUnidad" class="form-label">Dirección<span
                                 style="color: red; margin-left: 5px">*</span></label>
                         <input type="text" class="form-control campo-obligatorio" name="direccionUnidad"
-                            placeholder="Dirección" pattern="^[a-zA-Z0-9 ]+$" title="Solo se permiten letras, números y espacios">
+                            placeholder="Dirección" pattern="^[a-zA-Z0-9 ]+$"
+                            title="Solo se permiten letras, números y espacios">
                         <div class="text-error-message"></div>
                     </div>
                     <div class="mb-3">
@@ -72,3 +74,75 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modal-edit-unidad" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Editar Unidad</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="form-edit-unidad" method="POST">
+                    <input type="hidden" name="idUnidad" id="edit-idUnidad">
+                    <div class="mb-3">
+                        <label>Código Unidad</label>
+                        <input type="text" class="form-control" name="codigo_Unidad" id="edit-codigoUnidad" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label>Nombre Unidad</label>
+                        <input type="text" class="form-control" name="nombreUnidad" id="edit-nombreUnidad">
+                    </div>
+                    <div class="mb-3">
+                        <label>Contacto</label>
+                        <input type="text" class="form-control" name="contactoUnidad" id="edit-contactoUnidad">
+                    </div>
+                    <div class="mb-3">
+                        <label>Dirección</label>
+                        <input type="text" class="form-control" name="direccionUnidad" id="edit-direccionUnidad">
+                    </div>
+                    <div class="mb-3">
+                        <label>Comuna</label>
+                        <select class="form-select" name="nombreComuna" id="edit-nombreComuna">
+                            {% for comuna in comuna %}
+                            <option value="{{ comuna.idComuna }}">{{ comuna.nombreComuna }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label>Modalidad</label>
+                        <select class="form-select" name="idModalidad" id="edit-idModalidad">
+                            {% for modalidad in Modalidades %}
+                            <option value="{{ modalidad.idModalidad }}">{{ modalidad.nombreModalidad }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="submit" class="btn btn-primary" form="form-edit-unidad">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var editModal = document.getElementById('modal-edit-unidad');
+        editModal.addEventListener('show.bs.modal', function (event) {
+            var button = event.relatedTarget;
+
+            document.getElementById('edit-idUnidad').value = button.getAttribute('data-id');
+            document.getElementById('edit-codigoUnidad').value = button.getAttribute('data-codigo');
+            document.getElementById('edit-nombreUnidad').value = button.getAttribute('data-nombre');
+            document.getElementById('edit-contactoUnidad').value = button.getAttribute('data-contacto');
+            document.getElementById('edit-direccionUnidad').value = button.getAttribute('data-direccion');
+            document.getElementById('edit-nombreComuna').value = button.getAttribute('data-comuna');
+
+
+            // Cambiar dinámicamente la acción del formulario con la ID correcta
+            document.getElementById('form-edit-unidad').action = "/update_Unidad/" + button.getAttribute('data-id');
+        });
+    });
+</script>

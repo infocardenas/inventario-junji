@@ -69,8 +69,10 @@
           <td>
             <div class="d-flex gap-1">
               <!-- Botón de Editar -->
-              <button class="btn btn-success btn-sm" data-bs-toggle="tooltip" title="Editar"
-                onclick="window.location.href='/edit_Unidad/{{ubi.idUnidad}}'">
+              <button class="btn btn-success btn-sm" data-bs-toggle="modal" data-bs-target="#modal-edit-unidad"
+                data-id="{{ ubi.idUnidad }}" data-codigo="{{ ubi.idUnidad }}" data-nombre="{{ ubi.nombreUnidad }}"
+                data-contacto="{{ ubi.contactoUnidad }}" data-direccion="{{ ubi.direccionUnidad }}"
+                data-comuna="{{ ubi.idComuna }}" data-modalidad="{{ ubi.idModalidad }}" title="Editar">
                 <i class="bi bi-pencil"></i>
               </button>
 
@@ -79,7 +81,7 @@
                 onclick="window.location.href='/mostrar_funcionarios_unidad/{{ubi.idUnidad}}'">
                 <i class="bi bi-people-fill"></i>
               </button>
-              
+
               <!-- Botón de Mostrar Equipos -->
               <button class="btn btn-warning btn-sm" title="Ver Equipos"
                 onclick="window.location.href='/mostrar_equipos_unidad/{{ubi.idUnidad}}'">
