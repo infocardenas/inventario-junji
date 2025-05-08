@@ -8,6 +8,189 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+let debounceTimeout;
+document.getElementById("buscador").addEventListener("input", () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => buscarEquipos(1), 300);
+});
+
+function buscarEquipos(page = 1) {
+  const query = document.getElementById("buscador").value.toLowerCase(); // Obtener el término de búsqueda
+
+  fetch(`/buscar_equipos?q=${encodeURIComponent(query)}&page=${page}`) // Realizar la solicitud al backend
+    .then(response => {
+      if (!response.ok) {
+        throw new Error("Error al buscar equipos");
+      }
+      return response.json();
+    })
+    .then(data => {
+      actualizarTabla(data.equipos); // Actualizar la tabla con los datos recibidos
+      actualizarPaginacion(data.total_pages, data.current_page, query, data.visible_pages); // Actualizar la paginación
+      guardarIdsVisibles(data.equipos); // Guardar los IDs visibles para exportar
+    })
+    .catch(error => console.error("Error al buscar equipos:", error));
+}
+
+function guardarIdsVisibles(equipos) {
+  const visibleIds = equipos.map(equipo => equipo.idEquipo); // Extraer los IDs de los equipos visibles
+
+  // Guardar los IDs visibles en un atributo del botón de exportar búsqueda
+  const exportButton = document.getElementById("exportarBusqueda");
+  if (exportButton) {
+    exportButton.setAttribute("data-ids", visibleIds.join(","));
+  }
+
+  console.log("IDs visibles:", visibleIds); // Depuración
+}
+
+function exportarBusqueda() {
+  const exportButton = document.getElementById("exportarBusqueda");
+  const ids = exportButton.getAttribute("data-ids");
+
+  if (!ids) {
+    alert("No hay resultados para exportar.");
+    return;
+  }
+
+  // Redirigir al endpoint de exportar con los IDs visibles
+  window.location.href = `/crear_excel?ids=${encodeURIComponent(ids)}`;
+}
+
+function actualizarTabla(equipos) {
+  const tbody = document.getElementById("myTableBody");
+  tbody.innerHTML = ""; // Limpiar la tabla
+
+  if (equipos.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="10" class="text-center">No hay datos disponibles.</td></tr>';
+    return;
+  }
+
+  equipos.forEach(equipo => {
+    const row = document.createElement("tr");
+    row.setAttribute("data-id", equipo.idEquipo);
+    row.innerHTML = `
+      <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value"></td>
+      <td>${equipo.Cod_inventarioEquipo}</td>
+      <td>${equipo.Num_serieEquipo}</td>
+      <td>${equipo.nombreEstado_equipo}</td>
+      <td>${equipo.nombreFuncionario || '-'}</td>
+      <td>${equipo.codigoproveedor_equipo || '-'}</td>
+      <td>${equipo.nombreUnidad}</td>
+      <td>${equipo.nombreTipo_equipo}</td>
+      <td>${equipo.nombreModeloequipo}</td>
+      <td>
+        <a href="/equipo_detalles/${equipo.idEquipo}" class="btn button-info">
+          <i class="bi bi-eye-fill"></i>
+        </a>
+        <button class="btn btn-warning edit-equipo-btn" data-bs-toggle="modal"
+          data-bs-target="#editEquipoModal"
+          data-id="${equipo.idEquipo}"
+          data-codigo="${equipo.Cod_inventarioEquipo}"
+          data-serie="${equipo.Num_serieEquipo}"
+          data-observacion="${equipo.ObservacionEquipo || ''}"
+          data-unidad="${equipo.idUnidad || ''}"
+          data-orden="${equipo.idOrden_compra || ''}"
+          data-marca="${equipo.idMarca_Equipo || ''}"
+          data-tipo="${equipo.idTipo_equipo || ''}"
+          data-modelo="${equipo.idModelo_equipo || ''}"
+          data-proveedor="${equipo.codigoproveedor_equipo || ''}"
+          data-mac="${equipo.macEquipo || ''}"
+          data-imei="${equipo.imeiEquipo || ''}"
+          data-numero="${equipo.numerotelefonicoEquipo || ''}"
+          data-estado="${equipo.idEstado_equipo || ''}">
+          <i class="bi bi-pencil-square"></i>
+        </button>
+      </td>
+    `;
+    tbody.appendChild(row);
+  });
+
+  // Reconfigurar eventos para los botones de edición
+  configurarEventosEdicion();
+}
+
+function configurarEventosEdicion() {
+  document.querySelectorAll(".edit-equipo-btn").forEach(button => {
+    button.addEventListener("click", function () {
+      const id = this.getAttribute("data-id");
+      const marca = this.getAttribute("data-marca");
+      const tipo = this.getAttribute("data-tipo");
+      const modelo = this.getAttribute("data-modelo");
+
+      // Cargar marcas, tipos y modelos en el modal
+      cargarMarcas(marca);
+      cargarTipos(marca, tipo);
+      cargarModelos(marca, tipo, modelo);
+
+      // Rellenar otros campos del modal
+      document.getElementById("edit_id_equipo").value = id;
+      document.getElementById("edit_codigo_inventario").value = this.getAttribute("data-codigo");
+      document.getElementById("edit_numero_serie").value = this.getAttribute("data-serie");
+      document.getElementById("edit_observacion_equipo").value = this.getAttribute("data-observacion");
+      document.getElementById("edit_codigo_Unidad").value = this.getAttribute("data-unidad");
+      document.getElementById("edit_orden_compra").value = this.getAttribute("data-orden");
+      document.getElementById("edit_codigoproveedor").value = this.getAttribute("data-proveedor");
+      document.getElementById("edit_mac").value = this.getAttribute("data-mac");
+      document.getElementById("edit_imei").value = this.getAttribute("data-imei");
+      document.getElementById("edit_numero").value = this.getAttribute("data-numero");
+      document.getElementById("edit_estado_equipo").value = this.getAttribute("data-estado");
+
+      function cargarMarcas(selectedMarca) {
+        fetch("/get_marcas")
+          .then(response => response.json())
+          .then(data => {
+            const marcaSelect = document.getElementById("edit_marcaSelect");
+            marcaSelect.innerHTML = '<option value="">Seleccione una marca</option>';
+            data.forEach(marca => {
+              const option = document.createElement("option");
+              option.value = marca.idMarca_Equipo;
+              option.textContent = marca.nombreMarcaEquipo;
+              if (marca.idMarca_Equipo == selectedMarca) {
+                option.selected = true;
+              }
+              marcaSelect.appendChild(option);
+            });
+          });
+      }
+      function cargarTipos(marcaId, selectedTipo) {
+        fetch(`/get_tipos/${marcaId}`)
+          .then(response => response.json())
+          .then(data => {
+            const tipoSelect = document.getElementById("edit_tipoSelect");
+            tipoSelect.innerHTML = '<option value="">Seleccione un tipo</option>';
+            data.forEach(tipo => {
+              const option = document.createElement("option");
+              option.value = tipo.idTipo_equipo;
+              option.textContent = tipo.nombreTipo_equipo;
+              if (tipo.idTipo_equipo == selectedTipo) {
+                option.selected = true;
+              }
+              tipoSelect.appendChild(option);
+            });
+          });
+      }
+      function cargarModelos(marcaId, tipoId, selectedModelo) {
+        fetch(`/get_modelos/${marcaId}/${tipoId}`)
+          .then(response => response.json())
+          .then(data => {
+            const modeloSelect = document.getElementById("edit_modeloSelect");
+            modeloSelect.innerHTML = '<option value="">Seleccione un modelo</option>';
+            data.forEach(modelo => {
+              const option = document.createElement("option");
+              option.value = modelo.idModelo_equipo;
+              option.textContent = modelo.nombreModeloequipo;
+              if (modelo.idModelo_equipo == selectedModelo) {
+                option.selected = true;
+              }
+              modeloSelect.appendChild(option);
+            });
+          });
+      }
+    });
+  });
+}
+
 async function cargarMarcas() {
   const response = await fetch("/get_marcas");
   const marcas = await response.json();
@@ -60,6 +243,45 @@ async function cargarModelos() {
       option.textContent = modelo.nombreModeloequipo;
       modeloSelect.appendChild(option);
     });
+  }
+}
+
+function actualizarPaginacion(totalPages, currentPage, query, visiblePages) {
+  const paginationContainer = document.querySelector(".pagination-container ul");
+  paginationContainer.innerHTML = ""; // Limpiar la paginación
+
+  visiblePages.forEach(page => {
+    const li = document.createElement("li");
+    if (page === "...") {
+      li.className = "page-item disabled";
+      li.innerHTML = `<span class="page-link">...</span>`;
+    } else {
+      li.className = `page-item ${page === currentPage ? "active" : ""}`;
+      li.innerHTML = `
+        <a class="page-link" href="#" onclick="buscarEquipos(${page})">${page}</a>
+      `;
+    }
+    paginationContainer.appendChild(li);
+  });
+
+  // Botón "Anterior"
+  if (currentPage > 1) {
+    const prevLi = document.createElement("li");
+    prevLi.className = "page-item";
+    prevLi.innerHTML = `
+      <a class="page-link" href="#" onclick="buscarEquipos(${currentPage - 1})">Anterior</a>
+    `;
+    paginationContainer.insertBefore(prevLi, paginationContainer.firstChild);
+  }
+
+  // Botón "Siguiente"
+  if (currentPage < totalPages) {
+    const nextLi = document.createElement("li");
+    nextLi.className = "page-item";
+    nextLi.innerHTML = `
+      <a class="page-link" href="#" onclick="buscarEquipos(${currentPage + 1})">Siguiente</a>
+    `;
+    paginationContainer.appendChild(nextLi);
   }
 }
 
