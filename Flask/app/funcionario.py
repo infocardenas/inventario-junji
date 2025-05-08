@@ -161,7 +161,7 @@ def edit_funcionario():
     try:
         data = {
             'rut_actual': request.form.get('edit_rut_actual', '').strip(),
-            'rut_funcionario': request.form.get('rut_completo', '').strip(),
+            'rut_funcionario': request.form.get('edit_rut_actual', '').strip(),
             'nombre_funcionario': request.form.get('nombre_funcionario', '').strip(),
             'correo_funcionario': request.form.get('correo_funcionario', '').strip(),
             'cargo_funcionario': request.form.get('cargo_funcionario', '').strip(),
