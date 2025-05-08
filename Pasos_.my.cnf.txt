@@ -26,5 +26,12 @@ bash
 Y añade esta línea:
 
 bash
-
-    0 2 * * * /ruta/completa/a/script_backup.sh >> /var/log/backup.log 2>&1
+    Escape 
+        :qw --->editar
+        
+         0 2 * * * /ruta/completa/a/script_backup.sh >> /var/log/backup.log 2>&1
+    entrer 
+    Escape 
+        ::q! --->guaedar 
+    entrer 
+    contro + z 
