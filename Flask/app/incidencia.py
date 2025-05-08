@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file, session
+from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file, session, jsonify
 from db import mysql
 from fpdf import FPDF
 from funciones import getPerPage
@@ -655,3 +655,59 @@ def buscar(idIncidencia):
         page=1, 
         lastpage=True
     )
+
+@incidencia.route("/buscar_incidencias", methods=["GET"])
+def buscar_incidencias():
+    query = request.args.get("q", "").lower()  # Obtener el término de búsqueda
+    page = request.args.get("page", default=1, type=int)  # Página actual
+    per_page = 10  # Número de resultados por página
+    offset = (page - 1) * per_page
+
+    cur = mysql.connection.cursor()
+
+    # Consulta para buscar incidencias
+    cur.execute(f"""
+        SELECT i.idIncidencia, i.nombreIncidencia, i.observacionIncidencia,
+               i.fechaIncidencia, i.estadoIncidencia, e.cod_inventarioEquipo,
+               e.Num_serieEquipo, te.nombreTipo_equipo, me.nombreModeloequipo
+        FROM incidencia i
+        INNER JOIN equipo e ON i.idEquipo = e.idEquipo
+        INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
+        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE LOWER(i.nombreIncidencia) LIKE %s
+           OR LOWER(i.observacionIncidencia) LIKE %s
+           OR LOWER(e.cod_inventarioEquipo) LIKE %s
+           OR LOWER(e.Num_serieEquipo) LIKE %s
+           OR LOWER(te.nombreTipo_equipo) LIKE %s
+           OR LOWER(me.nombreModeloequipo) LIKE %s
+        LIMIT %s OFFSET %s
+    """, (f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%",
+          f"%{query}%", f"%{query}%", per_page, offset))
+    incidencias = cur.fetchall()
+
+    # Total de resultados para la búsqueda
+    cur.execute(f"""
+        SELECT COUNT(*) AS total
+        FROM incidencia i
+        INNER JOIN equipo e ON i.idEquipo = e.idEquipo
+        INNER JOIN modelo_equipo me ON e.idModelo_Equipo = me.idModelo_Equipo
+        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE LOWER(i.nombreIncidencia) LIKE %s
+           OR LOWER(i.observacionIncidencia) LIKE %s
+           OR LOWER(e.cod_inventarioEquipo) LIKE %s
+           OR LOWER(e.Num_serieEquipo) LIKE %s
+           OR LOWER(te.nombreTipo_equipo) LIKE %s
+           OR LOWER(me.nombreModeloequipo) LIKE %s
+    """, (f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%",
+          f"%{query}%", f"%{query}%"))
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    return jsonify({
+        "incidencias": incidencias,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page
+    })

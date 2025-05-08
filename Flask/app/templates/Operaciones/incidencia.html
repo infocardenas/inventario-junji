@@ -11,29 +11,22 @@
                 <h2 class="mb-1">Incidencias</h2>
             </div>
 
-            <!-- Ajuste responsive: Botón a la izquierda, Buscador centrado, espacio vacío a la derecha -->
-            <div class="orden-compra-toolbar row  mb-1">
-                <!-- Botón alineado a la izquierda -->
-                <div class="col-md-3 col-12 d-flex ">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+            <div class="row align-items-center mb-3">
+                <!-- Botón alineado completamente a la izquierda -->
+                <div class="col-12 col-md-2 d-flex justify-content-md-start justify-content-center mb-2 mb-md-0">
+                    <button type="button" class="btn btn-primary w-100 w-md-auto" data-bs-toggle="modal"
                         data-bs-target="#addIncidenciaModal">
-                        Incidencia
+                        <i class="bi bi-plus-circle me-1"></i> Agregar
                     </button>
                 </div>
-
-                <!-- Buscador centrado -->
-                <div class="col-md-6 col-12 d-flex  mb-2 mb-md-1">
-                    <form action="/consulta_equipo" method="POST" class="w-100" style="max-width: 270px;">
-                        <input name="palabra" type="text" class="form-control" placeholder="Buscar incidencia"
-                            id="buscador" onkeyup="busqueda('myTableBody')" />
-                    </form>
-                </div>
-
-                <!-- Espacio vacío a la derecha -->
-                <div class="col-md-3 d-none d-md-block">
-                    <!-- Espacio vacío solo visible en pantallas md o mayores -->
+            
+                <!-- Buscador completamente centrado en la página -->
+                <div class="col-12 col-md-6 offset-md-1 d-flex justify-content-center">
+                    <input type="text" id="buscador_incidencia" class="form-control w-100 w-md-75"
+                        placeholder="Buscar incidencias" oninput="buscarIncidencias(1)">
                 </div>
             </div>
+            
 
 
 
