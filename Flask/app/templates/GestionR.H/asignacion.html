@@ -7,6 +7,7 @@
     <!-- Toolbar responsive -->
     <div class="row mb-3">
       <div class="col-12">
+        
         <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
 
           <!-- Botón Asignar -->
@@ -18,9 +19,10 @@
           </div>
 
           <!-- Buscador -->
-          <div class="flex-grow-1" style="max-width: 400px;">
-            <input name="palabra" type="text" class="form-control" placeholder="Buscar asignación..."
-              id="buscador" onkeyup="busqueda('myTableBody')" />
+          <div class="row mb-0">
+            <div class="col-12">
+              <input type="text" id="buscador_asignaciones" class="form-control" placeholder="Buscar asignaciones..." oninput="buscarAsignaciones(1)">
+            </div>
           </div>
 
           <!-- Dropdowns y botón devolver -->
@@ -51,7 +53,9 @@
                 <i class="fa-solid fa-arrow-rotate-left"></i>
               </button>
             </div>
+            
           </div>
+
         </div>
       </div>
     </div>
@@ -136,7 +140,7 @@
         {% endif %}
       </ul>
     </nav>
-
+    <script src="{{ url_for('static', filename='js/GestionP/asignaciones.js') }}"></script>
     {% include 'GestionR.H/asignacion.modals.html' %}
     <script src="../static/js/asignaciones.controller.js"></script>
   </div>

@@ -15,7 +15,7 @@ document.getElementById("buscador").addEventListener("input", () => {
 });
 
 function buscarEquipos(page = 1) {
-  const query = document.getElementById("buscador").value.toLowerCase(); // Obtener el término de búsqueda
+  const query = document.getElementById("buscador_equipo").value.toLowerCase(); // Obtener el término de búsqueda
 
   fetch(`/buscar_equipos?q=${encodeURIComponent(query)}&page=${page}`) // Realizar la solicitud al backend
     .then(response => {
