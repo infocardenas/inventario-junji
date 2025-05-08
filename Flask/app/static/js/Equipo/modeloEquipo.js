@@ -79,6 +79,89 @@ $(document).ready(function () {
         });
     });
 
+let debounceTimeout;
+    document.getElementById("buscador_modelos").addEventListener("input", () => {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => buscarModelos(1), 300);
+});
+
+function buscarModelos(page = 1) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+        const query = document.getElementById("buscador_modelos").value.toLowerCase();
+
+    fetch(`/buscar_modelo_equipo?q=${encodeURIComponent(query)}&page=${page}`)
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("Error al buscar modelos de equipo");
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log("Datos recibidos:", data); // Verifica los datos aquí
+        actualizarTablaModelos(data.modelos);
+        actualizarPaginacion(data.total_pages, data.current_page, query);
+    })
+    .catch(error => console.error("Error al buscar modelos de equipo:", error));
+    }, 300); // Retraso de 300ms para evitar múltiples solicitudes
+}
+
+function actualizarTablaModelos(modelos) {
+    const tbody = document.getElementById("myTableBody");
+    tbody.innerHTML = ""; // Limpiar la tabla
+
+    if (modelos.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay datos disponibles.</td></tr>';
+        return;
+    }
+
+    modelos.forEach(modelo => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td class="checkbox-column">
+                <input type="checkbox" class="checkbox-table row-checkbox">
+            </td>
+            <td>${modelo.nombreModeloequipo}</td>
+            <td>${modelo.nombreTipo_equipo}</td>
+            <td>${modelo.nombreMarcaEquipo}</td>
+            <td>
+                <button class="btn button-info btn-sm btn-editar-modelo" data-bs-toggle="modal"
+                    data-bs-target="#editModeloEquipoModal" data-id="${modelo.idModelo_Equipo}"
+                    data-nombre="${modelo.nombreModeloequipo}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+function actualizarPaginacion(totalPages, currentPage, query) {
+    const pagination = document.querySelector(".pagination");
+    pagination.innerHTML = ""; // Limpiar la paginación
+
+    if (currentPage > 1) {
+        const prevPage = document.createElement("li");
+        prevPage.className = "page-item";
+        prevPage.innerHTML = `<a class="page-link" href="#" onclick="buscarModelos(${currentPage - 1})">Anterior</a>`;
+        pagination.appendChild(prevPage);
+    }
+
+    for (let i = 1; i <= totalPages; i++) {
+        const pageItem = document.createElement("li");
+        pageItem.className = `page-item ${i === currentPage ? "active" : ""}`;
+        pageItem.innerHTML = `<a class="page-link" href="#" onclick="buscarModelos(${i})">${i}</a>`;
+        pagination.appendChild(pageItem);
+    }
+
+    if (currentPage < totalPages) {
+        const nextPage = document.createElement("li");
+        nextPage.className = "page-item";
+        nextPage.innerHTML = `<a class="page-link" href="#" onclick="buscarModelos(${currentPage + 1})">Siguiente</a>`;
+        pagination.appendChild(nextPage);
+    }
+}
+
     // **Editar Modelo**
     $(".btn-editar-modelo").on("click", function () {
         let modeloId = $(this).data("id");

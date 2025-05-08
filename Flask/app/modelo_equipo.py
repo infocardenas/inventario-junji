@@ -27,6 +27,53 @@ schema = {
 }
 
 
+@modelo_equipo.route("/buscar_modelo_equipo", methods=["GET"])
+@loguear_requerido
+def buscar_modelo_equipo():
+    query = request.args.get("q", "").lower()  # Obtener el término de búsqueda
+    page = request.args.get("page", default=1, type=int)  # Página actual
+    per_page = 10  # Número de resultados por página
+    offset = (page - 1) * per_page
+
+    cur = mysql.connection.cursor()
+
+    # Consulta para buscar modelos de equipo
+    cur.execute("""
+        SELECT me.idModelo_Equipo, me.nombreModeloequipo, 
+               te.nombreTipo_equipo, mae.nombreMarcaEquipo
+        FROM modelo_equipo me
+        INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
+        INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+        WHERE LOWER(me.nombreModeloequipo) LIKE %s
+           OR LOWER(te.nombreTipo_equipo) LIKE %s
+           OR LOWER(mae.nombreMarcaEquipo) LIKE %s
+        LIMIT %s OFFSET %s
+    """, (f"%{query}%", f"%{query}%", f"%{query}%", per_page, offset))
+    modelos = cur.fetchall()
+
+    # Total de resultados para la búsqueda
+    cur.execute("""
+        SELECT COUNT(*) AS total
+        FROM modelo_equipo me
+        INNER JOIN marca_tipo_equipo mte ON mte.idMarcaTipo = me.idMarca_Tipo_Equipo
+        INNER JOIN tipo_equipo te ON te.idTipo_equipo = mte.idTipo_equipo
+        INNER JOIN marca_equipo mae ON mae.idMarca_Equipo = mte.idMarca_Equipo
+        WHERE LOWER(me.nombreModeloequipo) LIKE %s
+           OR LOWER(te.nombreTipo_equipo) LIKE %s
+           OR LOWER(mae.nombreMarcaEquipo) LIKE %s
+    """, (f"%{query}%", f"%{query}%", f"%{query}%"))
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    return jsonify({
+        "modelos": modelos,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page
+    })
+
+
 
 @modelo_equipo.route("/modelo_equipo")
 @modelo_equipo.route("/modelo_equipo/<int:page>")
