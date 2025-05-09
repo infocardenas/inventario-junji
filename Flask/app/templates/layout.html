@@ -16,23 +16,425 @@
     <link rel="stylesheet" href="{{url_for('static', filename='css/style.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/sidebar.css')}}">
     <link rel="stylesheet" href="{{url_for('static', filename='css/table.css')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/globalmodal.css')}}">
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 </head>
 
 <body>
 
 <!-- Carga y muestra los errores de flash de manera global -->
-{% with messages = get_flashed_messages(with_categories=true) %}
-{% if messages %}
-<div>
-    {% for category, message in messages %}
-    {% set alert_type = category %}
-    {% set message = message %}
-    {% include 'alert.html' %}
-    {% endfor %}
+<!--{% with messages = get_flashed_messages(with_categories=true) %}-->
+<!--{% if messages %}-->
+<!--<div>-->
+<!--    {% for category, message in messages %}-->
+<!--    {% set alert_type = category %}-->
+<!--    {% set message = message %}-->
+<!--    {% include 'alert.html' %}-->
+<!--    {% endfor %}-->
+<!--</div>-->
+<!--{% endif %}-->
+<!--{% endwith %}-->
+
+<!-- Modal para mensajes flash -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
 </div>
-{% endif %}
-{% endwith %}
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal Flash Messages - Diseño Base -->
+<div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <!-- Encabezado dinámico con icono -->
+            <div class="modal-header border-0 pb-0">
+                <h2 class="modal-title fs-5 d-flex align-items-center gap-2" id="flashModalTitle">
+                    <span id="flashModalIcon"></span>
+                    <span id="flashModalLabel">Título</span>
+                </h2>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            
+            <!-- Cuerpo del mensaje -->
+            <div class="modal-body pt-0" id="flashModalBody">
+                Mensaje de ejemplo...
+            </div>
+            
+            <!-- Pie de modal con botón -->
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <div class="container-fluid">
     <div class="d-flex flex-column flex-md-row" >
@@ -264,6 +666,50 @@
 {% include 'advertencia_eliminar.html' %}
 <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script src="{{ url_for('static', filename='js/tabla.js') }}"></script>
+
+<!-- Script para manejar los mensajes flash -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        /*{% with messages = get_flashed_messages(with_categories=true) %}*/
+            /*{% if messages %}*/
+                /*{% for category, message in messages %}*/
+                    // Configurar el modal según la categoría
+                    const modal = new bootstrap.Modal(document.getElementById('flashModal'));
+                    const modalTitle = document.getElementById('flashModalTitle');
+                    const modalBody = document.getElementById('flashModalBody');
+                    
+                    // Asignar clases según el tipo de mensaje
+                    let icon = '';
+                    let title = '';
+                    
+                    switch('{{ category }}') {
+                        case 'success':
+                            icon = '<i class="fas fa-check-circle text-success me-2"></i>';
+                            title = 'Éxito';
+                            break;
+                        case 'warning':
+                            icon = '<i class="fas fa-exclamation-triangle text-warning me-2"></i>';
+                            title = 'Advertencia';
+                            break;
+                        case 'danger':
+                            icon = '<i class="fas fa-times-circle text-danger me-2"></i>';
+                            title = 'Error';
+                            break;
+                        default:
+                            icon = '<i class="fas fa-info-circle text-primary me-2"></i>';
+                            title = 'Información';
+                    }
+                    
+                    modalTitle.innerHTML = icon + title;
+                    modalBody.innerHTML = '{{ message }}';
+                    
+                    // Mostrar el modal
+                    modal.show();
+                /*{% endfor %}*/
+            /*{% endif %}*/
+        /*{% endwith %}*/
+    });
+    </script>
 
 </body>
 
