@@ -183,4 +183,71 @@ document.getElementById('searchEquipo').addEventListener('input', function () {
     });
 });
 
+let debounceTimeout;
+document.getElementById("buscador_incidencia").addEventListener("input", () => {
+  clearTimeout(debounceTimeout);
+  debounceTimeout = setTimeout(() => buscarIncidencias(1), 300);
+});
+
+function buscarIncidencias(page = 1) {
+    const query = document.getElementById("buscador_incidencia").value.toLowerCase(); // Obtener el término de búsqueda
+
+    fetch(`/buscar_incidencias?q=${encodeURIComponent(query)}&page=${page}`) // Realizar la solicitud al backend
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Error al buscar incidencias");
+            }
+            return response.json();
+        })
+        .then(data => {
+            actualizarTabla(data.incidencias); // Actualizar la tabla con los datos recibidos
+            actualizarPaginacion(data.total_pages, data.current_page, query); // Actualizar la paginación
+        })
+        .catch(error => console.error("Error al buscar incidencias:", error));
+}
+
+function actualizarTabla(incidencias) {
+    const tbody = document.getElementById("myTableBody");
+    tbody.innerHTML = ""; // Limpiar la tabla
+
+    if (incidencias.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="10" class="text-center">No hay datos disponibles.</td></tr>';
+        return;
+    }
+
+    incidencias.forEach(inc => {
+        const row = document.createElement("tr");
+        row.setAttribute("data-id", inc.idIncidencia);
+        row.innerHTML = `
+            <td>${inc.estadoIncidencia}</td>
+            <td>${inc.nombreTipo_equipo}</td>
+            <td>${inc.nombreIncidencia}</td>
+            <td>${inc.observacionIncidencia || '-'}</td>
+            <td>${new Date(inc.fechaIncidencia).toLocaleDateString()}</td>
+            <td>${inc.cod_inventarioEquipo}</td>
+            <td>${inc.Num_serieEquipo}</td>
+            <td>${inc.nombreModeloequipo}</td>
+            <td>
+                <a href="/incidencia/listar_pdf/${inc.idIncidencia}" class="btn button-info">
+                    <i class="bi bi-info-circle"></i>
+                </a>
+                <button class="btn btn-warning edit-equipo-btn" data-bs-toggle="modal"
+                    data-bs-target="#edit_incidencia" data-id="${inc.idIncidencia}"
+                    data-estado="${inc.estadoIncidencia}" data-nombre="${inc.nombreIncidencia}"
+                    data-fecha="${inc.fechaIncidencia}" data-observacion="${inc.observacionIncidencia}">
+                    <i class="bi bi-pencil-square"></i>
+                </button>
+                <button class="btn btn-danger delete-button" data-bs-toggle="modal"
+                    data-bs-target="#deleteModal" data-id="${inc.idIncidencia}"
+                    data-url="/incidencia/delete_incidencia/${inc.idIncidencia}">
+                    <i class="bi bi-trash-fill"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+
+
 });

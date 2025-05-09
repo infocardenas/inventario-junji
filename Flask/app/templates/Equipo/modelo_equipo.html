@@ -12,10 +12,12 @@
                 <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#addModeloModal"><i
                         class="bi bi-plus-lg"></i> Agregar</button>
             </div>
-            <div class="toolbar-2">
-                <input name="palabra" type="text" class="search-box" placeholder="Buscar modelo..." id="buscador"
-                    onkeyup="busqueda('myTableBody')" />
+            
+            <div class="col-12 col-md-6 offset-md-1 d-flex justify-content-center">
+                <input type="text" id="buscador_modelos" class="form-control w-100 w-md-75"
+                    placeholder="Buscar Modelos" oninput="buscarModelos(1)">
             </div>
+
             <div class="toolbar-3">
                 <button class="btn btn-danger shadow-sm" id="eliminarSeleccionados"><i class="bi bi-trash"></i></button>
             </div>
@@ -128,7 +130,7 @@
         </nav>
         {% endif %}
         
-
+        <script src="{{ url_for('static', filename='js/Equipo/modeloEquipo.js') }}"></script>
         {% include 'Equipo/modelo_equipo.modals.html'%}
         <script src="{{ url_for('static', filename='js/Equipo/modeloEquipo.js') }}"></script>
 

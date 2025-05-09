@@ -29,31 +29,29 @@
     </div>
 
     <div class="col">
-      <h2>Equipos</h2>
-
-      <!-- Toolbar: todos los botones en una sola fila -->
-      <div class="row mb-3">
-        <div class="col-12">
-          <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
-
-            <!-- Botones principales: Agregar y Exportar Todo -->
-            <div class="d-flex gap-2 flex-wrap">
-              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipoModal">
-                Agregar
-              </button>
-
-
-              <a href="{{ url_for('equipo.crear_excel') }}" class="btn btn-primary d-flex align-items-center">
-                Exportar Todo
-                <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel" width="20"
-                  height="20" class="ms-2">
-              </a>
-            </div>
-
-            <!-- Buscador y Exportar búsqueda -->
-            <div class="d-flex gap-2 flex-grow-1" style="max-width: 650px;">
-              <input id="buscador_equipo" type="text" class="form-control" placeholder="Buscar equipos"
-                oninput="buscarEquipos(1)" />
+        <h2>Equipos</h2>
+      
+        <!-- Toolbar: todos los botones en una sola fila -->
+        <div class="row mb-3">
+          <div class="col-12">
+            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+      
+              <!-- Botones principales: Agregar y Exportar Todo -->
+              <div class="d-flex gap-2 flex-wrap">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipoModal">
+                  Agregar
+                </button>
+      
+                <a href="{{ url_for('equipo.crear_excel') }}" class="btn btn-primary d-flex align-items-center">
+                  Exportar Todo
+                  <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}"
+                    alt="Exportar Excel" width="20" height="20" class="ms-2">
+                </a>
+              </div>
+      
+              <!-- Buscador y Exportar búsqueda -->
+              <div class="d-flex gap-2 flex-grow-1" style="max-width: 650px;">
+                <input id="buscador_equipo" type="text" class="form-control" placeholder="Buscar equipos" oninput="buscarEquipos(1)" />
 
               <button class="btn btn-primary d-flex align-items-center flex-shrink-0" id="exportarBusqueda"
                 onclick="exportarBusqueda()">
