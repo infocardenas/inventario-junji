@@ -1,5 +1,5 @@
 from email.mime.application import MIMEApplication
-from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session
+from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session, jsonify
 from db import mysql
 from fpdf import FPDF
 from funciones import getPerPage
@@ -150,13 +150,14 @@ def create_asignacion():
     # Se crea un objeto para poder validar los datos recibidos
     data = {
         'fecha_asignacion': fecha_asignacion,
-        'rut_funcionario': rut_funcionario,
         'observacion': observacion,
         'equipos_asignados': id_equipos,
     }
+    print(data)
 
     # Valida los campos y muestra solo el primer mensaje de error
     v = Validator(schema_asignacion)
+    
     if not v.validate(data):
         for campo, mensaje in v.errors.items():
             flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
@@ -245,7 +246,7 @@ def create_asignacion():
     except IntegrityError as e:
         error_message = str(e)
         if "FOREIGN KEY (`rutFuncionario`) REFERENCES `funcionario` (`rutFuncionario`)" in error_message:
-            flash("Error: No se ha encontrado un funcionario con ese RUT", 'warning')
+            flash("Error: No se selecciono funcionario Unidad", 'warning')
         return redirect(url_for("asignacion.Asignacion"))
 
     except Exception as e:
@@ -900,6 +901,75 @@ def buscar(idAsignacion):
         page=1, 
         lastpage=True
     )
+
+
+@asignacion.route("/buscar_asignaciones", methods=["GET"])
+@loguear_requerido
+def buscar_asignaciones():
+    query = request.args.get("q", "").lower()  # Obtener el término de búsqueda
+    page = request.args.get("page", default=1, type=int)  # Página actual
+    per_page = 10  # Número de resultados por página
+    offset = (page - 1) * per_page
+
+    cur = mysql.connection.cursor()
+
+    # Consulta para buscar asignaciones
+    cur.execute(f"""
+        SELECT
+            a.idAsignacion,
+            a.fecha_inicioAsignacion,
+            a.ObservacionAsignacion,
+            a.ActivoAsignacion,
+            f.nombreFuncionario,
+            f.cargoFuncionario,
+            e.Cod_inventarioEquipo,
+            e.Num_serieEquipo,
+            te.nombreTipo_equipo
+        FROM asignacion a
+        JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+        JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+        JOIN equipo e ON e.idEquipo = ea.idEquipo
+        JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+        JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE LOWER(f.nombreFuncionario) LIKE %s
+           OR LOWER(f.cargoFuncionario) LIKE %s
+           OR LOWER(e.Cod_inventarioEquipo) LIKE %s
+           OR LOWER(e.Num_serieEquipo) LIKE %s
+           OR LOWER(te.nombreTipo_equipo) LIKE %s
+           OR LOWER(a.ObservacionAsignacion) LIKE %s
+        LIMIT %s OFFSET %s
+    """, (f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%",
+          f"%{query}%", f"%{query}%", per_page, offset))
+    asignaciones = cur.fetchall()
+
+    # Total de resultados para la búsqueda
+    cur.execute(f"""
+        SELECT COUNT(*) AS total
+        FROM asignacion a
+        JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+        JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+        JOIN equipo e ON e.idEquipo = ea.idEquipo
+        JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+        JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE LOWER(f.nombreFuncionario) LIKE %s
+           OR LOWER(f.cargoFuncionario) LIKE %s
+           OR LOWER(e.Cod_inventarioEquipo) LIKE %s
+           OR LOWER(e.Num_serieEquipo) LIKE %s
+           OR LOWER(te.nombreTipo_equipo) LIKE %s
+           OR LOWER(a.ObservacionAsignacion) LIKE %s
+    """, (f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%",
+          f"%{query}%", f"%{query}%"))
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    return jsonify({
+        "asignaciones": asignaciones,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page
+    })
 
 
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>")
