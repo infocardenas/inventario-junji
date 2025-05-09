@@ -150,13 +150,14 @@ def create_asignacion():
     # Se crea un objeto para poder validar los datos recibidos
     data = {
         'fecha_asignacion': fecha_asignacion,
-        'rut_funcionario': rut_funcionario,
         'observacion': observacion,
         'equipos_asignados': id_equipos,
     }
+    print(data)
 
     # Valida los campos y muestra solo el primer mensaje de error
     v = Validator(schema_asignacion)
+    
     if not v.validate(data):
         for campo, mensaje in v.errors.items():
             flash(f"Error en '{campo}': {mensaje[0]}", 'warning')
@@ -245,7 +246,7 @@ def create_asignacion():
     except IntegrityError as e:
         error_message = str(e)
         if "FOREIGN KEY (`rutFuncionario`) REFERENCES `funcionario` (`rutFuncionario`)" in error_message:
-            flash("Error: No se ha encontrado un funcionario con ese RUT", 'warning')
+            flash("Error: No se selecciono funcionario Unidad", 'warning')
         return redirect(url_for("asignacion.Asignacion"))
 
     except Exception as e:
