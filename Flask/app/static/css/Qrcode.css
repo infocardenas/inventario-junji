@@ -1,0 +1,40 @@
+
+/* Estilo para el marco de guía QR */
+.qr-guide-frame {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 60%;
+    max-width: 250px;
+    height: 250px;
+    border: 3px dashed rgba(255, 255, 255, 0.7);
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* Contenedor de la cámara */
+#qr-reader {
+    position: relative;
+    background: #000;
+}
+
+#qr-reader video {
+    width: 100% !important;
+    height: auto !important;
+}
+
+/* Mensaje de estado */
+#qr-status {
+    color: white;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 5px;
+    border-radius: 4px;
+    position: absolute;
+    bottom: 10px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    width: 80%;
+}
