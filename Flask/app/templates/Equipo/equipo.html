@@ -76,7 +76,6 @@
                 <i class="bi bi-qr-code-scan"></i>
               </button>
               
-
               <!-- Contenedor oculto inicialmente -->
               <div id="qr-reader" style="width: 300px; display: none; margin-top: 20px;"></div>
               <div id="qr-result" class="mt-2 text-success fw-bold"></div>
@@ -250,7 +249,15 @@
         qrbox: 250
       },
       qrCodeMessage => {
-        qrResult.innerText = `Código escaneado: ${qrCodeMessage}`;
+        
+        // Coloca el mensaje escaneado en el buscador
+        const inputBuscador = document.getElementById("buscador_equipo");
+        inputBuscador.value = qrCodeMessage;
+        
+        // Ejecuta la función de búsqueda
+        buscarEquipos(1);
+
+        // Detener el escaneo
         html5QrCode.stop();
         qrReader.style.display = "none";
       },
@@ -262,6 +269,7 @@
     });
   }
 </script>
+
 
 {% include 'Equipo/equipo.modals.html'%}
 {% endblock %}
