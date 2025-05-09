@@ -133,12 +133,17 @@
         editModal.addEventListener('show.bs.modal', function (event) {
             var button = event.relatedTarget;
 
+            // Para el campo oculto que guarda el ID de la unidad
             document.getElementById('edit-idUnidad').value = button.getAttribute('data-id');
+
+            // Para los otros campos
             document.getElementById('edit-codigoUnidad').value = button.getAttribute('data-codigo');
             document.getElementById('edit-nombreUnidad').value = button.getAttribute('data-nombre');
             document.getElementById('edit-contactoUnidad').value = button.getAttribute('data-contacto');
             document.getElementById('edit-direccionUnidad').value = button.getAttribute('data-direccion');
             document.getElementById('edit-nombreComuna').value = button.getAttribute('data-comuna');
+            document.getElementById('edit-idModalidad').value = button.getAttribute('data-modalidad');
+
             // Actualiza la acción del formulario
             document.getElementById('form-edit-unidad').action = "/update_Unidad/" + button.getAttribute('data-id');
         });
