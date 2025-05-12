@@ -7,23 +7,25 @@
     <!-- Toolbar responsive -->
     <div class="row mb-3">
       <div class="col-12">
-        
+
+        <!-- Buscador -->
+        <div class="row mb-0 flex-grow-2 d-flex justify-content-center">
+          <div class="col-auto"> <input type="text" id="buscador_asignaciones" class="form-control"
+              placeholder="Buscar asignaciones..." style="text-align: center; width: 300px; "
+              oninput="buscarAsignaciones(1)">
+          </div>
+        </div>
+
         <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
 
           <!-- Botón Asignar -->
           <div>
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-              data-bs-target="#addAsignacionModal" onclick="fechaPorDefecto()">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addAsignacionModal"
+              onclick="fechaPorDefecto()">
               Asignar
             </button>
           </div>
 
-          <!-- Buscador -->
-          <div class="row mb-0">
-            <div class="col-12">
-              <input type="text" id="buscador_asignaciones" class="form-control" placeholder="Buscar asignaciones..." oninput="buscarAsignaciones(1)">
-            </div>
-          </div>
 
           <!-- Dropdowns y botón devolver -->
           <div class="d-flex gap-2 flex-wrap">
@@ -53,7 +55,7 @@
                 <i class="fa-solid fa-arrow-rotate-left"></i>
               </button>
             </div>
-            
+
           </div>
 
         </div>
@@ -76,39 +78,38 @@
         </thead>
         <tbody id="myTableBody">
           {% if asignacion %}
-            {% for asig in asignacion %}
-            <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row">
-              <td>
-                <input type="checkbox" class="checkbox-table row-checkbox no-delete-value"
-                  value="{{ asig.idEquipoAsignacion }}"
-                  data-id-devolucion="{{ asig.idDevolucion if asig.idDevolucion else '' }}"
-                  data-id-asignacion="{{ asig.idAsignacion if asig.idAsignacion else '' }}"
-                  {% if asig.fechaDevolucion %} data-devuelto="true" {% else %} data-devuelto="false" {% endif %}>
-              </td>
-              <td class="toCheck">{{ asig.idAsignacion }}</td>
-              <td class="toCheck">{{ asig.nombreFuncionario }}</td>
-              <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
-              <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
-              <td class="toCheck">
-                {{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}
-              </td>
-              <td class="d-flex justify-content-center gap-2">
-                <div data-bs-toggle="tooltip" data-bs-title="Detalles">
-                  <button class="btn button-info" data-bs-toggle="modal"
-                    data-bs-target="#modal-view-{{ asig.idEquipoAsignacion }}">
-                    <i class="bi bi-info-circle"></i>
-                  </button>
-                </div>
-                <button class="btn btn-danger delete-button" data-bs-toggle="tooltip"
-                  data-url="/delete_asignacion/{{asig.idAsignacion}}"
-                  data-title="Confirmar eliminación de asignación"
-                  data-message="¿Estás seguro de que deseas eliminar esta asignación? Eliminar la asignación descartará los equipos asociados a este ID de asignación."
-                  data-bs-title="Eliminar">
-                  <i class="bi bi-trash-fill"></i>
+          {% for asig in asignacion %}
+          <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row">
+            <td>
+              <input type="checkbox" class="checkbox-table row-checkbox no-delete-value"
+                value="{{ asig.idEquipoAsignacion }}"
+                data-id-devolucion="{{ asig.idDevolucion if asig.idDevolucion else '' }}"
+                data-id-asignacion="{{ asig.idAsignacion if asig.idAsignacion else '' }}" {% if asig.fechaDevolucion %}
+                data-devuelto="true" {% else %} data-devuelto="false" {% endif %}>
+            </td>
+            <td class="toCheck">{{ asig.idAsignacion }}</td>
+            <td class="toCheck">{{ asig.nombreFuncionario }}</td>
+            <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
+            <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
+            <td class="toCheck">
+              {{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}
+            </td>
+            <td class="d-flex justify-content-center gap-2">
+              <div data-bs-toggle="tooltip" data-bs-title="Detalles">
+                <button class="btn button-info" data-bs-toggle="modal"
+                  data-bs-target="#modal-view-{{ asig.idEquipoAsignacion }}">
+                  <i class="bi bi-info-circle"></i>
                 </button>
-              </td>
-            </tr>
-            {% endfor %}
+              </div>
+              <button class="btn btn-danger delete-button" data-bs-toggle="tooltip"
+                data-url="/delete_asignacion/{{asig.idAsignacion}}" data-title="Confirmar eliminación de asignación"
+                data-message="¿Estás seguro de que deseas eliminar esta asignación? Eliminar la asignación descartará los equipos asociados a este ID de asignación."
+                data-bs-title="Eliminar">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </td>
+          </tr>
+          {% endfor %}
           {% else %}
           <tr>
             <td colspan="8">No hay asignaciones registradas</td>
@@ -133,11 +134,10 @@
         </li>
         {% endfor %}
 
-        {% if page < lastpage %}
-        <li class="page-item">
+        {% if page < lastpage %} <li class="page-item">
           <a class="page-link" href="{{ url_for('asignacion.Asignacion', page=page+1) }}">Siguiente</a>
-        </li>
-        {% endif %}
+          </li>
+          {% endif %}
       </ul>
     </nav>
     <script src="{{ url_for('static', filename='js/GestionP/asignaciones.js') }}"></script>
