@@ -48,11 +48,16 @@
                     alt="Exportar Excel" width="20" height="20" class="ms-2">
                 </a>
               </div>
-      
               <!-- Buscador y Exportar búsqueda -->
               <div class="d-flex gap-2 flex-grow-1" style="max-width: 650px;">
                 <input id="buscador_equipo" type="text" class="form-control" placeholder="Buscar equipos" oninput="buscarEquipos(1)" />
-
+                
+                <!-- Botón para mostrar el lector QR -->
+                <div class="d-flex gap-2">
+                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#qrModal">
+                      <i class="bi bi-qr-code-scan"></i>
+                    </button>
+                </div>
               <button class="btn btn-primary d-flex align-items-center flex-shrink-0" id="exportarBusqueda"
                 onclick="exportarBusqueda()">
                 <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel" width="20"
@@ -63,22 +68,13 @@
 
             <!-- Botones rápidos (iconos) -->
             <div class="d-flex gap-2">
-              <button class="btn btn-success" id="assign-button" data-bs-toggle="tooltip" title="Asignar/Devolver">
+              <button class="btn btn-primary" id="assign-button" data-bs-toggle="tooltip" title="Asignar/Devolver">
                 <i class="bi bi-person-fill-add"></i>
               </button>
-
               <button class="btn btn-secondary" id="incidencia-button" data-bs-toggle="tooltip" title="Incidencia"
                 onclick="setIdEquipoInModal()" disabled>
                 <i class="bi bi-incognito"></i>
               </button>
-              <!-- Botón para mostrar el lector QR -->
-              <button class="btn btn-info" onclick="startQRScanner()">
-                <i class="bi bi-qr-code-scan"></i>
-              </button>
-              
-              <!-- Contenedor oculto inicialmente -->
-              <div id="qr-reader" style="width: 300px; display: none; margin-top: 20px;"></div>
-              <div id="qr-result" class="mt-2 text-success fw-bold"></div>
 
 
               <button class="btn btn-danger" id="delete-selected-button" data-bs-toggle="tooltip" title="Eliminar">
@@ -202,73 +198,7 @@
 <script src="{{ url_for('static', filename='js/funciones.js') }}"></script>
 <script src="{{ url_for('static', filename='js/Equipo/equipo.js') }}"></script>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const placeholders = [
-      "Buscar por código de inventario",
-      "Buscar por número de serie",
-      "Buscar por estado del equipo",
-      "Buscar por funcionario",
-      "Buscar por código de proveedor",
-      "Buscar por unidad",
-      "Buscar por tipo de equipo",
-      "Buscar por modelo",
-    ];
-    enableDynamicPlaceholder("buscador_equipo", placeholders, 2000);
-  });
 
-  function enableDynamicPlaceholder(id, placeholders, interval = 2000) {
-    const input = document.getElementById(id);
-    let index = 0;
-    setInterval(() => {
-      input.placeholder = placeholders[index];
-      index = (index + 1) % placeholders.length;
-    }, interval);
-  }
-
-  let html5QrCode;
-  function startQRScanner() {
-    const qrReader = document.getElementById("qr-reader");
-    const qrResult = document.getElementById("qr-result");
-
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      alert("Tu navegador no soporta acceso a la cámara.");
-      return;
-    }
-
-    qrReader.style.display = "block";
-
-    if (!html5QrCode) {
-      html5QrCode = new Html5Qrcode("qr-reader");
-    }
-
-    html5QrCode.start(
-      { facingMode: "environment" },
-      {
-        fps: 10,
-        qrbox: 250
-      },
-      qrCodeMessage => {
-        
-        // Coloca el mensaje escaneado en el buscador
-        const inputBuscador = document.getElementById("buscador_equipo");
-        inputBuscador.value = qrCodeMessage;
-        
-        // Ejecuta la función de búsqueda
-        buscarEquipos(1);
-
-        // Detener el escaneo
-        html5QrCode.stop();
-        qrReader.style.display = "none";
-      },
-      error => {
-        console.warn(`QR Error: ${error}`);
-      }
-    ).catch(err => {
-      console.error("No se pudo iniciar la cámara: ", err);
-    });
-  }
-</script>
 
 
 {% include 'Equipo/equipo.modals.html'%}

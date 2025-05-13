@@ -782,6 +782,7 @@ svg.bi {
     display: flex;
     justify-content: center;
 }
+
 .toolbar-3 {
     justify-content: flex-end;
 }
@@ -832,3 +833,37 @@ svg.bi {
     padding: 5px 10px; /* Espaciado interno */
 }
 
+/* Estilos para el contenedor del buscador de DataTables */
+.dt-search {
+  margin-bottom: 1rem; /* Añade espacio debajo si lo deseas */
+  /* Puedes añadir float: none; text-align: right; si quieres alinearlo diferente */
+}
+
+/* Estilos para la etiqueta ("Search:") dentro del contenedor */
+.dt-search label {
+  margin-right: 0.5em; /* Espacio entre la etiqueta y el input */
+  font-weight: normal; /* O bold si prefieres */
+}
+
+/* Estilos para el input de búsqueda dentro del contenedor */
+.dt-search input[type="search"].form-control { 
+  /* Ya tiene form-control y form-control-sm, así que solo necesitas añadir o sobrescribir */
+  border: 1px solid #ced4da; /* Asegura un borde por defecto */
+  border-radius: 0.25rem; /* Bordes redondeados estándar de Bootstrap */
+  padding: 0.25rem 0.5rem; /* Padding estándar de form-control-sm */
+  width: auto; /* Permite que el input tome un ancho natural o definido */
+  min-width: 200px; /* Un ancho mínimo para que no sea demasiado pequeño */
+  display: inline-block; /* Para que respete el ancho 'auto' y se alinee con la etiqueta */
+  vertical-align: middle; /* Alineación vertical con la etiqueta */
+}
+
+/* Estilos para el input cuando tiene el foco */
+.dt-search input[type="search"].form-control:focus {
+  border-color: #86b7fe; /* Color de foco de Bootstrap */
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25); /* Sombra de foco de Bootstrap */
+}
+
+/* Si quieres ocultar la etiqueta "Search:" por completo */
+.dt-search label { 
+display: none; 
+} 
