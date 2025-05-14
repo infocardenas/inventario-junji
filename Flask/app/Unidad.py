@@ -234,7 +234,7 @@ def delete_Unidad(id):
         return redirect(url_for('Unidad.UNIDAD'))
     except Exception as e:
         #flash(e.args[1])
-        flash("Error al crear")
+        flash("NO se pudo eliminar la unidad, tiene equipos o funcionarios asociados")
         return redirect(url_for('Unidad.UNIDAD'))
     
 @Unidad.route("/unidad/buscar_unidad/<id>")
