@@ -1,88 +1,80 @@
-
-            <!-- Modal para agregar proveedor -->
-            <div class="modal fade" id="addProveedorModal" tabindex="-1" aria-labelledby="addProveedorModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="addProveedorModalLabel">Agregar Proveedor</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <form id="form_addProveedorModal" action="/add_proveedor" method="POST">
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label for="nombre_proveedor" class="form-label">Nombre Proveedor</label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control campo-obligatorio" 
-                                        id="nombre_proveedor" 
-                                        name="nombre_proveedor" 
-                                        placeholder="Ingrese un Proveedor"
-                                        required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <button type="submit" class="btn btn-primary">Guardar</button>
-                            </div>
-                        </form>
+<!-- Modal para agregar proveedor -->
+<div class="modal fade" id="addProveedorModal" tabindex="-1" aria-labelledby="addProveedorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addProveedorModalLabel">Agregar Proveedor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="form_addProveedorModal" action="/add_proveedor" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="nombre_proveedor" class="form-label">Nombre Proveedor</label>
+                        <input type="text" class="form-control campo-obligatorio" id="nombre_proveedor"
+                            name="nombre_proveedor" placeholder="Ingrese un Proveedor" required>
                     </div>
                 </div>
-            </div>
-
-                    <!-- Modal para editar proveedor -->
-            <!-- Modal para editar proveedor -->
-            <div class="modal fade" id="editProveedorModal" tabindex="-1" aria-labelledby="editProveedorModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="editProveedorModalLabel">Editar Proveedor</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                        </div>
-                        <form id="editProveedorForm" method="POST">
-                            <div class="modal-body">
-                                <!-- Contenedor para mensajes de error -->
-                                <div id="editProveedorError" class="alert alert-danger d-none"></div>
-
-                                <input type="hidden" id="edit_idProveedor" name="idProveedor">
-                                
-                                <div class="mb-3">
-                                    <label for="edit_nombreProveedor" class="form-label">Nombre Proveedor</label>
-                                    <input 
-                                        type="text" 
-                                        class="form-control" 
-                                        id="edit_nombreProveedor" 
-                                        name="nombre_proveedor" 
-                                        placeholder="Ingresa el nombre del proveedor" 
-                                        required>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                            </div>
-                        </form>                    
-                    </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
-            </div>
-
-
+            </form>
         </div>
+    </div>
+</div>
 
-        <!-- Modal de confirmación para eliminación -->
-        <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                    </div>
-                    <div class="modal-body">
-                        ¿Estás seguro de que deseas eliminar los proveedores seleccionados? Esta acción no se puede deshacer.
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
+<!-- Modal para editar proveedor -->
+<!-- Modal para editar proveedor -->
+<div class="modal fade" id="editProveedorModal" tabindex="-1" aria-labelledby="editProveedorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProveedorModalLabel">Editar Proveedor</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form id="editProveedorForm" method="POST">
+                <div class="modal-body">
+                    <!-- Contenedor para mensajes de error -->
+                    <div id="editProveedorError" class="alert alert-danger d-none"></div>
+
+                    <input type="hidden" id="edit_idProveedor" name="idProveedor">
+
+                    <div class="mb-3">
+                        <label for="edit_nombreProveedor" class="form-label">Nombre Proveedor</label>
+                        <input type="text" class="form-control" id="edit_nombreProveedor" name="nombre_proveedor"
+                            placeholder="Ingresa el nombre del proveedor" required>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<!-- Modal de confirmación para eliminación -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                ¿Estás seguro de que deseas eliminar los proveedores seleccionados? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Eliminar</button>
             </div>
         </div>
+    </div>
+</div>

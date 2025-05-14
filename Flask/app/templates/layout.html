@@ -460,7 +460,7 @@
                     </div>
                 </li>
 
-                <li class="mb-4">
+                <li class="mb-4"> 
                     <button class="btn btn-toggle align-items-center rounded collapsed w-100 text-start"
                         data-bs-toggle="collapse" data-bs-target="#dashboard-collapse" aria-expanded="false">
                         <i class="bi bi-person-lines-fill me-2"></i> <strong>Gestión de RR.HH</strong>
@@ -602,38 +602,6 @@
         <div class="main col">
             <div class="dashboard-navbar">
                 
-                <form action="/buscar" method="GET" style="position: absolute; top: 20px; left: 38%;">
-                    <div class="nav-search">
-                        <input id="search-input" name="busqueda" type="text" class="search-query"
-                            placeholder="Buscar Funcionarios">
-                        <button class="btn" type="submit">Search</button>
-                    </div>
-                    <script>
-                        // Array de ejemplos
-                        const placeholders = [
-                            "Buscar N° de serie",
-                            "Buscar Codigos de inventario",
-                            "Buscar Equipos",
-                            "Buscar unidades",
-                            "Buscar incidencias"
-                        ];
-
-                        // Referencia al input
-                        const searchInput = document.getElementById("search-input");
-
-                        // Índice inicial
-                        let index = 0;
-
-                        // Función para rotar el placeholder
-                        function rotatePlaceholder() {
-                            searchInput.placeholder = placeholders[index];
-                            index = (index + 1) % placeholders.length; // Mover al siguiente, reiniciar si llega al final
-                        }
-
-                        // Intervalo de 1 segundo
-                        setInterval(rotatePlaceholder, 2000);
-                    </script>
-                </form>
                 <div class="navbar-content">
                     <ul class="main-nav">
                         <li class="user-link">
