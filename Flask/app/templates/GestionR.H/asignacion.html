@@ -32,8 +32,10 @@
               <button id="firmar-button" class="btn btn-secondary dropdown-toggle" type="button"
                 data-bs-toggle="dropdown"><i class="bi bi-vector-pen me-1"></i>Firmar</button>
               <ul class="dropdown-menu dropdown-menu-dark">
-                <li><a id="documento-firmado-asignacion" class="dropdown-item disabled" href="#">Asignación</a></li>
-                <li><a id="documento-firmado-devolucion" class="dropdown-item disabled" href="#">Devolución</a></li>
+                <li>
+                  <button id="documento-firmado-asignacion" class="dropdown-item" onclick="abrirModalFirmarAsignacion()">Asignación</button>
+              </li>
+                <li><a id="documento-firmado-devolucion" class="dropdown-item disabled" >Devolución</a></li>
               </ul>
             </div>
 

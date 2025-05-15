@@ -971,6 +971,33 @@ def buscar_asignaciones():
         "current_page": page
     })
 
+@asignacion.route("/asignacion/firmar/<id>", methods=["GET"])
+@loguear_requerido
+def firmar_asignacion(id):
+    if "user" not in session:
+        flash("You are NOT authorized")
+        return redirect("/ingresar")
+
+    # Ruta de la carpeta donde se almacenan las firmas
+    dir_firmas = "pdf/firmas_asignaciones"
+    nombreFirmado = None
+
+    # Buscar el archivo firmado relacionado con el ID
+    try:
+        for filename in os.listdir(dir_firmas):
+            if filename.startswith(f"asignacion_{id}_") and filename.endswith("_firmado.pdf"):
+                nombreFirmado = filename
+                break
+    except FileNotFoundError:
+        flash("No se encontró la carpeta de firmas", "danger")
+
+    # Renderizar la plantilla con los datos necesarios
+    return render_template(
+        "GestionR.H/asignacion.modals.html",
+        id=id,
+        location="asignacion",
+        nombreFirmado=nombreFirmado
+    )
 
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>")
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>/<devolver>")
@@ -1068,7 +1095,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
     os.rename(temp_file_path, new_file_path)
 
     flash("Se subió la firma correctamente")
-    return redirect(f"/asignacion/listar_pdf/{idAsignacion}")
+    return print("1")
 
 
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
@@ -1100,48 +1127,7 @@ def adjuntar_pdf_devolucion(idAsignacion):
     new_file_path = os.path.join(dir, f"devolucion_{idAsignacion}_firmado.pdf")
     os.rename(temp_file_path, new_file_path)
 
-    return redirect(f"/asignacion/listar_pdf/{idAsignacion}/devolver")
-
-
-
-#/asignacion/listar_pdf/<idAsignacion>/<devolver>
-
-#junji
-#Tijunji2017
-#def enviar_asignacion(Asignacion):
-    #asunto = 'Nueva Asignacion'
-    #cuerpo = """
-    #<html>
-        #<body>
-        #<p>pretender que este correo se envia a </p>
-        #<table>
-            #<thead>
-                #<tr>
-                    #<th>N°</th>
-                    #<th>Tipo Equipo</th>
-                    #<th>Marca</th>
-                    #<th>Modelo</th>
-                    #<th>N° Serie</th>
-                    #<th>N° Inventario</th>
-                #</tr>
-            #</thead>
-            #<tbody>
-                #<tr>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                #</tr>
-            #</tbody>
-        #</table>
-        #</body>
-    #</html>
-    #""".format(1, Asignacion[''])
-    #enviar_correo(asunto, 'correo', cuerpo, 'filename')
-    #pass
+    return print("1")
 
 
 ######## Echar ojo a esto ###########

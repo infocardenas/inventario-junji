@@ -329,3 +329,66 @@
         </div>
     </div>
 </div>
+
+
+{% from 'funciones_macro.html' import paginacion, subirArchivo, tablaDocumentos %}
+<!-- Modal para firmar asignaciones -->
+<div class="modal fade" id="modalFirmarAsignacion" tabindex="-1" aria-labelledby="modalFirmarAsignacionLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header text-black">
+                <h5 class="modal-title">Firmar Asignaciones</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Formulario para subir archivos -->
+                <form id="formSubirFirma" action="/asignacion/adjuntar_pdf/{{ idAsignacion }}" method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="archivoFirma" class="form-label">Seleccione archivo de firma</label>
+                        <input class="form-control" type="file" id="archivoFirma" name="archivoFirma" accept=".pdf,.png,.jpg,.jpeg" required>
+                        <div class="form-text">Formatos aceptados: PDF (Máx. 5MB)</div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-upload me-2"></i>Subir Firma
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Tabla de archivos subidos -->
+                <div class="mt-4">
+                    <h5>Archivos subidos</h5>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover" id="tablaArchivosFirmados">
+                            <thead>
+                                <tr>
+                                    <th onclick="sortTable(0)">Nombre archivo</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="myTableBody">
+                                <p>El ID seleccionado es: <span id="idAsignacionSeleccionada"></span></p>
+                                {% if nombreFirmado %}
+                                <tr>
+                                    <td>{{ nombreFirmado }}</td><!-- Nombre del archivo -->
+                                    <td>
+                                        <a href="/{{ location }}/mostrar_pdf/{{ id }}/" class="info-button" target="_blank">Abrir</a> <!-- la ruta de el boton de pdf mostrar pdf/firmas_traslados/traslado_19_firmado.pdf    --> 
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td colspan="2" class="text-center">No existen firmas para este documento</td>
+                                </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>

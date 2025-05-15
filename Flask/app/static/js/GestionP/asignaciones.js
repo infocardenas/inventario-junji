@@ -73,3 +73,28 @@ function formatFecha(fecha) {
         return "Fecha inválida";
     }
 }
+
+
+function abrirModalFirmarAsignacion() {
+    const modalFirmarAsignacion = new bootstrap.Modal(document.getElementById("modalFirmarAsignacion"));
+    let idSeleccionado = null;
+
+    // Capturar el ID del ítem seleccionado
+    document.querySelectorAll(".row-checkbox").forEach(checkbox => {
+        if (checkbox.checked) {
+            idSeleccionado = checkbox.getAttribute("data-id-asignacion");
+        }
+    });
+
+    if (!idSeleccionado) {
+        alert("Por favor, selecciona un ítem antes de continuar.");
+        return;
+    }
+
+    // Mostrar el ID en el modal
+    const idSpan = document.getElementById("idAsignacionSeleccionada");
+    idSpan.textContent = idSeleccionado;
+
+    // Abrir el modal
+    modalFirmarAsignacion.show();
+}
