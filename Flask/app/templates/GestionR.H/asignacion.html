@@ -18,7 +18,7 @@
               Asignar
             </button>
           </div>
-          
+
           <div style="text-align: center; width: 150px; ">
           </div>
 
@@ -38,10 +38,12 @@
                 data-bs-toggle="dropdown"><i class="bi bi-vector-pen me-1"></i>Firmar</button>
               <ul class="dropdown-menu dropdown-menu-dark">
                 <li>
-                  <button id="documento-firmado-asignacion" class="dropdown-item" onclick="abrirModalFirmarAsignacion()">Asignación</button>
-              </li>
+                  <button id="documento-firmado-asignacion" class="dropdown-item"
+                    onclick="abrirModalFirmarAsignacion()">Asignación</button>
+                </li>
                 <li>
-                  <button id="documento-firmado-devolucion" class="dropdown-item" onclick="abrirModalFirmarDevolucion()">Devolución</button>
+                  <button id="documento-firmado-devolucion" class="dropdown-item"
+                    onclick="abrirModalFirmarDevolucion()">Devolución</button>
                 </li>
               </ul>
             </div>
@@ -129,24 +131,56 @@
     <!-- Paginador -->
     <nav aria-label="Paginación de asignaciones" class="mt-4">
       <ul class="pagination justify-content-center">
+
+        <!-- Botón Anterior -->
         {% if page > 1 %}
         <li class="page-item">
-          <a class="page-link" href="{{ url_for('asignacion.Asignacion', page=page-1) }}">Anterior</a>
+          <a class="page-link" href="{{ url_for('asignacion.Asignacion', page=page-1) }}" aria-label="Anterior">
+            <span aria-hidden="true">&laquo; Anterior</span>
+          </a>
         </li>
         {% endif %}
 
-        {% for p in range(1, lastpage + 1) %}
-        <li class="page-item {% if p == page %}active{% endif %}">
-          <a class="page-link" href="{{ url_for('asignacion.Asignacion', page=p) }}">{{ p }}</a>
+        <!-- Primera página -->
+        <li class="page-item {% if page == 1 %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('asignacion.Asignacion', page=1) }}">1</a>
         </li>
-        {% endfor %}
 
-        {% if page < lastpage %} <li class="page-item">
-          <a class="page-link" href="{{ url_for('asignacion.Asignacion', page=page+1) }}">Siguiente</a>
+        <!-- Puntos suspensivos antes -->
+        {% if page > 4 %}
+        <li class="page-item disabled"><span class="page-link">...</span></li>
+        {% endif %}
+
+        <!-- Páginas cercanas a la actual -->
+        {% for p in range(page - 2, page + 3) %}
+        {% if p > 1 and p < lastpage %} <li class="page-item {% if p == page %}active{% endif %}">
+          <a class="page-link" href="{{ url_for('asignacion.Asignacion', page=p) }}">{{ p }}</a>
           </li>
           {% endif %}
+          {% endfor %}
+
+          <!-- Puntos suspensivos después -->
+          {% if page < lastpage - 3 %} <li class="page-item disabled"><span class="page-link">...</span></li>
+            {% endif %}
+
+            <!-- Última página -->
+            {% if lastpage > 1 %}
+            <li class="page-item {% if page == lastpage %}active{% endif %}">
+              <a class="page-link" href="{{ url_for('asignacion.Asignacion', page=lastpage) }}">{{ lastpage }}</a>
+            </li>
+            {% endif %}
+
+            <!-- Botón Siguiente -->
+            {% if page < lastpage %} <li class="page-item">
+              <a class="page-link" href="{{ url_for('asignacion.Asignacion', page=page+1) }}" aria-label="Siguiente">
+                <span aria-hidden="true">Siguiente &raquo;</span>
+              </a>
+              </li>
+              {% endif %}
+
       </ul>
     </nav>
+
     <script src="{{ url_for('static', filename='js/GestionP/asignaciones.js') }}"></script>
     {% include 'GestionR.H/asignacion.modals.html' %}
     <script src="../static/js/asignaciones.controller.js"></script>
