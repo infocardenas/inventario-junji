@@ -15,8 +15,7 @@
             <br>
             <div>
                 <label>Observaciones</label>
-                <textarea id="observacion" name="observacion" rows="4" cols="50"
-                maxlength="250"></textarea>
+                <textarea id="observacion" name="observacion" rows="4" cols="50" maxlength="250"></textarea>
             </div>
             <br>
             <div>
@@ -69,7 +68,7 @@
                         {% if equipoSeleccionado == eq.idEquipo %}
                         <input type="checkbox" value="{{eq.idEquipo}}" name="asignaciones[]" checked="true" />
                         {% else %}
-                        <input type="checkbox" value="{{eq.idEquipo}}"  name="asignaciones[]"/>
+                        <input type="checkbox" value="{{eq.idEquipo}}" name="asignaciones[]" />
                         {% endif %}
                     </td>
                 </tr>
@@ -77,4 +76,6 @@
             </tbody>
         </table>
         </form>
-        {% endblock %}
+    </div>
+</div>
+{% endblock %}

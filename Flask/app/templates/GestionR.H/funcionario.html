@@ -14,6 +14,9 @@
                 <div class="toolbar-2">
                     <!-- Campo de búsqueda proporcionado por DataTables -->
                 </div>
+                <div class="toolbar-3">
+
+                </div>
             </div>
         </div>
 
@@ -90,7 +93,7 @@
             "lengthChange": false,
             "pageLength": 10,
             "language": {
-                "search": "Buscar:",
+                "search": "",
                 "lengthMenu": "Mostrar _MENU_ registros por página",
                 "zeroRecords": "No se encontraron resultados",
                 "info": "Mostrando página _PAGE_ de _PAGES_",
@@ -98,6 +101,20 @@
                 "infoFiltered": "(filtrado de _MAX_ registros totales)"
             }
         });
+        $('#dt-search-0').attr('placeholder', 'Buscar funcionario...');
+        // --- CÓDIGO PARA MOVER EL BUSCADOR ---
+        var searchInput = $('#dt-search-0'); // El input que ya tiene placeholder
+        var originalSearchContainer = $('.dt-search'); // El div original que contiene label+input
+
+        if (searchInput.length > 0) {
+            // Mueve SOLO el input a tu div toolbar-2
+            $('.toolbar-2').append(searchInput);
+
+            // Oculta el contenedor original de DataTables (que puede tener la etiqueta)
+            if (originalSearchContainer.length > 0) {
+                originalSearchContainer.hide();
+            }
+        }
         // --- CÓDIGO NUEVO PARA POBLAR EL MODAL DE EDICIÓN (CON DEBUG) ---
         $('#editFuncionarioModal').on('shown.bs.modal', function (event) {
             console.log("Edit modal 'show.bs.modal' event fired!"); // Check if event runs

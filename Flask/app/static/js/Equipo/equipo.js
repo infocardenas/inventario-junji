@@ -4,15 +4,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     await cargarMarcas(); // Llenar el selector de marcas
   } catch (error) {
-    onsole.error("Error al cargar marcas:", error);
+    console.error("Error al cargar marcas:", error);
   }
 });
 
-let debounceTimeout;
-document.getElementById("buscador").addEventListener("input", () => {
-  clearTimeout(debounceTimeout);
-  debounceTimeout = setTimeout(() => buscarEquipos(1), 300);
-});
 
 function buscarEquipos(page = 1) {
   const query = document.getElementById("buscador_equipo").value.toLowerCase(); // Obtener el término de búsqueda

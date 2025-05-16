@@ -14,15 +14,15 @@ def UNIDAD():
     
     cur.execute("""
         SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad,
-               u.direccionUnidad, u.idComuna, co.nombreComuna,
-               co.idComuna, COUNT(e.idEquipo) as num_equipos,
-               mo.nombreModalidad
+               u.direccionUnidad, u.idComuna, co.nombreComuna, 
+               COUNT(e.idEquipo) as num_equipos,
+               mo.nombreModalidad, u.idModalidad
         FROM unidad u
         INNER JOIN comuna co on u.idComuna = co.idComuna
         LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
         LEFT JOIN equipo e on u.idUnidad = e.idUnidad
         GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, 
-                 u.idComuna, co.nombreComuna, co.idComuna, mo.nombreModalidad
+                 u.idComuna, co.nombreComuna, mo.nombreModalidad, u.idModalidad
     """)
     
     data = cur.fetchall()  # Obtiene todas las unidades
@@ -234,7 +234,7 @@ def delete_Unidad(id):
         return redirect(url_for('Unidad.UNIDAD'))
     except Exception as e:
         #flash(e.args[1])
-        flash("Error al crear")
+        flash("NO se pudo eliminar la unidad, tiene equipos o funcionarios asociados")
         return redirect(url_for('Unidad.UNIDAD'))
     
 @Unidad.route("/unidad/buscar_unidad/<id>")

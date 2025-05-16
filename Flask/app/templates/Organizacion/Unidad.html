@@ -2,10 +2,26 @@
 {% block body %}
 
 <div class="row">
-  <div class="col-md-5">
-    <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modal-add-unidad">
-      <i class="bi bi-plus-lg"></i> Agregar
-    </button>
+  <div class="col">
+      <h2>Unidad</h2>
+    <div>
+      <div class="toolbar">
+        <div class="toolbar-1">
+          <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modal-add-unidad">
+            <i class="bi bi-plus-lg"></i> Agregar
+          </button>
+
+        </div>
+        <div class="toolbar-2">
+
+        </div>
+        <div class="toolbar-3">
+
+        </div>
+
+      </div>
+
+    </div>
     <div id="error-message" style="display: none" class="error-message"></div>
     <div class="card card-body" id="formulario" style="display: none">
       <form action="/add_Unidad" method="POST" class="mi-formulario">
@@ -41,7 +57,6 @@
       </form>
     </div>
   </div>
-  <h2>Unidad</h2>
   <div style="overflow-x: auto">
     <table id="posts" class="display table table-bordered table-striped">
       <thead>
@@ -106,6 +121,45 @@
 {% include 'Organizacion/unidad.modal.html' %}
 
 <!-- Vinculamos el archivo JavaScript -->
-<script src="{{ url_for('static', filename='js/Operaciones/Unidad.js') }}"></script>
+<!--<script></script>-->
+
+<script>
+
+  $(document).ready(function () {
+    // Inicializar DataTables
+    let table = $('#posts').DataTable({
+      "paging": true,
+      "searching": true,
+      "ordering": true,
+      "info": true,
+      "lengthChange": false,
+      "pageLength": 8,
+      "language": {
+        "search": "", // Limpiamos el label por defecto
+        "lengthMenu": "Mostrar _MENU_ registros por página",
+        "zeroRecords": "No se encontraron resultados",
+        "info": "Mostrando página _PAGE_ de _PAGES_",
+        "infoEmpty": "No hay registros disponibles",
+        "infoFiltered": "(filtrado de _MAX_ registros totales)"
+      }
+    });
+
+    // Mover el buscador al centro
+    var searchInput = $('#dt-search-0');
+    var originalSearchContainer = $('.dt-search');
+
+    if (searchInput.length > 0) {
+      $('.toolbar-2').append(searchInput);
+      if (originalSearchContainer.length > 0) {
+        originalSearchContainer.hide();
+      }
+    }
+
+    // Placeholder
+    $('#dt-search-0').attr('placeholder', 'Buscar unidad...');
+  });
+
+
+</script>
 
 {% endblock %}

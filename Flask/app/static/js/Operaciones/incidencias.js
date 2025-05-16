@@ -4,38 +4,33 @@ $(document).ready(function () {
     let estadoAntesDelCambio = '';   // Guarda el estado justo antes de seleccionar una opción que requiere confirmación
 
     // ✅ Evento para editar incidencia (Abrir modal con datos correctos)
-    $(".edit-equipo-btn").on("click", function () {
+    // Delegación de eventos para los botones de editar
+    $(document).on("click", ".edit-equipo-btn", function () {
         const idEquipoInc = limpiarDato($(this).data("id"));
         const estadoInc = limpiarDato($(this).data("estado"));
         const nombreInc = limpiarDato($(this).data("nombre"));
         const fechaInc = limpiarDato($(this).data("fecha"));
         const observacionInc = limpiarDato($(this).data("observacion"));
 
-        // Guardar el estado inicial en las variables cuando el modal se abre
-        originalEstadoIncidencia = estadoInc;
-        estadoAntesDelCambio = estadoInc; // Inicializar con el estado original
-
+        // Convertir la fecha al formato YYYY-MM-DD
+        const fechaFormateada = new Date(fechaInc).toISOString().split("T")[0];
+        
         // Rellenar los campos del formulario modal
         $("#edit_idEquipo").val(idEquipoInc);
         $("#form_edit_incidencia").attr("action", `/incidencia/update_incidencia/${idEquipoInc}`);
         $("#edit_estadoIncidencia").val(estadoInc);
-        // Guardar estado inicial también en data-attribute por si se usa en otro lado
-        $("#edit_estadoIncidencia").data("estado-anterior", estadoInc);
         $("#edit_nombreIncidencia").val(nombreInc);
-        $("#edit_fechaIncidencia").val(fechaInc);
+        $("#edit_fechaIncidencia").val(fechaFormateada);
         $("#edit_observacionIncidencia").val(observacionInc);
 
-        // --- Importante: Resetear estado enabled/disabled ---
-        // Asegurarse de que los campos estén habilitados por defecto al abrir
+        // Resetear estado enabled/disabled
         $("#edit_estadoIncidencia").prop("disabled", false);
         $("#edit_nombreIncidencia").prop("disabled", false);
         $("#edit_fechaIncidencia").prop("disabled", false);
         $("#edit_observacionIncidencia").prop("disabled", false);
-        // Habilitar también el botón de guardar por si se deshabilitó antes
         $('#form_edit_incidencia button[type="submit"]').prop('disabled', false);
 
-
-        // Bloquear campos si el estado INICIAL ya es uno de los finales
+        // Bloquear campos si el estado inicial ya es uno de los finales
         const estadosBloqueados = ["cerrado", "equipo cambiado", "equipo reparado"];
         if (estadosBloqueados.includes(estadoInc.toLowerCase())) {
             console.log("Estado inicial es final. Deshabilitando campos.");
@@ -46,8 +41,6 @@ $(document).ready(function () {
         }
 
         console.log("Editando incidencia ID:", idEquipoInc, "Estado inicial:", estadoInc);
-        // Asegúrate de que el modal de edición se muestre (si no se hace automáticamente)
-        // $('#edit_incidencia').modal('show'); // Descomentar si es necesario
     });
 
     // Variable para almacenar temporalmente el estado que necesita confirmación
