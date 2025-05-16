@@ -4,10 +4,16 @@ venv
 
 # Archivos de configuración
 .DS_Store
-#ignorar archivos pdf
-*.pdf
 
+#ignorar archivos pdf y excel
+*.pdf
 *.xlsx
 
+# Archivos específicos de Python
 **/__pycache__/
+
+# Certificados SSL/TLS
+*.pem
+*-key.pem
+rootCA.pem # Por si alguna vez se copia por error
 

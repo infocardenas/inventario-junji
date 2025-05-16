@@ -40,6 +40,42 @@ app.register_blueprint(buscar)
 app.register_blueprint(utils)
 app.register_blueprint(cuentas)
 
-# se inicia la aplicacion, y confirma que __name__ sea la aplicacion main y no un modulo
+import os
+
 if __name__ == "__main__":
-    app.run(debug=True, host='0.0.0.0', port=3000)
+    # Rutas relativas (para referencia)
+    # cert_file_relative = '../dev_cert.pem'
+    # key_file_relative = '../dev_key.pem'
+
+    # Reconstruyamos las rutas absolutas aquí para asegurar que usamos las mismas que en la depuración
+    script_dir_for_abs = os.path.dirname(os.path.abspath(__file__))
+    abs_cert_path_for_run = os.path.abspath(os.path.join(script_dir_for_abs, '../dev_cert.pem'))
+    abs_key_path_for_run = os.path.abspath(os.path.join(script_dir_for_abs, '../dev_key.pem'))
+
+
+    local_dev_port = 8080
+    http_port = 3000
+
+    try:
+        print(f"Intentando iniciar servidor de desarrollo local en HTTPS en https://localhost:{local_dev_port}")
+        # Usar las rutas absolutas aquí:
+        app.run(host='0.0.0.0', port=local_dev_port, debug=True, ssl_context=(abs_cert_path_for_run, abs_key_path_for_run))
+    except FileNotFoundError:
+        print("*********************************************************************")
+        print(f"ADVERTENCIA: Certificados de desarrollo (rutas absolutas) no encontrados.")
+        print(f"  Ruta intentada para certificado: {abs_cert_path_for_run}")
+        print(f"  Ruta intentada para clave: {abs_key_path_for_run}")
+        print(f"Ejecutando servidor de desarrollo local en HTTP en http://localhost:{http_port}.")
+    except OSError as e:
+        if "Errno 98" in str(e) or "Errno 48" in str(e) or "WinError 10048" in str(e): # Address already in use
+             print(f"ERROR: El puerto {local_dev_port} o {http_port} ya está en uso.")
+        elif "Errno 13" in str(e) or "WinError 10013" in str(e): # Permission denied
+             print(f"ERROR: Permiso denegado para usar el puerto. Para puertos < 1024 se necesita admin. Prueba un puerto > 1024.")
+        else:
+            print(f"ERROR al iniciar el servidor de desarrollo: {e}")
+        print(f"Si el error persiste, intenta ejecutar en HTTP en el puerto {http_port}.")
+        if not (("Errno 98" in str(e) or "Errno 48" in str(e) or "WinError 10048" in str(e)) and local_dev_port == http_port):
+            try:
+                app.run(host='0.0.0.0', port=http_port, debug=True)
+            except Exception as final_e:
+                print(f"No se pudo iniciar el servidor HTTP de respaldo: {final_e}")
