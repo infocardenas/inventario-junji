@@ -95,6 +95,34 @@ function abrirModalFirmarAsignacion() {
     const idSpan = document.getElementById("idAsignacionSeleccionada");
     idSpan.textContent = idSeleccionado;
 
+    const form = document.getElementById("formSubirFirma");
+    form.action = `/asignacion/adjuntar_pdf/${idSeleccionado}`;
+    form.reset(); // Limpiar el formulario antes de abrir el modal
     // Abrir el modal
     modalFirmarAsignacion.show();
+    
+    // Limpiar contenido anterior
+    const tbody = document.getElementById("tablaFirmasBody");
+
+    tbody.innerHTML = `<tr><td colspan="2" class="text-center">Buscando archivo...</td></tr>`;
+
+    fetch(`/asignacion/firmas_json/${idSeleccionado}`)
+    .then(res => res.json())
+    .then(data => {
+        tbody.innerHTML = ""; // Limpiar
+
+        if (data.existe) {
+            const fila = document.createElement("tr");
+            fila.innerHTML = `
+                <td>${data.nombre}</td>
+                <td><a href="/asignacion/mostrar_pdf/${idSeleccionado}/" class="info-button" target="_blank">Abrir</a></td>
+            `;
+            tbody.appendChild(fila);
+        } else {
+            const fila = document.createElement("tr");
+            fila.innerHTML = `<td colspan="2" class="text-center">No existen firmas para este documento</td>`;
+            tbody.appendChild(fila);
+        }
+    });
+
 }

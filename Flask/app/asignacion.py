@@ -1060,6 +1060,19 @@ def mostrar_pdf_asignacion_firmado(id):
     
 #*************************
 
+@asignacion.route("/asignacion/firmas_json/<idAsignacion>")
+@loguear_requerido
+def obtener_firma_json(idAsignacion):
+    dir_firmas = "pdf/firmas_asignaciones"
+    nombre = f"asignacion_{idAsignacion}_firmado.pdf"
+    ruta = os.path.join(dir_firmas, nombre)
+
+    if os.path.exists(ruta):
+        return jsonify({"existe": True, "nombre": nombre})
+    else:
+        return jsonify({"existe": False})
+
+
 @asignacion.route("/asignacion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
 @administrador_requerido
 def adjuntar_pdf_asignacion(idAsignacion):
@@ -1068,7 +1081,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
         return redirect("/ingresar")
 
     # Obtener el archivo
-    file = request.files["file"]
+    file = request.files["archivoFirma"]
 
     # Definir la carpeta donde se guardará el archivo
     dir = "pdf/firmas_asignaciones" if inLinux else "app/pdf/firmas_asignaciones"
@@ -1095,7 +1108,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
     os.rename(temp_file_path, new_file_path)
 
     flash("Se subió la firma correctamente")
-    return print("1")
+    return redirect(url_for("asignacion.Asignacion"))
 
 
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])

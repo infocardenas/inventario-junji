@@ -343,10 +343,10 @@
             </div>
             <div class="modal-body">
                 <!-- Formulario para subir archivos -->
-                <form id="formSubirFirma" action="/asignacion/adjuntar_pdf/{{ idAsignacion }}" method="POST" enctype="multipart/form-data">
+                <form id="formSubirFirma" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="archivoFirma" class="form-label">Seleccione archivo de firma</label>
-                        <input class="form-control" type="file" id="archivoFirma" name="archivoFirma" accept=".pdf,.png,.jpg,.jpeg" required>
+                        <input class="form-control" type="file" id="archivoFirma" name="archivoFirma" accept=".pdf" required>
                         <div class="form-text">Formatos aceptados: PDF (Máx. 5MB)</div>
                     </div>
                     <div class="d-grid gap-2">
@@ -367,21 +367,12 @@
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="myTableBody">
-                                <p>El ID seleccionado es: <span id="idAsignacionSeleccionada"></span></p>
-                                {% if nombreFirmado %}
-                                <tr>
-                                    <td>{{ nombreFirmado }}</td><!-- Nombre del archivo -->
-                                    <td>
-                                        <a href="/{{ location }}/mostrar_pdf/{{ id }}/" class="info-button" target="_blank">Abrir</a> <!-- la ruta de el boton de pdf mostrar pdf/firmas_traslados/traslado_19_firmado.pdf    --> 
-                                    </td>
-                                </tr>
-                                {% else %}
+                            <tbody id="tablaFirmasBody">
                                 <tr>
                                     <td colspan="2" class="text-center">No existen firmas para este documento</td>
                                 </tr>
-                                {% endif %}
                             </tbody>
+                            
                         </table>
                     </div>
                 </div>
@@ -392,3 +383,40 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalFirmarAsignacion" tabindex="-1" aria-labelledby="modalFirmarAsignacionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Firmar Asignación <span id="idAsignacionSeleccionada" class="text-muted"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <form id="formSubirFirma" method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+              <label for="archivoFirma" class="form-label">Seleccione archivo de firma (PDF)</label>
+              <input class="form-control" type="file" id="archivoFirma" name="archivoFirma" accept=".pdf" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Subir firma</button>
+          </form>
+  
+          <hr>
+          <h5>Archivos subidos</h5>
+          <table class="table table-bordered">
+            <thead>
+              <tr>
+                <th>Archivo</th>
+                <th>Acción</th>
+              </tr>
+            </thead>
+            <tbody id="tablaFirmasBody">
+              <tr>
+                <td colspan="2" class="text-center">Selecciona una asignación para ver sus archivos</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  
