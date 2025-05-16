@@ -1153,6 +1153,19 @@ def adjuntar_pdf_asignacion(idAsignacion):
     return redirect(url_for("asignacion.Asignacion"))
 
 
+@asignacion.route("/asignacion/firmas_devolucion_json/<idDevolucion>")
+@loguear_requerido
+def obtener_firma_devolucion_json(idDevolucion):
+    dir_firmas = "pdf/firmas_devoluciones"
+    nombre = f"devolucion_{idDevolucion}_firmado.pdf"
+    ruta = os.path.join(dir_firmas, nombre)
+
+    if os.path.exists(ruta):
+        return jsonify({"existe": True, "nombre": nombre})
+    else:
+        return jsonify({"existe": False})
+
+
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
 @administrador_requerido
 def adjuntar_pdf_devolucion(idAsignacion):
@@ -1171,7 +1184,7 @@ def adjuntar_pdf_devolucion(idAsignacion):
         os.remove(file_path)
 
     # Obtener el archivo desde la solicitud
-    file = request.files["file"]
+    file = request.files.get("archivoFirma")
 
     # Guardar el archivo con un nombre seguro
     sfilename = secure_filename(file.filename)
@@ -1183,67 +1196,3 @@ def adjuntar_pdf_devolucion(idAsignacion):
     os.rename(temp_file_path, new_file_path)
 
     return redirect(url_for("asignacion.Asignacion"))
-
-
-######## Echar ojo a esto ###########
-def enviar_correo(filename, correo):
-    #correo = "cacastilloc@junji.cl"
-    print("enviar_correo")
-    remitente = 'martin.castro@junji.cl'
-    destinatario = 'martin.castro@junji.cl'
-    asunto = 'Se le han asignado los siguientes equipos'
-    cuerpo = """
-
-            """.format(correo)
-    username = 'martin.castro@junji.cl'
-    password = 'junji.2024'
-
-    mensaje = MIMEMultipart()
-
-    mensaje['From'] = remitente
-    mensaje['To'] = destinatario
-    mensaje['Subject'] = asunto
-
-    with open(filename, "rb") as pdf_file:
-        pdf = MIMEApplication(pdf_file.read(), _subtype='pdf')
-    pdf.add_header('Content-Disposition', 'attachment', filename=filename)
-    mensaje.attach(pdf)
-
-    mensaje.attach(MIMEText(cuerpo, 'plain'))
-
-    texto = mensaje.as_string()
-    server_smtp1 = 'smtp.office365.com'
-    server_smtp2 = 'smtp-mail.outlook.com'
-    server = smtplib.SMTP('smtp.office365.com', port=587)
-    server.starttls()
-    server.login(username, password)
-    server.sendmail(remitente, destinatario, texto)
-    server.quit()
-
-#def enviar_correo(asunto, correo, cuerpo, filename):
-    ##correo = "cacastilloc@junji.cl"
-    #print("enviar_correo")
-    #remitente = 'martin.castro@junji.cl'
-    #destinatario = 'mauricio.cardenas@junji.cl'
-    #username = 'martin.castro@junji.cl'
-    #password = 'junji.2024'
-
-    #mensaje = MIMEMultipart()
-
-    #mensaje['From'] = remitente
-    #mensaje['To'] = destinatario
-    #mensaje['Subject'] = asunto
-
-    #mensaje.attach(MIMEText(cuerpo, 'html'))
-
-    #texto = mensaje.as_string()
-    #server_smtp1 = 'smtp.office365.com'
-    #server_smtp2 = 'smtp-mail.outlook.com'
-    #server = smtplib.SMTP('smtp.office365.com', port=587)
-    #server.starttls()
-    #server.login(username, password)
-    ##print("before send mail")
-    ##print(destinatario + "__")
-    #server.sendmail(remitente, destinatario, texto)
-    ##print("after send mail")
-    #server.quit()

@@ -138,7 +138,7 @@ function abrirModalFirmarAsignacion() {
             const fila = document.createElement("tr");
             fila.innerHTML = `
                 <td>${data.nombre}</td>
-                <td><a href="/asignacion/mostrar_pdf/${idSeleccionado}/" class="info-button" target="_blank">Abrir</a></td>
+                <td><a href="/asignacion/mostrar_pdf/${idSeleccionado}/" class="btn btn-primary info-button" target="_blank">Abrir</a></td>
             `;
             tbody.appendChild(fila);
         } else {
@@ -148,4 +148,72 @@ function abrirModalFirmarAsignacion() {
         }
     });
 
+}
+
+function abrirModalFirmarDevolucion() {
+    const modal = new bootstrap.Modal(document.getElementById("modalFirmarDevolucion"));
+    let idAsignacion = null;
+
+    document.querySelectorAll(".row-checkbox").forEach(checkbox => {
+        if (checkbox.checked) {
+            idAsignacion = checkbox.getAttribute("data-id-asignacion");
+        }
+    });
+
+    if (!idAsignacion) {
+        alert("Por favor, selecciona un ítem antes de continuar.");
+        return;
+    }
+
+    // Mostrar el ID
+    document.getElementById("detalleIDDevolucion").textContent = idAsignacion;
+
+    // Configurar formulario
+    const form = document.getElementById("formSubirFirmaDevolucion");
+    form.action = `/devolucion/adjuntar_pdf/${idAsignacion}`;
+    form.reset();
+
+    // Mostrar modal
+    modal.show();
+
+    // Cargar detalles
+    fetch(`/asignacion/detalles_json/${idAsignacion}`)
+        .then(res => res.json())
+        .then(data => {
+            const d = data.asignacion;
+
+            document.getElementById("rutFuncionarioDevolucion").textContent = d.rutFuncionario;
+            document.getElementById("nombreFuncionarioDevolucion").textContent = d.nombreFuncionario;
+            document.getElementById("cargoFuncionarioDevolucion").textContent = d.cargoFuncionario;
+
+            document.getElementById("fechaAsignacionDevolucion").textContent = formatFecha(d.fecha_inicioAsignacion);
+            document.getElementById("fechaDevolucionDevolucion").textContent = d.fechaDevolucion ? formatFecha(d.fechaDevolucion) : "Sin devolver";
+            document.getElementById("observacionesDevolucion").textContent = d.ObservacionAsignacion || "-";
+
+            document.getElementById("tipoEquipoDevolucion").textContent = d.nombreTipo_equipo;
+            document.getElementById("marcaEquipoDevolucion").textContent = d.nombreMarcaEquipo;
+            document.getElementById("modeloEquipoDevolucion").textContent = d.nombreModeloequipo;
+            document.getElementById("codigoInventarioDevolucion").textContent = d.Cod_inventarioEquipo;
+            document.getElementById("numeroSerieDevolucion").textContent = d.Num_serieEquipo;
+            document.getElementById("codigoProveedorDevolucion").textContent = d.codigoproveedor_equipo || "No informado";
+            document.getElementById("observacionesEquipoDevolucion").textContent = d.ObservacionEquipo || "-";
+        });
+
+    // Cargar archivo ya subido (si existe)
+    const tbody = document.getElementById("tablaFirmasBodyDevolucion");
+    tbody.innerHTML = `<tr><td colspan="2" class="text-center">Buscando archivo...</td></tr>`;
+
+    fetch(`/asignacion/firmas_devolucion_json/${idAsignacion}`)
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = "";
+            if (data.existe) {
+                tbody.innerHTML = `
+                    <td>${data.nombre}</td>
+                    <td><a href="/devolucion/mostrar_pdf/${idAsignacion}/" class="btn btn-primary info-button" target="_blank">Abrir</a></td>
+                `;
+            } else {
+                tbody.innerHTML = `<tr><td colspan="2" class="text-center">No existen firmas para esta devolución</td></tr>`;
+            }
+        });
 }
