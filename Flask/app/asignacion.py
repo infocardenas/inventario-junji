@@ -902,6 +902,48 @@ def buscar(idAsignacion):
         lastpage=True
     )
 
+@asignacion.route("/asignacion/detalles_json/<idAsignacion>")
+@loguear_requerido
+def obtener_detalles_asignacion(idAsignacion):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT 
+            a.idAsignacion,
+            a.fecha_inicioAsignacion,
+            d.fechaDevolucion,
+            a.ObservacionAsignacion,
+            f.rutFuncionario,
+            f.nombreFuncionario,
+            f.cargoFuncionario,
+            te.nombreTipo_equipo,
+            mae.nombreMarcaEquipo,
+            me.nombreModeloequipo,
+            e.Cod_inventarioEquipo,
+            e.Num_serieEquipo,
+            e.codigoproveedor_equipo,
+            e.ObservacionEquipo
+        FROM asignacion a
+        JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+        JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+        JOIN equipo e ON ea.idEquipo = e.idEquipo
+        LEFT JOIN devolucion d ON ea.idEquipoAsignacion = d.idEquipoAsignacion
+        JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+        JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+        WHERE a.idAsignacion = %s
+        LIMIT 1
+    """, (idAsignacion,))
+    row = cur.fetchone()
+    cur.close()
+
+    if not row:
+        return jsonify({"error": "No se encontró la asignación"}), 404
+
+    return jsonify({
+        "asignacion": row
+    })
+
 
 @asignacion.route("/buscar_asignaciones", methods=["GET"])
 @loguear_requerido
@@ -1140,7 +1182,7 @@ def adjuntar_pdf_devolucion(idAsignacion):
     new_file_path = os.path.join(dir, f"devolucion_{idAsignacion}_firmado.pdf")
     os.rename(temp_file_path, new_file_path)
 
-    return print("1")
+    return redirect(url_for("asignacion.Asignacion"))
 
 
 ######## Echar ojo a esto ###########

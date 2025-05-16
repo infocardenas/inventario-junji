@@ -338,23 +338,64 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header text-black">
-                <h5 class="modal-title">Firmar Asignaciones</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h5 class="modal-title">Firmar Asignacion</h5>
+                <button type="button" class="btn-close btn-close-black" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <!-- Formulario para subir archivos -->
                 <form id="formSubirFirma" method="POST" enctype="multipart/form-data">
                     <div class="mb-3">
-                        <label for="archivoFirma" class="form-label">Seleccione archivo de firma</label>
+                        
                         <input class="form-control" type="file" id="archivoFirma" name="archivoFirma" accept=".pdf" required>
-                        <div class="form-text">Formatos aceptados: PDF (Máx. 5MB)</div>
+                        <div class="text-muted form-text">Formatos aceptados: PDF (Máx. 5MB)</div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-upload me-2"></i>Subir Firma
+                            </button>
+                        </div>
                     </div>
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-upload me-2"></i>Subir Firma
-                        </button>
-                    </div>
+                    
                 </form>
+
+                <div class="accordion mb-4" id="accordionDetalles">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingDetalles">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDetalles" aria-expanded="false" aria-controls="collapseDetalles">
+                            Detalles de la Asignación <div class="ms-2 text text-muted">N°</div><span id="detalleID" class="text-muted"></span>
+                        </button>
+                    </h2>
+                    <div id="collapseDetalles" class="accordion-collapse collapse" aria-labelledby="headingDetalles" data-bs-parent="#accordionDetalles">
+                        <div class="accordion-body">
+                            <!--ESTO ES NECESARIO PARA LA BUSQUEDA DEL EQUIPO-->
+                            <table class="hidden table table-sm table-bordered tabla-detalle">
+                            <tr><td>RUT</td><td id="rutFuncionario"></td></tr>
+                            <tr><td>Nombre</td><td id="nombreFuncionario"></td></tr>
+                            <tr><td>Cargo</td><td id="cargoFuncionario"></td></tr>
+                            </table>
+                            <!--ESTO ES NECESARIO PARA LA BUSQUEDA DEL EQUIPO-->
+                            <table class="hidden table table-sm table-bordered tabla-detalle">
+                            <tr><td>Fecha de asignación</td><td id="fechaAsignacion"></td></tr>
+                            <tr><td>Fecha de devolución</td><td id="fechaDevolucion"></td></tr>
+                            <tr><td>Observaciones</td><td id="observacionesAsignacion"></td></tr>
+                            </table>
+
+                            <h6>Datos del Equipo</h6>
+                            <table class="table table-sm table-bordered tabla-detalle">
+                            <tr><td>Tipo</td><td id="tipoEquipo"></td></tr>
+                            <tr><td>Marca</td><td id="marcaEquipo"></td></tr>
+                            <tr><td>Modelo</td><td id="modeloEquipo"></td></tr>
+                            <tr><td>Cód. inventario</td><td id="codigoInventario"></td></tr>
+                            <tr><td>N° serie</td><td id="numeroSerie"></td></tr>
+                            <tr><td>Cód. proveedor</td><td id="codigoProveedor"></td></tr>
+                            <tr><td>Observaciones</td><td id="observacionesEquipo"></td></tr>
+                            </table>
+
+                        </div>
+                        </div>
+                    </div>
+                </div>
+                
+
 
                 <!-- Tabla de archivos subidos -->
                 <div class="mt-4">
@@ -386,37 +427,60 @@
 
 <div class="modal fade" id="modalFirmarAsignacion" tabindex="-1" aria-labelledby="modalFirmarAsignacionLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-      <div class="modal-content">
+        <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title">Firmar Asignación <span id="idAsignacionSeleccionada" class="text-muted"></span></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            <h5 class="modal-title">Firmar Asignación <span id="idAsignacionSeleccionada" class="text-muted"></span></h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
         </div>
         <div class="modal-body">
-          <form id="formSubirFirma" method="POST" enctype="multipart/form-data">
+            <form id="formSubirFirma" method="POST" enctype="multipart/form-data">
             <div class="mb-3">
-              <label for="archivoFirma" class="form-label">Seleccione archivo de firma (PDF)</label>
-              <input class="form-control" type="file" id="archivoFirma" name="archivoFirma" accept=".pdf" required>
+                <label for="archivoFirma" class="form-label">Seleccione archivo de firma (PDF)</label>
+                <input class="form-control" type="file" id="archivoFirma" name="archivoFirma" accept=".pdf" required>
             </div>
-            <button type="submit" class="btn btn-primary">Subir firma</button>
-          </form>
-  
-          <hr>
-          <h5>Archivos subidos</h5>
-          <table class="table table-bordered">
-            <thead>
-              <tr>
-                <th>Archivo</th>
-                <th>Acción</th>
-              </tr>
-            </thead>
-            <tbody id="tablaFirmasBody">
-              <tr>
-                <td colspan="2" class="text-center">Selecciona una asignación para ver sus archivos</td>
-              </tr>
-            </tbody>
-          </table>
+                <button type="submit" class="btn btn-primary">Subir firma</button>
+            </form>
+
+                <hr>
+                <h5>Archivos subidos</h5>
+                <table class="table table-bordered">
+                <thead>
+                <tr>
+                        <th>Archivo</th>
+                        <th>Acción</th>
+                </tr>
+                </thead>
+                <tbody id="tablaFirmasBody">
+                <tr>
+                    <td colspan="2" class="text-center">Selecciona una asignación para ver sus archivos</td>
+                </tr>
+                </tbody>
+                </table>
+            </div>
         </div>
-      </div>
     </div>
-  </div>
-  
+</div>
+
+
+<style>
+    .tabla-detalle {
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    .tabla-detalle td:first-child {
+      width: 30%;   /* Etiqueta */
+        white-space: nowrap;
+        font-weight: bold;
+    }
+
+    .tabla-detalle td:last-child {
+      width: 70%;   /* Valor */
+        word-break: break-word;
+    }
+
+    .accordion-body h6 {
+        margin-top: 1rem;
+    }
+</style>
+

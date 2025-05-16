@@ -100,7 +100,30 @@ function abrirModalFirmarAsignacion() {
     form.reset(); // Limpiar el formulario antes de abrir el modal
     // Abrir el modal
     modalFirmarAsignacion.show();
-    
+    // Obtener detalles y mostrarlos
+    fetch(`/asignacion/detalles_json/${idSeleccionado}`)
+    .then(res => res.json())
+    .then(data => {
+    const d = data.asignacion;
+
+    document.getElementById("detalleID").textContent = d.idAsignacion;
+    document.getElementById("rutFuncionario").textContent = d.rutFuncionario;
+    document.getElementById("nombreFuncionario").textContent = d.nombreFuncionario;
+    document.getElementById("cargoFuncionario").textContent = d.cargoFuncionario;
+
+    document.getElementById("fechaAsignacion").textContent = formatFecha(d.fecha_inicioAsignacion);
+    document.getElementById("fechaDevolucion").textContent = d.fechaDevolucion ? formatFecha(d.fechaDevolucion) : "Sin devolver";
+    document.getElementById("observacionesAsignacion").textContent = d.ObservacionAsignacion || "-";
+
+    document.getElementById("tipoEquipo").textContent = d.nombreTipo_equipo;
+    document.getElementById("marcaEquipo").textContent = d.nombreMarcaEquipo;
+    document.getElementById("modeloEquipo").textContent = d.nombreModeloequipo;
+    document.getElementById("codigoInventario").textContent = d.Cod_inventarioEquipo;
+    document.getElementById("numeroSerie").textContent = d.Num_serieEquipo;
+    document.getElementById("codigoProveedor").textContent = d.codigoproveedor_equipo || "No informado";
+    document.getElementById("observacionesEquipo").textContent = d.ObservacionEquipo || "-";
+    });
+
     // Limpiar contenido anterior
     const tbody = document.getElementById("tablaFirmasBody");
 
