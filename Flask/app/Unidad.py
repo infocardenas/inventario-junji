@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash, session
-from db import mysql
-from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requerido
+from . import mysql
+from .funciones import getPerPage
+from .cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 
 Unidad = Blueprint('Unidad', __name__, template_folder = 'app/templates')

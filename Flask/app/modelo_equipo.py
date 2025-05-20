@@ -1,7 +1,7 @@
 from flask import Blueprint, flash, redirect, render_template, url_for, request, session
-from db import mysql
-from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requerido
+from . import mysql
+from .funciones import getPerPage
+from .cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 from flask import jsonify
 from MySQLdb import IntegrityError

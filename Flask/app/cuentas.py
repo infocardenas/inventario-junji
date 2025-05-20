@@ -1,7 +1,7 @@
 from functools import wraps
 from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file, jsonify, session
-from db import mysql, bcrypt
-from funciones import getPerPage
+from . import mysql, bcrypt
+from .funciones import getPerPage
 import datetime
 from cerberus import Validator
 

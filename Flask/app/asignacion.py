@@ -1,14 +1,14 @@
 from email.mime.application import MIMEApplication
 from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session, jsonify
-from db import mysql
+from . import mysql
 from fpdf import FPDF
-from funciones import getPerPage
+from .funciones import getPerPage
 import os
 import shutil
 from werkzeug.utils import secure_filename
 from datetime import date
-from cuentas import loguear_requerido, administrador_requerido
-from traslado import crear_traslado_generico
+from .cuentas import loguear_requerido, administrador_requerido
+from .traslado import crear_traslado_generico
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText

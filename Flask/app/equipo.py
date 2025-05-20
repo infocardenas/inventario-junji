@@ -1,9 +1,9 @@
 from flask import request, flash, render_template, url_for, redirect, Blueprint, session, send_file
-from db import mysql
-from funciones import getPerPage
+from . import mysql
+from .funciones import getPerPage
 from openpyxl import Workbook, load_workbook
 from openpyxl.styles import PatternFill
-from cuentas import loguear_requerido, administrador_requerido
+from .cuentas import loguear_requerido, administrador_requerido
 from werkzeug.utils import secure_filename
 from cerberus import Validator
 from MySQLdb import IntegrityError

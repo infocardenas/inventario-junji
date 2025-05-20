@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file, session, jsonify
-from db import mysql
+from . import mysql
 from fpdf import FPDF
-from funciones import getPerPage
-from cuentas import loguear_requerido, administrador_requerido
+from .funciones import getPerPage
+from .cuentas import loguear_requerido, administrador_requerido
 import os, time
 from cerberus import Validator
 from MySQLdb import IntegrityError 

@@ -12,12 +12,12 @@ from flask import (
     abort,
     jsonify
 )
-from db import mysql
+from . import mysql
 from fpdf import FPDF
-from funciones import getPerPage
+from .funciones import getPerPage
 import os
 import shutil
-from cuentas import loguear_requerido, administrador_requerido
+from .cuentas import loguear_requerido, administrador_requerido
 from werkzeug.utils import secure_filename
 from env_vars import paths
 

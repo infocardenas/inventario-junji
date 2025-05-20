@@ -1,9 +1,9 @@
 #se importa flask
 from flask import Blueprint, render_template, request, url_for, redirect,flash
 #se importa db.py para utilizar la conexion a mysql
-from db import mysql
+from . import mysql
 #importamos el modulo que creamos
-from funciones import validarChar
+from .funciones import validarChar
 
 comuna = Blueprint('comuna', __name__, template_folder='app/templates')
 
