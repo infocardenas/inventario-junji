@@ -821,6 +821,8 @@ svg.bi {
     flex: 2; /* Ocupa más espacio que los otros elementos */
     display: flex;
     justify-content: center; /* Centra el campo de búsqueda */
+    max-width: 100%;
+    
 }
 
 .orden-compra-search-box {
@@ -828,7 +830,7 @@ svg.bi {
     text-align: center;
     border: 1px solid #ddd;
     border-radius: 4px;
-    width: 300px; /* Ancho fijo */
+    width: 500px; /* Ancho fijo */
     max-width: 100%; /* Asegura que no exceda el contenedor */
     padding: 5px 10px; /* Espaciado interno */
 }
