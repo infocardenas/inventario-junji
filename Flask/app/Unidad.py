@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, session
+from flask import Blueprint, render_template, request, url_for, redirect, flash, session, jsonify
 from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
@@ -335,3 +335,71 @@ def mostrar_equipos_unidad(idUnidad):
         # En caso de error, muestra un mensaje de flash y redirige a la página de unidades
         flash(f"Error al obtener equipos: {str(e)}", 'danger')
         return redirect(url_for('Unidad.UNIDAD'))
+
+@Unidad.route('/buscar_unidades', methods=['GET'])
+@loguear_requerido
+def buscar_unidades():
+    query = request.args.get("q", "").lower()
+    page = request.args.get("page", default=1, type=int)
+    per_page = 8  # igual que DataTables, puedes ajustar
+
+    offset = (page - 1) * per_page
+    cur = mysql.connection.cursor()
+
+    # Búsqueda por nombre, código, contacto, dirección o comuna
+    cur.execute("""
+        SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad,
+               u.direccionUnidad, u.idComuna, co.nombreComuna, 
+               COUNT(e.idEquipo) as num_equipos,
+               mo.nombreModalidad, u.idModalidad
+        FROM unidad u
+        INNER JOIN comuna co on u.idComuna = co.idComuna
+        LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
+        LEFT JOIN equipo e on u.idUnidad = e.idUnidad
+        WHERE LOWER(u.nombreUnidad) LIKE %s
+           OR LOWER(u.idUnidad) LIKE %s
+           OR LOWER(u.contactoUnidad) LIKE %s
+           OR LOWER(u.direccionUnidad) LIKE %s
+           OR LOWER(co.nombreComuna) LIKE %s
+        GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, 
+                 u.idComuna, co.nombreComuna, mo.nombreModalidad, u.idModalidad
+        LIMIT %s OFFSET %s
+    """, (f"%{query}%",)*5 + (per_page, offset))
+    unidades = cur.fetchall()
+
+    # Total de resultados
+    cur.execute("""
+        SELECT COUNT(*) as total
+        FROM unidad u
+        INNER JOIN comuna co on u.idComuna = co.idComuna
+        WHERE LOWER(u.nombreUnidad) LIKE %s
+           OR LOWER(u.idUnidad) LIKE %s
+           OR LOWER(u.contactoUnidad) LIKE %s
+           OR LOWER(u.direccionUnidad) LIKE %s
+           OR LOWER(co.nombreComuna) LIKE %s
+    """, (f"%{query}%",)*5)
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    # Páginas visibles (como en equipo)
+    visible_pages = []
+    if total_pages <= 7:
+        visible_pages = list(range(1, total_pages + 1))
+    else:
+        if page > 4:
+            visible_pages.append(1)
+            if page > 5:
+                visible_pages.append("...")
+        visible_pages.extend(range(max(1, page - 2), min(total_pages + 1, page + 3)))
+        if page < total_pages - 3:
+            if page < total_pages - 4:
+                visible_pages.append("...")
+            visible_pages.append(total_pages)
+
+    return jsonify({
+        "unidades": unidades,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page,
+        "visible_pages": visible_pages
+    })
