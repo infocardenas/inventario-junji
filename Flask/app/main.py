@@ -1,7 +1,6 @@
 from app import app
 # Se importan las variables blueprint en las vistas correspondientes para que puedan ser iniciadas a traves de main
 from proveedor import proveedor
-from tipo_adquisicion import tipo_adquisicion
 from orden_compra import orden_compra
 from provincia import provincias
 from tipo_equipo import tipo_equipo
@@ -20,7 +19,6 @@ from cuentas import cuentas
 
 app.register_blueprint(devolucion)
 app.register_blueprint(proveedor)
-app.register_blueprint(tipo_adquisicion)
 app.register_blueprint(provincias)
 app.register_blueprint(orden_compra)
 app.register_blueprint(tipo_equipo)
