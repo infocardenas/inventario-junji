@@ -22,18 +22,6 @@
 
 <body>
 
-    <!-- Carga y muestra los errores de flash de manera global -->
-    <!--{% with messages = get_flashed_messages(with_categories=true) %}-->
-    <!--{% if messages %}-->
-    <!--<div>-->
-    <!--    {% for category, message in messages %}-->
-    <!--    {% set alert_type = category %}-->
-    <!--    {% set message = message %}-->
-    <!--    {% include 'alert.html' %}-->
-    <!--    {% endfor %}-->
-    <!--</div>-->
-    <!--{% endif %}-->
-    <!--{% endwith %}-->
 
     <!-- Modal para mensajes flash -->
     <div class="modal fade" id="flashModal" tabindex="-1" aria-labelledby="flashModalLabel" aria-hidden="true">
@@ -677,7 +665,6 @@
     <script src="{{ url_for('static', filename='js/bootstrap.bundle.min.js') }}"></script>
     {% include 'advertencia_eliminar.html' %}
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    <script src="{{ url_for('static', filename='js/tabla.js') }}"></script>
 
     <!-- Script para manejar los mensajes flash -->
     <script>
