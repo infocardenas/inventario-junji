@@ -4,7 +4,6 @@ from proveedor import proveedor
 from tipo_adquisicion import tipo_adquisicion
 from orden_compra import orden_compra
 from provincia import provincias
-from comuna import comuna
 from tipo_equipo import tipo_equipo
 from Unidad import Unidad
 from marca_equipo import marca_equipo
@@ -25,7 +24,6 @@ app.register_blueprint(proveedor)
 app.register_blueprint(tipo_adquisicion)
 app.register_blueprint(provincias)
 app.register_blueprint(orden_compra)
-app.register_blueprint(comuna)
 app.register_blueprint(tipo_equipo)
 app.register_blueprint(Unidad)
 app.register_blueprint(marca_equipo)
