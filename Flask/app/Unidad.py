@@ -403,3 +403,89 @@ def buscar_unidades():
         "current_page": page,
         "visible_pages": visible_pages
     })
+
+@Unidad.route('/buscar_equipos_unidad/<int:idUnidad>', methods=['GET'])
+def buscar_equipos_unidad(idUnidad):
+    query = request.args.get("q", "").lower()
+    page = request.args.get("page", default=1, type=int)
+    per_page = 8
+
+    offset = (page - 1) * per_page
+    cur = mysql.connection.cursor()
+
+    # Búsqueda por inventario, serie, estado, funcionario, proveedor, tipo, modelo
+    cur.execute("""
+        SELECT 
+            e.Cod_inventarioEquipo,
+            e.Num_serieEquipo,
+            est.nombreEstado_equipo AS estadoEquipo,
+            f.nombreFuncionario,
+            e.codigoproveedor_equipo,
+            u.nombreUnidad,
+            te.nombreTipo_equipo AS tipoEquipo,
+            mo.nombreModeloequipo AS modeloEquipo
+        FROM equipo e
+        LEFT JOIN estado_equipo est ON e.idEstado_equipo = est.idEstado_equipo
+        LEFT JOIN funcionario f ON f.idUnidad = e.idUnidad
+        LEFT JOIN unidad u ON e.idUnidad = u.idUnidad
+        LEFT JOIN modelo_equipo mo ON e.idModelo_equipo = mo.idModelo_Equipo
+        LEFT JOIN marca_tipo_equipo mte ON mo.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        LEFT JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE e.idUnidad = %s AND (
+            LOWER(e.Cod_inventarioEquipo) LIKE %s OR
+            LOWER(e.Num_serieEquipo) LIKE %s OR
+            LOWER(est.nombreEstado_equipo) LIKE %s OR
+            LOWER(f.nombreFuncionario) LIKE %s OR
+            LOWER(e.codigoproveedor_equipo) LIKE %s OR
+            LOWER(te.nombreTipo_equipo) LIKE %s OR
+            LOWER(mo.nombreModeloequipo) LIKE %s
+        )
+        LIMIT %s OFFSET %s
+    """, (idUnidad,) + (f"%{query}%",)*7 + (per_page, offset))
+    equipos = cur.fetchall()
+
+    # Total de resultados
+    cur.execute("""
+        SELECT COUNT(*) as total
+        FROM equipo e
+        LEFT JOIN estado_equipo est ON e.idEstado_equipo = est.idEstado_equipo
+        LEFT JOIN funcionario f ON f.idUnidad = e.idUnidad
+        LEFT JOIN unidad u ON e.idUnidad = u.idUnidad
+        LEFT JOIN modelo_equipo mo ON e.idModelo_equipo = mo.idModelo_Equipo
+        LEFT JOIN marca_tipo_equipo mte ON mo.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        LEFT JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE e.idUnidad = %s AND (
+            LOWER(e.Cod_inventarioEquipo) LIKE %s OR
+            LOWER(e.Num_serieEquipo) LIKE %s OR
+            LOWER(est.nombreEstado_equipo) LIKE %s OR
+            LOWER(f.nombreFuncionario) LIKE %s OR
+            LOWER(e.codigoproveedor_equipo) LIKE %s OR
+            LOWER(te.nombreTipo_equipo) LIKE %s OR
+            LOWER(mo.nombreModeloequipo) LIKE %s
+        )
+    """, (idUnidad,) + (f"%{query}%",)*7)
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    # Páginas visibles
+    visible_pages = []
+    if total_pages <= 7:
+        visible_pages = list(range(1, total_pages + 1))
+    else:
+        if page > 4:
+            visible_pages.append(1)
+            if page > 5:
+                visible_pages.append("...")
+        visible_pages.extend(range(max(1, page - 2), min(total_pages + 1, page + 3)))
+        if page < total_pages - 3:
+            if page < total_pages - 4:
+                visible_pages.append("...")
+            visible_pages.append(total_pages)
+
+    return jsonify({
+        "equipos": equipos,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page,
+        "visible_pages": visible_pages
+    })

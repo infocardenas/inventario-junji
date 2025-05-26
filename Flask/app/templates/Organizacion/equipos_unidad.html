@@ -1,8 +1,25 @@
 {% extends "layout.html" %}
 
-{% block body %}
+{% block body %} 
 
 <h2>Equipos Asociados a la Unidad: {{ equipos[0].nombreUnidad if equipos else 'Sin nombre' }}</h2>
+
+    <div>
+      <div class="toolbar">
+        <div class="toolbar-1">
+          <a href="{{ url_for('Unidad.UNIDAD') }}" class="btn btn-secondary">Volver</a>
+        </div>
+        <div class="toolbar-2">
+          <!-- Buscador -->
+          <input id="buscador_equipo" type="text" class="form-control" placeholder="Buscar equipo..." oninput="buscarEquiposUnidad(1)" style="max-width: 400px; display: inline-block;" />
+        <div class="toolbar-3">
+          <!-- Buscador -->
+        
+        </div>
+      </div>
+
+    </div>
+
 
 <table class="table table-bordered table-striped">
   <thead>
@@ -17,7 +34,7 @@
       <th>Modelo</th>
     </tr>
   </thead>
-  <tbody>
+  <tbody id="equiposUnidadTableBody">
     {% for eq in equipos %}
     <tr>
       <td>{{ eq.Cod_inventarioEquipo }}</td>
@@ -26,13 +43,20 @@
       <td>{{ eq.nombreFuncionario }}</td>
       <td>{{ eq.codigoproveedor_equipo }}</td>
       <td>{{ eq.nombreUnidad }}</td>
-      <td>{{ eq.tipoEquipo }}</td>  <!-- Cambié 'nombreTipoEquipo' a 'tipoEquipo' -->
-      <td>{{ eq.modeloEquipo }}</td> <!-- Cambié 'nombreModelo' a 'modeloEquipo' -->
+      <td>{{ eq.tipoEquipo }}</td>
+      <td>{{ eq.modeloEquipo }}</td>
     </tr>
     {% endfor %}
   </tbody>
 </table>
 
-<a href="{{ url_for('Unidad.UNIDAD') }}" class="btn btn-secondary">Volver</a>
+<div class="pagination-container mt-3 d-flex justify-content-center">
+  <nav aria-label="Paginación de equipos">
+    <ul class="pagination" id="equipos-unidad-pagination"></ul>
+  </nav>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/Operaciones/EquiposUnidad.js') }}"></script>
 
 {% endblock %}
