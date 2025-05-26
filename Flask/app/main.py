@@ -15,7 +15,6 @@ from devolucion import devolucion
 from asignacion import asignacion
 from traslado import traslado
 from incidencia import incidencia
-from buscar import buscar
 from utils import utils
 from cuentas import cuentas
 
@@ -34,7 +33,6 @@ app.register_blueprint(equipo)
 app.register_blueprint(asignacion)
 app.register_blueprint(traslado)
 app.register_blueprint(incidencia)
-app.register_blueprint(buscar)
 app.register_blueprint(utils)
 app.register_blueprint(cuentas)
 
