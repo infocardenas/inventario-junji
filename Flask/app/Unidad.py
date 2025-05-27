@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, session, jsonify
+from flask import Blueprint, render_template, request, url_for, redirect, flash, jsonify
 from db import mysql
-from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 
@@ -98,9 +97,6 @@ def add_Unidad():
                 'required': True
             }
         }
-        #print("Formulario recibido:", data.form)
-
-
         # Validar datos
         v = Validator(add_Unidad_schema)
         if not v.validate(data):
@@ -136,20 +132,13 @@ def edit_Unidad(id):
         curs = mysql.connection.cursor()
         curs.execute('SELECT idComuna, nombreComuna FROM comuna')
         c_data = curs.fetchall()
-        #poner la comuna en primero NO FUNDIONA
-       # tmp = c_data[0]
-       # for i in range(0, len(c_data)):
-       #     if(data[0].idComuna == c_data[i].idComuna):
-       #         c_data[0] = c_data[i]
-       #         c_data[i] = tmp
-       #         break
+
         cur.execute("SELECT * FROM modalidad")
         modalidades_data = cur.fetchall()
         curs.close()
         return render_template('Organizacion/editUnidad.html', Unidad = data[0],
                 comuna = c_data, Modalidades=modalidades_data)
     except Exception as e:
-        #flash(e.args[1])
         flash("Error al crear")
         return redirect(url_for('Unidad.UNIDAD'))
 
@@ -201,7 +190,6 @@ def update_Unidad(id):
             flash("Caracteres no permitidos")
             return redirect(url_for('Unidad.UNIDAD'))
 
-
         try:
             cur = mysql.connection.cursor()
             cur.execute("""
@@ -233,7 +221,6 @@ def delete_Unidad(id):
         flash('Unidad eliminada correctamente')
         return redirect(url_for('Unidad.UNIDAD'))
     except Exception as e:
-        #flash(e.args[1])
         flash("NO se pudo eliminar la unidad, tiene equipos o funcionarios asociados")
         return redirect(url_for('Unidad.UNIDAD'))
     
