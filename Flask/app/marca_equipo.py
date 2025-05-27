@@ -1,4 +1,4 @@
-from flask import Blueprint, request, flash, render_template, redirect, url_for, g, session
+from flask import Blueprint, request, flash, render_template, redirect, url_for, session
 from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
@@ -24,13 +24,7 @@ def marcaEquipo(page=1):
     page = int(page)
     perpage = getPerPage()
     offset = (page-1) * perpage
-    #flash(order)
     query = 'SELECT * FROM marca_equipo '
-    #if(order == "ASC"):
-        ##flash("test")
-        #query += "ORDER BY marca_equipo.nombreMarcaEquipo" 
-    #elif(order == "DESC"):
-        #query += "ORDER BY marca_equipo.nombreMarcaEquipo DESC"
     query += "LIMIT {} OFFSET {}".format(perpage, offset)
     cur = mysql.connection.cursor()
     cur.execute(query)
@@ -70,7 +64,6 @@ def add_marca_equipo():
             warning_messages = []
             flash("Formato de entrada no válido", 'warning')
             return redirect(url_for("marca_equipo.marcaEquipo"))  # Redirigir a la misma página
-
 
         try:
             cur = mysql.connection.cursor()
