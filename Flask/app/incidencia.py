@@ -1,14 +1,12 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, make_response, send_file, session, jsonify
+from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session, jsonify
 from db import mysql
 from fpdf import FPDF
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
-import os, time
-from cerberus import Validator
+import os
 from MySQLdb import IntegrityError 
-import shutil 
 from werkzeug.utils import secure_filename
-from env_vars import paths, inLinux
+from env_vars import paths
 incidencia = Blueprint("incidencia", __name__, template_folder="app/templates")
 PDFS_INCIDENCIAS = paths['pdf_path']
 
