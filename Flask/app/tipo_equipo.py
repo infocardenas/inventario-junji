@@ -223,7 +223,7 @@ def delete_tipo_equipo(id):
         ids = id.split(",")  
 
         # Convertir la lista en formato para SQL
-        placeholders = ", ".join(["%s"] * len(ids))  # "%s, %s, %s" si hay 3 IDs
+        placeholders = ", ".join(["%s"] * len(ids))  
 
         # PASO 1: Eliminar dependencias en detalle_traslado
         cur.execute(f"""
