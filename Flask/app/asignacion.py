@@ -41,10 +41,7 @@ asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 def Asignacion(page=1):
     perpage = getPerPage()
     offset = (page - 1) * perpage
-
     cur = mysql.connection.cursor()
-
-    # Paginación de asignaciones
     cur.execute(f"""
     SELECT
         a.idAsignacion,
@@ -247,8 +244,6 @@ def create_asignacion():
         return redirect(url_for("asignacion.Asignacion"))
 
     flash("Asignación agregada exitosamente", 'success')
-
-    pdf_asignacion = crear_pdf_asignacion(funcionario, TuplaEquipos)
     
     return redirect(url_for('asignacion.Asignacion'))
 
@@ -406,10 +401,6 @@ def crear_pdf_asignacion(funcionario, equipos):
             self.cell(0, 12, "O'Higgins Poniente 77 Concepción. Tel: 412125579", ln=1)
             self.cell(0, 12, "www.junji.cl", ln=1)
 
-    #P Portrait -> Vertical
-    #mm milimetros
-    #A4 formato de tamaño
-
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
     titulo = "ACTA de Asignación de Equipo Informático N°" + funcionario["id_asignacion"]
@@ -472,8 +463,6 @@ def crear_pdf_asignacion(funcionario, equipos):
             for datum in datarow:
                 row.cell(datum)
 
-    observacion = "Esta es una observacion"
-
     pdf.ln(10)
     nombreEncargado = "Nombre del encargado TI:"
     rutEncargado = "RUT:"
@@ -524,13 +513,6 @@ def crear_pdf_asignacion(funcionario, equipos):
     nombrePdf = "asignacion_" + funcionario["id_asignacion"] + ".pdf"
     pdf.output(nombrePdf)
     shutil.move(nombrePdf, os.path.join(ruta_asignaciones, nombrePdf))
-    #******
-    #try:
-    #funcion para enviar un correo a un funcionario (se envia el acta)
-        #enviar_correo(nombrePdf, 'correo')
-    #except:
-        #TODO: agregar error
-        #flash("no se pudo enviar el correo")
     return nombrePdf
 
 @asignacion.route("/asignacion/descargar_pdf_asignacion/<id>")
@@ -538,7 +520,7 @@ def crear_pdf_asignacion(funcionario, equipos):
 def descargar_pdf_asignacion(id):
     try:
         nombrePDF = "asignacion_" + str(id) + ".pdf"
-        file = os.path.join("pdf/asignaciones", nombrePDF)#******
+        file = os.path.join("pdf/asignaciones", nombrePDF)
         return send_file(file, as_attachment=False)
     except:
         flash("Error: No se encontró el PDF", "danger")
@@ -790,7 +772,6 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
             for datum in datarow:
                 row.cell(datum)
 
-    observacion = "Esta es una observacion"
     pdf.ln(10)
     nombreEncargado = "Nombre del encargado TI:" 
     rutEncargado = "RUT:"
@@ -1046,14 +1027,12 @@ def listar_pdf(idAsignacion, devolver="None"):
         location = "asignacion"
     else:
         nombreFirmado = "devolucion_" + str(idAsignacion) + "_" + "firmado.pdf"
-        #print(nombreFirmado)
+
         location = "devolucion"
     #revisa si el archivo esta firmado
     if not os.path.exists(os.path.join("pdf/firmas_asignaciones", nombreFirmado)) and not os.path.exists(os.path.join("pdf/firmas_devoluciones", nombreFirmado)):
-        #mostrar
-        #print("#####NombreFirmado = None #######")
         nombreFirmado = "No existen firmas para este documento"
-    #print("exists")
+
     return render_template(
         'GestionR.H/firma.html', 
         nombreFirmado=nombreFirmado, 
@@ -1092,7 +1071,7 @@ def mostrar_pdf_asignacion_firmado(id):
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
     
-#*************************
+
 
 @asignacion.route("/asignacion/firmas_json/<idAsignacion>")
 @loguear_requerido
