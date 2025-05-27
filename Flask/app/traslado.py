@@ -157,7 +157,6 @@ def add_traslado():
             )
 
         except Exception as e:
-            #flash(e.args[1])
             flash("Error al crear")
             return redirect(url_for("traslado.Traslado"))
 
