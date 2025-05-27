@@ -1,10 +1,8 @@
 from flask import Blueprint, request, render_template, flash, url_for, redirect, session, jsonify
 from db import mysql
-from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 from MySQLdb import IntegrityError
-import math
 
 funcionario = Blueprint('funcionario', __name__, template_folder='app/templates')
 
