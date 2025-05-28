@@ -9,14 +9,12 @@ from modelo_equipo import modelo_equipo
 from estado_equipo import estado_equipo
 from funcionario import funcionario
 from equipo import equipo
-from devolucion import devolucion
 from asignacion import asignacion
 from traslado import traslado
 from incidencia import incidencia
 from utils import utils
 from cuentas import cuentas
 
-app.register_blueprint(devolucion)
 app.register_blueprint(proveedor)
 app.register_blueprint(orden_compra)
 app.register_blueprint(tipo_equipo)
