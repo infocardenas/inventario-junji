@@ -667,6 +667,10 @@
     <!-- Script para manejar los mensajes flash -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            /*{% with messages = get_flashed_messages(with_categories=true) %}*/
+            /*{% if messages %}*/
+            /*{% for category, message in messages %}*/
+            // Configurar el modal según la categoría
             const modal = new bootstrap.Modal(document.getElementById('flashModal'));
             const modalTitle = document.getElementById('flashModalTitle');
             const modalBody = document.getElementById('flashModalBody');
@@ -698,6 +702,9 @@
 
             // Mostrar el modal
             modal.show();
+            /*{% endfor %}*/
+            /*{% endif %}*/
+            /*{% endwith %}*/
         });
     </script>
 
