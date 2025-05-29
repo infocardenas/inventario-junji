@@ -161,16 +161,14 @@ def update_Unidad(id):
                 'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
             },
             'nombreUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+                'type': 'string',  # Permitir solo alfanuméricos y espacios
             },
             'contactoUnidad': {
                 'type': 'string',
                 'regex': '^[a-zA-Z0-9 ]+$', # Permitir solo alfanuméricos y espacios
             },
             'direccionUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir solo alfanuméricos y espacios
+                'type': 'string',  # Permitir solo alfanuméricos y espacios
             },
             'idComuna': {
                 'type': 'integer',
