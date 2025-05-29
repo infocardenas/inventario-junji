@@ -1,3 +1,4 @@
+from email.mime.application import MIMEApplication
 from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session, jsonify
 from db import mysql
 from fpdf import FPDF
@@ -7,7 +8,14 @@ import shutil
 from werkzeug.utils import secure_filename
 from datetime import date
 from cuentas import loguear_requerido, administrador_requerido
-from env_vars import  inLinux
+from traslado import crear_traslado_generico
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+import fitz
+from env_vars import paths, inLinux
 from cerberus import Validator
 from MySQLdb import IntegrityError
 
@@ -41,7 +49,10 @@ asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 def Asignacion(page=1):
     perpage = getPerPage()
     offset = (page - 1) * perpage
+
     cur = mysql.connection.cursor()
+
+    # Paginación de asignaciones
     cur.execute(f"""
     SELECT
         a.idAsignacion,
@@ -230,7 +241,8 @@ def create_asignacion():
             "id_asignacion": str(query["idAsignacion"]),
             "fecha_asignacion": str(query["fecha_inicioAsignacion"].strftime("%d-%m-%Y")),
             "unidad": query["nombreUnidad"],
-            "idUnidad": query["idUnidad"]
+            "idUnidad": query["idUnidad"],
+            "observacion": observacion  # <-- Agrega esta línea
         }
     except IntegrityError as e:
         error_message = str(e)
@@ -244,6 +256,8 @@ def create_asignacion():
         return redirect(url_for("asignacion.Asignacion"))
 
     flash("Asignación agregada exitosamente", 'success')
+
+    pdf_asignacion = crear_pdf_asignacion(funcionario, TuplaEquipos)
     
     return redirect(url_for('asignacion.Asignacion'))
 
@@ -401,6 +415,10 @@ def crear_pdf_asignacion(funcionario, equipos):
             self.cell(0, 12, "O'Higgins Poniente 77 Concepción. Tel: 412125579", ln=1)
             self.cell(0, 12, "www.junji.cl", ln=1)
 
+    #P Portrait -> Vertical
+    #mm milimetros
+    #A4 formato de tamaño
+
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
     titulo = "ACTA de Asignación de Equipo Informático N°" + funcionario["id_asignacion"]
@@ -463,6 +481,8 @@ def crear_pdf_asignacion(funcionario, equipos):
             for datum in datarow:
                 row.cell(datum)
 
+    observacion = "Observación: " + (funcionario.get("observacion") or "")
+
     pdf.ln(10)
     nombreEncargado = "Nombre del encargado TI:"
     rutEncargado = "RUT:"
@@ -470,7 +490,7 @@ def crear_pdf_asignacion(funcionario, equipos):
     nombreMinistro = "Nombre del funcionario:"
     rutMinistro = "RUT:"
     firma = "Firma"
-    with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
+    with pdf.text_columns(text_align="J", ncols=2, gutter=30) as cols:
         cols.write(nombreEncargado)
         cols.ln()
         cols.ln()
@@ -492,6 +512,8 @@ def crear_pdf_asignacion(funcionario, equipos):
         cols.write(firma)
         cols.ln()
         cols.ln()
+        cols.ln()
+        cols.write(observacion)  # <-- Aquí se muestra la observación real
         cols.new_column()
         for i in range(0, 3):
             if i == 0:
@@ -513,6 +535,13 @@ def crear_pdf_asignacion(funcionario, equipos):
     nombrePdf = "asignacion_" + funcionario["id_asignacion"] + ".pdf"
     pdf.output(nombrePdf)
     shutil.move(nombrePdf, os.path.join(ruta_asignaciones, nombrePdf))
+    #******
+    #try:
+    #funcion para enviar un correo a un funcionario (se envia el acta)
+        #enviar_correo(nombrePdf, 'correo')
+    #except:
+        #TODO: agregar error
+        #flash("no se pudo enviar el correo")
     return nombrePdf
 
 @asignacion.route("/asignacion/descargar_pdf_asignacion/<id>")
@@ -520,7 +549,7 @@ def crear_pdf_asignacion(funcionario, equipos):
 def descargar_pdf_asignacion(id):
     try:
         nombrePDF = "asignacion_" + str(id) + ".pdf"
-        file = os.path.join("pdf/asignaciones", nombrePDF)
+        file = os.path.join("pdf/asignaciones", nombrePDF)#******
         return send_file(file, as_attachment=False)
     except:
         flash("Error: No se encontró el PDF", "danger")
@@ -772,6 +801,7 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
             for datum in datarow:
                 row.cell(datum)
 
+    observacion = "Esta es una observacion"
     pdf.ln(10)
     nombreEncargado = "Nombre del encargado TI:" 
     rutEncargado = "RUT:"
@@ -802,15 +832,6 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
         cols.ln()
         cols.ln()
         cols.new_column()
-        for i in range(0, 3):
-            if i == 0:
-                cols.write(text= session['user'])
-            else:
-                cols.write(text="___________________________________")
-            cols.ln()
-            cols.ln()
-        cols.ln()
-        cols.ln()
         for i in range(0, 3):
             cols.write(text="___________________________________")
             cols.ln()
@@ -1027,12 +1048,14 @@ def listar_pdf(idAsignacion, devolver="None"):
         location = "asignacion"
     else:
         nombreFirmado = "devolucion_" + str(idAsignacion) + "_" + "firmado.pdf"
-
+        #print(nombreFirmado)
         location = "devolucion"
     #revisa si el archivo esta firmado
     if not os.path.exists(os.path.join("pdf/firmas_asignaciones", nombreFirmado)) and not os.path.exists(os.path.join("pdf/firmas_devoluciones", nombreFirmado)):
+        #mostrar
+        #print("#####NombreFirmado = None #######")
         nombreFirmado = "No existen firmas para este documento"
-
+    #print("exists")
     return render_template(
         'GestionR.H/firma.html', 
         nombreFirmado=nombreFirmado, 
@@ -1071,7 +1094,7 @@ def mostrar_pdf_asignacion_firmado(id):
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
     
-
+#*************************
 
 @asignacion.route("/asignacion/firmas_json/<idAsignacion>")
 @loguear_requerido
