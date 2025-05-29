@@ -3,22 +3,23 @@
 
 <div class="row">
   <div class="col">
-      <h2>Unidad</h2>
+    <h2>Unidad</h2>
     <div>
       <div class="toolbar">
         <div class="toolbar-1">
           <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#modal-add-unidad">
             <i class="bi bi-plus-lg"></i> Agregar
           </button>
-
         </div>
         <div class="toolbar-2">
-
+          <!-- Buscador -->
+          <input id="buscador_unidad" type="text" class="form-control" placeholder="Buscar unidad..."
+            oninput="buscarUnidades(1)" style="max-width: 500px; display: inline-block;" />
         </div>
         <div class="toolbar-3">
-
+          <!-- Buscador -->
+        
         </div>
-
       </div>
 
     </div>
@@ -61,17 +62,17 @@
     <table id="posts" class="display table table-bordered table-striped">
       <thead>
         <tr>
-          <th>Código Unidad</th>
-          <th>Nombre Unidad</th>
-          <th>Contacto</th>
-          <th>Dirección</th>
-          <th>Comuna</th>
-          <th>N° Equipos</th>
-          <th>Modalidad</th>
+          <th onclick="ordenarUnidad('idUnidad')">Código Unidad</th>
+          <th onclick="ordenarUnidad('nombreUnidad')">Nombre Unidad</th>
+          <th onclick="ordenarUnidad('contactoUnidad')">Contacto</th>
+          <th onclick="ordenarUnidad('direccionUnidad')">Dirección</th>
+          <th onclick="ordenarUnidad('nombreComuna')">Comuna</th>
+          <th onclick="ordenarUnidad('num_equipos')">N° Equipos</th>
+          <th onclick="ordenarUnidad('nombreModalidad')">Modalidad</th>
           <th>Acciones</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="unidadTableBody">
         {% for ubi in Unidad %}
         <tr>
           <td>{{ubi.idUnidad}}</td>
@@ -116,50 +117,20 @@
       </tbody>
     </table>
   </div>
+
+  <!-- Paginación -->
+  <div class="pagination-container mt-3 d-flex justify-content-center">
+    <nav aria-label="Paginación de unidades">
+      <ul class="pagination" id="unidad-pagination"></ul>
+    </nav>
+  </div>
 </div>
 
 {% include 'Organizacion/unidad.modal.html' %}
 
 <!-- Vinculamos el archivo JavaScript -->
-<!--<script></script>-->
-
-<script>
-
-  $(document).ready(function () {
-    // Inicializar DataTables
-    let table = $('#posts').DataTable({
-      "paging": true,
-      "searching": true,
-      "ordering": true,
-      "info": true,
-      "lengthChange": false,
-      "pageLength": 8,
-      "language": {
-        "search": "", // Limpiamos el label por defecto
-        "lengthMenu": "Mostrar _MENU_ registros por página",
-        "zeroRecords": "No se encontraron resultados",
-        "info": "Mostrando página _PAGE_ de _PAGES_",
-        "infoEmpty": "No hay registros disponibles",
-        "infoFiltered": "(filtrado de _MAX_ registros totales)"
-      }
-    });
-
-    // Mover el buscador al centro
-    var searchInput = $('#dt-search-0');
-    var originalSearchContainer = $('.dt-search');
-
-    if (searchInput.length > 0) {
-      $('.toolbar-2').append(searchInput);
-      if (originalSearchContainer.length > 0) {
-        originalSearchContainer.hide();
-      }
-    }
-
-    // Placeholder
-    $('#dt-search-0').attr('placeholder', 'Buscar unidad...');
-  });
+<script src="{{ url_for('static', filename='js/Operaciones/Unidad.js') }}"></script>
 
 
-</script>
 
 {% endblock %}

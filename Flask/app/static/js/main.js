@@ -33,8 +33,6 @@ function limpiarError(inputField) {
     inputField.css({ outline: "none", "outline-offset": "0px" });
   }
 }
-
-
 // Limpia los valores de todos los inputs, selects y textareas dentro del modal
 function limpiarInputsEnModal(modal) {
   if ($(modal).hasClass("no-limpiar-inputs")) {
@@ -134,9 +132,6 @@ function showDiv(id = "formulario", Esconder = []) {
   }
 }
 
-
-
-
 //al tocar el boton radio todo se destickea todo lo demas
 function todoCheck() {
   checkboxContainer = document.getElementById("checkbox_container")
@@ -162,12 +157,7 @@ function check_all() {
     checkboxes[i].checked = checkall.checked
   }
 }
-//Para filtrar los modelos de equipo en base a los tipos de equipo seria nesesario
-//tener los grupos ya filtrados. y guardados de alguna manera.
-//podria tenerlos separados en selects invisibles.
-//por cada tipo un select
 
-//tipos para mostrar Mac
 tipos_mac = {
   "Telefono": true
 }
@@ -187,8 +177,7 @@ function mostrarSelectModelo(id_select_tipo_equipo) {
   divs_select_de_tipo = document.querySelectorAll('.select_modelo_rel_tipo')
   console.log('divs_select_de_tipo')
   console.log(divs_select_de_tipo)
-  //no puede ser un for in porque divs_select_de_tipo es un diccionario y 
-  //devolveria las llaves no los valores
+
   for (let i = 0; i < divs_select_de_tipo.length; i++) {
     div = divs_select_de_tipo[i]
     console.log(div.id)
@@ -214,7 +203,6 @@ function mostrarSelectsEspeciales(id_marca) {
   } else {
     mac_div.style.display = "none"
   }
-
   //esconder imei
   imei_div = document.getElementById("Imei")
   if (tipos_imei[valor_tipo_equipo]) {
@@ -234,16 +222,12 @@ function mostrarSelectsEspeciales(id_marca) {
 }
 
 function mostrarTipo_equipo() {
-  //console.log("select_marca")
   select_marca = document.getElementById('marca')
   console.log(select_marca.value)
   //get all divs with class select_tipo_modelo_rel_marca
   divs_select_de_marca = document.querySelectorAll('.select_tipo_modelo_rel_marca')
-  //console.log('divs_select_de_marca')
-  //console.log(divs_select_de_marca)
   for (let i = 0; i < divs_select_de_marca.length; i++) {
     div = divs_select_de_marca[i]
-    //console.log(div)
     if (div.id === select_marca.value) {
       div.style.display = "block"
     } else {
@@ -290,9 +274,6 @@ function abrir_cerrar_ojo(id_ojo, repetir) {
       input = document.getElementById('contrasenna').type = 'text'
     }
   }
-
-
-
 }
 
 function enviarModelo(valor) {
@@ -318,13 +299,9 @@ function enviarModelo(valor) {
 function mostrarTipo_para_agregar_modelo() {
   select_marca = document.getElementById('marca')
   console.log(select_marca.value)
-  //get all divs with class select_tipo_modelo_rel_marca
   divs_select_de_marca = document.querySelectorAll('.select_modelo')
-  //console.log('divs_select_de_marca')
-  //console.log(divs_select_de_marca)
   for (let i = 0; i < divs_select_de_marca.length; i++) {
     div = divs_select_de_marca[i]
-    //console.log(div)
     if (div.id === select_marca.value) {
       div.style.display = "block"
     } else {
@@ -401,7 +378,6 @@ $(document).ready(function () {
     var input = $(this).val();
     var regex = /^[a-zA-Z0-9,.-/  ]*$/; // Permitir letras, @, puntos, números y espacios
     var errorMessage = $("#error-message");
-
     // Verificar si el input actual es válido
     if (!regex.test(input)) {
       errorMessage.text("Caracteres no permitidos. Solo se permiten letras, números y espacios.").show();
@@ -414,7 +390,6 @@ $(document).ready(function () {
       }
     }
   }
-
   // Asignar la función de validación a todos los inputs con la clase 'validatable-input'
   $(".validatable-input").on("input", validateInput);
 });
@@ -422,7 +397,6 @@ $(document).ready(function () {
 $(document).ready(function () {
   function validarContraseña() {
     const password = $(this).val();
-
     const upperCasePattern = /[A-Z]/;
     const lowerCasePattern = /[a-z]/;
     const numberPattern = /[0-9]/;
@@ -495,25 +469,25 @@ $(document).ready(function () {
 });
 
 
-  $(document).ready(function () {
-    function validarInputCorreo(inputField) {
-      const regex = /^[a-zA-Z0-9._-]+$/; // Solo caracteres válidos antes del @
-      const input = inputField.val().trim();
+$(document).ready(function () {
+  function validarInputCorreo(inputField) {
+    const regex = /^[a-zA-Z0-9._-]+$/; // Solo caracteres válidos antes del @
+    const input = inputField.val().trim();
 
-      if (input.length === 0) {
-        limpiarError(inputField);
-        return true;
-      }
-
-      if (!regex.test(input)) {
-        mostrarError(inputField, "Solo se permiten letras, números y los caracteres: . _ -");
-        return false;
-      } else {
-        limpiarError(inputField);
-      }
-
+    if (input.length === 0) {
+      limpiarError(inputField);
       return true;
     }
+
+    if (!regex.test(input)) {
+      mostrarError(inputField, "Solo se permiten letras, números y los caracteres: . _ -");
+      return false;
+    } else {
+      limpiarError(inputField);
+    }
+
+    return true;
+  }
 
   // Validar en tiempo real cuando el usuario escribe
   $(document).on("input", ".validar-input-correo", function () {
@@ -523,16 +497,16 @@ $(document).ready(function () {
   // Validación en el envío del formulario
   $(document).on("submit", "form", function (event) {
     let esValido = true;
-  const form = $(this);
+    const form = $(this);
 
-  form.find(".validar-input-correo").each(function () {
+    form.find(".validar-input-correo").each(function () {
       if (!validarInputCorreo($(this))) {
-    esValido = false;
+        esValido = false;
       }
     });
 
-  if (!esValido) {
-    event.preventDefault();
+    if (!esValido) {
+      event.preventDefault();
     }
   });
 });
@@ -591,16 +565,12 @@ $(document).ready(function () {
   });
 });
 
-// Valida las fechas, sólo es necesario ocupar la clase ".validar-fecha-X-Y", tal que:
-// => X representa los días anteriores a la fecha actual
-// => Y representa los días siguientes a la fecha actual
 $(document).ready(function () {
   function configurarRangoFecha(inputField) {
     const classList = inputField.attr("class").split(" ");
     let diasAtras = 0;
     let diasAdelante = 0;
 
-    // Buscar la clase que siga el formato "validar-fecha-X-Y"
     classList.forEach(className => {
       const match = className.match(/^validar-fecha-(\d+)-(\d+)$/);
       if (match) {
@@ -640,7 +610,6 @@ $(document).ready(function () {
     }
   }
 
-  // Configurar automáticamente los inputs con clase "validar-fecha-X-Y"
   $("input[type='date']").each(function () {
     if ($(this).attr("class").match(/validar-fecha-\d+-\d+/)) {
       configurarRangoFecha($(this));
@@ -691,7 +660,7 @@ $(document).ready(function () {
     // Configurar el título y el mensaje
     $("#genericModalLabel").text(title);
     $("#genericModalMessage").text(message);
-    
+
 
     // Quitar cualquier evento existente en el botón de confirmación y ocultarlo
     $("#genericModalConfirmButton").hide();

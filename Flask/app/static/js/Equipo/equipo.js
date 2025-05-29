@@ -1,5 +1,3 @@
-//Desde aqui comienzan las funciones para llenar los select dinamicos para marca, tipo y modelo
-//Ojo las rutas backend estan en el archivo modelo_equipo.py
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     await cargarMarcas(); // Llenar el selector de marcas
@@ -312,52 +310,52 @@ function manejarCamposTelefono() {
 document.addEventListener("DOMContentLoaded", function () {
   var tipoSelect = document.getElementById("tipoSelect");
   if (tipoSelect) {
-      tipoSelect.addEventListener("change", manejarCamposTelefono);
+    tipoSelect.addEventListener("change", manejarCamposTelefono);
   } else {
-      console.warn("El elemento #tipoSelect no se encontró en el DOM.");
+    console.warn("El elemento #tipoSelect no se encontró en el DOM.");
   }
 });
 
 
-  //Maneja boton de eliminar equipo
-  $(document).ready(function () {
-    $("#delete-selected-button").on("click", function () {
-        // Obtener los IDs de las filas seleccionadas
-        const selectedRows = $(".row-checkbox:checked").closest("tr");
-        if (!selectedRows.length) {
-            alert("Por favor, selecciona al menos una fila para eliminar.");
-            return;
-        }
+//Maneja boton de eliminar equipo
+$(document).ready(function () {
+  $("#delete-selected-button").on("click", function () {
+    // Obtener los IDs de las filas seleccionadas
+    const selectedRows = $(".row-checkbox:checked").closest("tr");
+    if (!selectedRows.length) {
+      alert("Por favor, selecciona al menos una fila para eliminar.");
+      return;
+    }
 
-        const ids = selectedRows.map(function () {
-            return $(this).data("id");
-        }).get();
+    const ids = selectedRows.map(function () {
+      return $(this).data("id");
+    }).get();
 
-        // Configurar y mostrar el modal de confirmación
-        configureGenericModal(
-            "Confirmar Eliminación",
-            "¿Estás seguro de que deseas eliminar los equipos seleccionados?",
-            `/delete_equipo/${ids.join(",")}`
-        );
-    });
+    // Configurar y mostrar el modal de confirmación
+    configureGenericModal(
+      "Confirmar Eliminación",
+      "¿Estás seguro de que deseas eliminar los equipos seleccionados?",
+      `/delete_equipo/${ids.join(",")}`
+    );
+  });
 });
 
 // Manejar boton de eliminar incidencia
 $(document).ready(function () {
   $("#delete-incidencia-button").on("click", function () {
-      // Obtener el ID de la incidencia (ya que es un único elemento)
-      const id = $(this).data("id");
-      if (!id) {
-          alert("No se encontró la incidencia.");
-          return;
-      }
+    // Obtener el ID de la incidencia (ya que es un único elemento)
+    const id = $(this).data("id");
+    if (!id) {
+      alert("No se encontró la incidencia.");
+      return;
+    }
 
-      // Configurar y mostrar el modal de confirmación con la URL de eliminación
-      configureGenericModal(
-          "Confirmar Eliminación",
-          "¿Estás seguro de que deseas eliminar esta incidencia?",
-          `/incidencia/delete_incidencia/${id}`
-      );
+    // Configurar y mostrar el modal de confirmación con la URL de eliminación
+    configureGenericModal(
+      "Confirmar Eliminación",
+      "¿Estás seguro de que deseas eliminar esta incidencia?",
+      `/incidencia/delete_incidencia/${id}`
+    );
   });
 });
 
@@ -367,7 +365,7 @@ $(document).ready(function () {
 //Redireccion al modulo de asignacion desde equipos
 $(document).ready(function () {
   $("#assign-button").on("click", function () {
-      window.location.href = "/asignacion"; // Cambia "/asignacion" por la URL correcta
+    window.location.href = "/asignacion"; // Cambia "/asignacion" por la URL correcta
   });
 });
 
@@ -632,8 +630,6 @@ $(document).ready(function () {
   });
 });
 
-
-// ==================== [EDITAR] Cargar Marcas ====================
 async function cargarMarcasEdit() {
   // 1. Llamar a la misma ruta donde obtienes las marcas
   const response = await fetch("/get_marcas");
@@ -650,8 +646,6 @@ async function cargarMarcasEdit() {
   });
   console.log(marcas)
 }
-
-// ==================== [EDITAR] Cargar Tipos ====================
 async function cargarTiposEdit() {
   const marcaId = document.getElementById("edit_marcaSelect").value;
 
@@ -710,8 +704,6 @@ async function cargarModelosEdit() {
   });
 }
 
-
-
 function mostrarCamposTelefonoEdit() {
   const tipoSelect = document.getElementById("edit_tipoSelect");
   const camposTelefono = document.getElementById("edit_camposTelefono");
@@ -730,45 +722,41 @@ function mostrarCamposTelefonoEdit() {
   }
 }
 
-
-document.getElementById("edit_tipoSelect").addEventListener("change", function() {
+document.getElementById("edit_tipoSelect").addEventListener("change", function () {
   mostrarCamposTelefonoEdit();
 });
-
-
 
 function setIdEquipoInModal() {
   // Obtener todos los checkboxes seleccionados
   var selectedCheckboxes = document.querySelectorAll('.row-checkbox:checked');
   console.log("Cantidad de checkboxes seleccionados:", selectedCheckboxes.length);
-  
+
   // Si no hay exactamente uno seleccionado, alerta y sale
   if (selectedCheckboxes.length !== 1) {
-      alert("Por favor, seleccione un equipo.");
-      return;
+    alert("Por favor, seleccione un equipo.");
+    return;
   }
-  
+
   // Obtener la fila y extraer el id del equipo
   var row = selectedCheckboxes[0].closest('tr');
   console.log("Fila seleccionada:", row);
   var idEquipo = row.getAttribute('data-id');
   console.log("Valor obtenido del data-id:", idEquipo);
-  
+
   // Asignar el id al input oculto dentro del modal
   var inputEquipo = document.querySelector('#add_incidencia #idEquipo');
   if (inputEquipo) {
-      inputEquipo.value = idEquipo;
-      console.log("idEquipo asignado en el input:", inputEquipo.value);
+    inputEquipo.value = idEquipo;
+    console.log("idEquipo asignado en el input:", inputEquipo.value);
   } else {
-      console.log("No se encontró el input #idEquipo dentro del modal.");
+    console.log("No se encontró el input #idEquipo dentro del modal.");
   }
-  
+
   // Abrir el modal manualmente usando la API de Bootstrap
   var modalElement = document.getElementById('add_incidencia');
   var modal = bootstrap.Modal.getOrCreateInstance(modalElement);
   modal.show();
 }
-
 
 document.addEventListener("DOMContentLoaded", function () {
   var checkboxes = document.querySelectorAll(".row-checkbox");
@@ -776,27 +764,27 @@ document.addEventListener("DOMContentLoaded", function () {
   var deleteButton = document.getElementById("delete-selected-button");
 
   function actualizarEstadoBotones() {
-      var selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
-      var seleccionados = selectedCheckboxes.length;
+    var selectedCheckboxes = document.querySelectorAll(".row-checkbox:checked");
+    var seleccionados = selectedCheckboxes.length;
 
-      // Habilita el botón de incidencia solo si hay exactamente 1 checkbox seleccionado
-      if (seleccionados === 1) {
-          incidenciaButton.removeAttribute("disabled");
-      } else {
-          incidenciaButton.setAttribute("disabled", "true");
-      }
+    // Habilita el botón de incidencia solo si hay exactamente 1 checkbox seleccionado
+    if (seleccionados === 1) {
+      incidenciaButton.removeAttribute("disabled");
+    } else {
+      incidenciaButton.setAttribute("disabled", "true");
+    }
 
-      // Habilita el botón de eliminar si hay al menos 1 checkbox seleccionado
-      if (seleccionados > 0) {
-          deleteButton.removeAttribute("disabled");
-      } else {
-          deleteButton.setAttribute("disabled", "true");
-      }
+    // Habilita el botón de eliminar si hay al menos 1 checkbox seleccionado
+    if (seleccionados > 0) {
+      deleteButton.removeAttribute("disabled");
+    } else {
+      deleteButton.setAttribute("disabled", "true");
+    }
   }
 
   // Agregar eventos a cada checkbox para actualizar el estado de los botones
   checkboxes.forEach(function (checkbox) {
-      checkbox.addEventListener("change", actualizarEstadoBotones);
+    checkbox.addEventListener("change", actualizarEstadoBotones);
   });
 
   // Ejecutar al cargar la página por si hay valores previos
@@ -804,38 +792,37 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 
-  // Espera a que el DOM esté completamente cargado
-  document.addEventListener("DOMContentLoaded", function() {
-    // Selecciona todas las filas del cuerpo de la tabla
-    const rows = document.querySelectorAll("#myTableBody tr");
-    
-    rows.forEach(row => {
-      row.addEventListener("click", function(e) {
-        // Evita que se active el toggle si se hace clic en elementos interactivos
-        const tag = e.target.tagName.toLowerCase();
-        if (tag === "input" || tag === "a" || tag === "button") {
-          return;
-        }
-        // Busca el checkbox dentro de la fila y alterna su estado
-        const checkbox = row.querySelector("input.row-checkbox");
-        if (checkbox) {
-          checkbox.checked = !checkbox.checked;
-          // Dispara el evento 'change' para que se ejecuten otros manejadores
-          checkbox.dispatchEvent(new Event('change'));
-        }
-      });
+// Espera a que el DOM esté completamente cargado
+document.addEventListener("DOMContentLoaded", function () {
+  // Selecciona todas las filas del cuerpo de la tabla
+  const rows = document.querySelectorAll("#myTableBody tr");
+
+  rows.forEach(row => {
+    row.addEventListener("click", function (e) {
+      // Evita que se active el toggle si se hace clic en elementos interactivos
+      const tag = e.target.tagName.toLowerCase();
+      if (tag === "input" || tag === "a" || tag === "button") {
+        return;
+      }
+      // Busca el checkbox dentro de la fila y alterna su estado
+      const checkbox = row.querySelector("input.row-checkbox");
+      if (checkbox) {
+        checkbox.checked = !checkbox.checked;
+        // Dispara el evento 'change' para que se ejecuten otros manejadores
+        checkbox.dispatchEvent(new Event('change'));
+      }
     });
   });
+});
 
 
-  function exportarBusqueda() {
-    let button = document.getElementById("exportarBusqueda");
-    let ids = button.getAttribute("data-ids");
-    
-    if (ids) {
-      window.location.href = `/crear_excel?ids=${ids}`;
-    } else {
-      alert("No hay datos visibles para exportar.");
-    }
+function exportarBusqueda() {
+  let button = document.getElementById("exportarBusqueda");
+  let ids = button.getAttribute("data-ids");
+
+  if (ids) {
+    window.location.href = `/crear_excel?ids=${ids}`;
+  } else {
+    alert("No hay datos visibles para exportar.");
   }
-  
+}

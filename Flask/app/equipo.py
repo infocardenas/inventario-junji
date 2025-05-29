@@ -499,10 +499,6 @@ def delete_equipo(id):
 
         return redirect(url_for("equipo.Equipo"))
 
-
-
-
-
 @equipo.route("/mostrar_asociados_traslado/<idTraslado>")
 @loguear_requerido
 def mostrar_asociados_traslado(idTraslado):
@@ -566,7 +562,7 @@ def mostrar_asociados_unidad(idUnidad, page=1):
         return redirect("/ingresar")
     page = int(page)
     page = 1
-    perpage = 200  # getPerPage()
+    perpage = 200  
     offset = (page - 1) * perpage
     cur = mysql.connection.cursor()
     cur.execute("SELECT COUNT(*) FROM equipo")
@@ -670,7 +666,6 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
             lastpage=False,
         )
     ultimaAsignacion = asignaciones[0]
-    primeraAsignacion = asignaciones[-1] #-1 deberia dar el ultimo elemento
 
     cur.execute(""" 
     SELECT *
@@ -711,10 +706,6 @@ def mostrar_asociados_funcionario(rutFuncionario, page=1):
 @loguear_requerido
 def equipo_detalles(idEquipo):
     cur = mysql.connection.cursor()
-    #Como funcionaria con la asignacion cambiada ¿?
-    #Cuando se añadan las asignaciones y devoluciones agregar funcionario como nombre
-    #TODO: Revisar que hacer con las observaciones de Traslado, 
-    #Revisar que hacer con observacion de Devolucion
     cur.execute("""
             SELECT i.fechaIncidencia as fecha, i.idIncidencia as id,
                 "Incidencia" as evento, i.observacionIncidencia as observacion,
@@ -745,23 +736,6 @@ def equipo_detalles(idEquipo):
             """, (idEquipo, idEquipo, idEquipo, idEquipo))
 
     data_eventos = cur.fetchall()
-    #cur.execute(
-        #"""
-                #SELECT e.idEquipo, e.Cod_inventarioEquipo, e.Num_serieEquipo, 
-                #e.ObservacionEquipo, e.codigoproveedor_equipo, e.macEquipo, e.imeiEquipo, 
-                #e.numerotelefonicoEquipo,e.idEstado_Equipo, e.idUnidad, 
-                #e.idOrden_compra, e.idModelo_equipo,te.idTipo_equipo, te.nombreTipo_Equipo, 
-                #ee.idEstado_equipo, ee.nombreEstado_equipo, u.idUnidad, u.nombreUnidad, 
-                #oc.idOrden_compra, oc.nombreOrden_compra,
-    #moe.idModelo_equipo, moe.nombreModeloequipo
-    #FROM equipo e
-    #INNER JOIN modelo_equipo moe on moe.idModelo_Equipo = e.idModelo_equipo
-    #INNER JOIN tipo_equipo te on te.idTipo_equipo = moe.idTipo_Equipo
-    #INNER JOIN estado_equipo ee on ee.idEstado_equipo = e.idEstado_Equipo
-    #INNER JOIN unidad u on u.idUnidad = e.idUnidad
-    #INNER JOIN orden_compra oc on oc.idOrden_compra = e.idOrden_compra
-    #WHERE e.idEquipo = %s
-                #""",(idEquipo))
     cur.execute("""
     SELECT *
     FROM super_equipo se
@@ -787,30 +761,6 @@ def equipo_detalles(idEquipo):
         eventos=data_eventos, 
         funcionario=funcionario
         )
-
-#
-    #cur.execute("""
-            #SELECT *
-            #FROM (
-                #SELECT *
-                #FROM asignacion
-                #WHERE asignacion.idEquipo = %s 
-            #)
-            #LEFT OUTER JOIN (
-                #SELECT *
-                #FROM devolucion
-                #WHERE devolucion.idEquipo = %s
-            #)
-            #LEFT OUTER JOIN (
-                #SELECT *
-                #FROM incidencia
-                #WHERE incidencia.idEquipo = %s
-            #)
-            #LEFT OUTER JOIN (
-
-            #)
-                #""")
-
 
 @equipo.route("/equipo/importar_excel", methods=["POST"])
 @administrador_requerido
@@ -859,7 +809,6 @@ def importar_excel_unidad():
                     col_nombre='B', 
                     col_direccion='D', 
                     worksheet=ws)
-    #TODO: delete file
     return redirect("/equipo")
     
 
@@ -990,7 +939,6 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
                 idMarca_Equipo)
             VALUES (%s, %s, %s)
                 """, (modelo, id_tipo_equipo, id_marca_equipo))
-                #commit
             mysql.connection.commit()
             id_modelo_equipo = cur.lastrowid
         else:
@@ -1044,12 +992,6 @@ def importar_equipo(col_codigo_inventario, col_n_serie, col_codigo_proveedor,
                       ))
         mysql.connection.commit()
         flash("equipos importados")
-
-        
-         
-
-    #TODO orden de compra no es nulable. deberia ser nulable
-
         pass
     pass 
 
@@ -1063,8 +1005,6 @@ def encontrar_o_crear_tipo_equipo(nombreTipoEquipo, cur, nombre_marca):
     print("tupla_tipo_equipo")
     print(tupla_tipo_equipos)
     id_tipo_equipo = ""
-    #revisar si se encontro un tipo de equipo.
-    #asignar valor a id_tipo_equipo consecuentemente
     if(len(tupla_tipo_equipos) == 0):
         cur.execute("""
         INSERT INTO tipo_equipo
@@ -1129,8 +1069,6 @@ def importar_unidad(col_comuna, col_modalidad, col_codigo,
         cur = mysql.connection.cursor()
         print("importar_unidad")
 
-        #id comuna
-
         cur.execute("""
             SELECT idComuna
             FROM comuna c
@@ -1138,7 +1076,6 @@ def importar_unidad(col_comuna, col_modalidad, col_codigo,
                     """, (nombreComuna,))
         Comuna = cur.fetchone()
         print(Comuna)
-        #id modalidad
         cur.execute("""
             SELECT idModalidad
             FROM modalidad m
@@ -1157,12 +1094,9 @@ def importar_unidad(col_comuna, col_modalidad, col_codigo,
         except Exception as e:
             print("unidad ya ingresada ¿?")
             flash("Error al crear")
-            #flash(e.args[1])
 
     flash("unidades importadas")
     print("unidades importadas")
-
-
 
 def obtener_equipos():
         cur = mysql.connection.cursor()
@@ -1267,7 +1201,7 @@ def crear_excel():
         return redirect("/ingresar")
 
     # Obtener los IDs desde la URL
-    ids_param = request.args.get("ids")  # Recibe '1,2,3,4'
+    ids_param = request.args.get("ids") 
     ids_lista = ids_param.split(",") if ids_param else None
 
     # Crear Excel

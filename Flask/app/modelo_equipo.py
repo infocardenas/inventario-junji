@@ -73,8 +73,6 @@ def buscar_modelo_equipo():
         "current_page": page
     })
 
-
-
 @modelo_equipo.route("/modelo_equipo")
 @modelo_equipo.route("/modelo_equipo/<int:page>")
 @loguear_requerido
@@ -130,8 +128,6 @@ def modeloEquipo(page=1):
 
 def getPerPage():
     return 10  # o cualquier número que desees por página
-
-
 
 @modelo_equipo.route("/add_modelo_equipo", methods=["POST"])
 def add_modelo_equipo():

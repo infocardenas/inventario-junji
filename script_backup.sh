@@ -2,7 +2,7 @@
 
 # Configuración
 FECHA=$(date +%F)
-DESTINO="/mnt/backups/inventario_junji"
+DESTINO="/mnt/backups/backups_inventariofinal"
 ARCHIVOS_BACKUP="$DESTINO/archivos_$FECHA"
 SQL_BACKUP="$DESTINO/bd_$FECHA.sql"
 BACKUP_TOTAL="$DESTINO/backup_total_$FECHA.tar.gz"
@@ -16,8 +16,8 @@ echo "[$FECHA] Iniciando respaldo..."
 echo "Respaldando /home y /etc en $ARCHIVOS_BACKUP..."
 rsync -avz /home /etc "$ARCHIVOS_BACKUP"
 
-# 2. Backup de base de datos (usando ~/.my.cnf para evitar contraseña en el script)
-echo "Respaldando base de datos MySQL..."
+# 2. Backup de base de datos inventariofinal
+echo "Respaldando base de datos MySQL: inventariofinal..."
 mysqldump --defaults-file=~/.my.cnf inventariofinal > "$SQL_BACKUP"
 
 # 3. Comprimir todo

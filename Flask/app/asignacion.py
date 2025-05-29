@@ -1,4 +1,3 @@
-from email.mime.application import MIMEApplication
 from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session, jsonify
 from . import mysql
 from fpdf import FPDF
@@ -49,10 +48,7 @@ asignacion = Blueprint("asignacion", __name__, template_folder="app/templates")
 def Asignacion(page=1):
     perpage = getPerPage()
     offset = (page - 1) * perpage
-
     cur = mysql.connection.cursor()
-
-    # Paginación de asignaciones
     cur.execute(f"""
     SELECT
         a.idAsignacion,
@@ -255,8 +251,6 @@ def create_asignacion():
         return redirect(url_for("asignacion.Asignacion"))
 
     flash("Asignación agregada exitosamente", 'success')
-
-    pdf_asignacion = crear_pdf_asignacion(funcionario, TuplaEquipos)
     
     return redirect(url_for('asignacion.Asignacion'))
 
@@ -414,10 +408,6 @@ def crear_pdf_asignacion(funcionario, equipos):
             self.cell(0, 12, "O'Higgins Poniente 77 Concepción. Tel: 412125579", ln=1)
             self.cell(0, 12, "www.junji.cl", ln=1)
 
-    #P Portrait -> Vertical
-    #mm milimetros
-    #A4 formato de tamaño
-
     pdf = PDF("P", "mm", "A4")
     pdf.add_page()
     titulo = "ACTA de Asignación de Equipo Informático N°" + funcionario["id_asignacion"]
@@ -480,8 +470,6 @@ def crear_pdf_asignacion(funcionario, equipos):
             for datum in datarow:
                 row.cell(datum)
 
-    observacion = "Esta es una observacion"
-
     pdf.ln(10)
     nombreEncargado = "Nombre del encargado TI:"
     rutEncargado = "RUT:"
@@ -532,13 +520,6 @@ def crear_pdf_asignacion(funcionario, equipos):
     nombrePdf = "asignacion_" + funcionario["id_asignacion"] + ".pdf"
     pdf.output(nombrePdf)
     shutil.move(nombrePdf, os.path.join(ruta_asignaciones, nombrePdf))
-    #******
-    #try:
-    #funcion para enviar un correo a un funcionario (se envia el acta)
-        #enviar_correo(nombrePdf, 'correo')
-    #except:
-        #TODO: agregar error
-        #flash("no se pudo enviar el correo")
     return nombrePdf
 
 @asignacion.route("/asignacion/descargar_pdf_asignacion/<id>")
@@ -546,7 +527,7 @@ def crear_pdf_asignacion(funcionario, equipos):
 def descargar_pdf_asignacion(id):
     try:
         nombrePDF = "asignacion_" + str(id) + ".pdf"
-        file = os.path.join("pdf/asignaciones", nombrePDF)#******
+        file = os.path.join("pdf/asignaciones", nombrePDF)
         return send_file(file, as_attachment=False)
     except:
         flash("Error: No se encontró el PDF", "danger")
@@ -798,7 +779,6 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
             for datum in datarow:
                 row.cell(datum)
 
-    observacion = "Esta es una observacion"
     pdf.ln(10)
     nombreEncargado = "Nombre del encargado TI:" 
     rutEncargado = "RUT:"
@@ -902,6 +882,48 @@ def buscar(idAsignacion):
         lastpage=True
     )
 
+@asignacion.route("/asignacion/detalles_json/<idAsignacion>")
+@loguear_requerido
+def obtener_detalles_asignacion(idAsignacion):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT 
+            a.idAsignacion,
+            a.fecha_inicioAsignacion,
+            d.fechaDevolucion,
+            a.ObservacionAsignacion,
+            f.rutFuncionario,
+            f.nombreFuncionario,
+            f.cargoFuncionario,
+            te.nombreTipo_equipo,
+            mae.nombreMarcaEquipo,
+            me.nombreModeloequipo,
+            e.Cod_inventarioEquipo,
+            e.Num_serieEquipo,
+            e.codigoproveedor_equipo,
+            e.ObservacionEquipo
+        FROM asignacion a
+        JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
+        JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+        JOIN equipo e ON ea.idEquipo = e.idEquipo
+        LEFT JOIN devolucion d ON ea.idEquipoAsignacion = d.idEquipoAsignacion
+        JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
+        JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+        WHERE a.idAsignacion = %s
+        LIMIT 1
+    """, (idAsignacion,))
+    row = cur.fetchone()
+    cur.close()
+
+    if not row:
+        return jsonify({"error": "No se encontró la asignación"}), 404
+
+    return jsonify({
+        "asignacion": row
+    })
+
 
 @asignacion.route("/buscar_asignaciones", methods=["GET"])
 @loguear_requerido
@@ -971,6 +993,33 @@ def buscar_asignaciones():
         "current_page": page
     })
 
+@asignacion.route("/asignacion/firmar/<id>", methods=["GET"])
+@loguear_requerido
+def firmar_asignacion(id):
+    if "user" not in session:
+        flash("You are NOT authorized")
+        return redirect("/ingresar")
+
+    # Ruta de la carpeta donde se almacenan las firmas
+    dir_firmas = "pdf/firmas_asignaciones"
+    nombreFirmado = None
+
+    # Buscar el archivo firmado relacionado con el ID
+    try:
+        for filename in os.listdir(dir_firmas):
+            if filename.startswith(f"asignacion_{id}_") and filename.endswith("_firmado.pdf"):
+                nombreFirmado = filename
+                break
+    except FileNotFoundError:
+        flash("No se encontró la carpeta de firmas", "danger")
+
+    # Renderizar la plantilla con los datos necesarios
+    return render_template(
+        "GestionR.H/asignacion.modals.html",
+        id=id,
+        location="asignacion",
+        nombreFirmado=nombreFirmado
+    )
 
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>")
 @asignacion.route("/asignacion/listar_pdf/<idAsignacion>/<devolver>")
@@ -985,14 +1034,12 @@ def listar_pdf(idAsignacion, devolver="None"):
         location = "asignacion"
     else:
         nombreFirmado = "devolucion_" + str(idAsignacion) + "_" + "firmado.pdf"
-        #print(nombreFirmado)
+
         location = "devolucion"
     #revisa si el archivo esta firmado
     if not os.path.exists(os.path.join("pdf/firmas_asignaciones", nombreFirmado)) and not os.path.exists(os.path.join("pdf/firmas_devoluciones", nombreFirmado)):
-        #mostrar
-        #print("#####NombreFirmado = None #######")
         nombreFirmado = "No existen firmas para este documento"
-    #print("exists")
+
     return render_template(
         'GestionR.H/firma.html', 
         nombreFirmado=nombreFirmado, 
@@ -1031,7 +1078,20 @@ def mostrar_pdf_asignacion_firmado(id):
         flash("no se encontro el pdf")
         return redirect(url_for('asignacion.Asignacion'))
     
-#*************************
+
+
+@asignacion.route("/asignacion/firmas_json/<idAsignacion>")
+@loguear_requerido
+def obtener_firma_json(idAsignacion):
+    dir_firmas = "pdf/firmas_asignaciones"
+    nombre = f"asignacion_{idAsignacion}_firmado.pdf"
+    ruta = os.path.join(dir_firmas, nombre)
+
+    if os.path.exists(ruta):
+        return jsonify({"existe": True, "nombre": nombre})
+    else:
+        return jsonify({"existe": False})
+
 
 @asignacion.route("/asignacion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
 @administrador_requerido
@@ -1041,7 +1101,7 @@ def adjuntar_pdf_asignacion(idAsignacion):
         return redirect("/ingresar")
 
     # Obtener el archivo
-    file = request.files["file"]
+    file = request.files["archivoFirma"]
 
     # Definir la carpeta donde se guardará el archivo
     dir = "pdf/firmas_asignaciones" if inLinux else "app/pdf/firmas_asignaciones"
@@ -1068,7 +1128,20 @@ def adjuntar_pdf_asignacion(idAsignacion):
     os.rename(temp_file_path, new_file_path)
 
     flash("Se subió la firma correctamente")
-    return redirect(f"/asignacion/listar_pdf/{idAsignacion}")
+    return redirect(url_for("asignacion.Asignacion"))
+
+
+@asignacion.route("/asignacion/firmas_devolucion_json/<idDevolucion>")
+@loguear_requerido
+def obtener_firma_devolucion_json(idDevolucion):
+    dir_firmas = "pdf/firmas_devoluciones"
+    nombre = f"devolucion_{idDevolucion}_firmado.pdf"
+    ruta = os.path.join(dir_firmas, nombre)
+
+    if os.path.exists(ruta):
+        return jsonify({"existe": True, "nombre": nombre})
+    else:
+        return jsonify({"existe": False})
 
 
 @asignacion.route("/devolucion/adjuntar_pdf/<idAsignacion>", methods=["POST"])
@@ -1089,7 +1162,7 @@ def adjuntar_pdf_devolucion(idAsignacion):
         os.remove(file_path)
 
     # Obtener el archivo desde la solicitud
-    file = request.files["file"]
+    file = request.files.get("archivoFirma")
 
     # Guardar el archivo con un nombre seguro
     sfilename = secure_filename(file.filename)
@@ -1100,109 +1173,4 @@ def adjuntar_pdf_devolucion(idAsignacion):
     new_file_path = os.path.join(dir, f"devolucion_{idAsignacion}_firmado.pdf")
     os.rename(temp_file_path, new_file_path)
 
-    return redirect(f"/asignacion/listar_pdf/{idAsignacion}/devolver")
-
-
-
-#/asignacion/listar_pdf/<idAsignacion>/<devolver>
-
-#junji
-#Tijunji2017
-#def enviar_asignacion(Asignacion):
-    #asunto = 'Nueva Asignacion'
-    #cuerpo = """
-    #<html>
-        #<body>
-        #<p>pretender que este correo se envia a </p>
-        #<table>
-            #<thead>
-                #<tr>
-                    #<th>N°</th>
-                    #<th>Tipo Equipo</th>
-                    #<th>Marca</th>
-                    #<th>Modelo</th>
-                    #<th>N° Serie</th>
-                    #<th>N° Inventario</th>
-                #</tr>
-            #</thead>
-            #<tbody>
-                #<tr>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                    #<td>{}</td>
-                #</tr>
-            #</tbody>
-        #</table>
-        #</body>
-    #</html>
-    #""".format(1, Asignacion[''])
-    #enviar_correo(asunto, 'correo', cuerpo, 'filename')
-    #pass
-
-
-######## Echar ojo a esto ###########
-def enviar_correo(filename, correo):
-    #correo = "cacastilloc@junji.cl"
-    print("enviar_correo")
-    remitente = 'martin.castro@junji.cl'
-    destinatario = 'martin.castro@junji.cl'
-    asunto = 'Se le han asignado los siguientes equipos'
-    cuerpo = """
-
-            """.format(correo)
-    username = 'martin.castro@junji.cl'
-    password = 'junji.2024'
-
-    mensaje = MIMEMultipart()
-
-    mensaje['From'] = remitente
-    mensaje['To'] = destinatario
-    mensaje['Subject'] = asunto
-
-    with open(filename, "rb") as pdf_file:
-        pdf = MIMEApplication(pdf_file.read(), _subtype='pdf')
-    pdf.add_header('Content-Disposition', 'attachment', filename=filename)
-    mensaje.attach(pdf)
-
-    mensaje.attach(MIMEText(cuerpo, 'plain'))
-
-    texto = mensaje.as_string()
-    server_smtp1 = 'smtp.office365.com'
-    server_smtp2 = 'smtp-mail.outlook.com'
-    server = smtplib.SMTP('smtp.office365.com', port=587)
-    server.starttls()
-    server.login(username, password)
-    server.sendmail(remitente, destinatario, texto)
-    server.quit()
-
-#def enviar_correo(asunto, correo, cuerpo, filename):
-    ##correo = "cacastilloc@junji.cl"
-    #print("enviar_correo")
-    #remitente = 'martin.castro@junji.cl'
-    #destinatario = 'mauricio.cardenas@junji.cl'
-    #username = 'martin.castro@junji.cl'
-    #password = 'junji.2024'
-
-    #mensaje = MIMEMultipart()
-
-    #mensaje['From'] = remitente
-    #mensaje['To'] = destinatario
-    #mensaje['Subject'] = asunto
-
-    #mensaje.attach(MIMEText(cuerpo, 'html'))
-
-    #texto = mensaje.as_string()
-    #server_smtp1 = 'smtp.office365.com'
-    #server_smtp2 = 'smtp-mail.outlook.com'
-    #server = smtplib.SMTP('smtp.office365.com', port=587)
-    #server.starttls()
-    #server.login(username, password)
-    ##print("before send mail")
-    ##print(destinatario + "__")
-    #server.sendmail(remitente, destinatario, texto)
-    ##print("after send mail")
-    #server.quit()
+    return redirect(url_for("asignacion.Asignacion"))
