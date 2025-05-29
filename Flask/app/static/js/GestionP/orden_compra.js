@@ -205,7 +205,12 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             // Mostrar fecha final si es Préstamo o Arriendo
             fechaFinContainer.style.display = "block";
-            fechaFinInput.required = true;
+            // Solo poner required si es el formulario de agregar
+            if (fechaFinInput.id === "fecha_fin_ordenc") {
+                fechaFinInput.required = true;
+            } else {
+                fechaFinInput.required = false; // Nunca requerido en edición
+            }
         }
     }
 
@@ -236,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
             document.getElementById("edit_nombre_proveedor_ordenc").value = proveedor;
             document.getElementById("edit_nombre_tipo_adquisicion_ordenc").value = tipo;
 
-            // 📌 Llamar a la función para decidir si la fecha final debe mostrarse
+            // 📌 Llamar a la función para decidir si la fecha final debe mostrarse 
             toggleFechaFin(selectAdquisicionEdit, fechaFinContainerEdit, fechaFinInputEdit);
         });
     });
