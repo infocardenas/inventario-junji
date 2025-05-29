@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, session
+from flask import Blueprint, render_template, request, url_for, redirect, flash, session, jsonify
 from . import mysql
 from .funciones import getPerPage
 from .cuentas import loguear_requerido, administrador_requerido
