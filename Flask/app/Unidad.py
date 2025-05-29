@@ -71,8 +71,7 @@ def add_Unidad():
                 'type': 'string',
                 'minlength': 1,
                 'maxlength': 255,
-                'required': True,
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+                'required': True,  # Permitir solo alfanuméricos y espacios
             },
             'contactoUnidad': {
                 'type': 'string',
@@ -85,8 +84,7 @@ def add_Unidad():
                 'type': 'string',
                 'minlength': 1,
                 'maxlength': 255,
-                'required': True,
-                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir alfanuméricos, espacios, comas, puntos y guiones
+                'required': True,  # Permitir alfanuméricos, espacios, comas, puntos y guiones
             },
             'idComuna': {
                 'type': 'integer',
