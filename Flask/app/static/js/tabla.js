@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    // Función para alternar la selección de todas las filas
+    // Función para alternar la selección de todas las filas 
     window.toggleSelectAll = function () {
         const checkboxes = tableBody.querySelectorAll('input[type="checkbox"]'); // Checkboxes dentro del tbody
         const allChecked = Array.from(checkboxes).every((checkbox) => checkbox.checked); // Verifica si todas están seleccionadas
