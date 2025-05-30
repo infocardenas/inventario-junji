@@ -1,6 +1,5 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, session, jsonify
+from flask import Blueprint, render_template, request, url_for, redirect, flash, jsonify
 from db import mysql
-from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 
@@ -72,8 +71,7 @@ def add_Unidad():
                 'type': 'string',
                 'minlength': 1,
                 'maxlength': 255,
-                'required': True,
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+                'required': True,  # Permitir solo alfanuméricos y espacios
             },
             'contactoUnidad': {
                 'type': 'string',
@@ -86,8 +84,7 @@ def add_Unidad():
                 'type': 'string',
                 'minlength': 1,
                 'maxlength': 255,
-                'required': True,
-                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir alfanuméricos, espacios, comas, puntos y guiones
+                'required': True,  # Permitir alfanuméricos, espacios, comas, puntos y guiones
             },
             'idComuna': {
                 'type': 'integer',
@@ -98,9 +95,6 @@ def add_Unidad():
                 'required': True
             }
         }
-        #print("Formulario recibido:", data.form)
-
-
         # Validar datos
         v = Validator(add_Unidad_schema)
         if not v.validate(data):
@@ -136,20 +130,13 @@ def edit_Unidad(id):
         curs = mysql.connection.cursor()
         curs.execute('SELECT idComuna, nombreComuna FROM comuna')
         c_data = curs.fetchall()
-        #poner la comuna en primero NO FUNDIONA
-       # tmp = c_data[0]
-       # for i in range(0, len(c_data)):
-       #     if(data[0].idComuna == c_data[i].idComuna):
-       #         c_data[0] = c_data[i]
-       #         c_data[i] = tmp
-       #         break
+
         cur.execute("SELECT * FROM modalidad")
         modalidades_data = cur.fetchall()
         curs.close()
         return render_template('Organizacion/editUnidad.html', Unidad = data[0],
                 comuna = c_data, Modalidades=modalidades_data)
     except Exception as e:
-        #flash(e.args[1])
         flash("Error al crear")
         return redirect(url_for('Unidad.UNIDAD'))
 
@@ -174,16 +161,14 @@ def update_Unidad(id):
                 'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
             },
             'nombreUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+                'type': 'string',  # Permitir solo alfanuméricos y espacios
             },
             'contactoUnidad': {
                 'type': 'string',
                 'regex': '^[a-zA-Z0-9 ]+$', # Permitir solo alfanuméricos y espacios
             },
             'direccionUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir solo alfanuméricos y espacios
+                'type': 'string',  # Permitir solo alfanuméricos y espacios
             },
             'idComuna': {
                 'type': 'integer',
@@ -195,12 +180,11 @@ def update_Unidad(id):
             }
         }
 
-        # Validar datos
+        # Validar datos 
         v = Validator(update_Unidad_schema)
         if not v.validate(data):
             flash("Caracteres no permitidos")
             return redirect(url_for('Unidad.UNIDAD'))
-
 
         try:
             cur = mysql.connection.cursor()
@@ -233,7 +217,6 @@ def delete_Unidad(id):
         flash('Unidad eliminada correctamente')
         return redirect(url_for('Unidad.UNIDAD'))
     except Exception as e:
-        #flash(e.args[1])
         flash("NO se pudo eliminar la unidad, tiene equipos o funcionarios asociados")
         return redirect(url_for('Unidad.UNIDAD'))
     
@@ -484,6 +467,62 @@ def buscar_equipos_unidad(idUnidad):
 
     return jsonify({
         "equipos": equipos,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page,
+        "visible_pages": visible_pages
+    })
+
+@Unidad.route('/buscar_funcionarios_unidad/<int:idUnidad>', methods=['GET'])
+def buscar_funcionarios_unidad(idUnidad):
+    query = request.args.get("q", "").lower()
+    page = request.args.get("page", default=1, type=int)
+    per_page = 8
+    offset = (page - 1) * per_page
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        SELECT rutFuncionario, nombreFuncionario, cargoFuncionario, correoFuncionario
+        FROM funcionario
+        WHERE idUnidad = %s AND (
+            LOWER(rutFuncionario) LIKE %s OR
+            LOWER(nombreFuncionario) LIKE %s OR
+            LOWER(cargoFuncionario) LIKE %s OR
+            LOWER(correoFuncionario) LIKE %s
+        )
+        LIMIT %s OFFSET %s
+    """, (idUnidad,) + (f"%{query}%",)*4 + (per_page, offset))
+    funcionarios = cur.fetchall()
+
+    cur.execute("""
+        SELECT COUNT(*) as total
+        FROM funcionario
+        WHERE idUnidad = %s AND (
+            LOWER(rutFuncionario) LIKE %s OR
+            LOWER(nombreFuncionario) LIKE %s OR
+            LOWER(cargoFuncionario) LIKE %s OR
+            LOWER(correoFuncionario) LIKE %s
+        )
+    """, (idUnidad,) + (f"%{query}%",)*4)
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    visible_pages = []
+    if total_pages <= 7:
+        visible_pages = list(range(1, total_pages + 1))
+    else:
+        if page > 4:
+            visible_pages.append(1)
+            if page > 5:
+                visible_pages.append("...")
+        visible_pages.extend(range(max(1, page - 2), min(total_pages + 1, page + 3)))
+        if page < total_pages - 3:
+            if page < total_pages - 4:
+                visible_pages.append("...")
+            visible_pages.append(total_pages)
+
+    return jsonify({
+        "funcionarios": funcionarios,
         "total": total,
         "total_pages": total_pages,
         "current_page": page,
