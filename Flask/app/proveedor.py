@@ -1,12 +1,8 @@
-#se importa flask
 from flask import Blueprint, render_template, request, url_for, redirect,flash, session, jsonify, redirect
-#se importa dependencias para conexion con mysql
 from db import mysql
-#importamos el modulo que creamos
-from funciones import validarChar, getPerPage
+from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
-from MySQLdb import IntegrityError
 proveedor = Blueprint('proveedor', __name__, template_folder='app/templates')
 
 # Definir el esquema de validación para el proveedor
@@ -169,7 +165,7 @@ def actualizar_proveedor(id):
     except Exception as e:
         # Captura cualquier error inesperado
         flash("Error en el servidor. Intente nuevamente.", "danger")
-        print(f"Error al actualizar el proveedor: {str(e)}")  # Log en consola
+        print(f"Error al actualizar el proveedor: {str(e)}")  
         return redirect(url_for('proveedor.Proveedor'))
 
 

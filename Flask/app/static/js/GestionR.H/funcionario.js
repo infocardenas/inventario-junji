@@ -190,3 +190,21 @@ $(document).ready(function () {
         }
     });
 });
+
+// --- NUEVO: Manejar eliminación de funcionario ---
+$(document).on('click', '.delete-button', function (e) {
+    e.preventDefault();
+    const url = $(this).data('url');
+    const message = $(this).data('message') || "¿Estás seguro de eliminar?";
+    if (confirm(message)) {
+        fetch(url, { method: 'POST' })
+            .then(response => {
+                if (response.redirected) {
+                    window.location.href = response.url;
+                } else {
+                    buscarFuncionarios(1);
+                }
+            })
+            .catch(error => alert("Error al eliminar funcionario: " + error));
+    }
+});

@@ -111,27 +111,27 @@ function abrirModalFirmarAsignacion() {
     modalFirmarAsignacion.show();
     // Obtener detalles y mostrarlos
     fetch(`/asignacion/detalles_json/${idSeleccionado}`)
-    .then(res => res.json())
-    .then(data => {
-    const d = data.asignacion;
+        .then(res => res.json())
+        .then(data => {
+            const d = data.asignacion;
 
-    document.getElementById("detalleID").textContent = d.idAsignacion;
-    document.getElementById("rutFuncionario").textContent = d.rutFuncionario;
-    document.getElementById("nombreFuncionario").textContent = d.nombreFuncionario;
-    document.getElementById("cargoFuncionario").textContent = d.cargoFuncionario;
+            document.getElementById("detalleID").textContent = d.idAsignacion;
+            document.getElementById("rutFuncionario").textContent = d.rutFuncionario;
+            document.getElementById("nombreFuncionario").textContent = d.nombreFuncionario;
+            document.getElementById("cargoFuncionario").textContent = d.cargoFuncionario;
 
-    document.getElementById("fechaAsignacion").textContent = formatFecha(d.fecha_inicioAsignacion);
-    document.getElementById("fechaDevolucion").textContent = d.fechaDevolucion ? formatFecha(d.fechaDevolucion) : "Sin devolver";
-    document.getElementById("observacionesAsignacion").textContent = d.ObservacionAsignacion || "-";
+            document.getElementById("fechaAsignacion").textContent = formatFecha(d.fecha_inicioAsignacion);
+            document.getElementById("fechaDevolucion").textContent = d.fechaDevolucion ? formatFecha(d.fechaDevolucion) : "Sin devolver";
+            document.getElementById("observacionesAsignacion").textContent = d.ObservacionAsignacion || "-";
 
-    document.getElementById("tipoEquipo").textContent = d.nombreTipo_equipo;
-    document.getElementById("marcaEquipo").textContent = d.nombreMarcaEquipo;
-    document.getElementById("modeloEquipo").textContent = d.nombreModeloequipo;
-    document.getElementById("codigoInventario").textContent = d.Cod_inventarioEquipo;
-    document.getElementById("numeroSerie").textContent = d.Num_serieEquipo;
-    document.getElementById("codigoProveedor").textContent = d.codigoproveedor_equipo || "No informado";
-    document.getElementById("observacionesEquipo").textContent = d.ObservacionEquipo || "-";
-    });
+            document.getElementById("tipoEquipo").textContent = d.nombreTipo_equipo;
+            document.getElementById("marcaEquipo").textContent = d.nombreMarcaEquipo;
+            document.getElementById("modeloEquipo").textContent = d.nombreModeloequipo;
+            document.getElementById("codigoInventario").textContent = d.Cod_inventarioEquipo;
+            document.getElementById("numeroSerie").textContent = d.Num_serieEquipo;
+            document.getElementById("codigoProveedor").textContent = d.codigoproveedor_equipo || "No informado";
+            document.getElementById("observacionesEquipo").textContent = d.ObservacionEquipo || "-";
+        });
 
     // Limpiar contenido anterior
     const tbody = document.getElementById("tablaFirmasBody");
@@ -139,23 +139,23 @@ function abrirModalFirmarAsignacion() {
     tbody.innerHTML = `<tr><td colspan="2" class="text-center">Buscando archivo...</td></tr>`;
 
     fetch(`/asignacion/firmas_json/${idSeleccionado}`)
-    .then(res => res.json())
-    .then(data => {
-        tbody.innerHTML = ""; // Limpiar
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = ""; // Limpiar
 
-        if (data.existe) {
-            const fila = document.createElement("tr");
-            fila.innerHTML = `
+            if (data.existe) {
+                const fila = document.createElement("tr");
+                fila.innerHTML = `
                 <td>${data.nombre}</td>
                 <td><a href="/asignacion/mostrar_pdf/${idSeleccionado}/" class="btn btn-primary info-button" target="_blank">Abrir</a></td>
             `;
-            tbody.appendChild(fila);
-        } else {
-            const fila = document.createElement("tr");
-            fila.innerHTML = `<td colspan="2" class="text-center">No existen firmas para este documento</td>`;
-            tbody.appendChild(fila);
-        }
-    });
+                tbody.appendChild(fila);
+            } else {
+                const fila = document.createElement("tr");
+                fila.innerHTML = `<td colspan="2" class="text-center">No existen firmas para este documento</td>`;
+                tbody.appendChild(fila);
+            }
+        });
 
 }
 
