@@ -12,7 +12,9 @@
                         data-bs-target="#addFuncionarioModal">Agregar</button>
                 </div>
                 <div class="toolbar-2">
-                    <!-- Campo de búsqueda proporcionado por DataTables -->
+                    <input id="buscador_funcionario" type="text" class="form-control"
+                        placeholder="Buscar funcionario..." oninput="buscarFuncionarios(1)"
+                        style="max-width: 500px; display: inline-block;" />
                 </div>
                 <div class="toolbar-3">
 
@@ -25,15 +27,15 @@
             <table id="funcionariosTable" class="display table table-striped table-bordered table-hover">
                 <thead>
                     <tr>
-                        <th>RUT</th>
-                        <th>Nombre</th>
-                        <th>Cargo</th>
-                        <th>Unidad</th>
-                        <th>Correo</th>
+                        <th onclick="ordenarFuncionario('rutFuncionario')">RUT</th>
+                        <th onclick="ordenarFuncionario('nombreFuncionario')">Nombre</th>
+                        <th onclick="ordenarFuncionario('cargoFuncionario')">Cargo</th>
+                        <th onclick="ordenarFuncionario('nombreUnidad')">Unidad</th>
+                        <th onclick="ordenarFuncionario('correoFuncionario')">Correo</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="funcionarioTableBody">
                     {% for fun in funcionario %}
                     <tr data-rut="{{ fun.rutFuncionario }}" data-nombre="{{ fun.nombreFuncionario }}"
                         data-correo="{{ fun.correoFuncionario }}" data-cargo="{{ fun.cargoFuncionario }}"
@@ -75,46 +77,24 @@
             </table>
         </div>
 
+        <!-- Paginación -->
+        <div class="pagination-container mt-3 d-flex justify-content-center">
+          <nav aria-label="Paginación de funcionarios">
+            <ul class="pagination" id="funcionario-pagination"></ul>
+          </nav>
+        </div>
+
         <!-- Incluir los modales -->
         {% include 'GestionR.H/funcionario.modals.html' %}
     </div>
 </div>
 
 <!-- Scripts para DataTables -->
+<script src="{{ url_for('static', filename='js/GestionR.H/funcionario.js') }}"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.5/js/jquery.dataTables.min.js"></script>
 <script>
     $(document).ready(function () {
-        $('#funcionariosTable').DataTable({
-            "paging": true,
-            "searching": true,
-            "ordering": true,
-            "info": true,
-            "lengthChange": false,
-            "pageLength": 10,
-            "language": {
-                "search": "",
-                "lengthMenu": "Mostrar _MENU_ registros por página",
-                "zeroRecords": "No se encontraron resultados",
-                "info": "Mostrando página _PAGE_ de _PAGES_",
-                "infoEmpty": "No hay registros disponibles",
-                "infoFiltered": "(filtrado de _MAX_ registros totales)"
-            }
-        });
-        $('#dt-search-0').attr('placeholder', 'Buscar funcionario...');
-        // --- CÓDIGO PARA MOVER EL BUSCADOR ---
-        var searchInput = $('#dt-search-0'); // El input que ya tiene placeholder
-        var originalSearchContainer = $('.dt-search'); // El div original que contiene label+input
-
-        if (searchInput.length > 0) {
-            // Mueve SOLO el input a tu div toolbar-2
-            $('.toolbar-2').append(searchInput);
-
-            // Oculta el contenedor original de DataTables (que puede tener la etiqueta)
-            if (originalSearchContainer.length > 0) {
-                originalSearchContainer.hide();
-            }
-        }
         // --- CÓDIGO NUEVO PARA POBLAR EL MODAL DE EDICIÓN (CON DEBUG) ---
         $('#editFuncionarioModal').on('shown.bs.modal', function (event) {
             console.log("Edit modal 'show.bs.modal' event fired!"); // Check if event runs

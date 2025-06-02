@@ -1,4 +1,4 @@
-from flask import Blueprint, request, render_template, flash, url_for, redirect, session
+from flask import Blueprint, request, render_template, flash, url_for, redirect, session, jsonify
 from . import mysql
 from .funciones import getPerPage
 from .cuentas import loguear_requerido, administrador_requerido
@@ -35,7 +35,7 @@ schema_agregar_funcionario = {
         'type': 'string',
         'minlength': 5,
         'maxlength': 100,
-        'regex': r'^[a-zA-Z0-9._%+-]+@(junji\.cl|junjired\.cl)$'  # Permitir formato de correo electrónico
+        'regex': r'^[a-zA-Z0-9._%+-]+@(junji\.cl|junjired\.cl)$'  # Perm itir formato de correo electrónico
     }
 }
 
@@ -245,3 +245,72 @@ def buscar_funcionario(id):
         Unidad = unidades, 
         page=1, lastpage=True
         )
+
+@funcionario.route('/buscar_funcionarios', methods=['GET'])
+@loguear_requerido
+def buscar_funcionarios():
+    query = request.args.get("q", "").lower()
+    page = request.args.get("page", default=1, type=int)
+    per_page = 8
+
+    offset = (page - 1) * per_page
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        SELECT 
+            f.rutFuncionario,
+            f.nombreFuncionario,
+            f.cargoFuncionario, 
+            f.idUnidad,
+            u.nombreUnidad,
+            f.correoFuncionario,
+            COALESCE((SELECT COUNT(*)
+                        FROM asignacion a
+                        JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+                        WHERE a.rutFuncionario = f.rutFuncionario
+                        AND a.ActivoAsignacion = 1), 0) AS equipos_asignados
+        FROM funcionario f
+        JOIN unidad u ON f.idUnidad = u.idUnidad
+        WHERE LOWER(f.rutFuncionario) LIKE %s
+           OR LOWER(f.nombreFuncionario) LIKE %s
+           OR LOWER(f.cargoFuncionario) LIKE %s
+           OR LOWER(u.nombreUnidad) LIKE %s
+           OR LOWER(f.correoFuncionario) LIKE %s
+        LIMIT %s OFFSET %s
+    """, (f"%{query}%",)*5 + (per_page, offset))
+    funcionarios = cur.fetchall()
+
+    cur.execute("""
+        SELECT COUNT(*) as total
+        FROM funcionario f
+        JOIN unidad u ON f.idUnidad = u.idUnidad
+        WHERE LOWER(f.rutFuncionario) LIKE %s
+           OR LOWER(f.nombreFuncionario) LIKE %s
+           OR LOWER(f.cargoFuncionario) LIKE %s
+           OR LOWER(u.nombreUnidad) LIKE %s
+           OR LOWER(f.correoFuncionario) LIKE %s
+    """, (f"%{query}%",)*5)
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    visible_pages = []
+    if total_pages <= 7:
+        visible_pages = list(range(1, total_pages + 1))
+    else:
+        if page > 4:
+            visible_pages.append(1)
+            if page > 5:
+                visible_pages.append("...")
+        visible_pages.extend(range(max(1, page - 2), min(total_pages + 1, page + 3)))
+        if page < total_pages - 3:
+            if page < total_pages - 4:
+                visible_pages.append("...")
+            visible_pages.append(total_pages)
+
+    return jsonify({
+        "funcionarios": funcionarios,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page,
+        "visible_pages": visible_pages
+    })

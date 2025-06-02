@@ -72,8 +72,7 @@ def add_Unidad():
                 'type': 'string',
                 'minlength': 1,
                 'maxlength': 255,
-                'required': True,
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+                'required': True,  # Permitir solo alfanuméricos y espacios
             },
             'contactoUnidad': {
                 'type': 'string',
@@ -86,8 +85,7 @@ def add_Unidad():
                 'type': 'string',
                 'minlength': 1,
                 'maxlength': 255,
-                'required': True,
-                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir alfanuméricos, espacios, comas, puntos y guiones
+                'required': True,  # Permitir alfanuméricos, espacios, comas, puntos y guiones
             },
             'idComuna': {
                 'type': 'integer',
@@ -98,9 +96,6 @@ def add_Unidad():
                 'required': True
             }
         }
-        #print("Formulario recibido:", data.form)
-
-
         # Validar datos
         v = Validator(add_Unidad_schema)
         if not v.validate(data):
@@ -136,20 +131,13 @@ def edit_Unidad(id):
         curs = mysql.connection.cursor()
         curs.execute('SELECT idComuna, nombreComuna FROM comuna')
         c_data = curs.fetchall()
-        #poner la comuna en primero NO FUNDIONA
-       # tmp = c_data[0]
-       # for i in range(0, len(c_data)):
-       #     if(data[0].idComuna == c_data[i].idComuna):
-       #         c_data[0] = c_data[i]
-       #         c_data[i] = tmp
-       #         break
+
         cur.execute("SELECT * FROM modalidad")
         modalidades_data = cur.fetchall()
         curs.close()
         return render_template('Organizacion/editUnidad.html', Unidad = data[0],
                 comuna = c_data, Modalidades=modalidades_data)
     except Exception as e:
-        #flash(e.args[1])
         flash("Error al crear")
         return redirect(url_for('Unidad.UNIDAD'))
 
@@ -174,16 +162,14 @@ def update_Unidad(id):
                 'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
             },
             'nombreUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ]+$'  # Permitir solo alfanuméricos y espacios
+                'type': 'string',  # Permitir solo alfanuméricos y espacios
             },
             'contactoUnidad': {
                 'type': 'string',
                 'regex': '^[a-zA-Z0-9 ]+$', # Permitir solo alfanuméricos y espacios
             },
             'direccionUnidad': {
-                'type': 'string',
-                'regex': '^[a-zA-Z0-9 ,/]+$'  # Permitir solo alfanuméricos y espacios
+                'type': 'string',  # Permitir solo alfanuméricos y espacios
             },
             'idComuna': {
                 'type': 'integer',
@@ -195,12 +181,11 @@ def update_Unidad(id):
             }
         }
 
-        # Validar datos
+        # Validar datos 
         v = Validator(update_Unidad_schema)
         if not v.validate(data):
             flash("Caracteres no permitidos")
             return redirect(url_for('Unidad.UNIDAD'))
-
 
         try:
             cur = mysql.connection.cursor()
@@ -233,7 +218,6 @@ def delete_Unidad(id):
         flash('Unidad eliminada correctamente')
         return redirect(url_for('Unidad.UNIDAD'))
     except Exception as e:
-        #flash(e.args[1])
         flash("NO se pudo eliminar la unidad, tiene equipos o funcionarios asociados")
         return redirect(url_for('Unidad.UNIDAD'))
     
@@ -335,3 +319,213 @@ def mostrar_equipos_unidad(idUnidad):
         # En caso de error, muestra un mensaje de flash y redirige a la página de unidades
         flash(f"Error al obtener equipos: {str(e)}", 'danger')
         return redirect(url_for('Unidad.UNIDAD'))
+
+@Unidad.route('/buscar_unidades', methods=['GET'])
+@loguear_requerido
+def buscar_unidades():
+    query = request.args.get("q", "").lower()
+    page = request.args.get("page", default=1, type=int)
+    per_page = 8  # igual que DataTables, puedes ajustar
+
+    offset = (page - 1) * per_page
+    cur = mysql.connection.cursor()
+
+    # Búsqueda por nombre, código, contacto, dirección o comuna
+    cur.execute("""
+        SELECT u.idUnidad, u.nombreUnidad, u.contactoUnidad,
+               u.direccionUnidad, u.idComuna, co.nombreComuna, 
+               COUNT(e.idEquipo) as num_equipos,
+               mo.nombreModalidad, u.idModalidad
+        FROM unidad u
+        INNER JOIN comuna co on u.idComuna = co.idComuna
+        LEFT JOIN modalidad mo on mo.idModalidad = u.idModalidad
+        LEFT JOIN equipo e on u.idUnidad = e.idUnidad
+        WHERE LOWER(u.nombreUnidad) LIKE %s
+           OR LOWER(u.idUnidad) LIKE %s
+           OR LOWER(u.contactoUnidad) LIKE %s
+           OR LOWER(u.direccionUnidad) LIKE %s
+           OR LOWER(co.nombreComuna) LIKE %s
+        GROUP BY u.idUnidad, u.nombreUnidad, u.contactoUnidad, u.direccionUnidad, 
+                 u.idComuna, co.nombreComuna, mo.nombreModalidad, u.idModalidad
+        LIMIT %s OFFSET %s
+    """, (f"%{query}%",)*5 + (per_page, offset))
+    unidades = cur.fetchall()
+
+    # Total de resultados
+    cur.execute("""
+        SELECT COUNT(*) as total
+        FROM unidad u
+        INNER JOIN comuna co on u.idComuna = co.idComuna
+        WHERE LOWER(u.nombreUnidad) LIKE %s
+           OR LOWER(u.idUnidad) LIKE %s
+           OR LOWER(u.contactoUnidad) LIKE %s
+           OR LOWER(u.direccionUnidad) LIKE %s
+           OR LOWER(co.nombreComuna) LIKE %s
+    """, (f"%{query}%",)*5)
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    # Páginas visibles (como en equipo)
+    visible_pages = []
+    if total_pages <= 7:
+        visible_pages = list(range(1, total_pages + 1))
+    else:
+        if page > 4:
+            visible_pages.append(1)
+            if page > 5:
+                visible_pages.append("...")
+        visible_pages.extend(range(max(1, page - 2), min(total_pages + 1, page + 3)))
+        if page < total_pages - 3:
+            if page < total_pages - 4:
+                visible_pages.append("...")
+            visible_pages.append(total_pages)
+
+    return jsonify({
+        "unidades": unidades,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page,
+        "visible_pages": visible_pages
+    })
+
+@Unidad.route('/buscar_equipos_unidad/<int:idUnidad>', methods=['GET'])
+def buscar_equipos_unidad(idUnidad):
+    query = request.args.get("q", "").lower()
+    page = request.args.get("page", default=1, type=int)
+    per_page = 8
+
+    offset = (page - 1) * per_page
+    cur = mysql.connection.cursor()
+
+    # Búsqueda por inventario, serie, estado, funcionario, proveedor, tipo, modelo
+    cur.execute("""
+        SELECT 
+            e.Cod_inventarioEquipo,
+            e.Num_serieEquipo,
+            est.nombreEstado_equipo AS estadoEquipo,
+            f.nombreFuncionario,
+            e.codigoproveedor_equipo,
+            u.nombreUnidad,
+            te.nombreTipo_equipo AS tipoEquipo,
+            mo.nombreModeloequipo AS modeloEquipo
+        FROM equipo e
+        LEFT JOIN estado_equipo est ON e.idEstado_equipo = est.idEstado_equipo
+        LEFT JOIN funcionario f ON f.idUnidad = e.idUnidad
+        LEFT JOIN unidad u ON e.idUnidad = u.idUnidad
+        LEFT JOIN modelo_equipo mo ON e.idModelo_equipo = mo.idModelo_Equipo
+        LEFT JOIN marca_tipo_equipo mte ON mo.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        LEFT JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE e.idUnidad = %s AND (
+            LOWER(e.Cod_inventarioEquipo) LIKE %s OR
+            LOWER(e.Num_serieEquipo) LIKE %s OR
+            LOWER(est.nombreEstado_equipo) LIKE %s OR
+            LOWER(f.nombreFuncionario) LIKE %s OR
+            LOWER(e.codigoproveedor_equipo) LIKE %s OR
+            LOWER(te.nombreTipo_equipo) LIKE %s OR
+            LOWER(mo.nombreModeloequipo) LIKE %s
+        )
+        LIMIT %s OFFSET %s
+    """, (idUnidad,) + (f"%{query}%",)*7 + (per_page, offset))
+    equipos = cur.fetchall()
+
+    # Total de resultados
+    cur.execute("""
+        SELECT COUNT(*) as total
+        FROM equipo e
+        LEFT JOIN estado_equipo est ON e.idEstado_equipo = est.idEstado_equipo
+        LEFT JOIN funcionario f ON f.idUnidad = e.idUnidad
+        LEFT JOIN unidad u ON e.idUnidad = u.idUnidad
+        LEFT JOIN modelo_equipo mo ON e.idModelo_equipo = mo.idModelo_Equipo
+        LEFT JOIN marca_tipo_equipo mte ON mo.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        LEFT JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        WHERE e.idUnidad = %s AND (
+            LOWER(e.Cod_inventarioEquipo) LIKE %s OR
+            LOWER(e.Num_serieEquipo) LIKE %s OR
+            LOWER(est.nombreEstado_equipo) LIKE %s OR
+            LOWER(f.nombreFuncionario) LIKE %s OR
+            LOWER(e.codigoproveedor_equipo) LIKE %s OR
+            LOWER(te.nombreTipo_equipo) LIKE %s OR
+            LOWER(mo.nombreModeloequipo) LIKE %s
+        )
+    """, (idUnidad,) + (f"%{query}%",)*7)
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    # Páginas visibles
+    visible_pages = []
+    if total_pages <= 7:
+        visible_pages = list(range(1, total_pages + 1))
+    else:
+        if page > 4:
+            visible_pages.append(1)
+            if page > 5:
+                visible_pages.append("...")
+        visible_pages.extend(range(max(1, page - 2), min(total_pages + 1, page + 3)))
+        if page < total_pages - 3:
+            if page < total_pages - 4:
+                visible_pages.append("...")
+            visible_pages.append(total_pages)
+
+    return jsonify({
+        "equipos": equipos,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page,
+        "visible_pages": visible_pages
+    })
+
+@Unidad.route('/buscar_funcionarios_unidad/<int:idUnidad>', methods=['GET'])
+def buscar_funcionarios_unidad(idUnidad):
+    query = request.args.get("q", "").lower()
+    page = request.args.get("page", default=1, type=int)
+    per_page = 8
+    offset = (page - 1) * per_page
+    cur = mysql.connection.cursor()
+
+    cur.execute("""
+        SELECT rutFuncionario, nombreFuncionario, cargoFuncionario, correoFuncionario
+        FROM funcionario
+        WHERE idUnidad = %s AND (
+            LOWER(rutFuncionario) LIKE %s OR
+            LOWER(nombreFuncionario) LIKE %s OR
+            LOWER(cargoFuncionario) LIKE %s OR
+            LOWER(correoFuncionario) LIKE %s
+        )
+        LIMIT %s OFFSET %s
+    """, (idUnidad,) + (f"%{query}%",)*4 + (per_page, offset))
+    funcionarios = cur.fetchall()
+
+    cur.execute("""
+        SELECT COUNT(*) as total
+        FROM funcionario
+        WHERE idUnidad = %s AND (
+            LOWER(rutFuncionario) LIKE %s OR
+            LOWER(nombreFuncionario) LIKE %s OR
+            LOWER(cargoFuncionario) LIKE %s OR
+            LOWER(correoFuncionario) LIKE %s
+        )
+    """, (idUnidad,) + (f"%{query}%",)*4)
+    total = cur.fetchone()["total"]
+    total_pages = (total + per_page - 1) // per_page
+
+    visible_pages = []
+    if total_pages <= 7:
+        visible_pages = list(range(1, total_pages + 1))
+    else:
+        if page > 4:
+            visible_pages.append(1)
+            if page > 5:
+                visible_pages.append("...")
+        visible_pages.extend(range(max(1, page - 2), min(total_pages + 1, page + 3)))
+        if page < total_pages - 3:
+            if page < total_pages - 4:
+                visible_pages.append("...")
+            visible_pages.append(total_pages)
+
+    return jsonify({
+        "funcionarios": funcionarios,
+        "total": total,
+        "total_pages": total_pages,
+        "current_page": page,
+        "visible_pages": visible_pages
+    })

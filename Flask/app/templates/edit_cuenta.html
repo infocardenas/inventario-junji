@@ -1,50 +1,132 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<!-- Estilos adicionales -->
+<style>
+  .card-edit:hover .form-group label,
+  .card-edit:hover h3 {
+    color: #0d6efd;
+  }
+
+  .invalid-input i {
+    color: #dc3545;
+  }
+
+  .valid-input i {
+    color: #198754;
+  }
+
+  .form-text.text-danger {
+    display: none;
+  }
+
+  .card-edit img {
+    cursor: pointer;
+  }
+</style>
+
+<!-- Botón volver -->
 <a class="nav-button" href="/registrar">Volver</a>
-<div id="error-message" style="display: none;" class="error-message"></div>
-<div class="card card-body" id="formulario">
-    <form action="/update_usuario/{{usuario.nombreUsuario}}" method="POST" class="mi-formulario">
-        <h3>Editar Cuenta</h3>
-        <div class="form-group">
-            <label for="nombreUsuario">Nombre de Usuario</label>
-            <input type="text" class="validar-user" name="nombreUsuario" placeholder="Nombre Usuario"
-                value="{{usuario.nombreUsuario}}">
-            <br>
-            <label>Tipo de Usuario</label>
-            <select class="form-control" name="privilegiosAdministrador">
-                <option value="0" {% if usuario.privilegiosAdministrador==0 %}selected{% endif %}>Usuario Normal
-                </option>
-                <option value="1" {% if usuario.privilegiosAdministrador==1 %}selected{% endif %}>Administrador</option>
-            </select>
-            <br />
-            <button class="agregar-button">Actualizar</button>
+
+<!-- Formulario de Editar Usuario -->
+<div class="container mt-4 d-flex justify-content-center">
+  <div class="card shadow-lg card-edit" style="max-width: 500px; width: 100%;">
+    <div class="card-body">
+      <form action="/update_usuario/{{ usuario.nombreUsuario }}" method="POST" class="mi-formulario">
+        <h3 class="text-center mb-4">Editar Cuenta</h3>
+
+        <!-- Nombre de Usuario -->
+        <div class="mb-3">
+          <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
+          <input type="text" class="form-control validar-user" name="nombreUsuario"
+            value="{{ usuario.nombreUsuario }}" required>
         </div>
-    </form>
+
+        <!-- Tipo de Usuario -->
+        <div class="mb-3">
+          <label for="privilegiosAdministrador" class="form-label">Tipo de Usuario</label>
+          <select class="form-control" name="privilegiosAdministrador">
+            <option value="0" {% if usuario.privilegiosAdministrador==0 %}selected{% endif %}>Usuario Normal</option>
+            <option value="1" {% if usuario.privilegiosAdministrador==1 %}selected{% endif %}>Administrador</option>
+          </select>
+        </div>
+
+        <!-- Botón actualizar -->
+        <div class="d-grid mt-4">
+          <button type="submit" class="btn btn-success">Actualizar</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
-<div class="card card-body" id="formulario">
-    <form action="/update_usuario_contrasenna/{{usuario.nombreUsuario}}" method="POST" class="mi-formulario">
-        <h3>Editar Contraseña</h3>
-        <div class="form-group">
-            <label for="nombreUsuario">Ingrese Contraseña Actual</label>
+<!-- Formulario de Editar Contraseña -->
+<div class="container mt-4 d-flex justify-content-center">
+  <div class="card shadow-lg card-edit" style="max-width: 500px; width: 100%;">
+    <div class="card-body">
+      <form action="/update_usuario_contrasenna/{{ usuario.nombreUsuario }}" method="POST" class="mi-formulario">
+        <h3 class="text-center mb-4">Editar Contraseña</h3>
+
+        <!-- Contraseña actual -->
+        <div class="mb-3">
+          <label for="contrasenna" class="form-label">Contraseña Actual</label>
+          <div class="input-group">
             <input type="password" class="form-control" id="contrasenna" name="contranna_vieja"
-                placeholder="Contraseña Antigua">
-            <img style="width: 20px; height:20px" src="../static/img/hidden.png"
-                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" id="ojo_contrasenna" />
-            <br>
-            <label for="nombreUsuario">Ingrese Contraseña Nueva</label>
-            <input type="password" class="form-control" id="contrasenna_repetir" name="contrasenna_nueva"
-                placeholder="Contraseña Nueva">
-            <img style="width: 20px; height:20px" src="../static/img/hidden.png"
-                onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" id="ojo_contrasenna_repetir" />
-
-            <button class="agregar-button">Ingresar</button>
+              placeholder="Contraseña Antigua" required>
+            <span class="input-group-text bg-white">
+              <img src="../static/img/hidden.png" alt="Mostrar/Ocultar" id="ojo_contrasenna"
+                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" style="width: 20px; height: 20px;" />
+            </span>
+          </div>
         </div>
-    </form>
-</div>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"
-    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
+        <!-- Contraseña nueva -->
+        <div class="mb-3">
+          <label for="contrasenna_repetir" class="form-label">Nueva Contraseña</label>
+          <div class="input-group">
+            <input type="password" class="form-control validar-contraseña" id="contrasenna_repetir"
+              name="contrasenna_nueva" placeholder="Contraseña Nueva" required>
+            <span class="input-group-text bg-white">
+              <img src="../static/img/hidden.png" alt="Mostrar/Ocultar" id="ojo_contrasenna_repetir"
+                onclick="abrir_cerrar_ojo('ojo_contrasenna_repetir', true)" style="width: 20px; height: 20px;" />
+            </span>
+          </div>
+
+          <!-- Validaciones visuales -->
+          <div class="mt-2">
+            <small id="lowerCase" class="text-muted invalid-input d-block">
+              <i class="bi bi-shield-x"></i> Al menos 1 minúscula
+            </small>
+            <small id="upperCase" class="text-muted invalid-input d-block">
+              <i class="bi bi-shield-x"></i> Al menos 1 mayúscula
+            </small>
+            <small id="number" class="text-muted invalid-input d-block">
+              <i class="bi bi-shield-x"></i> Al menos 1 número
+            </small>
+            <small id="specialChar" class="text-muted invalid-input d-block">
+              <i class="bi bi-shield-x"></i> Al menos 1 símbolo
+            </small>
+            <small id="minLength" class="text-muted invalid-input d-block">
+              <i class="bi bi-shield-x"></i> Mínimo 8 caracteres
+            </small>
+          </div>
+        </div>
+
+        <!-- Botón Ingresar -->
+        <div class="d-grid mt-4">
+          <button class="btn btn-success">Cambiar Contraseña</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 <script src="../static/js/main.js"></script>
+
 {% endblock %}
