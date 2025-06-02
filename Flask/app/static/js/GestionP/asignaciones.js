@@ -14,7 +14,7 @@ function buscarAsignaciones(page = 1) {
             })
             .then(data => {
                 actualizarTablaAsignaciones(data.asignaciones); // Actualizar la tabla con los datos recibidos
-                actualizarPaginacion(data.total_pages, data.current_page, query); // Actualizar la paginación
+                // actualizarPaginacion(data.total_pages, data.current_page, query); // Actualizar la paginación (comentado porque no está definida)
             })
             .catch(error => console.error("Error al buscar asignaciones:", error));
     }, 300); // Retraso de 300ms para evitar múltiples solicitudes
@@ -26,11 +26,15 @@ function actualizarTablaAsignaciones(asignaciones) {
 
     if (asignaciones.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay datos disponibles.</td></tr>';
+        actualizarBotonesBarraSuperior(); // Asegura que los botones se deshabiliten si no hay datos
         return;
     }
 
     asignaciones.forEach(asig => {
         const row = document.createElement("tr");
+        // Agregar atributos data-marca-equipo y data-modelo-equipo
+        row.setAttribute('data-marca-equipo', asig.nombreMarcaEquipo || '');
+        row.setAttribute('data-modelo-equipo', asig.nombreModeloequipo || '');
         row.innerHTML = `
             <td>
                 <input type="checkbox" class="checkbox-table row-checkbox no-delete-value"
@@ -47,7 +51,7 @@ function actualizarTablaAsignaciones(asignaciones) {
             <td class="d-flex justify-content-center gap-2">
                 <div data-bs-toggle="tooltip" data-bs-title="Detalles">
                   <button class="btn button-info" data-bs-toggle="modal"
-                    data-bs-target="#modal-view-${asig.idEquipoAsignacion}">
+                    data-bs-target="#modal-view-${asig.idEquipoAsignacion}" data-id-asignacion="${asig.idAsignacion}">
                     <i class="bi bi-info-circle"></i>
                   </button>
                 </div>
@@ -55,13 +59,20 @@ function actualizarTablaAsignaciones(asignaciones) {
                   data-url="/delete_asignacion/${asig.idAsignacion}"
                   data-title="Confirmar eliminación de asignación"
                   data-message="¿Estás seguro de que deseas eliminar esta asignación? Eliminar la asignación descartará los equipos asociados a este ID de asignación."
-                  data-bs-title="Eliminar">
+                  data-bs-title="Eliminar" data-id-asignacion="${asig.idAsignacion}">
                   <i class="bi bi-trash-fill"></i>
                 </button>
             </td>
         `;
         tbody.appendChild(row);
     });
+
+    // Vuelve a enlazar los eventos para los checkboxes
+    document.querySelectorAll('.row-checkbox').forEach(cb => {
+        cb.addEventListener('change', actualizarBotonesBarraSuperior);
+    });
+
+    actualizarBotonesBarraSuperior();
 }
 
 function formatFecha(fecha) {
@@ -217,3 +228,127 @@ function abrirModalFirmarDevolucion() {
             }
         });
 }
+
+// Evento para abrir el modal de devolución y poblarlo con los equipos seleccionados
+document.addEventListener('DOMContentLoaded', function () {
+    const devolverButton = document.getElementById('devolver-button');
+    const modalEl = document.getElementById('modalConfirmarDevolucion');
+    const tbody = document.getElementById('tbodyDevolucionSeleccionados');
+    const form = document.getElementById('formDevolver');
+
+    if (devolverButton && modalEl && tbody && form) {
+        devolverButton.addEventListener('click', function () {
+            // Obtener todos los checkboxes seleccionados
+            const seleccionados = Array.from(document.querySelectorAll('.row-checkbox:checked'));
+
+            // Limpiar el tbody y los inputs ocultos previos
+            tbody.innerHTML = '';
+            Array.from(form.querySelectorAll('input[name="equiposSeleccionados"]')).forEach(input => input.remove());
+
+            if (seleccionados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center">No hay equipos seleccionados.</td></tr>';
+            } else {
+                seleccionados.forEach(checkbox => {
+                    const row = checkbox.closest('tr');
+                    if (!row) return;
+                    const cells = row.querySelectorAll('td');
+                    // Extraer datos del tr (marca/modelo) y celdas
+                    const marcaEquipo = row.getAttribute('data-marca-equipo') || '';
+                    const modeloEquipo = row.getAttribute('data-modelo-equipo') || '';
+                    const idAsignacion = cells[1]?.textContent || '';
+                    const funcionario = cells[2]?.textContent || '';
+                    const tipoEquipo = cells[3]?.textContent || '';
+                    // Puedes ajustar el índice de celdas si tu tabla cambia
+                    const codInventario = cells[5]?.textContent || '';
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${idAsignacion}</td>
+                        <td>${funcionario}</td>
+                        <td>${tipoEquipo}</td>
+                        <td>${marcaEquipo}</td>
+                        <td>${modeloEquipo}</td>
+                        <td>${codInventario}</td>
+                    `;
+                    tbody.appendChild(tr);
+
+                    // Crea el input oculto para enviar el idEquipoAsignacion
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'equiposSeleccionados';
+                    input.value = checkbox.value;
+                    form.appendChild(input);
+                });
+            }
+
+            // Mostrar el modal correctamente (sin bloquear)
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+        });
+
+        // Limpiar el modal al cerrarse y eliminar backdrop si queda
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            tbody.innerHTML = '';
+            Array.from(form.querySelectorAll('input[name="equiposSeleccionados"]')).forEach(input => input.remove());
+            // Limpieza manual del backdrop si quedara alguno
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+        });
+    }
+});
+
+function actualizarBotonesBarraSuperior() {
+    // Actualizar enlaces de descarga PDF según el seleccionado
+    const descargarAsignacion = document.getElementById("descargar-asignacion");
+    const descargarDevolucion = document.getElementById("descargar-devolucion");
+    const firmarButton = document.getElementById("firmar-button");
+    const devolverButton = document.getElementById("devolver-button");
+
+    // Buscar el primer checkbox seleccionado
+    const checked = document.querySelector('.row-checkbox:checked');
+    const haySeleccion = !!checked;
+
+    // Habilitar/deshabilitar botones según selección
+    if (firmarButton) firmarButton.disabled = !haySeleccion;
+    if (devolverButton) devolverButton.disabled = !haySeleccion;
+
+    if (haySeleccion) {
+        const idAsignacion = checked.getAttribute('data-id-asignacion');
+        const idDevolucion = checked.getAttribute('data-id-devolucion');
+        if (descargarAsignacion) {
+            descargarAsignacion.href = `/asignacion/descargar_pdf_asignacion/${idAsignacion}`;
+            descargarAsignacion.classList.remove('disabled');
+        }
+        if (descargarDevolucion) {
+            if (idDevolucion) {
+                descargarDevolucion.href = `/asignacion/descargar_pdf_devolucion/${idDevolucion}`;
+                descargarDevolucion.classList.remove('disabled');
+            } else {
+                descargarDevolucion.href = "#";
+                descargarDevolucion.classList.add('disabled');
+            }
+        }
+    } else {
+        if (descargarAsignacion) {
+            descargarAsignacion.href = "#";
+            descargarAsignacion.classList.add('disabled');
+        }
+        if (descargarDevolucion) {
+            descargarDevolucion.href = "#";
+            descargarDevolucion.classList.add('disabled');
+        }
+    }
+}
+
+// Actualizar los enlaces de descarga y botones cada vez que se selecciona un checkbox
+document.addEventListener('change', function (e) {
+    if (e.target.classList.contains('row-checkbox')) {
+        actualizarBotonesBarraSuperior();
+    }
+});
+
+// También actualizar al cargar la tabla por primera vez
+document.addEventListener('DOMContentLoaded', function () {
+    actualizarBotonesBarraSuperior();
+});

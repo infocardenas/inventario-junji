@@ -290,7 +290,7 @@
                 <div class="modal-body">
                     <p>Se devolverán los siguientes equipos:</p>
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered" id="tablaDevolucionSeleccionados">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -301,22 +301,8 @@
                                     <th>Cód. inventario</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {% for asig in asignacion %}
-                                <!-- Fila oculta por defecto -->
-                                <tr id="modal-row-{{ asig.idEquipoAsignacion }}" style="display: none;">
-                                    <td>{{ asig.idAsignacion }}</td>
-                                    <td>{{ asig.nombreFuncionario }}</td>
-                                    <td>{{ asig.nombreTipo_equipo }}</td>
-                                    <td>{{ asig.nombreMarcaEquipo }}</td>
-                                    <td>{{ asig.nombreModeloequipo }}</td>
-                                    <td>{{ asig.Cod_inventarioEquipo }}</td>
-                                </tr>
-                                <!-- Input oculto para enviar si el row se activa -->
-                                <input type="hidden" name="equiposSeleccionados"
-                                    id="modal-input-{{ asig.idEquipoAsignacion }}" value="{{ asig.idEquipoAsignacion }}"
-                                    style="display: none;">
-                                {% endfor %}
+                            <tbody id="tbodyDevolucionSeleccionados">
+                                <!-- Se llenará dinámicamente por JS -->
                             </tbody>
                         </table>
                     </div>

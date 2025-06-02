@@ -64,7 +64,6 @@
                <i class="bi bi-repeat"></i>
               </button>
             </div>
-
           </div>
 
         </div>
@@ -88,7 +87,9 @@
         <tbody id="myTableBody">
           {% if asignacion %}
           {% for asig in asignacion %}
-          <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row">
+          <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row"
+              data-marca-equipo="{{ asig.nombreMarcaEquipo }}"
+              data-modelo-equipo="{{ asig.nombreModeloequipo }}">
             <td>
               <input type="checkbox" class="checkbox-table row-checkbox no-delete-value"
                 value="{{ asig.idEquipoAsignacion }}"
@@ -106,14 +107,14 @@
             <td class="d-flex justify-content-center gap-2">
               <div data-bs-toggle="tooltip" data-bs-title="Detalles">
                 <button class="btn button-info" data-bs-toggle="modal"
-                  data-bs-target="#modal-view-{{ asig.idEquipoAsignacion }}">
+                  data-bs-target="#modal-view-{{ asig.idEquipoAsignacion }}" data-id-asignacion="{{ asig.idAsignacion }}">
                   <i class="bi bi-info-circle"></i>
                 </button>
               </div>
               <button class="btn btn-danger delete-button" data-bs-toggle="tooltip"
                 data-url="/delete_asignacion/{{asig.idAsignacion}}" data-title="Confirmar eliminación de asignación"
                 data-message="¿Estás seguro de que deseas eliminar esta asignación? Eliminar la asignación descartará los equipos asociados a este ID de asignación."
-                data-bs-title="Eliminar">
+                data-bs-title="Eliminar" data-id-asignacion="{{ asig.idAsignacion }}">
                 <i class="bi bi-trash-fill"></i>
               </button>
             </td>

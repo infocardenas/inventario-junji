@@ -946,7 +946,7 @@ def buscar_asignaciones():
 
     cur = mysql.connection.cursor()
 
-    # Consulta para buscar asignaciones
+    # Consulta para buscar asignaciones (ahora incluye todos los campos necesarios)
     cur.execute(f"""
         SELECT
             a.idAsignacion,
@@ -955,16 +955,25 @@ def buscar_asignaciones():
             a.ActivoAsignacion,
             f.nombreFuncionario,
             f.cargoFuncionario,
+            ea.idEquipoAsignacion,
+            d.idDevolucion,
+            d.fechaDevolucion,
             e.Cod_inventarioEquipo,
             e.Num_serieEquipo,
-            te.nombreTipo_equipo
+            te.nombreTipo_equipo,
+            me.nombreModeloequipo,
+            mae.nombreMarcaEquipo,
+            e.codigoproveedor_equipo,
+            e.ObservacionEquipo
         FROM asignacion a
         JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
         JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+        LEFT JOIN devolucion d ON ea.idEquipoAsignacion = d.idEquipoAsignacion
         JOIN equipo e ON e.idEquipo = ea.idEquipo
         JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
         JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
         JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
         WHERE LOWER(f.nombreFuncionario) LIKE %s
            OR LOWER(f.cargoFuncionario) LIKE %s
            OR LOWER(e.Cod_inventarioEquipo) LIKE %s
