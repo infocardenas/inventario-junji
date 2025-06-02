@@ -26,13 +26,12 @@ function actualizarTablaAsignaciones(asignaciones) {
 
     if (asignaciones.length === 0) {
         tbody.innerHTML = '<tr><td colspan="7" class="text-center">No hay datos disponibles.</td></tr>';
-        actualizarBotonesBarraSuperior(); // Asegura que los botones se deshabiliten si no hay datos
+        actualizarBotonesBarraSuperior();
         return;
     }
 
     asignaciones.forEach(asig => {
         const row = document.createElement("tr");
-        // Agregar atributos data-marca-equipo y data-modelo-equipo
         row.setAttribute('data-marca-equipo', asig.nombreMarcaEquipo || '');
         row.setAttribute('data-modelo-equipo', asig.nombreModeloequipo || '');
         row.innerHTML = `
@@ -72,6 +71,7 @@ function actualizarTablaAsignaciones(asignaciones) {
         cb.addEventListener('change', actualizarBotonesBarraSuperior);
     });
 
+    // Llama a la función para actualizar el estado de los botones después de actualizar la tabla
     actualizarBotonesBarraSuperior();
 }
 
@@ -304,6 +304,7 @@ function actualizarBotonesBarraSuperior() {
     const descargarDevolucion = document.getElementById("descargar-devolucion");
     const firmarButton = document.getElementById("firmar-button");
     const devolverButton = document.getElementById("devolver-button");
+    const descargarPDFButton = document.getElementById("descargar-PDF-button"); // <-- Añadido
 
     // Buscar el primer checkbox seleccionado
     const checked = document.querySelector('.row-checkbox:checked');
@@ -312,6 +313,7 @@ function actualizarBotonesBarraSuperior() {
     // Habilitar/deshabilitar botones según selección
     if (firmarButton) firmarButton.disabled = !haySeleccion;
     if (devolverButton) devolverButton.disabled = !haySeleccion;
+    if (descargarPDFButton) descargarPDFButton.disabled = !haySeleccion; // <-- Añadido
 
     if (haySeleccion) {
         const idAsignacion = checked.getAttribute('data-id-asignacion');
@@ -319,24 +321,29 @@ function actualizarBotonesBarraSuperior() {
         if (descargarAsignacion) {
             descargarAsignacion.href = `/asignacion/descargar_pdf_asignacion/${idAsignacion}`;
             descargarAsignacion.classList.remove('disabled');
+            descargarAsignacion.removeAttribute('aria-disabled');
         }
         if (descargarDevolucion) {
             if (idDevolucion) {
                 descargarDevolucion.href = `/asignacion/descargar_pdf_devolucion/${idDevolucion}`;
                 descargarDevolucion.classList.remove('disabled');
+                descargarDevolucion.removeAttribute('aria-disabled');
             } else {
                 descargarDevolucion.href = "#";
                 descargarDevolucion.classList.add('disabled');
+                descargarDevolucion.setAttribute('aria-disabled', 'true');
             }
         }
     } else {
         if (descargarAsignacion) {
             descargarAsignacion.href = "#";
             descargarAsignacion.classList.add('disabled');
+            descargarAsignacion.setAttribute('aria-disabled', 'true');
         }
         if (descargarDevolucion) {
             descargarDevolucion.href = "#";
             descargarDevolucion.classList.add('disabled');
+            descargarDevolucion.setAttribute('aria-disabled', 'true');
         }
     }
 }
@@ -348,7 +355,62 @@ document.addEventListener('change', function (e) {
     }
 });
 
+// Asegura que el estado de los botones se actualiza también cuando se hace click en la tabla (por si acaso)
+document.addEventListener('click', function (e) {
+    if (e.target.classList.contains('row-checkbox')) {
+        actualizarBotonesBarraSuperior();
+    }
+});
+
 // También actualizar al cargar la tabla por primera vez
 document.addEventListener('DOMContentLoaded', function () {
     actualizarBotonesBarraSuperior();
+
+    // Descargar PDF dinámicamente según selección
+    const descargarAsignacion = document.getElementById("descargar-asignacion");
+    const descargarDevolucion = document.getElementById("descargar-devolucion");
+
+    if (descargarAsignacion) {
+        descargarAsignacion.addEventListener('click', function (e) {
+            if (descargarAsignacion.classList.contains('disabled')) {
+                e.preventDefault();
+                return;
+            }
+            const checked = document.querySelector('.row-checkbox:checked');
+            if (!checked) {
+                e.preventDefault();
+                alert("Selecciona una asignación para descargar el PDF.");
+                return;
+            }
+            const idAsignacion = checked.getAttribute('data-id-asignacion');
+            if (idAsignacion) {
+                descargarAsignacion.href = `/asignacion/descargar_pdf_asignacion/${idAsignacion}`;
+            } else {
+                e.preventDefault();
+                alert("No se encontró el ID de asignación.");
+            }
+        });
+    }
+
+    if (descargarDevolucion) {
+        descargarDevolucion.addEventListener('click', function (e) {
+            if (descargarDevolucion.classList.contains('disabled')) {
+                e.preventDefault();
+                return;
+            }
+            const checked = document.querySelector('.row-checkbox:checked');
+            if (!checked) {
+                e.preventDefault();
+                alert("Selecciona una asignación para descargar el PDF de devolución.");
+                return;
+            }
+            const idDevolucion = checked.getAttribute('data-id-devolucion');
+            if (idDevolucion) {
+                descargarDevolucion.href = `/asignacion/descargar_pdf_devolucion/${idDevolucion}`;
+            } else {
+                e.preventDefault();
+                alert("No se encontró el ID de devolución para esta asignación.");
+            }
+        });
+    }
 });
