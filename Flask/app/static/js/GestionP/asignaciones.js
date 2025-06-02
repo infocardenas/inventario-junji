@@ -431,4 +431,39 @@ function rebindCheckboxEvents() {
     document.querySelectorAll('.row-checkbox').forEach(cb => {
         cb.onchange = actualizarBotonesBarraSuperior;
     });
+
+    // Re-enlazar eventos para los botones de información y eliminar
+    document.querySelectorAll('.button-info').forEach(btn => {
+        btn.onclick = function (e) {
+            e.stopPropagation();
+            const modalTarget = btn.getAttribute('data-bs-target');
+            if (modalTarget) {
+                const modal = new bootstrap.Modal(document.querySelector(modalTarget));
+                modal.show();
+            }
+        };
+    });
+
+    document.querySelectorAll('.delete-button').forEach(btn => {
+        btn.onclick = function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const url = btn.getAttribute('data-url');
+            const title = btn.getAttribute('data-title') || 'Confirmar eliminación';
+            const message = btn.getAttribute('data-message') || '¿Estás seguro de que deseas eliminar este elemento?';
+
+            if (confirm(`${title}\n\n${message}`)) {
+                // Enviar petición POST para eliminar (puedes usar fetch o crear un formulario temporal)
+                fetch(url, { method: 'POST' })
+                    .then(res => {
+                        if (res.ok) {
+                            location.reload();
+                        } else {
+                            alert('Error al eliminar la asignación.');
+                        }
+                    })
+                    .catch(() => alert('Error al eliminar la asignación.'));
+            }
+        };
+    });
 }
