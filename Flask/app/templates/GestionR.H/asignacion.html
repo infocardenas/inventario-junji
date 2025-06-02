@@ -105,12 +105,9 @@
               {{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}
             </td>
             <td class="d-flex justify-content-center gap-2">
-              <div data-bs-toggle="tooltip" data-bs-title="Detalles">
-                <button class="btn button-info" data-bs-toggle="modal"
-                  data-bs-target="#modal-view-{{ asig.idEquipoAsignacion }}" data-id-asignacion="{{ asig.idAsignacion }}">
-                  <i class="bi bi-info-circle"></i>
-                </button>
-              </div>
+              <button class="btn button-info" type="button" data-id-asignacion="{{ asig.idAsignacion }}">
+                <i class="bi bi-info-circle"></i>
+              </button>
               <button class="btn btn-danger delete-button" data-bs-toggle="tooltip"
                 data-url="/delete_asignacion/{{asig.idAsignacion}}" data-title="Confirmar eliminación de asignación"
                 data-message="¿Estás seguro de que deseas eliminar esta asignación? Eliminar la asignación descartará los equipos asociados a este ID de asignación."

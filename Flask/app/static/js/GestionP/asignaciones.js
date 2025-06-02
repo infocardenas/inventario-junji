@@ -49,8 +49,8 @@ function actualizarTablaAsignaciones(asignaciones) {
             <td class="toCheck">${asig.fechaDevolucion ? formatFecha(asig.fechaDevolucion) : 'Sin devolver'}</td>
             <td class="d-flex justify-content-center gap-2">
                 <div data-bs-toggle="tooltip" data-bs-title="Detalles">
-                  <button class="btn button-info" data-bs-toggle="modal"
-                    data-bs-target="#modal-view-${asig.idEquipoAsignacion}" data-id-asignacion="${asig.idAsignacion}">
+                  <button class="btn button-info"
+                    data-id-asignacion="${asig.idAsignacion}">
                     <i class="bi bi-info-circle"></i>
                   </button>
                 </div>
@@ -432,15 +432,14 @@ function rebindCheckboxEvents() {
         cb.onchange = actualizarBotonesBarraSuperior;
     });
 
-    // Re-enlazar eventos para los botones de información y eliminar
+    // Botón de información: abrir modal genérico y cargar datos dinámicamente
     document.querySelectorAll('.button-info').forEach(btn => {
         btn.onclick = function (e) {
+            e.preventDefault();
             e.stopPropagation();
-            const modalTarget = btn.getAttribute('data-bs-target');
-            if (modalTarget) {
-                const modal = new bootstrap.Modal(document.querySelector(modalTarget));
-                modal.show();
-            }
+            const idAsignacion = btn.getAttribute('data-id-asignacion');
+            if (!idAsignacion) return;
+            abrirModalDetalleAsignacion(idAsignacion);
         };
     });
 
@@ -453,7 +452,6 @@ function rebindCheckboxEvents() {
             const message = btn.getAttribute('data-message') || '¿Estás seguro de que deseas eliminar este elemento?';
 
             if (confirm(`${title}\n\n${message}`)) {
-                // Enviar petición POST para eliminar (puedes usar fetch o crear un formulario temporal)
                 fetch(url, { method: 'POST' })
                     .then(res => {
                         if (res.ok) {
@@ -466,4 +464,53 @@ function rebindCheckboxEvents() {
             }
         };
     });
+}
+
+// Modal genérico para detalles de asignación
+function abrirModalDetalleAsignacion(idAsignacion) {
+    // Mostrar el número de asignación en el título
+    document.getElementById('modalDetalleAsignacionId').textContent = `#${idAsignacion}`;
+    // Limpia el contenido anterior
+    document.getElementById('modalDetalleAsignacionBody').innerHTML = '<div class="text-center">Cargando...</div>';
+    const modal = new bootstrap.Modal(document.getElementById('modalDetalleAsignacion'));
+    modal.show();
+
+    fetch(`/asignacion/detalles_json/${idAsignacion}`)
+        .then(res => res.json())
+        .then(data => {
+            if (!data.asignacion) {
+                document.getElementById('modalDetalleAsignacionBody').innerHTML = '<div class="text-danger">No se encontraron datos.</div>';
+                return;
+            }
+            const d = data.asignacion;
+            document.getElementById('modalDetalleAsignacionBody').innerHTML = `
+                <h5>Datos del Funcionario</h5>
+                <table class="table table-bordered" style="table-layout: fixed">
+                    <tr><td><strong>RUT</strong></td><td>${d.rutFuncionario || 'Sin información'}</td></tr>
+                    <tr><td><strong>Nombre</strong></td><td>${d.nombreFuncionario || 'Sin información'}</td></tr>
+                    <tr><td><strong>Cargo</strong></td><td>${d.cargoFuncionario || 'Sin información'}</td></tr>
+                </table>
+                <br>
+                <h5>Datos de la Asignación</h5>
+                <table class="table table-bordered" style="table-layout: fixed">
+                    <tr><td><strong>Fecha de asignación</strong></td><td>${d.fecha_inicioAsignacion ? new Date(d.fecha_inicioAsignacion).toLocaleDateString() : 'Sin información'}</td></tr>
+                    <tr><td><strong>Fecha de devolución</strong></td><td>${d.fechaDevolucion ? new Date(d.fechaDevolucion).toLocaleDateString() : 'Sin devolver'}</td></tr>
+                    <tr><td><strong>Observaciones</strong></td><td>${d.ObservacionAsignacion || 'Sin información'}</td></tr>
+                </table>
+                <br>
+                <h5>Datos del Equipo</h5>
+                <table class="table table-bordered" style="table-layout: fixed">
+                    <tr><td><strong>Tipo</strong></td><td>${d.nombreTipo_equipo || 'Sin información'}</td></tr>
+                    <tr><td><strong>Marca</strong></td><td>${d.nombreMarcaEquipo || 'Sin información'}</td></tr>
+                    <tr><td><strong>Modelo</strong></td><td>${d.nombreModeloequipo || 'Sin información'}</td></tr>
+                    <tr><td><strong>Cód. inventario</strong></td><td>${d.Cod_inventarioEquipo || 'Sin información'}</td></tr>
+                    <tr><td><strong>N° serie</strong></td><td>${d.Num_serieEquipo || 'Sin información'}</td></tr>
+                    <tr><td><strong>Cód. proveedor</strong></td><td>${d.codigoproveedor_equipo || 'Sin información'}</td></tr>
+                    <tr><td><strong>Observaciones</strong></td><td>${d.ObservacionEquipo || 'Sin información'}</td></tr>
+                </table>
+            `;
+        })
+        .catch(() => {
+            document.getElementById('modalDetalleAsignacionBody').innerHTML = '<div class="text-danger">Error al cargar los datos.</div>';
+        });
 }
