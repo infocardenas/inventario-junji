@@ -67,9 +67,7 @@ function actualizarTablaAsignaciones(asignaciones) {
     });
 
     // Vuelve a enlazar los eventos para los checkboxes
-    document.querySelectorAll('.row-checkbox').forEach(cb => {
-        cb.addEventListener('change', actualizarBotonesBarraSuperior);
-    });
+    rebindCheckboxEvents();
 
     // Llama a la función para actualizar el estado de los botones después de actualizar la tabla
     actualizarBotonesBarraSuperior();
@@ -304,16 +302,36 @@ function actualizarBotonesBarraSuperior() {
     const descargarDevolucion = document.getElementById("descargar-devolucion");
     const firmarButton = document.getElementById("firmar-button");
     const devolverButton = document.getElementById("devolver-button");
-    const descargarPDFButton = document.getElementById("descargar-PDF-button"); // <-- Añadido
+    const descargarPDFButton = document.getElementById("descargar-PDF-button");
+    // Siempre obtener los botones de firma del dropdown
+    const btnFirmarAsignacion = document.getElementById("documento-firmado-asignacion");
+    const btnFirmarDevolucion = document.getElementById("documento-firmado-devolucion");
+
+    // Siempre dejar los botones de firma activos (no bloqueados)
+    if (btnFirmarAsignacion) {
+        btnFirmarAsignacion.disabled = false;
+        btnFirmarAsignacion.classList.remove('disabled');
+        btnFirmarAsignacion.tabIndex = 0;
+        btnFirmarAsignacion.style.pointerEvents = 'auto';
+    }
+    if (btnFirmarDevolucion) {
+        btnFirmarDevolucion.disabled = false;
+        btnFirmarDevolucion.classList.remove('disabled');
+        btnFirmarDevolucion.tabIndex = 0;
+        btnFirmarDevolucion.style.pointerEvents = 'auto';
+    }
 
     // Buscar el primer checkbox seleccionado
     const checked = document.querySelector('.row-checkbox:checked');
     const haySeleccion = !!checked;
 
-    // Habilitar/deshabilitar botones según selección
     if (firmarButton) firmarButton.disabled = !haySeleccion;
     if (devolverButton) devolverButton.disabled = !haySeleccion;
-    if (descargarPDFButton) descargarPDFButton.disabled = !haySeleccion; // <-- Añadido
+    if (descargarPDFButton) descargarPDFButton.disabled = !haySeleccion;
+
+    // Habilitar los botones del dropdown de firma SOLO si hay selección
+    if (btnFirmarAsignacion) btnFirmarAsignacion.disabled = !haySeleccion;
+    if (btnFirmarDevolucion) btnFirmarDevolucion.disabled = !haySeleccion;
 
     if (haySeleccion) {
         const idAsignacion = checked.getAttribute('data-id-asignacion');
@@ -355,17 +373,10 @@ document.addEventListener('change', function (e) {
     }
 });
 
-// Asegura que el estado de los botones se actualiza también cuando se hace click en la tabla (por si acaso)
-document.addEventListener('click', function (e) {
-    if (e.target.classList.contains('row-checkbox')) {
-        actualizarBotonesBarraSuperior();
-    }
-});
-
 // También actualizar al cargar la tabla por primera vez
 document.addEventListener('DOMContentLoaded', function () {
     actualizarBotonesBarraSuperior();
-
+    rebindCheckboxEvents();
     // Descargar PDF dinámicamente según selección
     const descargarAsignacion = document.getElementById("descargar-asignacion");
     const descargarDevolucion = document.getElementById("descargar-devolucion");
@@ -414,3 +425,10 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
+
+// Asegura que los eventos de los checkboxes funcionen después de buscar
+function rebindCheckboxEvents() {
+    document.querySelectorAll('.row-checkbox').forEach(cb => {
+        cb.onchange = actualizarBotonesBarraSuperior;
+    });
+}
