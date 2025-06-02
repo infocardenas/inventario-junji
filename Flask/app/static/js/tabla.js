@@ -1,4 +1,3 @@
-
 let selectAllState = false; // Estado actual: false = deseleccionado
 document.addEventListener('DOMContentLoaded', () => {
     const tableBody = document.getElementById('myTableBody');
@@ -155,23 +154,26 @@ document.addEventListener('DOMContentLoaded', () => {
     paginateTable();
 
     // **Actualizar paginación cuando se realiza una búsqueda**
-    document.getElementById("buscador").addEventListener("input", function () {
-        let searchTerm = this.value.toLowerCase();
-        let visibleRows = [];
+    const buscador = document.getElementById("buscador_asignaciones");
+    if (buscador) {
+        buscador.addEventListener("input", function () {
+            let searchTerm = this.value.toLowerCase();
+            let visibleRows = [];
 
-        rows.forEach(row => {
-            let text = row.innerText.toLowerCase();
-            if (text.includes(searchTerm)) {
-                row.style.display = "";
-                visibleRows.push(row);
-            } else {
-                row.style.display = "none";
-            }
+            rows.forEach(row => {
+                let text = row.innerText.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    row.style.display = "";
+                    visibleRows.push(row);
+                } else {
+                    row.style.display = "none";
+                }
+            });
+
+            // Si hay búsqueda, ocultamos la paginación
+            paginationContainer.style.display = searchTerm ? "none" : "flex";
         });
-
-        // Si hay búsqueda, ocultamos la paginación
-        paginationContainer.style.display = searchTerm ? "none" : "flex";
-    });
+    }
 });
 
 

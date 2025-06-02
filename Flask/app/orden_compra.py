@@ -1,9 +1,6 @@
-#se importa flask
 from flask import Blueprint, render_template, request, url_for, redirect,flash, session, jsonify
-#se importa db.py para utilizar la conexion a mysql
 from db import mysql
-#importamos el modulo que creamos
-from funciones import validarChar, getPerPage
+from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
 from cerberus import Validator
 

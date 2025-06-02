@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, url_for, redirect, flash, session, jsonify
+from flask import Blueprint, render_template, request, url_for, redirect, flash, session
 from db import mysql
 from funciones import getPerPage
 from cuentas import loguear_requerido, administrador_requerido
@@ -220,10 +220,10 @@ def delete_tipo_equipo(id):
 
     cur = mysql.connection.cursor()
     try:
-        ids = id.split(",")  # Convierte "1,2,3" en ["1", "2", "3"]
+        ids = id.split(",")  
 
         # Convertir la lista en formato para SQL
-        placeholders = ", ".join(["%s"] * len(ids))  # "%s, %s, %s" si hay 3 IDs
+        placeholders = ", ".join(["%s"] * len(ids))  
 
         # PASO 1: Eliminar dependencias en detalle_traslado
         cur.execute(f"""

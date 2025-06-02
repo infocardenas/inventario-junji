@@ -3,6 +3,27 @@
 
 <h2>Funcionarios de la Unidad: {{ unidad.nombreUnidad }}</h2>
 
+<div class="toolbar">
+  <div class="toolbar-1">
+    <a href="{{ url_for('Unidad.UNIDAD') }}" class="btn btn-secondary">Volver</a>
+  </div>
+  <div class="toolbar-2">
+    <!-- Buscador -->
+    <input id="buscador_funcionario" type="text" class="form-control" placeholder="Buscar funcionario..."
+      oninput="buscarFuncionariosUnidad(1)" style="max-width: 400px; display: inline-block;" />
+    <div class="toolbar-3">
+<<<<<<< HEAD
+      <!-- Buscador --> 
+=======
+      <!-- Buscador -->
+>>>>>>> isaac
+
+    </div>
+  </div>
+
+</div>
+
+
 <table class="table table-bordered table-striped">
   <thead>
     <tr>
@@ -12,18 +33,18 @@
       <th>Correo</th>
     </tr>
   </thead>
-  <tbody>
-    {% for f in funcionarios %}
-    <tr>
-      <td>{{ f.rutFuncionario }}</td>
-      <td>{{ f.nombreFuncionario }}</td>
-      <td>{{ f.cargoFuncionario }}</td>
-      <td>{{ f.correoFuncionario }}</td>
-    </tr>
-    {% endfor %}
+  <tbody id="funcionariosUnidadTableBody">
+    <!-- JS llenará este tbody -->
   </tbody>
 </table>
 
-<a href="{{ url_for('Unidad.UNIDAD') }}" class="btn btn-secondary">Volver</a>
+<div class="pagination-container mt-3 d-flex justify-content-center">
+  <nav aria-label="Paginación de funcionarios">
+    <ul class="pagination" id="funcionarios-unidad-pagination"></ul>
+  </nav>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/Operaciones/FuncionariosUnidad.js') }}"></script>
 
 {% endblock %}

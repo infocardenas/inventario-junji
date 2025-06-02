@@ -30,14 +30,8 @@
         <!-- Usuario -->
         <div class="mb-3">
           <label for="nombreUsuario" class="form-label">Nombre de Usuario</label>
-          <input
-            type="text"
-            id="nombreUsuario"
-            name="nombreUsuario"
-            class="form-control campo-obligatorio"
-            placeholder="Ingrese su nombre de usuario"
-            required
-          />
+          <input type="text" id="nombreUsuario" name="nombreUsuario" class="form-control campo-obligatorio"
+            placeholder="Ingrese su nombre de usuario" required />
           <div class="form-text text-danger text-error-message"></div>
         </div>
 
@@ -45,22 +39,12 @@
         <div class="mb-3">
           <label for="contrasenna" class="form-label">Contraseña</label>
           <div class="input-group">
-            <input
-              type="password"
-              id="contrasenna"
-              name="contrasenna"
-              class="form-control validar-contraseña campo-obligatorio"
-              placeholder="Ingrese su contraseña"
-              required
-            />
+            <input type="password" id="contrasenna" name="contrasenna"
+              class="form-control validar-contraseña campo-obligatorio" placeholder="Ingrese su contraseña" required />
             <span class="input-group-text bg-white">
-              <img
-                src="../static/img/hidden.png"
-                alt="Mostrar/Ocultar contraseña"
-                id="ojo_contrasenna"
+              <img src="../static/img/hidden.png" alt="Mostrar/Ocultar contraseña" id="ojo_contrasenna"
                 style="width: 20px; height: 20px; cursor: pointer;"
-                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)"
-              />
+                onclick="abrir_cerrar_ojo('ojo_contrasenna', false)" />
             </span>
           </div>
           <div class="form-text text-danger text-error-message"></div>
@@ -95,10 +79,7 @@
 </div>
 
 <!-- jQuery -->
-<script
-  src="https://code.jquery.com/jquery-3.7.1.min.js"
-  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
-  crossorigin="anonymous"
-></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+  integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 {% endblock %}

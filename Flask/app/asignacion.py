@@ -1,3 +1,4 @@
+from email.mime.application import MIMEApplication
 from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session, jsonify
 from db import mysql
 from fpdf import FPDF
@@ -7,7 +8,14 @@ import shutil
 from werkzeug.utils import secure_filename
 from datetime import date
 from cuentas import loguear_requerido, administrador_requerido
-from env_vars import  inLinux
+from traslado import crear_traslado_generico
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.mime.base import MIMEBase
+from email.mime.image import MIMEImage
+import fitz
+from env_vars import paths, inLinux
 from cerberus import Validator
 from MySQLdb import IntegrityError
 
@@ -233,7 +241,8 @@ def create_asignacion():
             "id_asignacion": str(query["idAsignacion"]),
             "fecha_asignacion": str(query["fecha_inicioAsignacion"].strftime("%d-%m-%Y")),
             "unidad": query["nombreUnidad"],
-            "idUnidad": query["idUnidad"]
+            "idUnidad": query["idUnidad"],
+            "observacion": observacion  # <-- Agrega esta línea
         }
     except IntegrityError as e:
         error_message = str(e)
@@ -472,7 +481,7 @@ def crear_pdf_asignacion(funcionario, equipos):
             for datum in datarow:
                 row.cell(datum)
 
-    observacion = "Esta es una observacion"
+    observacion = "Observación: " + (funcionario.get("observacion") or "")
 
     pdf.ln(10)
     nombreEncargado = "Nombre del encargado TI:"
@@ -481,7 +490,7 @@ def crear_pdf_asignacion(funcionario, equipos):
     nombreMinistro = "Nombre del funcionario:"
     rutMinistro = "RUT:"
     firma = "Firma"
-    with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
+    with pdf.text_columns(text_align="J", ncols=2, gutter=30) as cols:
         cols.write(nombreEncargado)
         cols.ln()
         cols.ln()
@@ -503,6 +512,8 @@ def crear_pdf_asignacion(funcionario, equipos):
         cols.write(firma)
         cols.ln()
         cols.ln()
+        cols.ln()
+        cols.write(observacion)  # <-- Aquí se muestra la observación real
         cols.new_column()
         for i in range(0, 3):
             if i == 0:
@@ -583,7 +594,6 @@ def devolver_equipos():
             cur.execute("ROLLBACK")  # Cancelar todo el proceso
             return redirect(url_for("asignacion.Asignacion"))
 
-
     # Si no hay errores, proceder con la devolución
     for id_equipo_asignacion in ids_equipos_asignacion:
         # Obtener la asignación y el equipo correspondiente
@@ -633,13 +643,14 @@ def devolver_equipos():
                 WHERE idAsignacion = %s
             """, (id_asignacion,))
 
-    # Obtiene información relevante del funcionario para añadir al PDF
+    # Obtiene información relevante del funcionario y la observación para añadir al PDF
     cur.execute("""
         SELECT 
             f.nombreFuncionario,
             a.idAsignacion,
             a.fecha_inicioAsignacion,
-            u.nombreUnidad
+            u.nombreUnidad,
+            a.ObservacionAsignacion
         FROM funcionario f
         JOIN asignacion a ON f.rutFuncionario = a.rutFuncionario
         JOIN unidad u ON f.idUnidad = u.idUnidad
@@ -651,7 +662,8 @@ def devolver_equipos():
         "nombre": query["nombreFuncionario"],
         "id_asignacion": str(query["idAsignacion"]),
         "fecha_asignacion": str(query["fecha_inicioAsignacion"].strftime("%d-%m-%Y")),
-        "unidad": query["nombreUnidad"]
+        "unidad": query["nombreUnidad"],
+        "observacion": query["ObservacionAsignacion"] or ""
     }
 
     # Obtiene información relevante de los equipos seleccionados para devolver para añadir al PDF
@@ -686,12 +698,13 @@ def devolver_equipos():
 
     # Si todo fue exitoso, confirmar cambios
     cur.execute("COMMIT")
-    crear_pdf_devolucion(data_funcionario_PDF, data_equipos_PDF, id_devolucion)
+    crear_pdf_devolucion(data_funcionario_PDF, data_equipos_PDF, id_devolucion, data_funcionario_PDF["observacion"])
     flash("Devolución de equipos realizada exitosamente", "success")
     return redirect(url_for("asignacion.Asignacion"))
 
 
-def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
+# Modifica la función para aceptar la observación
+def crear_pdf_devolucion(funcionario, equipos, id_devolucion, observacion=""):
     class PDF(FPDF):
         def header(self):
             #logo
@@ -789,8 +802,8 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
             row = table.row()
             for datum in datarow:
                 row.cell(datum)
-
-    observacion = "Esta es una observacion"
+ 
+    # Mostrar la observación real
     pdf.ln(10)
     nombreEncargado = "Nombre del encargado TI:" 
     rutEncargado = "RUT:"
@@ -820,21 +833,15 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion):
         cols.write(firma)
         cols.ln()
         cols.ln()
+        cols.ln()
+        cols.write("Observación: " + (observacion or ""))
+        cols.ln()
         cols.new_column()
-        for i in range(0, 3):
-            if i == 0:
-                cols.write(text= session['user'])
-            else:
-                cols.write(text="___________________________________")
-            cols.ln()
-            cols.ln()
-        cols.ln()
-        cols.ln()
         for i in range(0, 3):
             cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
-    creado_por = "documento creado por: " + session['user']#! codigo basura????
+    creado_por = "documento creado por: " + session['user']
     #* Definir la ruta donde se almacenarán los PDFs de devoluciones
     ruta_devoluciones = "pdf/devoluciones"
     # Asegurar que la carpeta "pdf/devoluciones" exista
@@ -947,7 +954,7 @@ def buscar_asignaciones():
 
     cur = mysql.connection.cursor()
 
-    # Consulta para buscar asignaciones
+    # Consulta para buscar asignaciones (ahora incluye todos los campos necesarios)
     cur.execute(f"""
         SELECT
             a.idAsignacion,
@@ -956,16 +963,25 @@ def buscar_asignaciones():
             a.ActivoAsignacion,
             f.nombreFuncionario,
             f.cargoFuncionario,
+            ea.idEquipoAsignacion,
+            d.idDevolucion,
+            d.fechaDevolucion,
             e.Cod_inventarioEquipo,
             e.Num_serieEquipo,
-            te.nombreTipo_equipo
+            te.nombreTipo_equipo,
+            me.nombreModeloequipo,
+            mae.nombreMarcaEquipo,
+            e.codigoproveedor_equipo,
+            e.ObservacionEquipo
         FROM asignacion a
         JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
         JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+        LEFT JOIN devolucion d ON ea.idEquipoAsignacion = d.idEquipoAsignacion
         JOIN equipo e ON e.idEquipo = ea.idEquipo
         JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
         JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
         JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
         WHERE LOWER(f.nombreFuncionario) LIKE %s
            OR LOWER(f.cargoFuncionario) LIKE %s
            OR LOWER(e.Cod_inventarioEquipo) LIKE %s
