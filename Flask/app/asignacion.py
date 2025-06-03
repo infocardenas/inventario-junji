@@ -179,8 +179,28 @@ def create_asignacion():
 
         TuplaEquipos = ()
 
+        # Obtener la unidad del funcionario (destino del traslado)
+        cur.execute("SELECT idUnidad FROM funcionario WHERE rutFuncionario = %s", (rut_funcionario,))
+        funcionario_data = cur.fetchone()
+        id_unidad_funcionario = funcionario_data['idUnidad'] if funcionario_data else None
+
         # Recorre los equipos asignados
         for id_equipo in id_equipos:
+            # Obtener la unidad actual del equipo (origen del traslado)
+            cur.execute("SELECT idUnidad FROM equipo WHERE idEquipo = %s", (id_equipo,))
+            equipo_data = cur.fetchone()
+            id_unidad_origen = equipo_data['idUnidad'] if equipo_data else None
+
+            # Si la unidad de origen y destino son diferentes, crear traslado
+            if id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
+                # Llama a la función de traslado (usa la fecha de asignación)
+                crear_traslado_generico(
+                    fecha_asignacion,
+                    id_unidad_funcionario,
+                    id_unidad_origen,
+                    [id_equipo]
+                )
+
             # Inserta los datos en la tabla equipo_asignacion
             cur.execute("""
                 INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
