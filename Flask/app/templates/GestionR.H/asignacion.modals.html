@@ -607,6 +607,26 @@
     </div>
 </div>
 
+<!-- Modal de confirmación de traslado -->
+<div class="modal fade" id="modalConfirmarTraslado" tabindex="-1" aria-labelledby="modalConfirmarTrasladoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalConfirmarTrasladoLabel">¿Desea realizar el traslado?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Uno o más equipos seleccionados están en una unidad diferente a la del funcionario.<br>
+        ¿Desea generar automáticamente el traslado de estos equipos?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnCancelarTraslado" data-bs-dismiss="modal">No, solo asignar</button>
+        <button type="button" class="btn btn-primary" id="btnAceptarTraslado">Sí, generar traslado</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <style>
     .tabla-detalle {
         width: 100%;
@@ -628,4 +648,72 @@
         margin-top: 1rem;
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('form-asignacion-modal');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Obtener datos del formulario
+        const formData = new FormData(form);
+        // Recopilar equipos seleccionados
+        let equipos = [];
+        document.querySelectorAll('input[name="equipoSeleccionado"]:checked').forEach(cb => {
+            equipos.push(cb.value);
+        });
+        if (equipos.length === 0) {
+            form.submit(); // Dejar que el backend maneje el error de equipos vacíos
+            return;
+        }
+        formData.delete('equiposAsignados[]');
+        equipos.forEach(eq => formData.append('equiposAsignados[]', eq));
+
+        // Obtener rut_funcionario
+        let rut = form.querySelector('input[name="rut_funcionario"]')?.value;
+        if (!rut) {
+            alert("Debe seleccionar un funcionario.");
+            return;
+        }
+        formData.set('rut_funcionario', rut);
+
+        // Validar si requiere traslado
+        fetch('/asignacion/validar_traslado', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.requiere_traslado) {
+                // Mostrar modal de confirmación
+                const modal = new bootstrap.Modal(document.getElementById('modalConfirmarTraslado'));
+                modal.show();
+
+                // Botón aceptar: enviar con traslado
+                document.getElementById('btnAceptarTraslado').onclick = function () {
+                    form.insertAdjacentHTML('beforeend', '<input type="hidden" name="crear_traslado" value="1">');
+                    modal.hide();
+                    form.submit();
+                };
+                // Botón cancelar: enviar sin traslado
+                document.getElementById('btnCancelarTraslado').onclick = function () {
+                    form.insertAdjacentHTML('beforeend', '<input type="hidden" name="crear_traslado" value="0">');
+                    modal.hide();
+                    form.submit();
+                };
+            } else {
+                // No requiere traslado, enviar normalmente
+                form.insertAdjacentHTML('beforeend', '<input type="hidden" name="crear_traslado" value="0">');
+                form.submit();
+            }
+        })
+        .catch(() => {
+            // Si falla la validación, enviar igual
+            form.submit();
+        });
+    });
+});
+</script>
 

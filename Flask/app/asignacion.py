@@ -131,6 +131,30 @@ def Asignacion(page=1):
 def getPerPage():
     return 10 
 
+@asignacion.route("/asignacion/validar_traslado", methods=["POST"])
+@loguear_requerido
+def validar_traslado():
+    """
+    Recibe rut_funcionario y equipos_asignados, retorna si se requiere traslado.
+    """
+    rut_funcionario = request.form.get('rut_funcionario')
+    id_equipos = request.form.getlist('equiposAsignados[]')
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT idUnidad FROM funcionario WHERE rutFuncionario = %s", (rut_funcionario,))
+    funcionario_data = cur.fetchone()
+    id_unidad_funcionario = funcionario_data['idUnidad'] if funcionario_data else None
+
+    requiere_traslado = False
+    for id_equipo in id_equipos:
+        cur.execute("SELECT idUnidad FROM equipo WHERE idEquipo = %s", (id_equipo,))
+        equipo_data = cur.fetchone()
+        id_unidad_origen = equipo_data['idUnidad'] if equipo_data else None
+        if id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
+            requiere_traslado = True
+            break
+    cur.close()
+    return jsonify({"requiere_traslado": requiere_traslado})
+
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
 def create_asignacion():
@@ -146,6 +170,7 @@ def create_asignacion():
     rut_funcionario = request.form.get('rut_funcionario')
     observacion = request.form.get('observacion')
     id_equipos = [int(equipo) for equipo in request.form.getlist('equiposAsignados[]')]
+    crear_traslado = request.form.get('crear_traslado', '1')  # Nuevo: por defecto sí
 
     # Se crea un objeto para poder validar los datos recibidos
     data = {
@@ -191,9 +216,8 @@ def create_asignacion():
             equipo_data = cur.fetchone()
             id_unidad_origen = equipo_data['idUnidad'] if equipo_data else None
 
-            # Si la unidad de origen y destino son diferentes, crear traslado
-            if id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
-                # Llama a la función de traslado (usa la fecha de asignación)
+            # Si la unidad de origen y destino son diferentes, crear traslado SOLO si el usuario aceptó
+            if crear_traslado == '1' and id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
                 crear_traslado_generico(
                     fecha_asignacion,
                     id_unidad_funcionario,
