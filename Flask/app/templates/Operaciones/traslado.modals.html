@@ -11,7 +11,7 @@
             <form id="trasladoForm">
                 <div class="modal-body">
                     <div class="form-group">
-                        <label for="fechatraslado">Fecha de Traslado</label>
+                        <label for="fechatraslado" >Fecha de Traslado</label>
                         <input type="date" name="fechatraslado" id="fechatraslado" class="form-control" required>
                     </div>
                     <div class="form-group">
@@ -24,8 +24,9 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label>Equipos disponibles</label>
                         <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+                            <label >Equipos disponibles</label>
+                        <input type="text" class="form-control " id="buscarEquipoTraslado" placeholder="Buscar equipo ">
                             <table id="posts" class="table table-striped table-hover">
                                 <thead class="thead-light">
                                     <tr>
@@ -133,3 +134,19 @@
         </div>
     </div>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Buscador para la tabla de equipos en traslado
+    const input = document.getElementById('buscarEquipoTraslado');
+    const tbody = document.getElementById('equiposLista');
+    if (input && tbody) {
+        input.addEventListener('input', function () {
+            const filtro = input.value.toLowerCase();
+            Array.from(tbody.querySelectorAll('tr')).forEach(tr => {
+                const texto = tr.textContent.toLowerCase();
+                tr.style.display = texto.includes(filtro) ? '' : 'none';
+            });
+        });
+    }
+});
+</script>
