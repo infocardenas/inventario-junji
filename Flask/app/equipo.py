@@ -350,13 +350,6 @@ def update_equipo(id):
             return redirect(url_for("equipo.Equipo"))
 
         # Verificar si el código de inventario ya existe (excepto para el mismo equipo)
-        cur.execute("""
-            SELECT idEquipo FROM equipo 
-            WHERE Cod_inventarioEquipo = %s AND idEquipo != %s
-        """, (datos['codigo_inventario'], id))
-        if cur.fetchone():
-            flash("El código de inventario ya está en uso", 'warning')
-            return redirect(url_for("equipo.Equipo"))
 
         # Verificar si el número de serie ya existe (excepto para el mismo equipo)
         cur.execute("""
