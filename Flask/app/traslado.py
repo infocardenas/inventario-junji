@@ -466,18 +466,16 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             for datum in datarow:
                 row.cell(datum)
 
+                
+
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado:"
-    rutEncargado = "Numero de RUT:"
+    nombreEncargado = "Nombre del encargado TI:"
+    rutEncargado = "RUT:"
     firmaEncargado = "Firma:"
-    nombreMinistro = "Nombre Ministro de Fe:"
-    rutMinistro = "Numero de RUT:"
+    nombreMinistro = "Nombre del funcionario:"
+    rutMinistro = "RUT:"
     firma = "Firma"
-    nombreEncargadoUnidadTI = "Nombre Encargado TI " + session["user"]
-    rutMinistro = "Numero de RUT:"
-    firma = "Firma"
-    # crea dos columnas una para el espacio de firma y otra para los nombres
-    with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
+    with pdf.text_columns(text_align="J", ncols=2, gutter=30) as cols:
         cols.write(nombreEncargado)
         cols.ln()
         cols.ln()
@@ -499,33 +497,19 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
         cols.write(firma)
         cols.ln()
         cols.ln()
-        cols.ln()
-        cols.ln()
-
-        cols.write(nombreEncargadoUnidadTI)
-        cols.ln()
-        cols.ln()
-        cols.write(rutMinistro)
-        cols.ln()
-        cols.ln()
-        cols.write(firma)
-        cols.ln()
-        cols.ln()
+        cols.ln() # <-- Aquí se muestra la observación real
         cols.new_column()
         for i in range(0, 3):
-            cols.write(text="_________________________")
+            if i == 0:
+                cols.write(text= session['user'])
+            else:
+                cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
         cols.ln()
         cols.ln()
         for i in range(0, 3):
-            cols.write(text="_________________________")
-            cols.ln()
-            cols.ln()
-        cols.ln()
-        cols.ln()
-        for i in range(0, 3):
-            cols.write(text="_________________________")
+            cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
     # crear pdf con la id para diferenciar pdfs
