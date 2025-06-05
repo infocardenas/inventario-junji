@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const fechaFin = this.dataset.fechaFin;
             const tipo = this.dataset.tipo;
             const proveedor = this.dataset.proveedor;
-            
+
             // Verificar qué valores están llegando
             console.log("ID Orden:", id);
             console.log("Nombre Orden:", nombre);
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 $(document).ready(function () {
-    
+
 
     $("#eliminarSeleccionados").on("click", function () {
         let seleccionados = $(".row-checkbox:checked").closest("tr").map(function () {
@@ -74,33 +74,33 @@ $(document).ready(function () {
 
     function mostrarAlerta(mensaje, tipo = "success") {
         let alertContainer = document.getElementById("alertContainer");
-    
+
         // Verifica si el contenedor ya existe
         if (!alertContainer) {
             console.warn("⚠️ Contenedor de alertas no encontrado, creándolo dinámicamente...");
             document.body.insertAdjacentHTML("afterbegin", '<div id="alertContainer" class="alert-container"></div>');
             alertContainer = document.getElementById("alertContainer");
         }
-    
+
         // Remueve cualquier alerta previa antes de agregar una nueva
         alertContainer.innerHTML = "";
-    
+
         let alertaHTML = `
             <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
                 ${mensaje}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
-    
+
         alertContainer.innerHTML = alertaHTML;
         alertContainer.classList.remove("d-none");
-    
+
         setTimeout(() => {
             alertContainer.classList.add("d-none");
             alertContainer.innerHTML = ""; // Limpia el contenido después de ocultarlo
         }, 5000);
     }
-    
+
 });
 
 
@@ -145,8 +145,8 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         }
     });
-     // **Validación de formularios antes de enviarlos**
-     function validarFormulario(formId) {
+    // **Validación de formularios antes de enviarlos**
+    function validarFormulario(formId) {
         let form = document.getElementById(formId);
         let inputs = form.querySelectorAll("input[required], select[required]");
         let valido = true;
@@ -182,7 +182,7 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Funcion para ocultar o mostrar la fecha final en orden de compra
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     // 📌 Elementos del formulario de agregar
     const selectAdquisicionAdd = document.getElementById("tipoAdquisicionSelect");
     const fechaFinContainerAdd = document.getElementById("fechaFinContainer");
@@ -196,7 +196,7 @@ document.addEventListener("DOMContentLoaded", function() {
     // 📌 Función general para ocultar/mostrar la fecha final
     function toggleFechaFin(selectElement, fechaFinContainer, fechaFinInput) {
         const valorSeleccionado = selectElement.value;
-        
+
         if (valorSeleccionado === "" || valorSeleccionado === "1") {
             // Ocultar fecha final si es Compra
             fechaFinContainer.style.display = "none";
@@ -205,7 +205,12 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             // Mostrar fecha final si es Préstamo o Arriendo
             fechaFinContainer.style.display = "block";
-            fechaFinInput.required = true;
+            // Solo poner required si es el formulario de agregar
+            if (fechaFinInput.id === "fecha_fin_ordenc") {
+                fechaFinInput.required = true;
+            } else {
+                fechaFinInput.required = false; // Nunca requerido en edición
+            }
         }
     }
 
@@ -236,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("edit_nombre_proveedor_ordenc").value = proveedor;
             document.getElementById("edit_nombre_tipo_adquisicion_ordenc").value = tipo;
 
-            // 📌 Llamar a la función para decidir si la fecha final debe mostrarse
+            // 📌 Llamar a la función para decidir si la fecha final debe mostrarse 
             toggleFechaFin(selectAdquisicionEdit, fechaFinContainerEdit, fechaFinInputEdit);
         });
     });
@@ -256,7 +261,7 @@ document.addEventListener("DOMContentLoaded", function () {
         button.addEventListener("click", function () {
             const fechaGuardada = this.dataset.fechaCompra; // La fecha que ya tenía guardada
             const fechaHoy = new Date().toISOString().split("T")[0]; // Fecha de hoy en formato YYYY-MM-DD
-            
+
             console.log("Fecha Guardada:", fechaGuardada);
             console.log("Fecha de Hoy:", fechaHoy);
 

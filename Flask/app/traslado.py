@@ -5,11 +5,9 @@ from flask import (
     url_for,
     redirect,
     flash,
-    make_response,
     send_file,
     session,
     request,
-    abort,
     jsonify
 )
 from . import mysql
@@ -159,7 +157,6 @@ def add_traslado():
             )
 
         except Exception as e:
-            #flash(e.args[1])
             flash("Error al crear")
             return redirect(url_for("traslado.Traslado"))
 
@@ -402,13 +399,9 @@ def crear_traslado_generico(fechatraslado, Destino, Origen, equipos):
 def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     print("create_pdf")
 
-    # se añade el encabezado y footer creando una clase PDF que hereda de FPDF y sobreescribe los
-    # metodos
     class PDF(FPDF):
         def header(self):
-            # logo
-            # imageUrl = url_for('static', filename='img/logo_junji.png')
-            # print(imageUrl)
+
             self.image("static/img/logo_junji.png", 10, 8, 32)
             # font
             self.set_font("times", "B", 12)
@@ -432,11 +425,8 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
                 0, 12, "OHiggins Poniente 77 Concepción. Tel: 412125579", ln=1
             )  # problema con el caracter ’
             self.cell(0, 12, "www.junji.cl", ln=1)
-            # self.image('logo_inferior.jpg', 30, -30, 25) Las imagenes en el Footer no parecen funcionar correctamente
             pass
 
-    # (Orientacion, unidades, formato)
-    # Orientacion P(portrait) o L(landscape)
     pdf = PDF("P", "mm", "A4")
 
     pdf.add_page()
@@ -452,10 +442,6 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     TABLE_DATA = [
     ("N°", "Articulos", "Serie", "Código Inventario", "Estado", "Modelo"),
     ]
-    
-    # print("$$$$$$$$$$$$$$$$$$$$$$$$$")
-    # print(equipos)
-    # contadores de estado
 
     # ingresa los datos de la tabla como una tupla, donde la primera tupla es el encabezado
     for i, equipo in enumerate(equipos, start=1):
@@ -467,16 +453,6 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             str(equipo["nombreEstado_equipo"]),
             equipo ["nombreModeloequipo"],
         ))
-
-    # print("#$$$$$$#############")
-    # print(TABLE_DATA)
-
-    # TABLE_DATA2 = (('N°', 'Articulos', 'Serie', 'Código Inventario', 'Estado'),
-    # (str(3), 'AIO', str(0), str(8013913), 'EN USO'),)
-    # ("1", "EpsonI5190", "X5NS117668", "8042812", "MAL"),
-    # ("2", "EpsonI5190", "X5NS117668", "8042813", "MAL"),
-    # ("3", "EpsonI5190", "X5NS117668", "8042814", "MAL"),
-    # ("4", "EpsonI5190", "X5NS117668", "8042815", "MAL"),
     pdf.set_font("times", "", 20)
     pdf.cell(0, 10, titulo, ln=True, align="C")
     pdf.set_font("times", "", 12)
@@ -489,21 +465,17 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
             row = table.row()
             for datum in datarow:
                 row.cell(datum)
-    # parrafo_2 = "Se ecuentran X en Bien, Y Regular y Z Mal"
 
-    # pdf.multi_cell(0,10,parrafo_2, ln=True)
+                
+
     pdf.ln(10)
-    nombreEncargado = "Nombre Encargado:"
-    rutEncargado = "Numero de RUT:"
+    nombreEncargado = "Nombre del encargado TI:"
+    rutEncargado = "RUT:"
     firmaEncargado = "Firma:"
-    nombreMinistro = "Nombre Ministro de Fe:"
-    rutMinistro = "Numero de RUT:"
+    nombreMinistro = "Nombre del funcionario:"
+    rutMinistro = "RUT:"
     firma = "Firma"
-    nombreEncargadoUnidadTI = "Nombre Encargado TI " + session["user"]
-    rutMinistro = "Numero de RUT:"
-    firma = "Firma"
-    # crea dos columnas una para el espacio de firma y otra para los nombres
-    with pdf.text_columns(text_align="J", ncols=2, gutter=20) as cols:
+    with pdf.text_columns(text_align="J", ncols=2, gutter=30) as cols:
         cols.write(nombreEncargado)
         cols.ln()
         cols.ln()
@@ -525,42 +497,25 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
         cols.write(firma)
         cols.ln()
         cols.ln()
-        cols.ln()
-        cols.ln()
-
-        cols.write(nombreEncargadoUnidadTI)
-        cols.ln()
-        cols.ln()
-        cols.write(rutMinistro)
-        cols.ln()
-        cols.ln()
-        cols.write(firma)
-        cols.ln()
-        cols.ln()
+        cols.ln() # <-- Aquí se muestra la observación real
         cols.new_column()
         for i in range(0, 3):
-            cols.write(text="_________________________")
+            if i == 0:
+                cols.write(text= session['user'])
+            else:
+                cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
         cols.ln()
         cols.ln()
         for i in range(0, 3):
-            cols.write(text="_________________________")
-            cols.ln()
-            cols.ln()
-        cols.ln()
-        cols.ln()
-        for i in range(0, 3):
-            cols.write(text="_________________________")
+            cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
     # crear pdf con la id para diferenciar pdfs
 
     nombrePdf = "traslado" + "_" + str(traslado["idTraslado"]) + ".pdf"
     pdf.output("traslado_{}.pdf".format(traslado["idTraslado"]))
-    # print("test")
-    # print(str(os.curdir))
-
     # mover pdf a la carpeta
     shutil.move(nombrePdf, "pdf")
     return redirect(url_for("traslado.Traslado"))

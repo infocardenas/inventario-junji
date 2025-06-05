@@ -6,9 +6,8 @@ from .cuentas import loguear_requerido, administrador_requerido
 import os, time
 from cerberus import Validator
 from MySQLdb import IntegrityError 
-import shutil 
 from werkzeug.utils import secure_filename
-from env_vars import paths, inLinux
+from env_vars import paths
 incidencia = Blueprint("incidencia", __name__, template_folder="app/templates")
 PDFS_INCIDENCIAS = paths['pdf_path']
 

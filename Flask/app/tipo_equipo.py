@@ -220,115 +220,85 @@ def delete_tipo_equipo(id):
 
     cur = mysql.connection.cursor()
     try:
-        ids = id.split(",")  # Convierte "1,2,3" en ["1", "2", "3"]
+        ids = id.split(",")  
 
-        # Convertir la lista en formato para SQL
-        placeholders = ", ".join(["%s"] * len(ids))  # "%s, %s, %s" si hay 3 IDs
+        for tipo_id in ids:
+            # 1. Obtener todos los idMarcaTipo de este tipo_equipo
+            cur.execute("SELECT idMarcaTipo FROM marca_tipo_equipo WHERE idTipo_equipo = %s", (tipo_id,))
+            marca_tipo_ids = [row['idMarcaTipo'] for row in cur.fetchall()]
 
-        # PASO 1: Eliminar dependencias en detalle_traslado
-        cur.execute(f"""
-            DELETE FROM detalle_traslado 
-            WHERE idTraslado IN (
-                SELECT idTraslado FROM traslado
-                WHERE idTraslado IN (
-                    SELECT idTraslado FROM traslacion
-                    WHERE idEquipo IN (
-                        SELECT idEquipo FROM equipo 
-                        WHERE idModelo_equipo IN (
-                            SELECT idModelo_Equipo FROM modelo_equipo 
-                            WHERE idMarca_Tipo_Equipo IN (
-                                SELECT idMarcaTipo FROM marca_tipo_equipo 
-                                WHERE idTipo_equipo IN ({placeholders})
-                            )
-                        )
-                    )
-                )
-            )
-        """, ids)
+            # 2. Obtener todos los idModelo_Equipo de estos marca_tipo
+            if marca_tipo_ids:
+                formato = ",".join(["%s"] * len(marca_tipo_ids))
+                cur.execute(f"SELECT idModelo_Equipo FROM modelo_equipo WHERE idMarca_Tipo_Equipo IN ({formato})", tuple(marca_tipo_ids))
+                modelo_ids = [row['idModelo_Equipo'] for row in cur.fetchall()]
+            else:
+                modelo_ids = []
 
-        # PASO 2: Eliminar dependencias en incidencia
-        cur.execute(f"""
-            DELETE FROM incidencia 
-            WHERE idEquipo IN (
-                SELECT idEquipo FROM equipo 
-                WHERE idModelo_equipo IN (
-                    SELECT idModelo_Equipo FROM modelo_equipo 
-                    WHERE idMarca_Tipo_Equipo IN (
-                        SELECT idMarcaTipo FROM marca_tipo_equipo 
-                        WHERE idTipo_equipo IN ({placeholders})
-                    )
-                )
-            )
-        """, ids)
+            # 3. Obtener todos los idEquipo de estos modelos
+            if modelo_ids:
+                formato = ",".join(["%s"] * len(modelo_ids))
+                cur.execute(f"SELECT idEquipo FROM equipo WHERE idModelo_equipo IN ({formato})", tuple(modelo_ids))
+                equipo_ids = [row['idEquipo'] for row in cur.fetchall()]
+            else:
+                equipo_ids = []
 
-        # PASO 3: Eliminar dependencias en devolucion
-        cur.execute(f"""
-            DELETE FROM devolucion 
-            WHERE idEquipoAsignacion IN (
-                SELECT idEquipoAsignacion 
-                FROM equipo_asignacion
-                WHERE idEquipo IN (
-                    SELECT idEquipo 
-                    FROM equipo
-                    WHERE idModelo_equipo IN (
-                        SELECT idModelo_equipo 
-                        FROM modelo_equipo
-                        WHERE idMarca_Tipo_Equipo IN (
-                            SELECT idMarca_Tipo_Equipo
-                            FROM marca_tipo_equipo
-                            WHERE idTipo_equipo IN ({placeholders})
-                        )
-                    )
-                )
-            )
-        """, ids)
+            # 4. Obtener todos los idEquipoAsignacion de estos equipos
+            if equipo_ids:
+                formato = ",".join(["%s"] * len(equipo_ids))
+                cur.execute(f"SELECT idEquipoAsignacion FROM equipo_asignacion WHERE idEquipo IN ({formato})", tuple(equipo_ids))
+                equipo_asignacion_ids = [row['idEquipoAsignacion'] for row in cur.fetchall()]
+            else:
+                equipo_asignacion_ids = []
 
-        # PASO 4: Eliminar dependencias en equipo_asignacion
-        cur.execute(f"""
-            DELETE FROM equipo_asignacion 
-            WHERE idEquipo IN (
-                SELECT idEquipo FROM equipo 
-                WHERE idModelo_equipo IN (
-                    SELECT idModelo_Equipo FROM modelo_equipo 
-                    WHERE idMarca_Tipo_Equipo IN (
-                        SELECT idMarcaTipo FROM marca_tipo_equipo 
-                        WHERE idTipo_equipo IN ({placeholders})
-                    )
-                )
-            )
-        """, ids)
+            # 5. Obtener todos los idTraslado de traslacion de estos equipos
+            if equipo_ids:
+                formato = ",".join(["%s"] * len(equipo_ids))
+                cur.execute(f"SELECT idTraslado FROM traslacion WHERE idEquipo IN ({formato})", tuple(equipo_ids))
+                traslado_ids = [row['idTraslado'] for row in cur.fetchall()]
+            else:
+                traslado_ids = []
 
-        # PASO 5: Eliminar equipos
-        cur.execute(f"""
-            DELETE FROM equipo 
-            WHERE idModelo_equipo IN (
-                SELECT idModelo_Equipo FROM modelo_equipo 
-                WHERE idMarca_Tipo_Equipo IN (
-                    SELECT idMarcaTipo FROM marca_tipo_equipo 
-                    WHERE idTipo_equipo IN ({placeholders})
-                )
-            )
-        """, ids)
+            # 6. Eliminar detalle_traslado
+            if traslado_ids:
+                formato = ",".join(["%s"] * len(traslado_ids))
+                cur.execute(f"DELETE FROM detalle_traslado WHERE idTraslado IN ({formato})", tuple(traslado_ids))
 
-        # PASO 6: Eliminar modelos
-        cur.execute(f"""
-            DELETE FROM modelo_equipo 
-            WHERE idMarca_Tipo_Equipo IN (
-                SELECT idMarcaTipo FROM marca_tipo_equipo 
-                WHERE idTipo_equipo IN ({placeholders})
-            )
-        """, ids)
+            # 7. Eliminar traslacion
+            if equipo_ids:
+                formato = ",".join(["%s"] * len(equipo_ids))
+                cur.execute(f"DELETE FROM traslacion WHERE idEquipo IN ({formato})", tuple(equipo_ids))
 
-        # PASO 7: Eliminar relaciones en marca_tipo_equipo
-        cur.execute(f"""
-            DELETE FROM marca_tipo_equipo 
-            WHERE idTipo_equipo IN ({placeholders})
-        """, ids)
+            # 8. Eliminar incidencia
+            if equipo_ids:
+                formato = ",".join(["%s"] * len(equipo_ids))
+                cur.execute(f"DELETE FROM incidencia WHERE idEquipo IN ({formato})", tuple(equipo_ids))
 
-        # PASO 8: Eliminar los tipos de equipo
-        cur.execute(f"""
-            DELETE FROM tipo_equipo WHERE idTipo_equipo IN ({placeholders})
-        """, ids)
+            # 9. Eliminar devolucion
+            if equipo_asignacion_ids:
+                formato = ",".join(["%s"] * len(equipo_asignacion_ids))
+                cur.execute(f"DELETE FROM devolucion WHERE idEquipoAsignacion IN ({formato})", tuple(equipo_asignacion_ids))
+
+            # 10. Eliminar equipo_asignacion
+            if equipo_ids:
+                formato = ",".join(["%s"] * len(equipo_ids))
+                cur.execute(f"DELETE FROM equipo_asignacion WHERE idEquipo IN ({formato})", tuple(equipo_ids))
+
+            # 11. Eliminar equipos
+            if modelo_ids:
+                formato = ",".join(["%s"] * len(modelo_ids))
+                cur.execute(f"DELETE FROM equipo WHERE idModelo_equipo IN ({formato})", tuple(modelo_ids))
+
+            # 12. Eliminar modelos
+            if marca_tipo_ids:
+                formato = ",".join(["%s"] * len(marca_tipo_ids))
+                cur.execute(f"DELETE FROM modelo_equipo WHERE idMarca_Tipo_Equipo IN ({formato})", tuple(marca_tipo_ids))
+
+            # 13. Eliminar marca_tipo_equipo
+            cur.execute("DELETE FROM marca_tipo_equipo WHERE idTipo_equipo = %s", (tipo_id,))
+
+            # 14. Eliminar tipo_equipo
+            cur.execute("DELETE FROM tipo_equipo WHERE idTipo_equipo = %s", (tipo_id,))
 
         mysql.connection.commit()
         flash("Tipo(s) de equipo eliminado(s) exitosamente.", "success")

@@ -49,8 +49,8 @@ function actualizarTablaUnidades(unidades) {
               onclick="window.location.href='/mostrar_equipos_unidad/${ubi.idUnidad}'">
               <i class="bi bi-hdd-network-fill"></i>
             </button>
-            <button class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Eliminar"
-              onclick="window.location.href='/delete_Unidad/${ubi.idUnidad}'">
+            <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-confirm-delete-unidad"
+              data-id="${ubi.idUnidad}" title="Eliminar">
               <i class="bi bi-trash-fill"></i>
             </button>
           </div>

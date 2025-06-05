@@ -38,11 +38,11 @@
                 data-bs-toggle="dropdown"><i class="bi bi-vector-pen me-1"></i>Firmar</button>
               <ul class="dropdown-menu dropdown-menu-dark">
                 <li>
-                  <button id="documento-firmado-asignacion" class="dropdown-item"
+                  <button id="documento-firmado-asignacion" class="dropdown-item" href="#" target="_blank"
                     onclick="abrirModalFirmarAsignacion()">Asignación</button>
                 </li>
                 <li>
-                  <button id="documento-firmado-devolucion" class="dropdown-item"
+                  <button id="documento-firmado-devolucion" class="dropdown-item" href="#" target="_blank"
                     onclick="abrirModalFirmarDevolucion()">Devolución</button>
                 </li>
               </ul>
@@ -64,7 +64,6 @@
                <i class="bi bi-repeat"></i>
               </button>
             </div>
-
           </div>
 
         </div>
@@ -72,7 +71,7 @@
     </div>
 
     <!-- Tabla de asignaciones -->
-    <div class="table-responsive">
+    <div class="myTableBody">
       <table class="table table-striped table-bordered table-hover">
         <thead>
           <tr>
@@ -88,7 +87,9 @@
         <tbody id="myTableBody">
           {% if asignacion %}
           {% for asig in asignacion %}
-          <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row">
+          <tr id="row-{{ asig.idEquipoAsignacion }}" class="selectable-row"
+              data-marca-equipo="{{ asig.nombreMarcaEquipo }}"
+              data-modelo-equipo="{{ asig.nombreModeloequipo }}">
             <td>
               <input type="checkbox" class="checkbox-table row-checkbox no-delete-value"
                 value="{{ asig.idEquipoAsignacion }}"
@@ -104,16 +105,13 @@
               {{ asig.fechaDevolucion.strftime('%d-%m-%Y') if asig.fechaDevolucion else 'Sin devolver' }}
             </td>
             <td class="d-flex justify-content-center gap-2">
-              <div data-bs-toggle="tooltip" data-bs-title="Detalles">
-                <button class="btn button-info" data-bs-toggle="modal"
-                  data-bs-target="#modal-view-{{ asig.idEquipoAsignacion }}">
-                  <i class="bi bi-info-circle"></i>
-                </button>
-              </div>
+              <button class="btn button-info" type="button" data-id-asignacion="{{ asig.idAsignacion }}">
+                <i class="bi bi-info-circle"></i>
+              </button>
               <button class="btn btn-danger delete-button" data-bs-toggle="tooltip"
                 data-url="/delete_asignacion/{{asig.idAsignacion}}" data-title="Confirmar eliminación de asignación"
                 data-message="¿Estás seguro de que deseas eliminar esta asignación? Eliminar la asignación descartará los equipos asociados a este ID de asignación."
-                data-bs-title="Eliminar">
+                data-bs-title="Eliminar" data-id-asignacion="{{ asig.idAsignacion }}">
                 <i class="bi bi-trash-fill"></i>
               </button>
             </td>

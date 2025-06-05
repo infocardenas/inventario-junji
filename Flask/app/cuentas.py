@@ -7,8 +7,6 @@ from cerberus import Validator
 
 cuentas = Blueprint("cuentas", __name__, template_folder="app/templates")
 
-#definir decorador para ingresar
-#no se lo que significa el * antes del atributo, (puntero ¿?)
 def loguear_requerido(f):
     @wraps(f)
     def decorated_function(*args, **kargs):
@@ -19,20 +17,15 @@ def loguear_requerido(f):
         return f(*args, **kargs)
     return decorated_function
 
-#definir decorador para ingresar
-#no se lo que significa el * antes del atributo, (puntero ¿?)
+
 def administrador_requerido(f):
     @wraps(f)
     def decorated_function(*args, **kargs):
-        #print("DECORATOR 2")
-        #print(session)
-        #print(session['privilegio'])
         if "user" not in session:
             flash("Necesita estar logueado para acceder a esta ruta")
             return redirect("/ingresar")
         
         if session['privilegio'] == 1:
-            #print("test")
             return f(*args, **kargs)
         
         flash("Se nesesita ser administrador para usar esta funcion")
@@ -53,8 +46,6 @@ def loguear():
     FROM usuario u
     WHERE u.nombreUsuario = %s
                 """, (nombreUsuario,))
-    #se usa fetchall para que el resultado este en forma de tupla.
-    #para revisar el tamaño de esta
     usuario = cur.fetchall()
     if len(usuario) != 1:
         flash("Nombre de usuario o contraseña incorrecta", 'warning')
@@ -156,18 +147,6 @@ def crear_cuenta():
     return redirect("/registrar")
 
 
-@cuentas.route("/protected")
-@loguear_requerido
-@administrador_requerido
-def protected():
-    print("logueado")
-    return "good"
-    if "user" not in session:
-        flash("you are NOT authorized")
-        return redirect("/ingresar")
-    else:
-        flash("you are authorized")
-        return redirect("/")
 
 @cuentas.route("/desloguear")
 @loguear_requerido
@@ -216,12 +195,6 @@ def edit_contrasenna(nombre_usuario):
         return redirect("/registrar")
     flash("la contraseña ingresada es incorrecta")
     return redirect("/registrar")
-    
-
-
-
-
-    pass
 
 @cuentas.route("/update_usuario/<nombreUsuario>", methods=["POST"])
 @administrador_requerido

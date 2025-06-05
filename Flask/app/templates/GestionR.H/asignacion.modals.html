@@ -195,7 +195,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">Detalles de la Asignación #{{ asig.idAsignacion }}</h5>
+                <h5 class="modal-title">Detalles de la Asignación #{{ asig.idAsignacion or 'Sin información' }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
             </div>
             <div class="modal-body">
@@ -203,15 +203,15 @@
                 <table class="table table-bordered" style="table-layout: fixed">
                     <tr>
                         <td><strong>RUT</strong></td>
-                        <td>{{ asig.rutFuncionario }}</td>
+                        <td>{{ asig.rutFuncionario if asig.rutFuncionario else "Sin información" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Nombre</strong></td>
-                        <td>{{ asig.nombreFuncionario }}</td>
+                        <td>{{ asig.nombreFuncionario if asig.nombreFuncionario else "Sin información" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Cargo</strong></td>
-                        <td>{{ asig.cargoFuncionario }}</td>
+                        <td>{{ asig.cargoFuncionario if asig.cargoFuncionario else "Sin información" }}</td>
                     </tr>
                 </table>
 
@@ -221,17 +221,27 @@
                 <table class="table table-bordered" style="table-layout: fixed">
                     <tr>
                         <td><strong>Fecha de asignación</strong></td>
-                        <td>{{ asig.fecha_inicioAsignacion.strftime("%d-%m-%Y") if asig.fecha_inicioAsignacion else
-                            "N/A" }}</td>
+                        <td>
+                            {% if asig.fecha_inicioAsignacion %}
+                                {{ asig.fecha_inicioAsignacion.strftime("%d-%m-%Y") }}
+                            {% else %}
+                                Sin información
+                            {% endif %}
+                        </td>
                     </tr>
                     <tr>
                         <td><strong>Fecha de devolución</strong></td>
-                        <td>{{ asig.fechaDevolucion.strftime("%d-%m-%Y") if asig.fechaDevolucion else "Sin devolver" }}
+                        <td>
+                            {% if asig.fechaDevolucion %}
+                                {{ asig.fechaDevolucion.strftime("%d-%m-%Y") }}
+                            {% else %}
+                                Sin devolver
+                            {% endif %}
                         </td>
                     </tr>
                     <tr>
                         <td><strong>Observaciones</strong></td>
-                        <td>{{ asig.ObservacionAsignacion if asig.ObservacionAsignacion else "" }}</td>
+                        <td>{{ asig.ObservacionAsignacion if asig.ObservacionAsignacion else "Sin información" }}</td>
                     </tr>
                 </table>
 
@@ -241,31 +251,31 @@
                 <table class="table table-bordered" style="table-layout: fixed">
                     <tr>
                         <td><strong>Tipo</strong></td>
-                        <td>{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else "No asignado" }}</td>
+                        <td>{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else "Sin información" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Marca</strong></td>
-                        <td>{{ asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "No asignado" }}</td>
+                        <td>{{ asig.nombreMarcaEquipo if asig.nombreMarcaEquipo else "Sin información" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Modelo</strong></td>
-                        <td>{{ asig.nombreModeloequipo if asig.nombreModeloequipo else "No asignado" }}</td>
+                        <td>{{ asig.nombreModeloequipo if asig.nombreModeloequipo else "Sin información" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Cód. inventario</strong></td>
-                        <td>{{ asig.Cod_inventarioEquipo if asig.Cod_inventarioEquipo else "" }}</td>
+                        <td>{{ asig.Cod_inventarioEquipo if asig.Cod_inventarioEquipo else "Sin información" }}</td>
                     </tr>
                     <tr>
                         <td><strong>N° serie</strong></td>
-                        <td>{{ asig.Num_serieEquipo if asig.Num_serieEquipo else "" }}</td>
+                        <td>{{ asig.Num_serieEquipo if asig.Num_serieEquipo else "Sin información" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Cód. proveedor</strong></td>
-                        <td>{{ asig.codigoproveedor_equipo if codigoproveedor_equipo else "No informado" }}</td>
+                        <td>{{ asig.codigoproveedor_equipo if asig.codigoproveedor_equipo else "Sin información" }}</td>
                     </tr>
                     <tr>
                         <td><strong>Observaciones</strong></td>
-                        <td>{{ asig.ObservacionEquipo if asig.ObservacionEquipo else "" }}</td>
+                        <td>{{ asig.ObservacionEquipo if asig.ObservacionEquipo else "Sin información" }}</td>
                     </tr>
                 </table>
             </div>
@@ -290,7 +300,7 @@
                 <div class="modal-body">
                     <p>Se devolverán los siguientes equipos:</p>
                     <div class="table-responsive">
-                        <table class="table table-bordered">
+                        <table class="table table-bordered" id="tablaDevolucionSeleccionados">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -301,22 +311,8 @@
                                     <th>Cód. inventario</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {% for asig in asignacion %}
-                                <!-- Fila oculta por defecto -->
-                                <tr id="modal-row-{{ asig.idEquipoAsignacion }}" style="display: none;">
-                                    <td>{{ asig.idAsignacion }}</td>
-                                    <td>{{ asig.nombreFuncionario }}</td>
-                                    <td>{{ asig.nombreTipo_equipo }}</td>
-                                    <td>{{ asig.nombreMarcaEquipo }}</td>
-                                    <td>{{ asig.nombreModeloequipo }}</td>
-                                    <td>{{ asig.Cod_inventarioEquipo }}</td>
-                                </tr>
-                                <!-- Input oculto para enviar si el row se activa -->
-                                <input type="hidden" name="equiposSeleccionados"
-                                    id="modal-input-{{ asig.idEquipoAsignacion }}" value="{{ asig.idEquipoAsignacion }}"
-                                    style="display: none;">
-                                {% endfor %}
+                            <tbody id="tbodyDevolucionSeleccionados">
+                                <!-- Se llenará dinámicamente por JS -->
                             </tbody>
                         </table>
                     </div>
@@ -591,6 +587,45 @@
     </div>
 </div>
 
+<!-- Modal genérico para detalles de asignación (solo uno en el DOM) -->
+<div class="modal fade" id="modalDetalleAsignacion" tabindex="-1" aria-labelledby="modalDetalleAsignacionLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalDetalleAsignacionLabel">
+                    Detalles de la Asignación <span id="modalDetalleAsignacionId" class="text-primary"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body" id="modalDetalleAsignacionBody">
+                <!-- Se llenará dinámicamente por JS -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de confirmación de traslado -->
+<div class="modal fade" id="modalConfirmarTraslado" tabindex="-1" aria-labelledby="modalConfirmarTrasladoLabel" aria-hidden="true">
+  <div class="modal-dialog ">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalConfirmarTrasladoLabel">¿Desea realizar el traslado?</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <p>Uno o más equipos seleccionados están en una unidad diferente a la del funcionario.<br>
+        ¿Desea generar automáticamente el traslado de estos equipos?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="btnCancelarTraslado" data-bs-dismiss="modal">No, solo asignar</button>
+        <button type="button" class="btn btn-primary" id="btnAceptarTraslado">Sí, generar traslado</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <style>
     .tabla-detalle {
@@ -613,4 +648,72 @@
         margin-top: 1rem;
     }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('form-asignacion-modal');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        // Obtener datos del formulario
+        const formData = new FormData(form);
+        // Recopilar equipos seleccionados
+        let equipos = [];
+        document.querySelectorAll('input[name="equipoSeleccionado"]:checked').forEach(cb => {
+            equipos.push(cb.value);
+        });
+        if (equipos.length === 0) {
+            form.submit(); // Dejar que el backend maneje el error de equipos vacíos
+            return;
+        }
+        formData.delete('equiposAsignados[]');
+        equipos.forEach(eq => formData.append('equiposAsignados[]', eq));
+
+        // Obtener rut_funcionario
+        let rut = form.querySelector('input[name="rut_funcionario"]')?.value;
+        if (!rut) {
+            alert("Debe seleccionar un funcionario.");
+            return;
+        }
+        formData.set('rut_funcionario', rut);
+
+        // Validar si requiere traslado
+        fetch('/asignacion/validar_traslado', {
+            method: 'POST',
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.requiere_traslado) {
+                // Mostrar modal de confirmación
+                const modal = new bootstrap.Modal(document.getElementById('modalConfirmarTraslado'));
+                modal.show();
+
+                // Botón aceptar: enviar con traslado
+                document.getElementById('btnAceptarTraslado').onclick = function () {
+                    form.insertAdjacentHTML('beforeend', '<input type="hidden" name="crear_traslado" value="1">');
+                    modal.hide();
+                    form.submit();
+                };
+                // Botón cancelar: enviar sin traslado
+                document.getElementById('btnCancelarTraslado').onclick = function () {
+                    form.insertAdjacentHTML('beforeend', '<input type="hidden" name="crear_traslado" value="0">');
+                    modal.hide();
+                    form.submit();
+                };
+            } else {
+                // No requiere traslado, enviar normalmente
+                form.insertAdjacentHTML('beforeend', '<input type="hidden" name="crear_traslado" value="0">');
+                form.submit();
+            }
+        })
+        .catch(() => {
+            // Si falla la validación, enviar igual
+            form.submit();
+        });
+    });
+});
+</script>
 

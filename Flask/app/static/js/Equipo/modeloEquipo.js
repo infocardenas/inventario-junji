@@ -1,10 +1,7 @@
 
 $(document).ready(function () {
     console.log("El DOM esta listo");
-
-
     cargarMarcas();
-
     // Deshabilitar select de tipos hasta que se elija una marca
     $("#tipoSelect, #edit_tipoSelect").prop("disabled", true);
 
@@ -45,7 +42,7 @@ $(document).ready(function () {
             mostrarMensaje("Debe seleccionar una marca antes de guardar.", "warning");
             return;
         }
-    
+
         if (!tipoEquipo) {
             mostrarMensaje("Debe seleccionar un tipo de equipo antes de guardar.", "warning");
             return;
@@ -79,45 +76,45 @@ $(document).ready(function () {
         });
     });
 
-let debounceTimeout;
+    let debounceTimeout;
     document.getElementById("buscador_modelos").addEventListener("input", () => {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(() => buscarModelos(1), 300);
-});
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => buscarModelos(1), 300);
+    });
 
-function buscarModelos(page = 1) {
-    clearTimeout(debounceTimeout);
-    debounceTimeout = setTimeout(() => {
-        const query = document.getElementById("buscador_modelos").value.toLowerCase();
+    function buscarModelos(page = 1) {
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+            const query = document.getElementById("buscador_modelos").value.toLowerCase();
 
-    fetch(`/buscar_modelo_equipo?q=${encodeURIComponent(query)}&page=${page}`)
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Error al buscar modelos de equipo");
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log("Datos recibidos:", data); // Verifica los datos aquí
-        actualizarTablaModelos(data.modelos);
-        actualizarPaginacion(data.total_pages, data.current_page, query);
-    })
-    .catch(error => console.error("Error al buscar modelos de equipo:", error));
-    }, 300); // Retraso de 300ms para evitar múltiples solicitudes
-}
-
-function actualizarTablaModelos(modelos) {
-    const tbody = document.getElementById("myTableBody");
-    tbody.innerHTML = ""; // Limpiar la tabla
-
-    if (modelos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay datos disponibles.</td></tr>';
-        return;
+            fetch(`/buscar_modelo_equipo?q=${encodeURIComponent(query)}&page=${page}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Error al buscar modelos de equipo");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("Datos recibidos:", data); // Verifica los datos aquí
+                    actualizarTablaModelos(data.modelos);
+                    actualizarPaginacion(data.total_pages, data.current_page, query);
+                })
+                .catch(error => console.error("Error al buscar modelos de equipo:", error));
+        }, 300); // Retraso de 300ms para evitar múltiples solicitudes
     }
 
-    modelos.forEach(modelo => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
+    function actualizarTablaModelos(modelos) {
+        const tbody = document.getElementById("myTableBody");
+        tbody.innerHTML = ""; // Limpiar la tabla
+
+        if (modelos.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="text-center">No hay datos disponibles.</td></tr>';
+            return;
+        }
+
+        modelos.forEach(modelo => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
             <td class="checkbox-column">
                 <input type="checkbox" class="checkbox-table row-checkbox">
             </td>
@@ -132,35 +129,35 @@ function actualizarTablaModelos(modelos) {
                 </button>
             </td>
         `;
-        tbody.appendChild(row);
-    });
-}
-
-function actualizarPaginacion(totalPages, currentPage, query) {
-    const pagination = document.querySelector(".pagination");
-    pagination.innerHTML = ""; // Limpiar la paginación
-
-    if (currentPage > 1) {
-        const prevPage = document.createElement("li");
-        prevPage.className = "page-item";
-        prevPage.innerHTML = `<a class="page-link" href="#" onclick="buscarModelos(${currentPage - 1})">Anterior</a>`;
-        pagination.appendChild(prevPage);
+            tbody.appendChild(row);
+        });
     }
 
-    for (let i = 1; i <= totalPages; i++) {
-        const pageItem = document.createElement("li");
-        pageItem.className = `page-item ${i === currentPage ? "active" : ""}`;
-        pageItem.innerHTML = `<a class="page-link" href="#" onclick="buscarModelos(${i})">${i}</a>`;
-        pagination.appendChild(pageItem);
-    }
+    function actualizarPaginacion(totalPages, currentPage, query) {
+        const pagination = document.querySelector(".pagination");
+        pagination.innerHTML = ""; // Limpiar la paginación
 
-    if (currentPage < totalPages) {
-        const nextPage = document.createElement("li");
-        nextPage.className = "page-item";
-        nextPage.innerHTML = `<a class="page-link" href="#" onclick="buscarModelos(${currentPage + 1})">Siguiente</a>`;
-        pagination.appendChild(nextPage);
+        if (currentPage > 1) {
+            const prevPage = document.createElement("li");
+            prevPage.className = "page-item";
+            prevPage.innerHTML = `<a class="page-link" href="#" onclick="buscarModelos(${currentPage - 1})">Anterior</a>`;
+            pagination.appendChild(prevPage);
+        }
+
+        for (let i = 1; i <= totalPages; i++) {
+            const pageItem = document.createElement("li");
+            pageItem.className = `page-item ${i === currentPage ? "active" : ""}`;
+            pageItem.innerHTML = `<a class="page-link" href="#" onclick="buscarModelos(${i})">${i}</a>`;
+            pagination.appendChild(pageItem);
+        }
+
+        if (currentPage < totalPages) {
+            const nextPage = document.createElement("li");
+            nextPage.className = "page-item";
+            nextPage.innerHTML = `<a class="page-link" href="#" onclick="buscarModelos(${currentPage + 1})">Siguiente</a>`;
+            pagination.appendChild(nextPage);
+        }
     }
-}
 
     // **Editar Modelo**
     $(".btn-editar-modelo").on("click", function () {
@@ -193,41 +190,41 @@ function actualizarPaginacion(totalPages, currentPage, query) {
         });
     });
 
-        $("#eliminarSeleccionados").on("click", function () {
-            let seleccionados = $(".row-checkbox:checked").closest("tr").map(function () {
-                return $(this).data("id");
-            }).get();
-    
-            if (seleccionados.length === 0) {
-                mostrarMensaje("Debe seleccionar al menos un modelo para eliminar.", "warning");
-                return;
-            }
-    
-            $("#confirmDeleteModal").modal("show");
-    
-            $("#confirmDeleteBtn").off("click").on("click", function () {
-                $("#confirmDeleteModal").modal("hide");
-    
-                $.ajax({
-                    url: "/delete_modelo_equipo",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({ ids: seleccionados }),
-                    success: function (response) {
-                        mostrarMensaje(response.message, response.tipo_alerta);
-                        setTimeout(() => location.reload(), 2000);
-                    },
-                    error: function (xhr) {
-                        let errorMsg = xhr.responseJSON?.message || "Error al eliminar los modelos.";
-                        let tipoAlerta = xhr.responseJSON?.tipo_alerta || "danger";
-                        mostrarMensaje(errorMsg, tipoAlerta);
-                    }
-                });
+    $("#eliminarSeleccionados").on("click", function () {
+        let seleccionados = $(".row-checkbox:checked").closest("tr").map(function () {
+            return $(this).data("id");
+        }).get();
+
+        if (seleccionados.length === 0) {
+            mostrarMensaje("Debe seleccionar al menos un modelo para eliminar.", "warning");
+            return;
+        }
+
+        $("#confirmDeleteModal").modal("show");
+
+        $("#confirmDeleteBtn").off("click").on("click", function () {
+            $("#confirmDeleteModal").modal("hide");
+
+            $.ajax({
+                url: "/delete_modelo_equipo",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ ids: seleccionados }),
+                success: function (response) {
+                    mostrarMensaje(response.message, response.tipo_alerta);
+                    setTimeout(() => location.reload(), 2000);
+                },
+                error: function (xhr) {
+                    let errorMsg = xhr.responseJSON?.message || "Error al eliminar los modelos.";
+                    let tipoAlerta = xhr.responseJSON?.tipo_alerta || "danger";
+                    mostrarMensaje(errorMsg, tipoAlerta);
+                }
             });
         });
     });
+});
 
-    
+
 // **Función para Mostrar Mensajes en la UI**
 function mostrarMensaje(mensaje, tipo) {
     let alertContainer = $("#alertContainer");
@@ -249,9 +246,6 @@ function mostrarMensaje(mensaje, tipo) {
         });
     }, 4000);
 }
-
-
-
 // **Función para Cargar Marcas desde el Backend**
 function cargarMarcas() {
     $.get("/get_marcas", function (marcas) {
@@ -264,7 +258,6 @@ function cargarMarcas() {
         mostrarMensaje("Error al cargar marcas.", "danger");
     });
 }
-
 // **Función para Cargar Tipos de Equipo Según la Marca Seleccionada**
 function cargarTipos(marcaId, selectId, tipoSeleccionado = null) {
     if (!marcaId) {
@@ -325,22 +318,22 @@ document.addEventListener("DOMContentLoaded", function () {
             method: "POST",
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === "error") {
-                // 🔹 Mostrar el mensaje de error en el modal
-                errorContainer.innerHTML = data.message;
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === "error") {
+                    // 🔹 Mostrar el mensaje de error en el modal
+                    errorContainer.innerHTML = data.message;
+                    errorContainer.classList.remove("d-none");
+                } else {
+                    // 🔹 Cerrar el modal y recargar la página si la actualización fue exitosa
+                    $('#editModeloEquipoModal').modal('hide');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error("❌ Error en la actualización:", error);
+                errorContainer.innerHTML = "Ocurrió un error inesperado.";
                 errorContainer.classList.remove("d-none");
-            } else {
-                // 🔹 Cerrar el modal y recargar la página si la actualización fue exitosa
-                $('#editModeloEquipoModal').modal('hide');
-                location.reload();
-            }
-        })
-        .catch(error => {
-            console.error("❌ Error en la actualización:", error);
-            errorContainer.innerHTML = "Ocurrió un error inesperado.";
-            errorContainer.classList.remove("d-none");
-        });
+            });
     });
 });

@@ -1,9 +1,0 @@
-<form action="/update_comuna/{{comuna.idComuna}}" method="POST"class="mi-formulario">
-    <input type="text" name="nombre_comuna" placeholder="Nombre tipo adquisicion" value="{{comuna.nombreComuna}}">
-    <select name="nombre_provincia">
-        {% for pro in provincia %}
-            <option value="{{ pro.idProvincia }}" {% if pro.idProvincia == comuna.idProvincia%}selected{% endif %}>{{ pro.nombreProvincia }}</option>
-        {% endfor %}
-    </select>
-    <button type="submit" class="agregar-button"> Guardar</button>  
-</form>

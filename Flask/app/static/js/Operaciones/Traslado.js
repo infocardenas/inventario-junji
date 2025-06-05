@@ -1,6 +1,6 @@
 document.getElementById("Origen").addEventListener("change", function () {
     fetch(`/traslado/equipos_unidad/${this.value}`)
-    
+
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');

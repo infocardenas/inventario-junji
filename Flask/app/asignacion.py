@@ -1,3 +1,4 @@
+from email.mime.application import MIMEApplication
 from flask import Blueprint, render_template, request, url_for, redirect, flash, send_file, session, jsonify
 from . import mysql
 from fpdf import FPDF
@@ -130,6 +131,30 @@ def Asignacion(page=1):
 def getPerPage():
     return 10 
 
+@asignacion.route("/asignacion/validar_traslado", methods=["POST"])
+@loguear_requerido
+def validar_traslado():
+    """
+    Recibe rut_funcionario y equipos_asignados, retorna si se requiere traslado.
+    """
+    rut_funcionario = request.form.get('rut_funcionario')
+    id_equipos = request.form.getlist('equiposAsignados[]')
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT idUnidad FROM funcionario WHERE rutFuncionario = %s", (rut_funcionario,))
+    funcionario_data = cur.fetchone()
+    id_unidad_funcionario = funcionario_data['idUnidad'] if funcionario_data else None
+
+    requiere_traslado = False
+    for id_equipo in id_equipos:
+        cur.execute("SELECT idUnidad FROM equipo WHERE idEquipo = %s", (id_equipo,))
+        equipo_data = cur.fetchone()
+        id_unidad_origen = equipo_data['idUnidad'] if equipo_data else None
+        if id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
+            requiere_traslado = True
+            break
+    cur.close()
+    return jsonify({"requiere_traslado": requiere_traslado})
+
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
 def create_asignacion():
@@ -145,6 +170,7 @@ def create_asignacion():
     rut_funcionario = request.form.get('rut_funcionario')
     observacion = request.form.get('observacion')
     id_equipos = [int(equipo) for equipo in request.form.getlist('equiposAsignados[]')]
+    crear_traslado = request.form.get('crear_traslado', '1')  # Nuevo: por defecto sí
 
     # Se crea un objeto para poder validar los datos recibidos
     data = {
@@ -178,8 +204,27 @@ def create_asignacion():
 
         TuplaEquipos = ()
 
+        # Obtener la unidad del funcionario (destino del traslado)
+        cur.execute("SELECT idUnidad FROM funcionario WHERE rutFuncionario = %s", (rut_funcionario,))
+        funcionario_data = cur.fetchone()
+        id_unidad_funcionario = funcionario_data['idUnidad'] if funcionario_data else None
+
         # Recorre los equipos asignados
         for id_equipo in id_equipos:
+            # Obtener la unidad actual del equipo (origen del traslado)
+            cur.execute("SELECT idUnidad FROM equipo WHERE idEquipo = %s", (id_equipo,))
+            equipo_data = cur.fetchone()
+            id_unidad_origen = equipo_data['idUnidad'] if equipo_data else None
+
+            # Si la unidad de origen y destino son diferentes, crear traslado SOLO si el usuario aceptó
+            if crear_traslado == '1' and id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
+                crear_traslado_generico(
+                    fecha_asignacion,
+                    id_unidad_funcionario,
+                    id_unidad_origen,
+                    [id_equipo]
+                )
+
             # Inserta los datos en la tabla equipo_asignacion
             cur.execute("""
                 INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
@@ -953,7 +998,7 @@ def buscar_asignaciones():
 
     cur = mysql.connection.cursor()
 
-    # Consulta para buscar asignaciones
+    # Consulta para buscar asignaciones (ahora incluye todos los campos necesarios)
     cur.execute(f"""
         SELECT
             a.idAsignacion,
@@ -962,16 +1007,25 @@ def buscar_asignaciones():
             a.ActivoAsignacion,
             f.nombreFuncionario,
             f.cargoFuncionario,
+            ea.idEquipoAsignacion,
+            d.idDevolucion,
+            d.fechaDevolucion,
             e.Cod_inventarioEquipo,
             e.Num_serieEquipo,
-            te.nombreTipo_equipo
+            te.nombreTipo_equipo,
+            me.nombreModeloequipo,
+            mae.nombreMarcaEquipo,
+            e.codigoproveedor_equipo,
+            e.ObservacionEquipo
         FROM asignacion a
         JOIN funcionario f ON a.rutFuncionario = f.rutFuncionario
         JOIN equipo_asignacion ea ON a.idAsignacion = ea.idAsignacion
+        LEFT JOIN devolucion d ON ea.idEquipoAsignacion = d.idEquipoAsignacion
         JOIN equipo e ON e.idEquipo = ea.idEquipo
         JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_Equipo
         JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
         JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
         WHERE LOWER(f.nombreFuncionario) LIKE %s
            OR LOWER(f.cargoFuncionario) LIKE %s
            OR LOWER(e.Cod_inventarioEquipo) LIKE %s
