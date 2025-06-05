@@ -23,3 +23,4 @@ Antes de comenzar, asegúrate de tener lo siguiente instalado en tu sistema:
 ```bash
 git clone https://github.com/tu-usuario/tu-repo.git](https://github.com/infocardenas/inventario-junji.git
 cd inventario-junji
+```
