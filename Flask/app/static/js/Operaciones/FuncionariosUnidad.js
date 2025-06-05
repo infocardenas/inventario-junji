@@ -1,4 +1,4 @@
-let funcionariosActuales = []; 
+let funcionariosActuales = [];
 
 function buscarFuncionariosUnidad(page = 1) {
   const query = document.getElementById("buscador_funcionario").value.toLowerCase();
