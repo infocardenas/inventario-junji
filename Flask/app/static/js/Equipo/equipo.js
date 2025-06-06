@@ -244,30 +244,6 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 });
 
-
-//Maneja boton de eliminar equipo
-$(document).ready(function () {
-  $("#delete-selected-button").on("click", function () {
-    // Obtener los IDs de las filas seleccionadas
-    const selectedRows = $(".row-checkbox:checked").closest("tr");
-    if (!selectedRows.length) {
-      alert("Por favor, selecciona al menos una fila para eliminar.");
-      return;
-    }
-
-    const ids = selectedRows.map(function () {
-      return $(this).data("id");
-    }).get();
-
-    // Configurar y mostrar el modal de confirmación
-    configureGenericModal(
-      "Confirmar Eliminación",
-      "¿Estás seguro de que deseas eliminar los equipos seleccionados?",
-      `/delete_equipo/${ids.join(",")}`
-    );
-  });
-});
-
 // Manejar boton de eliminar incidencia
 $(document).ready(function () {
   $("#delete-incidencia-button").on("click", function () {
@@ -286,9 +262,6 @@ $(document).ready(function () {
     );
   });
 });
-
-
-
 
 //Redireccion al modulo de asignacion desde equipos
 $(document).ready(function () {
@@ -944,20 +917,4 @@ document.addEventListener('DOMContentLoaded', async () => {
       mostrarCamposTelefonoEdit(); // Para el modal de edición, actualizar campos de teléfono
     });
   }
-
-  // Selects dependientes en el modal de AGREGAR (ya definidos con onchange en HTML, pero podrías moverlos aquí)
-  // Ejemplo:
-  // const addMarcaSelect = document.getElementById('marcaSelect');
-  // if (addMarcaSelect) {
-  //     addMarcaSelect.addEventListener('change', cargarTipos); // cargarTipos es tu función global
-  // }
-  // const addTipoSelect = document.getElementById('tipoSelect');
-  // if (addTipoSelect) {
-  //     addTipoSelect.addEventListener('change', cargarModelos); // cargarModelos es tu función global
-  //     addTipoSelect.addEventListener('change', manejarCamposTelefono); // manejarCamposTelefono es tu función global
-  // }
-  // const addModeloSelect = document.getElementById('modeloSelect');
-  // if (addModeloSelect) {
-  //     addModeloSelect.addEventListener('change', actualizarModeloSeleccionado); // actualizarModeloSeleccionado es tu función global
-  // }
 });
