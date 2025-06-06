@@ -279,3 +279,30 @@ function cargarEditarTraslado(idTraslado, fechaTraslado) {
 
     console.log("Cargando traslado:", idTraslado, fechaTraslado); // Depuración
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    const modalEl = document.getElementById("trasladoModal");
+    const equiposLista = document.getElementById("equiposLista");
+
+    if (modalEl && equiposLista) {
+        modalEl.addEventListener("hidden.bs.modal", function () {
+            // Clear modal content and reset state when closed
+            equiposLista.innerHTML = `
+                <tr>
+                    <td colspan="6" class="text-center">Seleccione una unidad para trasladar</td>
+                </tr>`;
+            document.getElementById("Origen").value = ""; // Reset dropdown
+        });
+
+        modalEl.addEventListener("shown.bs.modal", function () {
+            // Ensure modal is properly initialized when opened
+            const origenValue = document.getElementById("Origen").value;
+            if (!origenValue) {
+                equiposLista.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center">Seleccione una unidad para trasladar</td>
+                    </tr>`;
+            }
+        });
+    }
+});
