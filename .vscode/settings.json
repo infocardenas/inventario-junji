@@ -1,0 +1,23 @@
+{
+    // Activa el formateo cada vez que guardas un archivo
+    "editor.formatOnSave": true,
+
+    // Define el formateador por defecto para cada lenguaje
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[html]": {
+        "editor.defaultFormatter": "djlint.djlint-vscode"
+    },
+
+    // Le dice a la extensión de djlint que trate los archivos .html como plantillas Jinja
+    "djlint.languages": [
+        {
+            "language_id": "html",
+            "engine": "jinja"
+        }
+    ]
+}

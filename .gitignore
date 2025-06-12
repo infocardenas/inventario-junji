@@ -11,3 +11,6 @@ venv
 
 **/__pycache__/
 
+# Certificados y llaves de desarrollo
+*.pem
+*.key
