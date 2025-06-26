@@ -1,8 +1,11 @@
 {
-    // Activa el formateo cada vez que guardas un archivo
     "editor.formatOnSave": true,
+    "editor.formatOnSaveMode": "file",
 
-    // Define el formateador por defecto para cada lenguaje
+    "black-formatter.path": [
+        "C:\\Universidad del Biobio\\Practica\\inventario-junji\\venv\\Scripts\\black.exe"
+    ],
+
     "[python]": {
         "editor.defaultFormatter": "ms-python.black-formatter"
     },
@@ -10,10 +13,8 @@
         "editor.defaultFormatter": "esbenp.prettier-vscode"
     },
     "[html]": {
-        "editor.defaultFormatter": "djlint.djlint-vscode"
+        "editor.defaultFormatter": "monosans.djlint"
     },
-
-    // Le dice a la extensión de djlint que trate los archivos .html como plantillas Jinja
     "djlint.languages": [
         {
             "language_id": "html",

@@ -14,3 +14,5 @@ venv
 # Certificados y llaves de desarrollo
 *.pem
 *.key
+
+.vscode
