@@ -1,0 +1,12 @@
+[flake8]
+# Establece un largo de línea un poco más flexible. Black por defecto usa 88.
+max-line-length = 99
+
+# Ignora errores que son incompatibles con Black.
+# E203: Espacio en blanco antes de ':'
+# W503: Salto de línea antes de un operador binario
+ignore = E203, W503
+
+# Le decimos a flake8 que ignore carpetas específicas.
+# Es fundamental para no revisar el código de las librerías en venv.
+exclude = venv
