@@ -19,11 +19,18 @@
             {% endif %}
 
             <!-- Botones de acción -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
+            <div class="d-flex justify-content-between align-items-center mb-9">
                 <button class="btn btn-primary shadow-sm" data-bs-toggle="modal" data-bs-target="#trasladoModal">
                     <i class="bi bi-plus-lg"></i> Agregar Traslado
                 </button>
-                <button class="btn btn-success shadow-sm" id="firmarTraslado">
+                <!--input que sirve como un buscador-->
+                <div class="col-auto">
+                    <input type="text" id="buscador_traslados" class="form-control" placeholder="Buscar traslados..."
+                        style="text-align: center; width: 550px; " onkeyup="busqueda('myTableBody')">
+                </div>
+                <!--Botón para acceder al modal de firmar-->
+                <button class="btn btn-success shadow-sm" id="firmarTraslado" data-bs-target="#modalAdjuntarPDF"
+                    onclick="abrirModalFirmarTraslado()" disabled>
                     <i class="bi bi-pencil"></i> Firmar Traslado
                 </button>
                 <button class="btn btn-danger shadow-sm" id="eliminarSeleccionados">
@@ -36,9 +43,12 @@
                 <table id="posts" class="table table-striped table-hover align-middle">
                     <thead class="table">
                         <tr>
-                            <th><input type="checkbox" id="selectAll"></th>
-                            <th>Origen</th>
-                            <th>Destino</th>
+                            <th><input type="checkbox" id="selectAll" class="checkbox-table row-checkbox"
+                                    style="border-color: white;"></th>
+                            <th data-bs-toggle="tooltip" title="Unidad Origen">U.Origen</th>
+                            <th data-bs-toggle="tooltip" title="Código Origen">C.Origen</th>
+                            <th data-bs-toggle="tooltip" title="Unidad Destino" style="width: 20%;">U.Destino</th>
+                            <th data-bs-toggle="tooltip" title="Código Destino">C.Destino</th>
                             <th>Fecha Traslado</th>
                             <th>Detalles</th>
                             <th>Acta</th>
@@ -46,10 +56,16 @@
                     </thead>
                     <tbody id="myTableBody">
                         {% for tras in traslado %}
-                        <tr data-id="{{ tras.idTraslado }}">
-                            <td><input type="checkbox" class="row-checkbox" value="{{ tras.idTraslado }}"></td>
+                        <tr data-id="row-{{ tras.idTraslado }}">
+                            <td>
+                                <input type="checkbox" class="checkbox-table row-checkbox black"
+                                    value="{{ tras.idTraslado }}"
+                                    data-id-asignacion="{{tras.idAsignacion if tras.idAsignacion else ''}}">
+                            </td>
                             <td>{{ tras.nombreOrigen }}</td>
+                            <td>{{ tras.codigoOrigen }}</td>
                             <td>{{ tras.nombreDestino }}</td>
+                            <td>{{ tras.codigoDestino }}</td>
                             <td>{{ tras.fechatraslado }}
                                 <button class="btn btn-warning btn-sm ms-2" data-bs-toggle="modal"
                                     data-bs-target="#editarTrasladoModal"
@@ -65,9 +81,24 @@
                                 </button>
                             </td>
                             <td>
-                                <a href="/traslado/mostrar_pdf/{{ tras.idTraslado }}" class="btn btn-info btn-sm" target="_blank">
+                                <a href="/traslado/mostrar_pdf/{{ tras.idTraslado }}" class="btn btn-info btn-sm"
+                                    target="_blank">
                                     <i class="bi bi-file-earmark-pdf"></i> Acta
                                 </a>
+
+                                <!--Condición que mostrará un botón deshabilitado si no existe una firma en el traslado-->
+                                {% if tras.estaFirmadoTraslado == 1 %}
+                                <a href="/traslado/mostrar_pdf/{{ tras.idTraslado }}/" class="btn btn-success btn-sm"
+                                    target="_blank" data-bs-toggle="tooltip" title="Acta Firmada"
+                                    style="margin-left: 1rem;">
+                                    <i class="bi bi-file-earmark-pdf"></i> A.Firmada
+                                </a>
+                                {% else %}
+                                <a class="btn btn-success btn-sm disabled" target="_blank" data-bs-toggle="tooltip"
+                                    title="Acta Firmada" style="margin-left: 1rem;">
+                                    <i class="bi bi-file-earmark-pdf"></i> A.Firmada
+                                </a>
+                                {% endif %}
                             </td>
                         </tr>
                         {% endfor %}
@@ -90,11 +121,10 @@
                     </li>
                     {% endfor %}
 
-                    {% if page < lastpage %}
-                    <li class="page-item">
+                    {% if page < lastpage %} <li class="page-item">
                         <a class="page-link" href="{{ url_for('traslado.Traslado', page=page+1) }}">Siguiente</a>
-                    </li>
-                    {% endif %}
+                        </li>
+                        {% endif %}
                 </ul>
             </nav>
         </div>
@@ -109,7 +139,7 @@
 
 <script src="{{ url_for('static', filename='js/Operaciones/Traslado.js') }}"></script>
 
-<script>
+<!-- <script>
 document.getElementById("firmarTraslado").addEventListener("click", function() {
     let seleccionados = document.querySelectorAll(".row-checkbox:checked");
     let ids = Array.from(seleccionados).map(cb => cb.value);
@@ -122,6 +152,38 @@ document.getElementById("firmarTraslado").addEventListener("click", function() {
     let url = `/traslado/listar_pdf/${ids}`;
     window.location.href = url;
 });
+</script> -->
+
+<script src="../../static/js/funciones.js"></script>
+
+
+<!--Script para realizar busquedas en la tabla traslado-->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Define los placeholders dinámicos, sobre que buscar
+        const placeholders = [
+            "Buscar por... Unidad Origen",
+            "Buscar por... Código Origen",
+            "Buscar por... Unidad Destino",
+            "Buscar por... Código Destino",
+            "Buscar por... Fecha Traslado",
+        ];
+        enableDynamicPlaceholder("buscador_traslados", placeholders, 2000)
+    });
+
+    //Busqueda de traslado segun la etiquetas definidas
+    function busqueda(tbodyId) {
+        let input = document.getElementById("buscador_traslados")
+        if (!input) return;
+        let filter = input.value.toLowerCase();
+        let tbody = document.getElementById(tbodyId);
+        if (!tbody) return;
+        let rows = tbody.getElementsByTagName("tr") || tbody.getElementsByTagName("li");
+        for (let i = 0; i < rows.length; i++) {
+            let rowText = rows[i].innerText.toLowerCase();
+            rows[i].style.display = rowText.includes(filter) ? "" : "none";
+        }
+    }
 </script>
 
 {% endblock %}

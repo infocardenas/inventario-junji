@@ -306,3 +306,108 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 });
+
+
+//Condiciones para habilitar el botón de firmar traslados
+function habilitarBotonFirmar() {
+    const firmarButton = document.getElementById("firmarTraslado");
+
+
+    const checked = document.querySelector('.row-checkbox:checked');
+    const seleccionado = !!checked; // Verifica si hay un checkbox activado
+
+    if (firmarButton) firmarButton.disabled = !seleccionado;//Habilita el botón al seleccionar un checkbox
+}
+
+//actualizar botón de firmar traslado al seleccionar el checkbox
+document.addEventListener('change', function (e) {
+    if (e.target.classList.contains('row-checkbox')) {
+        habilitarBotonFirmar();
+    }
+});
+
+//modal para firmar traslados//
+function abrirModalFirmarTraslado() {
+    const modalFirmarTraslado = new bootstrap.Modal(document.getElementById("modalAdjuntarPDF"));
+    let seleccionados = document.querySelectorAll(".row-checkbox:checked");
+    let ids = Array.from(seleccionados).map(cb => cb.value);
+
+    if (ids.length === 0) {
+        alert("Selecciona al menos un traslado para firmar.");
+        return;
+    }
+
+    //Obtener ID del traslado y mostrarlo
+    document.getElementById("detalleIdTraslado").textContent = ids;
+
+    const form = document.getElementById("formAdjuntarPDF");
+    form.action = `/traslado/adjuntar_pdf/${ids}`;
+    form.reset(); // Limpiar el formulario antes de mostrar el modal
+
+    modalFirmarTraslado.show();//mostrar modal
+
+    const tbody = document.getElementById("tablaFirmaTraslado");
+    tbody.innerHTML = `<tr><td>Buscando...</td></tr>`;
+
+    fetch(`/traslado/firmas_json/${ids}`)
+        .then(res => res.json())
+        .then(data => {
+            tbody.innerHTML = "";
+
+            if (data.existe) {
+                const fila = document.createElement("tr");
+                fila.innerHTML = `
+                    <td>${data.nombre}</td>
+                    <td>
+                        <a href="/traslado/mostrar_pdf/${ids}/" class="btn btn-primary" target="_blank">Ver PDF</a>
+                    </td>
+                `;
+                tbody.appendChild(fila);
+            } else {
+                const fila = document.createElement("tr");
+                fila.innerHTML = `
+                    <td colspan="3" class="text-center">No hay PDF adjunto</td>
+                `;
+                tbody.appendChild(fila);
+            }
+        });
+
+
+    const tbody2 =
+        document.getElementById("detalleEquipos")
+
+    fetch(`/traslado/detalles_json/${ids}`)//detalles del traslado que se muestran en el modal de firma
+        .then(res => res.json())
+        .then(data => {
+            const t = data.traslado;
+
+            document.getElementById("unidadOrigen").textContent = t.nombreOrigen;
+            document.getElementById("unidadDestino").textContent = t.nombreDestino;
+            document.getElementById("direccionOrigen").textContent = t.direccionOrigen;
+            document.getElementById("CodigoUnidad").textContent = t.CodigoUnidad;
+            document.getElementById("direccionDestino").textContent = t.direccionDestino;
+            document.getElementById("codigoDestino").textContent = t.codigoDestino;
+
+            document.getElementById("nombreEquipo").textContent = t.nombreEquipo;
+            document.getElementById("modeloEquipo").textContent = t.nombreModeloequipo;
+            document.getElementById("marcaEquipo").textContent = t.marcaEquipo;
+            document.getElementById("numeroSerie").textContent = t.numeroSerie;
+            document.getElementById("codigoInventario").textContent = t.codigoInventario;
+        });
+}
+
+//funcion para buscar traslados según las columnas que tenga la tabla
+function buscarTraslados(page = 1) {
+    clearTimeout(debounceTimeout);
+    debounceTimeout = setTimeout(() => {
+        const query = document.getElementById("buscador_traslados").value.toLowerCase();
+
+        fetch(`/traslado/buscar_traslados?q=${encodeURIComponent(query)}&page=${page}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error("Error al buscar traslados");
+                }
+                return response.json();
+            })
+    })
+}

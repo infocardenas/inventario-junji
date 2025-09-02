@@ -48,13 +48,36 @@
 
                     <div class="col-md-6">
                         <label class="form-label" for="codigo_Unidad">Unidad <span style="color: red;">*</span></label>
-                        <select class="form-select campo-obligatorio" name="codigo_Unidad" id="codigo_Unidad">
-                            <option value="" selected>Seleccione la Unidad</option>
-                            {% for unidad in Unidad %}
-                            <option value="{{ unidad.idUnidad }}">{{ unidad.nombreUnidad }}</option>
-                            {% endfor %}
-                        </select>
-                        <div class="text-error-message"></div>
+                        <div style="display: flex; align-items: center;">
+
+                            <!--Select con evento onchange, permite mostrar el codigo del nombre seleccionado-->
+                            <select class="form-select campo-obligatorio" name="codigo_Unidad" id="codigo_Unidad"
+                                onchange="mostrarCodigoUnidad(event)" style="width: 75%;">
+
+                                <option value="" selected>Selecciona la unidad</option>
+                                {% for unidad in Unidad %}
+                                <option value="{{ unidad.idUnidad }}" data-codigo="{{unidad.idUnidad}}">{{
+                                    unidad.nombreUnidad }}</option>
+                                {% endfor %}
+
+                            </select>
+
+                            <div class="text-error-message"></div>
+
+                            <span style="width: 5%;"></span>
+
+                            <div id="nombreUnidadD2"
+                                style="width: 20%; overflow: hidden; border: 1px solid #ccc; background: rgb(228, 226, 226);">
+                                <div id="scrollWrapper"
+                                    style="white-space: nowrap; display: inline-block; align-items: center;">
+
+                                <!--Muestra dinamicamente el codigo de la unidad al seleccionar el nombre-->
+                                    <input type="text" id="codigoUnidad" class="form-control"
+                                        placeholder="Código" value="" disabled
+                                        style="border: none; outline: none;min-width: 25%; background: transparent">
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -189,13 +212,37 @@
                     <div class="col-md-6">
                         <label class="form-label" for="edit_codigo_Unidad">Unidad <span
                                 style="color: red;">*</span></label>
-                        <select class="form-select campo-obligatorio" name="codigo_Unidad" id="edit_codigo_Unidad">
-                            <option value="">Seleccione la Unidad</option>
-                            {% for unidad in Unidad %}
-                            <option value="{{ unidad.idUnidad }}">{{ unidad.nombreUnidad }}</option>
-                            {% endfor %}
-                        </select>
-                        <div class="text-error-message"></div>
+
+                        <div style="display: flex; align-items: center;">
+
+                            <!--Select con evento onchange, permite mostrar el nombre del codigo seleccionado-->
+                            <select class="form-select campo-obligatorio" name="codigo_Unidad" id="edit_codigo_Unidad"
+                                onchange="mostrarCodigoUnidadEdit(event)" style="width: 80%;">
+                                <option value="">Seleccione el codigo</option>
+                                {% for unidad in Unidad %}
+                                <option value="{{ unidad.idUnidad }}" data-codigo="{{unidad.idUnidad}}">{{
+                                    unidad.nombreUnidad }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                            <div class="text-error-message"></div>
+
+                            <span style="width: 5%;"></span>
+
+                            <div id="nombreUnidadD2"
+                                style="width: 20%; overflow: hidden; border: 1px solid #ccc; background: rgb(228, 226, 226);">
+                                <div id="scrollWrapper"
+                                    style="white-space: nowrap; display: inline-block; align-items: center;">
+
+                                    <!--Muestra dinamicamente el codigo de la unidad al seleccionar un nombre-->
+                                    <input type="text" id="nombreUnidadDEdit" class="form-control"
+                                        placeholder="Código" disabled
+                                        style="border: none; outline: none; min-width: 20%;background: transparent;">
+
+                                </div>
+
+                            </div>
+                        </div>
                     </div>
 
                     <div class="col-md-6">
@@ -225,13 +272,13 @@
                         <select class="form-select no-delete-value" name="estado_equipo" id="edit_estado_equipo">
                             <option value="">Seleccione el estado</option>
                             {% for est in estado %}
-                                {% if est.idEstado_equipo != 2 %}
-                                    <option value="{{ est.idEstado_equipo }}">
-                                        {{ est.nombreEstado_equipo }}
-                                    </option>
-                                {% endif %}
+                            {% if est.idEstado_equipo != 2 %}
+                            <option value="{{ est.idEstado_equipo }}">
+                                {{ est.nombreEstado_equipo }}
+                            </option>
+                            {% endif %}
                             {% endfor %}
-                        </select>                        
+                        </select>
                         <div class="text-error-message"></div>
                     </div>
 
@@ -300,13 +347,14 @@
                     <div class="mb-3">
                         <label for="nombreIncidencia" class="form-label">Tipo de Incidencia</label>
                         <select class="form-control" id="nombreIncidencia" name="nombreIncidencia" required>
-                            <option value="" disabled selected>Seleccione tipo de incidencia</option> <!-- Placeholder -->
+                            <option value="" disabled selected>Seleccione tipo de incidencia</option>
+                            <!-- Placeholder -->
                             <option value="Robo">Robo</option>
                             <option value="Perdido">Perdido</option>
                             <option value="Dañado/Averiado">Dañado/Averiado</option>
                         </select>
                     </div>
-                    
+
                     <div class="mb-3">
                         <label for="fechaIncidencia" class="form-label">Fecha de la incidencia</label>
                         <input type="date" class="form-control validar-fecha-30-0" id="fechaIncidencia"
@@ -415,15 +463,16 @@
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
                 <h5 class="modal-title">Escanear código QR</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
             </div>
             <div class="modal-body p-0 position-relative">
                 <!-- Contenedor de la cámara - importante el id -->
                 <div id="qr-reader" style="width: 100%; min-height: 300px;"></div>
-                
+
                 <!-- Marco de guía para QR -->
                 <div class="qr-guide-frame"></div>
-                
+
                 <!-- Mensaje de estado -->
                 <div id="qr-status" class="text-center small my-2"></div>
             </div>
@@ -439,21 +488,21 @@
 
 <!-- Modal para confirmar elimnar equipo -->
 <div class="modal fade" id="genericModal" tabindex="-1" aria-labelledby="genericModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="genericModalLabel">Confirmar Acción</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body">
-        <p id="genericModalMessage">¿Estás seguro?</p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-        <button type="button" class="btn btn-danger" id="genericModalConfirmButton">Confirmar</button>
-      </div>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="genericModalLabel">Confirmar Acción</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <p id="genericModalMessage">¿Estás seguro?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-danger" id="genericModalConfirmButton">Confirmar</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <!-- CSS primero -->
@@ -464,127 +513,144 @@
 
 <!-- Finalmente nuestros scripts -->
 <script>
-// Variable global para el escáner
-let html5QrCode = null;
-let currentCameraId = null;
+    // Variable global para el escáner
+    let html5QrCode = null;
+    let currentCameraId = null;
 
-// Inicializar cuando el modal se muestra
-document.getElementById('qrModal').addEventListener('shown.bs.modal', async function() {
-    try {
-        // Detener escáner si ya está activo
+    // Inicializar cuando el modal se muestra
+    document.getElementById('qrModal').addEventListener('shown.bs.modal', async function () {
+        try {
+            // Detener escáner si ya está activo
+            if (html5QrCode && html5QrCode.isScanning) {
+                await html5QrCode.stop();
+            }
+
+            // Obtener cámaras disponibles
+            const cameras = await Html5Qrcode.getCameras();
+            if (cameras.length === 0) {
+                updateStatus("No se encontraron cámaras");
+                return;
+            }
+
+            // Crear nueva instancia
+            html5QrCode = new Html5Qrcode("qr-reader");
+
+            // Usar cámara trasera o la primera disponible
+            const backCamera = cameras.find(cam => cam.label.includes("back")) || cameras[0];
+            currentCameraId = backCamera.id;
+
+            // Iniciar escáner
+            await html5QrCode.start(
+                currentCameraId,
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 },
+                    aspectRatio: 1.777778 // 16:9
+                },
+                decodedText => {
+                    // Código detectado
+                    document.getElementById('buscador_equipo').value = decodedText;
+                    if (typeof buscarEquipos === "function") {
+                        buscarEquipos(1);
+                    }
+                    bootstrap.Modal.getInstance(document.getElementById('qrModal')).hide();
+                },
+                error => {
+                    console.warn("Error QR:", error);
+                    //updateStatus("Error: " + error);
+                }
+            );
+
+            updateStatus("Escaneando...");
+        } catch (err) {
+            console.error("Error al iniciar cámara:", err);
+            updateStatus("Error: " + err.message);
+        }
+    });
+
+    // Detener cámara cuando se cierra el modal
+    document.getElementById('qrModal').addEventListener('hidden.bs.modal', function () {
         if (html5QrCode && html5QrCode.isScanning) {
+            html5QrCode.stop().catch(err => {
+                console.error("Error al detener cámara:", err);
+            });
+        }
+    });
+
+    // Función para cambiar de cámara
+    document.getElementById('switch-camera').addEventListener('click', async function () {
+        if (!html5QrCode || !html5QrCode.isScanning) return;
+
+        try {
+            const cameras = await Html5Qrcode.getCameras();
+            if (cameras.length < 2) {
+                updateStatus("Solo hay una cámara");
+                return;
+            }
+
+            const currentIndex = cameras.findIndex(cam => cam.id === currentCameraId);
+            const nextIndex = (currentIndex + 1) % cameras.length;
+            const nextCamera = cameras[nextIndex];
+
             await html5QrCode.stop();
-        }
-        
-        // Obtener cámaras disponibles
-        const cameras = await Html5Qrcode.getCameras();
-        if (cameras.length === 0) {
-            updateStatus("No se encontraron cámaras");
-            return;
-        }
-        
-        // Crear nueva instancia
-        html5QrCode = new Html5Qrcode("qr-reader");
-        
-        // Usar cámara trasera o la primera disponible
-        const backCamera = cameras.find(cam => cam.label.includes("back")) || cameras[0];
-        currentCameraId = backCamera.id;
-        
-        // Iniciar escáner
-        await html5QrCode.start(
-            currentCameraId,
-            {
-                fps: 10,
-                qrbox: { width: 250, height: 250 },
-                aspectRatio: 1.777778 // 16:9
-            },
-            decodedText => {
-                // Código detectado
-                document.getElementById('buscador_equipo').value = decodedText;
-                if (typeof buscarEquipos === "function") {
-                    buscarEquipos(1);
+            await html5QrCode.start(
+                nextCamera.id,
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                decodedText => {
+                    document.getElementById('buscador_equipo').value = decodedText;
+                    if (typeof buscarEquipos === "function") {
+                        buscarEquipos(1);
+                    }
+                    bootstrap.Modal.getInstance(document.getElementById('qrModal')).hide();
+                },
+                error => {
+                    console.warn("Error QR:", error);
                 }
-                bootstrap.Modal.getInstance(document.getElementById('qrModal')).hide();
-            },
-            error => {
-                console.warn("Error QR:", error);
-                //updateStatus("Error: " + error);
-            }
-        );
-        
-        updateStatus("Escaneando...");
-    } catch (err) {
-        console.error("Error al iniciar cámara:", err);
-        updateStatus("Error: " + err.message);
-    }
-});
+            );
 
-// Detener cámara cuando se cierra el modal
-document.getElementById('qrModal').addEventListener('hidden.bs.modal', function() {
-    if (html5QrCode && html5QrCode.isScanning) {
-        html5QrCode.stop().catch(err => {
-            console.error("Error al detener cámara:", err);
-        });
-    }
-});
-
-// Función para cambiar de cámara
-document.getElementById('switch-camera').addEventListener('click', async function() {
-    if (!html5QrCode || !html5QrCode.isScanning) return;
-    
-    try {
-        const cameras = await Html5Qrcode.getCameras();
-        if (cameras.length < 2) {
-            updateStatus("Solo hay una cámara");
-            return;
+            currentCameraId = nextCamera.id;
+            updateStatus("Usando cámara: " + nextCamera.label);
+        } catch (err) {
+            console.error("Error al cambiar cámara:", err);
+            updateStatus("Error al cambiar cámara");
         }
-        
-        const currentIndex = cameras.findIndex(cam => cam.id === currentCameraId);
-        const nextIndex = (currentIndex + 1) % cameras.length;
-        const nextCamera = cameras[nextIndex];
-        
-        await html5QrCode.stop();
-        await html5QrCode.start(
-            nextCamera.id,
-            {
-                fps: 10,
-                qrbox: { width: 250, height: 250 }
-            },
-            decodedText => {
-                document.getElementById('buscador_equipo').value = decodedText;
-                if (typeof buscarEquipos === "function") {
-                    buscarEquipos(1);
-                }
-                bootstrap.Modal.getInstance(document.getElementById('qrModal')).hide();
-            },
-            error => {
-                console.warn("Error QR:", error);
-            }
-        );
-        
-        currentCameraId = nextCamera.id;
-        updateStatus("Usando cámara: " + nextCamera.label);
-    } catch (err) {
-        console.error("Error al cambiar cámara:", err);
-        updateStatus("Error al cambiar cámara");
-    }
-});
+    });
 
-// Función auxiliar para mostrar estado
-function updateStatus(message, type = "info") {
-    const statusElement = document.getElementById("qr-status");
-    if (statusElement) {
-        statusElement.textContent = message;
-        statusElement.className = "text-center small my-2 ";
-        
-        if (type === "error") {
-            //statusElement.classList.add("text-danger");
-        } else if (type === "success") {
-            statusElement.classList.add("text-success");
-        } else {
-            statusElement.classList.add("text-white");
+    // Función auxiliar para mostrar estado
+    function updateStatus(message, type = "info") {
+        const statusElement = document.getElementById("qr-status");
+        if (statusElement) {
+            statusElement.textContent = message;
+            statusElement.className = "text-center small my-2 ";
+
+            if (type === "error") {
+                //statusElement.classList.add("text-danger");
+            } else if (type === "success") {
+                statusElement.classList.add("text-success");
+            } else {
+                statusElement.classList.add("text-white");
+            }
         }
     }
-}
 </script>
 <script src="{{ url_for('static', filename='js/Equipo/equipo.js') }}"></script>
+
+<!--Script para obtener el codigo de la unidad al seleccionar el nombre del select-->
+<script>
+    function mostrarCodigoUnidad(e) {
+        //Obtiene el codigo de la variable data-codigo de las opciones del select
+
+        let name = e.target.selectedOptions[0].getAttribute('data-codigo');
+        document.getElementById('codigoUnidad').value = name;
+    }
+
+    //función para mostrar el codigo al editar un equipo
+    function mostrarCodigoUnidadEdit(e) {
+        //Obtiene el codigo de la variable data-codigo de las opciones del select
+        let name = e.target.selectedOptions[0].getAttribute('data-codigo');
+        document.getElementById('nombreUnidadDEdit').value = name;
+    }
+</script>

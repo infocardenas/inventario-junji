@@ -38,8 +38,8 @@ def Traslado(page=1):
     cur = mysql.connection.cursor()
     cur.execute("""
         SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, 
-               origen.nombreUnidad as nombreOrigen, 
-               destino.nombreUnidad as nombreDestino,
+               origen.nombreUnidad as nombreOrigen, origen.idUnidad as codigoOrigen,
+               destino.nombreUnidad as nombreDestino, destino.idUnidad as codigoDestino,
                t.estaFirmadoTraslado
         FROM traslado t
         INNER JOIN unidad origen on origen.idUnidad = t.idUnidadOrigen
@@ -393,10 +393,31 @@ def crear_traslado_generico(fechatraslado, Destino, Origen, equipos):
     )
     UnidadDestino = cur.fetchone()
 
-    flash("traslado agregado correctamente")
-    create_pdf(traslado, equipos_lista, UnidadOrigen, UnidadDestino)
+    #id origen y destino
+    cur.execute(
+        """
+                    SELECT *
+                    FROM unidad
+                    WHERE unidad.idUnidad = %s
+                    """,
+        (traslado["idUnidadOrigen"],),
+    )
+    idUnidadOrigen = cur.fetchone()
 
-def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
+    cur.execute(
+        """
+                    SELECT *
+                    FROM unidad
+                    WHERE unidad.idUnidad = %s
+                    """,
+        (traslado["idUnidadDestino"],),
+    )
+    idUnidadDestino = cur.fetchone()
+
+    flash("traslado agregado correctamente")
+    create_pdf(traslado, equipos_lista, UnidadOrigen, UnidadDestino,idUnidadDestino,idUnidadOrigen)
+
+def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino,idUnidadDestino,idUnidadOrigen):
     print("create_pdf")
 
     class PDF(FPDF):
@@ -433,9 +454,11 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
 
     titulo = "ACTA DE TRASLADO N°" + str(traslado["idTraslado"])
     creado_por = "Documento creado por: " + session["user"]
-    parrafo_1 = "En Concepción {} se procede al traslado de bienes JUNJI de registro inventario desde {} hasta {} el siguiente detalle: ".format(
+    parrafo_1 = "En Concepción {}, se procede al traslado de bienes JUNJI de registro inventario desde {}:{} hasta {}:{} el siguiente detalle: ".format(
         traslado["fechatraslado"],
+        idUnidadOrigen["idUnidad"],
         UnidadOrigen["nombreUnidad"],
+        idUnidadDestino["idUnidad"],
         UnidadDestino["nombreUnidad"],
     )
     # encabezado de la tabla
@@ -474,7 +497,7 @@ def create_pdf(traslado, equipos, UnidadOrigen, UnidadDestino):
     firmaEncargado = "Firma:"
     nombreMinistro = "Nombre del funcionario:"
     rutMinistro = "RUT:"
-    firma = "Firma"
+    firma = "Firma:"
     with pdf.text_columns(text_align="J", ncols=2, gutter=30) as cols:
         cols.write(nombreEncargado)
         cols.ln()
@@ -625,7 +648,9 @@ def mostrar_pdf_traslado_firmado(id):
         # Verificar si el archivo existe antes de enviarlo
         if not os.path.exists(file_path):
             flash("No se encontró el archivo PDF solicitado.")
-            return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige a la página de traslados
+            return redirect(url_for("traslado.Traslado"))
+
+            #return redirect(url_for('traslado.listar_pdf', idTraslado=id))  # Redirige a la página de traslados
 
         # Si el archivo existe, enviarlo para su visualización
         return send_file(file_path, as_attachment=False)
@@ -678,9 +703,72 @@ def adjuntar_pdf_traslado(idTraslado):
         os.remove(new_file_path)
 
     os.rename(temp_file_path, new_file_path)
+    
+    # Actualizar la base de datos para reflejar que el traslado está firmado
+    # Se asigna un valor de 1 si se ha subido el archivo de firma
+    try:
+        cur = mysql.connection.cursor()
+        cur.execute(
+            "UPDATE traslado SET estaFirmadoTraslado = 1 WHERE idTraslado = %s",
+            (idTraslado,)
+        )
+        mysql.connection.commit()
+    except Exception as e:
+        print(f"Error al actualizar el estado del traslado: {e}")
+
+    flash("PDF adjuntado correctamente")
+    # Redirigir a la lista de traslados(tabla)
+    return redirect(url_for("traslado.Traslado"))
+    #cambiado [ f"/traslado/listar_pdf/{idTraslado}" ]
+    
+
+#obtener los datos en fomato json sobre si presenta firma el traslado
+@traslado.route("/traslado/firmas_json/<idTraslado>")
+@loguear_requerido
+def obtener_firma_json(idTraslado):
+    dir_firmas = "pdf/firmas_traslados"
+    nombre = f"traslado_{idTraslado}_firmado.pdf"
+    ruta = os.path.join(dir_firmas, nombre)
+    #devuelve un resultado en formato json si tiene o no firma el traslado
+    if os.path.exists(ruta):
+        return jsonify({"existe":True,"nombre":nombre})
+    else:
+        return jsonify({"Existe":False})
+    
 
 
-    # Redirigir a la lista de PDFs del traslado
-    return redirect(f"/traslado/listar_pdf/{idTraslado}")
-
-
+#Obtener los detalles del traslado en formato json 
+@traslado.route("/traslado/detalles_json/<idTraslado>")
+@loguear_requerido
+def obtener_detalles_traslado(idTraslado):
+    cur = mysql.connection.cursor()
+    cur.execute("""
+        SELECT t.idTraslado, t.fechatraslado, t.rutadocumentoTraslado, 
+               origen.nombreUnidad as nombreOrigen, 
+               destino.nombreUnidad as nombreDestino,
+               t.estaFirmadoTraslado,me.nombreModeloequipo,
+                te.nombreTipo_equipo as nombreEquipo,
+                origen.direccionUnidad as direccionOrigen,
+                origen.idUnidad as CodigoUnidad, destino.direccionUnidad as direccionDestino,
+                destino.idUnidad as codigoDestino, mae.nombreMarcaEquipo as marcaEquipo,
+                e.Num_SerieEquipo as numeroSerie, e.Cod_inventarioEquipo as codigoInventario        
+         FROM traslado t
+        INNER JOIN unidad origen ON origen.idUnidad = t.idUnidadOrigen
+        INNER JOIN unidad destino ON destino.idUnidad = t.idUnidadDestino
+        INNER JOIN traslacion tr ON tr.idTraslado = t.idTraslado
+        INNER JOIN equipo e ON tr.idEquipo = e.idEquipo
+        INNER JOIN modelo_equipo me ON e.idModelo_equipo = me.idModelo_equipo
+        INNER JOIN marca_tipo_equipo mte ON me.idMarca_Tipo_Equipo = mte.idMarcaTipo
+        INNER JOIN tipo_equipo te ON mte.idTipo_equipo = te.idTipo_equipo
+        INNER JOIN marca_equipo mae ON mte.idMarca_Equipo = mae.idMarca_Equipo
+        WHERE t.idTraslado = %s
+    """, (idTraslado,),)
+    
+    traslado = cur.fetchone()
+    
+    if not traslado:
+        return jsonify({"error": "Traslado no encontrado"}), 404
+    #Se obtiene información del traslado en formato json
+    return jsonify({
+        "traslado":traslado
+    })
