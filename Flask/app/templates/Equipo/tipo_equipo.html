@@ -13,7 +13,7 @@
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTipoEquipoModal">Agregar</button>
                 </div>
                 <div class="toolbar-2">
-                    <input name="palabra" type="text" class="search-box" placeholder="Buscar marcas asociadas" id="buscador" onkeyup="busqueda('myTableBody')" />
+                    <input name="palabra" type="text" class="search-box" placeholder="Buscar marcas asociadas" id="buscador" oninput="busqueda('myTableBody')" />
                 </div>
                 <div class="toolbar-3">
                     <button type="button" class="btn btn-warning edit-button" data-bs-toggle="tooltip" data-bs-title="Editar" disabled><i class="bi bi-pencil-square"></i></button>
@@ -30,6 +30,17 @@
                         ];
                         enableDynamicPlaceholder("buscador", placeholders, 2000)
                     });
+                    // Filtro en vivo para la tabla de tipos de equipo
+                    function busqueda(tbodyId) {
+                        var input = document.getElementById("buscador");
+                        var filter = input.value.toLowerCase();
+                        var tbody = document.getElementById(tbodyId);
+                        var rows = tbody.getElementsByTagName("tr");
+                        for (var i = 0; i < rows.length; i++) {
+                            var rowText = rows[i].innerText.toLowerCase();
+                            rows[i].style.display = rowText.includes(filter) ? "" : "none";
+                        }
+                    }
                 </script>
 
             <!-- Tabla de tipos de equipos -->

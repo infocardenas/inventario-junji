@@ -105,9 +105,9 @@
               </button>
 
 
-              <!-- Botón de Eliminar -->
-              <button class="btn btn-danger btn-sm" data-bs-toggle="tooltip" title="Eliminar"
-                onclick="window.location.href='/delete_Unidad/{{ubi.idUnidad}}'">
+              <!-- Botón de Eliminar (abre modal) -->
+              <button class="btn btn-danger btn-sm" data-bs-toggle="modal" data-bs-target="#modal-confirm-delete-unidad"
+                data-id="{{ubi.idUnidad}}" title="Eliminar">
                 <i class="bi bi-trash-fill"></i>
               </button>
             </div>
@@ -126,11 +126,42 @@
   </div>
 </div>
 
+<!-- Modal de confirmación de eliminación -->
+<div class="modal fade" id="modal-confirm-delete-unidad" tabindex="-1" aria-labelledby="modalConfirmDeleteUnidadLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalConfirmDeleteUnidadLabel">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Está seguro que desea eliminar esta unidad? Esta acción no se puede deshacer.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form id="form-delete-unidad" method="POST" style="display:inline;">
+          <button type="submit" class="btn btn-danger">Eliminar</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
 {% include 'Organizacion/unidad.modal.html' %}
 
 <!-- Vinculamos el archivo JavaScript -->
 <script src="{{ url_for('static', filename='js/Operaciones/Unidad.js') }}"></script>
-
-
+<script>
+  // Script para pasar el id al formulario del modal de eliminar
+  document.addEventListener('DOMContentLoaded', function () {
+    var deleteModal = document.getElementById('modal-confirm-delete-unidad');
+    deleteModal.addEventListener('show.bs.modal', function (event) {
+      var button = event.relatedTarget;
+      var idUnidad = button.getAttribute('data-id');
+      var form = document.getElementById('form-delete-unidad');
+      form.action = '/delete_Unidad/' + idUnidad;
+    });
+  });
+</script>
 
 {% endblock %}

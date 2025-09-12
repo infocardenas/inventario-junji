@@ -207,9 +207,17 @@ def add_equipo():
             # ✅ Verificar si el código de inventario ya existe
             if datos['codigo_inventario']:
                 cur.execute("SELECT idEquipo FROM equipo WHERE Cod_inventarioEquipo = %s", (datos['codigo_inventario'],))
-                if cur.fetchone():
-                    flash("El código de inventario ya existe", 'warning')
-                    return redirect(url_for("equipo.Equipo"))
+                equipo_existente = cur.fetchone()
+                if equipo_existente:
+                    # Excepción: permitir si el equipo existente tiene incidencia con estado 'equipo cambiado'
+                    cur.execute("""
+                        SELECT 1 FROM incidencia
+                        WHERE idEquipo = %s AND estadoIncidencia = 'equipo cambiado'
+                        """, (equipo_existente['idEquipo'],))
+                    incidencia_cambiado = cur.fetchone()
+                    if not incidencia_cambiado:
+                        flash("El código de inventario ya está en uso", 'warning')
+                        return redirect(url_for("equipo.Equipo"))
 
             # ✅ Verificar si el número de serie ya existe
             if datos['numero_serie']:
@@ -342,13 +350,6 @@ def update_equipo(id):
             return redirect(url_for("equipo.Equipo"))
 
         # Verificar si el código de inventario ya existe (excepto para el mismo equipo)
-        cur.execute("""
-            SELECT idEquipo FROM equipo 
-            WHERE Cod_inventarioEquipo = %s AND idEquipo != %s
-        """, (datos['codigo_inventario'], id))
-        if cur.fetchone():
-            flash("El código de inventario ya está en uso", 'warning')
-            return redirect(url_for("equipo.Equipo"))
 
         # Verificar si el número de serie ya existe (excepto para el mismo equipo)
         cur.execute("""

@@ -93,6 +93,7 @@ function actualizarTabla(equipos) {
           data-serie="${equipo.Num_serieEquipo}"
           data-observacion="${equipo.ObservacionEquipo || ''}"
           data-unidad="${equipo.idUnidad || ''}"
+          data-name="${equipo.nombreUnidad || ''}"
           data-orden="${equipo.idOrden_compra || ''}"
           data-marca="${equipo.idMarca_Equipo || ''}" 
           data-tipo="${equipo.idTipo_equipo || ''}"
@@ -714,9 +715,9 @@ function configurarEventosEdicion() {
 
     button.addEventListener("click", function () {
       const id = this.getAttribute("data-id");
-      const marca = this.getAttribute("data-marca"); // idMarca_Equipo
-      const tipo = this.getAttribute("data-tipo");   // idTipo_equipo
-      const modelo = this.getAttribute("data-modelo"); // idModelo_equipo
+      const marca = limpiarDato(this.getAttribute("data-marca")); // Ensure empty fields are filled with empty strings
+      const tipo = limpiarDato(this.getAttribute("data-tipo"));
+      const modelo = limpiarDato(this.getAttribute("data-modelo"));
 
       // Guardar los IDs originales para la carga en cascada de selects
       const tipoSelect = document.getElementById("edit_tipoSelect");
@@ -730,16 +731,17 @@ function configurarEventosEdicion() {
 
       // Rellenar otros campos del modal
       document.getElementById("edit_id_equipo").value = id;
-      document.getElementById("edit_codigo_inventario").value = this.getAttribute("data-codigo");
-      document.getElementById("edit_numero_serie").value = this.getAttribute("data-serie");
-      document.getElementById("edit_observacion_equipo").value = this.getAttribute("data-observacion");
-      document.getElementById("edit_codigo_Unidad").value = this.getAttribute("data-unidad");
-      document.getElementById("edit_orden_compra").value = this.getAttribute("data-orden");
-      document.getElementById("edit_codigoproveedor").value = this.getAttribute("data-proveedor");
-      document.getElementById("edit_mac").value = this.getAttribute("data-mac");
-      document.getElementById("edit_imei").value = this.getAttribute("data-imei");
-      document.getElementById("edit_numero").value = this.getAttribute("data-numero");
-      document.getElementById("edit_estado_equipo").value = this.getAttribute("data-estado");
+      document.getElementById("edit_codigo_inventario").value = limpiarDato(this.getAttribute("data-codigo"));
+      document.getElementById("edit_numero_serie").value = limpiarDato(this.getAttribute("data-serie"));
+      document.getElementById("edit_observacion_equipo").value = limpiarDato(this.getAttribute("data-observacion"));
+      document.getElementById("edit_codigo_Unidad").value = limpiarDato(this.getAttribute("data-unidad"));
+      document.getElementById("nombreUnidadDEdit").value = limpiarDato(this.getAttribute("data-unidad"));
+      document.getElementById("edit_orden_compra").value = limpiarDato(this.getAttribute("data-orden"));
+      document.getElementById("edit_codigoproveedor").value = limpiarDato(this.getAttribute("data-proveedor"));
+      document.getElementById("edit_mac").value = limpiarDato(this.getAttribute("data-mac"));
+      document.getElementById("edit_imei").value = limpiarDato(this.getAttribute("data-imei"));
+      document.getElementById("edit_numero").value = limpiarDato(this.getAttribute("data-numero"));
+      document.getElementById("edit_estado_equipo").value = limpiarDato(this.getAttribute("data-estado"));
 
       // Actualizar el action del formulario de edición
       const editForm = document.getElementById("editEquipoForm");
@@ -749,6 +751,10 @@ function configurarEventosEdicion() {
     });
     button.dataset.listenerAttached = 'true';
   });
+}
+
+function limpiarDato(dato) {
+  return (dato === undefined || dato === null || dato === "None") ? "" : dato;
 }
 
 function configurarEventosCheckbox() {

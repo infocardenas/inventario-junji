@@ -1,3 +1,18 @@
+// --- Buscador en vivo para la tabla de marcas ---
+// Mueve esta función fuera de $(document).ready para que sea global
+function busqueda(tbodyId) {
+    var input = document.getElementById("buscador");
+    if (!input) return;
+    var filter = input.value.toLowerCase();
+    var tbody = document.getElementById(tbodyId);
+    if (!tbody) return;
+    var rows = tbody.getElementsByTagName("tr");
+    for (var i = 0; i < rows.length; i++) {
+        var rowText = rows[i].innerText.toLowerCase();
+        rows[i].style.display = rowText.includes(filter) ? "" : "none";
+    }
+}
+
 $(document).ready(function () {
     // Detectar cambios en los checkboxes para actualizar los botones
     $(document).on("change", ".row-checkbox, #selectAll", function () {
@@ -61,18 +76,30 @@ $(document).ready(function () {
         $("#modal-edit-marca").modal("show");
     });
 
-    // Manejar clic en el botón "Eliminar" para abrir el modal de confirmación
+    // Manejar clic en el botón "Eliminar" para abrir el modal de confirmación o redirigir directamente
     $(".delete-button").on("click", function () {
         if ($(this).prop("disabled")) return; // Evita la acción si está deshabilitado
 
         const deleteUrl = $(this).data("url");
 
-        if (!deleteUrl.includes("/delete_marca_equipo/")) {
+        if (!deleteUrl || !deleteUrl.includes("/delete_marca_equipo/")) {
             return;
         }
 
-        // Configurar el modal con la URL correcta
-        $("#confirm-delete-button").attr("href", deleteUrl);
-        $("#modal-delete-marca").modal("show");
+        // Si tienes un modal de confirmación, descomenta y usa esto:
+        // $("#confirm-delete-button").attr("href", deleteUrl);
+        // $("#modal-delete-marca").modal("show");
+
+        // Si NO tienes modal de confirmación, usa confirm() nativo:
+        if (confirm("¿Estás seguro de que deseas eliminar las marcas seleccionadas? Esto eliminará también las relaciones asociadas")) {
+            window.location.href = deleteUrl;
+        }
     });
+
+    var buscador = document.getElementById("buscador");
+    if (buscador) {
+        buscador.addEventListener("input", function () {
+            busqueda('myTableBody');
+        });
+    }
 });

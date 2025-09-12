@@ -131,6 +131,30 @@ def Asignacion(page=1):
 def getPerPage():
     return 10 
 
+@asignacion.route("/asignacion/validar_traslado", methods=["POST"])
+@loguear_requerido
+def validar_traslado():
+    """
+    Recibe rut_funcionario y equipos_asignados, retorna si se requiere traslado.
+    """
+    rut_funcionario = request.form.get('rut_funcionario')
+    id_equipos = request.form.getlist('equiposAsignados[]')
+    cur = mysql.connection.cursor()
+    cur.execute("SELECT idUnidad FROM funcionario WHERE rutFuncionario = %s", (rut_funcionario,))
+    funcionario_data = cur.fetchone()
+    id_unidad_funcionario = funcionario_data['idUnidad'] if funcionario_data else None
+
+    requiere_traslado = False
+    for id_equipo in id_equipos:
+        cur.execute("SELECT idUnidad FROM equipo WHERE idEquipo = %s", (id_equipo,))
+        equipo_data = cur.fetchone()
+        id_unidad_origen = equipo_data['idUnidad'] if equipo_data else None
+        if id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
+            requiere_traslado = True
+            break
+    cur.close()
+    return jsonify({"requiere_traslado": requiere_traslado})
+
 @asignacion.route("/asignacion/create_asignacion", methods=["POST"])
 @administrador_requerido
 def create_asignacion():
@@ -146,6 +170,7 @@ def create_asignacion():
     rut_funcionario = request.form.get('rut_funcionario')
     observacion = request.form.get('observacion')
     id_equipos = [int(equipo) for equipo in request.form.getlist('equiposAsignados[]')]
+    crear_traslado = request.form.get('crear_traslado', '1')  # Nuevo: por defecto sí
 
     # Se crea un objeto para poder validar los datos recibidos
     data = {
@@ -179,8 +204,27 @@ def create_asignacion():
 
         TuplaEquipos = ()
 
+        # Obtener la unidad del funcionario (destino del traslado)
+        cur.execute("SELECT idUnidad FROM funcionario WHERE rutFuncionario = %s", (rut_funcionario,))
+        funcionario_data = cur.fetchone()
+        id_unidad_funcionario = funcionario_data['idUnidad'] if funcionario_data else None
+
         # Recorre los equipos asignados
         for id_equipo in id_equipos:
+            # Obtener la unidad actual del equipo (origen del traslado)
+            cur.execute("SELECT idUnidad FROM equipo WHERE idEquipo = %s", (id_equipo,))
+            equipo_data = cur.fetchone()
+            id_unidad_origen = equipo_data['idUnidad'] if equipo_data else None
+
+            # Si la unidad de origen y destino son diferentes, crear traslado SOLO si el usuario aceptó
+            if crear_traslado == '1' and id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
+                crear_traslado_generico(
+                    fecha_asignacion,
+                    id_unidad_funcionario,
+                    id_unidad_origen,
+                    [id_equipo]
+                )
+
             # Inserta los datos en la tabla equipo_asignacion
             cur.execute("""
                 INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
@@ -838,6 +882,15 @@ def crear_pdf_devolucion(funcionario, equipos, id_devolucion, observacion=""):
         cols.ln()
         cols.new_column()
         for i in range(0, 3):
+            if i == 0:
+                cols.write(text= session['user'])
+            else:
+                cols.write(text="___________________________________")
+            cols.ln()
+            cols.ln()
+        cols.ln()
+        cols.ln()
+        for i in range(0, 3):
             cols.write(text="___________________________________")
             cols.ln()
             cols.ln()
@@ -873,6 +926,7 @@ def buscar(idAsignacion):
         a.observacionAsignacion,
         a.rutaactaAsignacion,
         f.nombreFuncionario,
+        f.rutFuncionario,
         a.fechaDevolucion,
         a.ActivoAsignacion
     FROM asignacion a
@@ -962,6 +1016,7 @@ def buscar_asignaciones():
             a.ObservacionAsignacion,
             a.ActivoAsignacion,
             f.nombreFuncionario,
+            f.rutFuncionario,
             f.cargoFuncionario,
             ea.idEquipoAsignacion,
             d.idDevolucion,
@@ -988,9 +1043,10 @@ def buscar_asignaciones():
            OR LOWER(e.Num_serieEquipo) LIKE %s
            OR LOWER(te.nombreTipo_equipo) LIKE %s
            OR LOWER(a.ObservacionAsignacion) LIKE %s
+           OR LOWER(f.rutFuncionario) LIKE %s
         LIMIT %s OFFSET %s
     """, (f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%",
-          f"%{query}%", f"%{query}%", per_page, offset))
+          f"%{query}%", f"%{query}%",f"%{query}", per_page, offset))
     asignaciones = cur.fetchall()
 
     # Total de resultados para la búsqueda
@@ -1118,7 +1174,7 @@ def obtener_firma_json(idAsignacion):
     ruta = os.path.join(dir_firmas, nombre)
 
     if os.path.exists(ruta):
-        return jsonify({"existe": True, "nombre": nombre})
+        return jsonify({"existe": True, "nombre": nombre, "firmas":dir_firmas})
     else:
         return jsonify({"existe": False})
 
