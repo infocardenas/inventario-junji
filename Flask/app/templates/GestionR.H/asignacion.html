@@ -78,9 +78,10 @@
             <th class="checkbox-column" onclick="toggleSelectAll()">Todo</th>
             <th onclick="sortTable(1, this)">ID</th>
             <th onclick="sortTable(2, this)">Funcionario</th>
-            <th onclick="sortTable(3, this)">Tipo de equipo</th>
-            <th onclick="sortTable(4, this)">Fecha de asignación</th>
-            <th onclick="sortTable(5, this)">Fecha de devolución</th>
+            <th onclick="sortTable(3,this)">RUT Funcionario</th>
+            <th onclick="sortTable(4, this)">Tipo de equipo</th>
+            <th onclick="sortTable(5, this)">Fecha de asignación</th>
+            <th onclick="sortTable(6, this)">Fecha de devolución</th>
             <th>Acciones</th>
           </tr>
         </thead>
@@ -99,6 +100,7 @@
             </td>
             <td class="toCheck">{{ asig.idAsignacion }}</td>
             <td class="toCheck">{{ asig.nombreFuncionario }}</td>
+            <td class="toCheck">{{ asig.rutFuncionario }}</td>
             <td class="toCheck">{{ asig.nombreTipo_equipo if asig.nombreTipo_equipo else '-' }}</td>
             <td class="toCheck">{{ asig.fecha_inicioAsignacion.strftime('%d-%m-%Y') }}</td>
             <td class="toCheck">

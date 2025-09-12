@@ -93,6 +93,7 @@ function actualizarTabla(equipos) {
           data-serie="${equipo.Num_serieEquipo}"
           data-observacion="${equipo.ObservacionEquipo || ''}"
           data-unidad="${equipo.idUnidad || ''}"
+          data-name="${equipo.nombreUnidad || ''}"
           data-orden="${equipo.idOrden_compra || ''}"
           data-marca="${equipo.idMarca_Equipo || ''}" 
           data-tipo="${equipo.idTipo_equipo || ''}"
@@ -734,6 +735,7 @@ function configurarEventosEdicion() {
       document.getElementById("edit_numero_serie").value = limpiarDato(this.getAttribute("data-serie"));
       document.getElementById("edit_observacion_equipo").value = limpiarDato(this.getAttribute("data-observacion"));
       document.getElementById("edit_codigo_Unidad").value = limpiarDato(this.getAttribute("data-unidad"));
+      document.getElementById("nombreUnidadDEdit").value = limpiarDato(this.getAttribute("data-unidad"));
       document.getElementById("edit_orden_compra").value = limpiarDato(this.getAttribute("data-orden"));
       document.getElementById("edit_codigoproveedor").value = limpiarDato(this.getAttribute("data-proveedor"));
       document.getElementById("edit_mac").value = limpiarDato(this.getAttribute("data-mac"));

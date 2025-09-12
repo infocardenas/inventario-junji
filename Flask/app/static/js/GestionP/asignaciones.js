@@ -44,6 +44,7 @@ function actualizarTablaAsignaciones(asignaciones) {
             </td>
             <td class="toCheck">${asig.idAsignacion || '-'}</td>
             <td class="toCheck">${asig.nombreFuncionario || '-'}</td>
+            <td class="toCheck">${asig.rutFuncionario || '-'}</td>
             <td class="toCheck">${asig.nombreTipo_equipo || '-'}</td>
             <td class="toCheck">${formatFecha(asig.fecha_inicioAsignacion)}</td>
             <td class="toCheck">${asig.fechaDevolucion ? formatFecha(asig.fechaDevolucion) : 'Sin devolver'}</td>

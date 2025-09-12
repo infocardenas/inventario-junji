@@ -926,6 +926,7 @@ def buscar(idAsignacion):
         a.observacionAsignacion,
         a.rutaactaAsignacion,
         f.nombreFuncionario,
+        f.rutFuncionario,
         a.fechaDevolucion,
         a.ActivoAsignacion
     FROM asignacion a
@@ -1015,6 +1016,7 @@ def buscar_asignaciones():
             a.ObservacionAsignacion,
             a.ActivoAsignacion,
             f.nombreFuncionario,
+            f.rutFuncionario,
             f.cargoFuncionario,
             ea.idEquipoAsignacion,
             d.idDevolucion,
@@ -1041,9 +1043,10 @@ def buscar_asignaciones():
            OR LOWER(e.Num_serieEquipo) LIKE %s
            OR LOWER(te.nombreTipo_equipo) LIKE %s
            OR LOWER(a.ObservacionAsignacion) LIKE %s
+           OR LOWER(f.rutFuncionario) LIKE %s
         LIMIT %s OFFSET %s
     """, (f"%{query}%", f"%{query}%", f"%{query}%", f"%{query}%",
-          f"%{query}%", f"%{query}%", per_page, offset))
+          f"%{query}%", f"%{query}%",f"%{query}", per_page, offset))
     asignaciones = cur.fetchall()
 
     # Total de resultados para la búsqueda
@@ -1171,7 +1174,7 @@ def obtener_firma_json(idAsignacion):
     ruta = os.path.join(dir_firmas, nombre)
 
     if os.path.exists(ruta):
-        return jsonify({"existe": True, "nombre": nombre})
+        return jsonify({"existe": True, "nombre": nombre, "firmas":dir_firmas})
     else:
         return jsonify({"existe": False})
 
