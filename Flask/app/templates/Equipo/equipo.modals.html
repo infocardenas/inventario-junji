@@ -5,7 +5,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="addEquipoModalLabel">Agregar Nuevo Equipo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar" id="cerr"></button>
             </div>
             <div class="modal-body">
                 <form action="/add_equipo" method="POST" id="addEquipoForm" class="row g-3">
@@ -71,10 +71,12 @@
                                 <div id="scrollWrapper"
                                     style="white-space: nowrap; display: inline-block; align-items: center;">
 
-                                <!--Muestra dinamicamente el codigo de la unidad al seleccionar el nombre-->
-                                    <input type="text" id="codigoUnidad" class="form-control"
-                                        placeholder="Código" value="" disabled
-                                        style="border: none; outline: none;min-width: 25%; background: transparent">
+                                    <!--Muestra dinamicamente el codigo de la unidad al seleccionar el nombre-->
+                                    <span data-bs-toggle="tooltip" title="Código de la Unidad">
+                                        <input type="text" id="codigoUnidad" class="form-control" placeholder="Código"
+                                            value="" disabled
+                                            style="border: none; outline: none;min-width: 25%; background: transparent">
+                                    </span>
                                 </div>
                             </div>
                         </div>
@@ -83,10 +85,12 @@
                     <div class="col-md-6">
                         <label class="form-label" for="nombre_orden_compra">Orden de Compra <span
                                 style="color: red;">*</span></label>
-                        <select class="form-select campo-obligatorio" name="nombre_orden_compra">
+                        <select class="form-select campo-obligatorio" name="nombre_orden_compra"
+                            onchange="mostrarCodigoProveedor(event)">
                             <option value="">Seleccione el Orden de Compra</option>
                             {% for ordenc in orden_compra %}
-                            <option value="{{ ordenc.idOrden_compra }}">{{ ordenc.nombreOrden_compra }}</option>
+                            <option value="{{ ordenc.idOrden_compra }}" data-codigo="{{ordenc.idOrden_compra}}">{{
+                                ordenc.nombreOrden_compra }}</option>
                             {% endfor %}
                         </select>
                         <div class="text-error-message"></div>
@@ -100,7 +104,7 @@
                         <div class="text-error-message"></div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6" id="codigoproveedor">
                         <label class="form-label" for="codigoproveedor">Código de Proveedor: </label>
                         <input type="text" class="form-control validar-numero" name="codigoproveedor"
                             placeholder="Ingrese Código del Proveedor">
@@ -133,12 +137,33 @@
 
                     <div class="col-12">
                         <label class="form-label" for="observacion_equipo">Observación</label>
-                        <textarea class="form-control" id="observacion_equipo" name="observacion_equipo" rows="3"
-                            placeholder="Ingrese observaciones"></textarea>
+
+                        <div class="accordion mb-4" id="agregarObservacion">
+                            <div class="accordion-item">
+                                <h2 class="accordion-header">
+                                    <button class="accordion-button collapsed no-arrow" type="button"
+                                        data-bs-toggle="collapse" data-bs-target="#flush-collapseOne"
+                                        aria-expanded="false" aria-controls="flush-collapseOne">
+                                        <li class="link-secondary rounded" style="letter-spacing: 1px;">
+                                            <i class="bi bi-plus-lg me-2"></i> Agregar Observación
+                                        </li>
+                                    </button>
+                                </h2>
+                                <div id="flush-collapseOne" class="accordion-collapse collapse"
+                                    data-bs-parent="#agregarObservacion">
+                                    <div class="accordion-body">
+                                        <textarea class="form-control" id="observacion_equipo" name="observacion_equipo"
+                                            rows="3" placeholder="Escriba aquí..."></textarea>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
                     </div>
 
                     <div class="col-12 text-end">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                            id="canc">Cancelar</button>
                         <button type="submit" class="btn btn-success">Guardar</button>
                     </div>
                 </form>
@@ -235,10 +260,11 @@
                                     style="white-space: nowrap; display: inline-block; align-items: center;">
 
                                     <!--Muestra dinamicamente el codigo de la unidad al seleccionar un nombre-->
-                                    <input type="text" id="nombreUnidadDEdit" class="form-control"
-                                        placeholder="Código" disabled
-                                        style="border: none; outline: none; min-width: 20%;background: transparent;">
-
+                                    <span data-bs-toggle="tooltip" title="Código de la Unidad">
+                                        <input type="text" id="nombreUnidadDEdit" class="form-control"
+                                            placeholder="Código" disabled
+                                            style="border: none; outline: none; min-width: 20%;background: transparent;">
+                                    </span>
                                 </div>
 
                             </div>
@@ -248,10 +274,12 @@
                     <div class="col-md-6">
                         <label class="form-label" for="edit_nombre_orden_compra">Orden de Compra <span
                                 style="color: red;">*</span></label>
-                        <select class="form-select campo-obligatorio" name="nombre_orden_compra" id="edit_orden_compra">
+                        <select class="form-select campo-obligatorio" name="nombre_orden_compra" id="edit_orden_compra"
+                            onchange="mostrarCodigoProveedorEdit(event)">
                             <option value="">Seleccione el Orden de Compra</option>
                             {% for ordenc in orden_compra %}
-                            <option value="{{ ordenc.idOrden_compra }}">{{ ordenc.nombreOrden_compra }}</option>
+                            <option value="{{ ordenc.idOrden_compra }}" data-codigo="{{ordenc.idOrden_compra}}">{{
+                                ordenc.nombreOrden_compra }}</option>
                             {% endfor %}
                         </select>
                         <div class="text-error-message"></div>
@@ -282,7 +310,7 @@
                         <div class="text-error-message"></div>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-6" id="codigoproveedor_edit">
                         <label class="form-label" for="edit_codigoproveedor">Código de Proveedor: </label>
                         <input type="text" class="form-control validar-numero" name="codigoproveedor"
                             id="edit_codigoproveedor" placeholder="Ingrese Código del Proveedor">
@@ -653,4 +681,49 @@
         let name = e.target.selectedOptions[0].getAttribute('data-codigo');
         document.getElementById('nombreUnidadDEdit').value = name;
     }
+</script>
+
+<script>
+    //Función para mostrar/ocultar el campo proveedor según el id del orden de compra 
+    function mostrarCodigoProveedor(e) {
+        //Se obtiene el id del orden de compra seleccionado
+        let ordenc = e.target.selectedOptions[0].getAttribute('data-codigo');
+        //Se obtiene el id del campo proveedor
+        const campoProveedor = document.getElementById('codigoproveedor');
+
+        if (ordenc === '0000000') {
+            campoProveedor.style.display = 'none';
+        } else {
+            campoProveedor.style.display = 'block';
+        }
+    }
+
+    function mostrarCodigoProveedorEdit(e) {
+        //Se obtiene el id del orden de compra seleccionado
+        let ordenc = e.target.selectedOptions[0].getAttribute('data-codigo');
+        //Se obtiene el id del campo proveedor
+        const campoProveedor = document.getElementById('codigoproveedor_edit');
+
+        if (ordenc === '0000000') {
+            campoProveedor.style.display = 'none';
+        } else {
+            campoProveedor.style.display = 'block';
+        }
+    }
+    document.getElementById('editEquipoModal').addEventListener('shown.bs.modal', function () {
+        const selectEdit = document.getElementById('edit_orden_compra');
+        if (selectEdit) {
+            //comprobar el valor del select
+            mostrarCodigoProveedorEdit({ target: selectEdit });
+        }
+    });
+
+    const formAdd = document.getElementById('addEquipoForm');
+    const campoProveedor = document.getElementById('codigoproveedor');
+    document.getElementById("cerr").addEventListener("click", function () {
+        campoProveedor.style.display = 'block';
+    });
+    document.getElementById("canc").addEventListener("click", function () {
+        campoProveedor.style.display = 'block';
+    });
 </script>

@@ -216,15 +216,6 @@ def create_asignacion():
             equipo_data = cur.fetchone()
             id_unidad_origen = equipo_data['idUnidad'] if equipo_data else None
 
-            # Si la unidad de origen y destino son diferentes, crear traslado SOLO si el usuario aceptó
-            if crear_traslado == '1' and id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
-                crear_traslado_generico(
-                    fecha_asignacion,
-                    id_unidad_funcionario,
-                    id_unidad_origen,
-                    [id_equipo]
-                )
-
             # Inserta los datos en la tabla equipo_asignacion
             cur.execute("""
                 INSERT INTO equipo_asignacion (idAsignacion, idEquipo)
@@ -246,6 +237,14 @@ def create_asignacion():
                         WHERE idEquipo = %s
                         """, (id_estado_equipo, id_equipo))
 
+            # Si la unidad de origen y destino son diferentes, crear traslado SOLO si el usuario aceptó
+            if crear_traslado == '1' and id_unidad_funcionario and id_unidad_origen and id_unidad_funcionario != id_unidad_origen:
+                crear_traslado_generico(
+                    fecha_asignacion,
+                    id_unidad_funcionario,
+                    id_unidad_origen,
+                    [id_equipo]
+                )
             #Seleccionar el equipo de equipo_asignacion y agregarlo a una tupla para el excel
             cur.execute("""
                         SELECT e.*, 

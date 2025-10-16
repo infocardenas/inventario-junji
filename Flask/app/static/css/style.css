@@ -868,4 +868,41 @@ svg.bi {
 /* Si quieres ocultar la etiqueta "Search:" por completo */
 .dt-search label { 
 display: none; 
+
 } 
+
+.accordion-button::after {
+  background-image: initial;
+  width: 0;
+}
+
+.accordion-button:not(.collapsed)::after {
+  background-image: initial;
+  width: 0;
+}
+
+.accordion-button:hover {
+  background-color: #afd2f542;
+}
+
+#agregarObservacion {
+    border-radius: 5px;
+    padding: 10px;
+    border: 3px dashed #b6b9bdd0;
+
+}
+
+/*input que muestra el nombre de la unidad al seleccionar un codigo*/
+/* #nombreUnidadD,#nombreUnidadDEdit{ 
+    text-overflow: clip;
+    overflow: hidden;
+    animation: marquee 6s linear infinite alternate;
+    text-align: center;
+}
+
+/*animacion para el input que contiene el nombre de la unidad se mueva de izquierda a derecha*/
+/* @keyframes marquee{
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-45%); }
+}
+ */

@@ -137,13 +137,24 @@ function mostrarAlerta(mensaje, tipo = "success") {
     }, 5000);
 }
 
+const botonEliminar = document.getElementById("eliminarSeleccionados");
+
+
 document.addEventListener("DOMContentLoaded", function () {
     // Seleccionar/Deseleccionar todos los checkboxes
     document.getElementById("selectAll").addEventListener("change", function () {
         let checkboxes = document.querySelectorAll(".row-checkbox");
         checkboxes.forEach(cb => cb.checked = this.checked);
-    });
 
+        if (this.checked) {
+            botonEliminar.disabled = false; // Habilita el botón de eliminar
+            botonEliminar.innerHTML = '<i class="bi bi-trash"></i> Eliminar seleccionados'; //mensaje en el botón de eliminar
+        } else {
+            botonEliminar.disabled = true; //deshabilita el botón de eliminar
+            botonEliminar.innerHTML = '<i class="bi bi-trash"></i> ' // icono sin mensaje para el botón de eliminar
+        }
+    });
+    
     // Botón de eliminar traslados seleccionados
     document.getElementById("eliminarSeleccionados").addEventListener("click", function () {
         let seleccionados = Array.from(document.querySelectorAll(".row-checkbox:checked"))
@@ -169,6 +180,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
                             // Desmarcar el checkbox de "Seleccionar todo"
                             document.getElementById("selectAll").checked = false;
+                            botonEliminar.innerHTML = '<i class="bi bi-trash"></i> '; // icono sin mensaje para el botón de eliminar
+                            botonEliminar.disabled = true; //deshabilita el botón de eliminar
                         } else {
                             mostrarAlerta("Error al eliminar traslados.", "danger");
                         }
@@ -317,12 +330,24 @@ function habilitarBotonFirmar() {
     const seleccionado = !!checked; // Verifica si hay un checkbox activado
 
     if (firmarButton) firmarButton.disabled = !seleccionado;//Habilita el botón al seleccionar un checkbox
+
+    // Condición para habilitar/deshabilitar el botón de eliminar
+    if (botonEliminar) {
+        botonEliminar.disabled = !seleccionado;
+        botonEliminar.innerHTML = seleccionado
+            ? '<i class="bi bi-trash"></i> Eliminar seleccionado(s)'
+            : '<i class="bi bi-trash"></i> ';
+    }
+
+    
 }
 
 //actualizar botón de firmar traslado al seleccionar el checkbox
 document.addEventListener('change', function (e) {
     if (e.target.classList.contains('row-checkbox')) {
         habilitarBotonFirmar();
+    } else{
+        firmarButton.disabled
     }
 });
 
@@ -334,6 +359,11 @@ function abrirModalFirmarTraslado() {
 
     if (ids.length === 0) {
         alert("Selecciona al menos un traslado para firmar.");
+        return;
+    }
+
+    if (ids.length > 1) {
+        mostrarAlerta("Solo puedes firmar un traslado a la vez.", "danger");
         return;
     }
 
