@@ -86,3 +86,9 @@ main {
   color: #6c757d; /* Color de los íconos */
   margin-right: 0.5rem; /* Separación entre icono y texto */
 }
+
+/* .btn-toggle[data-bs-target="#asignacion"]::before {
+  content: none;
+} */
+ .mt-5 {
+  margin-top: 7rem !important; /* Más espacio en la parte superior */}

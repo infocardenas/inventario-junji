@@ -7,14 +7,14 @@
         <div class="col-md-8">
             {% with messages = get_flashed_messages() %}
             {% if messages %}
-                {% for message in messages %}
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ message }}
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                {% endfor %}
+            {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            {% endfor %}
             {% endif %}
             {% endwith %}
         </div>
@@ -29,6 +29,10 @@
                 <div class="col-md-3 mb-4 d-flex flex-column align-items-center">
                     <h5 class="text-dark mb-3"><i class="fas fa-tools me-2"></i>Gestión de Equipos</h5>
                     <div class="d-flex flex-column align-items-center">
+                        <a href="/asignacion" class="text-decoration-none text-dark mb-3">
+                            <i class="bi bi-laptop fs-5"></i>
+                            <span>Asignaciones</span>
+                        </a>
                         <a href="/equipo" class="text-decoration-none text-dark mb-3">
                             <i class="bi bi-laptop fs-5"></i>
                             <span>Equipos</span>
@@ -60,15 +64,15 @@
                             <i class="bi bi-person fs-5"></i>
                             <span>Funcionarios</span>
                         </a>
-                        <a href="/asignacion" class="text-decoration-none text-dark mb-3">
+                        <!-- <a href="/asignacion" class="text-decoration-none text-dark mb-3">
                             <i class="bi bi-person-check fs-5"></i>
                             <span>Asignaciones</span>
-                        </a>
+                        </a> -->
                     </div>
                 </div>
 
                 <!-- Categoría 3: Gestión de Proveedores -->
-                <div class="col-md-2 mb-4 d-flex flex-column align-items-center">  
+                <div class="col-md-2 mb-4 d-flex flex-column align-items-center">
                     <h5 class="text-dark mb-3"><i class="fas fa-truck me-2"></i>Gestión de Proveedores</h5>
                     <div class="d-flex flex-column align-items-center">
                         <a href="/proveedor" class="text-decoration-none text-dark mb-3">
@@ -94,7 +98,7 @@
                             <i class="bi bi-exclamation-triangle"></i>
                             <span>Incidencias</span>
                         </a>
-                        
+
                     </div>
                 </div>
 
