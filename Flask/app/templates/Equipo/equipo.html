@@ -29,35 +29,37 @@
     </div>
 
     <div class="col">
-        <h2>Equipos</h2>
-      
-        <!-- Toolbar: todos los botones en una sola fila -->
-        <div class="row mb-3">
-          <div class="col-12">
-            <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
-      
-              <!-- Botones principales: Agregar y Exportar Todo -->
-              <div class="d-flex gap-2 flex-wrap">
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipoModal">
-                  Agregar
+      <h2>Equipos</h2>
+
+      <!-- Toolbar: todos los botones en una sola fila -->
+      <div class="row mb-3">
+        <div class="col-12">
+          <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+
+            <!-- Botones principales: Agregar y Exportar Todo -->
+            <div class="d-flex gap-2 flex-wrap">
+              <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addEquipoModal">
+                Agregar
+              </button>
+
+              <a href="{{ url_for('equipo.crear_excel') }}" class="btn btn-primary d-flex align-items-center"
+                data-bs-target="#exportall">
+                Exportar Todo
+                <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel" width="20"
+                  height="20" class="ms-2">
+              </a>
+            </div>
+            <!-- Buscador y Exportar búsqueda -->
+            <div class="d-flex gap-2 flex-grow-1" style="max-width: 650px;">
+              <input id="buscador_equipo" type="text" class="form-control" placeholder="Buscar equipos"
+                oninput="buscarEquipos(1)" />
+
+              <!-- Botón para mostrar el lector QR este es el QR-->
+              <div class="d-flex gap-2">
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#qrModal">
+                  <i class="bi bi-qr-code-scan"></i>
                 </button>
-      
-                <a href="{{ url_for('equipo.crear_excel') }}" class="btn btn-primary d-flex align-items-center">
-                  Exportar Todo
-                  <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}"
-                    alt="Exportar Excel" width="20" height="20" class="ms-2">
-                </a>
               </div>
-              <!-- Buscador y Exportar búsqueda -->
-              <div class="d-flex gap-2 flex-grow-1" style="max-width: 650px;">
-                <input id="buscador_equipo" type="text" class="form-control" placeholder="Buscar equipos" oninput="buscarEquipos(1)" />
-                
-                <!-- Botón para mostrar el lector QR este es el QR-->
-                <div class="d-flex gap-2">
-                    <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#qrModal">
-                      <i class="bi bi-qr-code-scan"></i>
-                    </button>
-                </div>
               <button class="btn btn-primary d-flex align-items-center flex-shrink-0" id="exportarBusqueda"
                 onclick="exportarBusqueda()">
                 <img src="{{ url_for('static', filename='img/icons8-ms-excel.svg') }}" alt="Exportar Excel" width="20"
@@ -96,13 +98,13 @@
         <thead>
           <tr>
             <th class="checkbox-column" onclick="toggleSelectAll()">Todo</th>
-            <th onclick="sortTable(1,this)">C. Inv</th>
+            <th onclick="sortTable(1,this)" data-bs-toggle="tooltip" title="Código Inventario">C. Inv</th>
             <th onclick="sortTable(2,this)">N° Serie</th>
             <th onclick="sortTable(3,this)">Estado equipo</th>
-            <th onclick="sortTable(4,this)">Funcionario</th>
-            <th onclick="sortTable(5,this)">C. Prov</th>
-            <th onclick="sortTable(6,this)">Unidad</th>
-            <th onclick="sortTable(7,this)">Tipo equipo</th>
+            <th onclick="sortTable(4,this)" style="width: 12%;">Funcionario</th>
+            <th onclick="sortTable(5,this)" data-bs-toggle="tooltip" title="Código Proveedor">C. Prov</th>
+            <th onclick="sortTable(6,this)" style="width: 12%;">Unidad</th>
+            <th onclick="sortTable(7,this)" style="width: 10%;">Tipo equipo</th>
             <th onclick="sortTable(8,this)">Modelo</th>
             <th>Acciones</th>
           </tr>
@@ -111,7 +113,8 @@
           {% if equipo %}
           {% for equi in equipo %}
           <tr data-id="{{ equi.idEquipo }}">
-            <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value"></td>
+            <td><input type="checkbox" class="checkbox-table row-checkbox no-delete-value" data-bs-toggle="tooltip"
+                title="Seleccionar"></td>
             <td>{{ equi.Cod_inventarioEquipo }}</td>
             <td>{{ equi.Num_serieEquipo }}</td>
             <td>{{ equi.nombreIncidencia if equi.nombreIncidencia else equi.nombreEstado_equipo }}</td>
@@ -198,7 +201,32 @@
 
 
 
+<!-- <script> atajo de teclado 
+  document.addEventListener('keydown', function (event) {
+    if (event.repeat) return;
 
+    if (event.altKey && event.key === 'a') {
+      event.preventDefault();
+      $('#addEquipoModal').modal('show');
+      $('#addEquipoModal').modal('hide');
+
+    }
+
+    if (event.altKey && event.key === 'Enter') {
+      event.preventDefault();
+
+      const exportBtn = document.querySelector('a[data-bs-target="#exportall"]');
+      if (exportBtn) {
+        exportBtn.click();
+      }
+    }
+
+    if(document.querySelector('.row-checkbox:checked') && event.altKey && event.key === 'i'){
+      event.preventDefault();
+      alert("hola");
+    }
+  });
+</script> -->
 
 {% include 'Equipo/equipo.modals.html'%}
 {% endblock %}
